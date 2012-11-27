@@ -1,0 +1,473 @@
+/* MAIN LIST STYLES */
+
+ul#potential-parents-list li.variable-item {
+    height: 30px;
+}
+
+ul#potential-parents-list li.variable-item .variable:hover {
+    text-decoration: underline;
+}
+
+ul#potential-parents-list li.variable-item .variable,
+ul#redundant-relationship-list li.variable-item .header .variable {
+    font-size: 13.5pt;
+    font-style: normal;
+    color: #48802c; /* mimic the colour of links from global.css */
+}
+
+ul#redundant-relationship-list li.variable-item .header .variable {
+}
+
+/* List items which indicate disagreement */
+
+ul#potential-parents-list li.variable-item.disagree .variable {
+    color: #793838;
+}
+
+ul#potential-parents-list li.variable-item.disagree input[type=button] {
+    border: solid 1px #da8f8f;
+}
+
+ul#potential-parents-list li.variable-item.disagree {
+    background-color: #eecbcb;
+    border: solid 1px #da8f8f;
+    color: #da8f8f;
+}
+
+/* splash screen - variables have icons on the left, a 'needs review' status message to the right, and some info
+about relationships below. */
+
+ul#all-children-list li.variable-item {
+    height: auto;
+}
+
+ul#all-children-list li.variable-item.doesnt-need-review {
+    background: url("../images/icons/accept.png") no-repeat scroll 5px 50% transparent;
+}
+
+ul#all-children-list li.variable-item.needs-review {
+    background: url("../images/icons/exclamation.png") no-repeat scroll 5px 50% transparent;
+}
+
+ul#all-children-list li.variable-item {
+    padding: 5px 0 5px 30px;
+}
+
+ul#all-children-list li.variable-item a .variable {
+    font-style: normal;
+}
+
+ul#all-children-list li.variable-item a:hover {
+    text-decoration: underline;
+}
+
+ul#all-children-list li.variable-item a {
+    text-decoration: none;
+    font-size: 13.5pt;
+    font-style: normal;
+}
+
+/* main list sub-items (other stuff below the variable label) */
+
+.item-description {
+    font-size: 10pt;
+    padding-top: 0.1em;
+    color: #666;
+}
+
+.info, .stats {
+    font-size: 11pt;
+    color: #888;
+}
+
+.redundant .variable, .mediating-chain .variable {
+	padding: 0 0.2em;
+	color: #48802c;
+}
+
+.indent {
+	display: block;
+	padding-left: 1em;
+}
+
+.info .indent {
+	padding-top: 1em;
+}
+
+.redundant.content .info {
+	max-width: 500px;
+	margin: 0.5em 0.5em;
+}
+
+.answers label {
+	display: block;
+}
+
+.redundant, .mediating-chain, .answers, .info {
+	font-size: 11pt;
+	color: #666;
+	margin: 0.4em 0;
+}
+
+.synonyms {
+
+}
+
+/* DIALOG STYLE */
+table.form th {
+
+    width: 25%;
+	font-size: 0.75em;
+    margin-left: 1.3em;
+    padding: 0.3em 0.7em 0 0;
+	color: #777;
+    text-align: right;
+
+}
+
+.reasons .header {
+    padding-top: 0.3em;
+}
+
+.reasons-list .me.exists, .reasons-list .other.exists {
+    color: green;
+}
+
+.reasons-list .me.doesnt-exist, .reasons-list .other.doesnt-exist {
+    color: red;
+}
+
+.reasons .redundant {
+	font-size: 0.9em;
+	font-family: monospace;
+	color: #999;
+	text-decoration: line-through;
+}
+
+.reasons .redundant:after {
+	content: "<span class='redundnat-explain'>Because!</span>";
+}
+
+.bar-chart, .slider {
+    width: 100%;
+    margin: 0.3em 0.3em 0.3em 0;
+}
+
+.reasons {
+    clear: both;
+}
+
+.reasons ul.reasons-list li {
+    list-style: none;
+    margin: 0.5em 0.5em 1.5em 1em;
+    font-style: italic;
+}
+
+.reasons .author {
+    font-style: normal;
+    margin: 0.5em 0 0 2em;
+}
+
+.reasons .list-wrapper {
+    max-height: 300px;
+    overflow: auto;
+}
+
+.var-details .comment .label {
+    width: 22%;
+    float: right;
+    margin-top: 1.5em;
+}
+
+.header-wrapper {
+    width: 100%;
+    margin: 0 0 0.5em 0;
+}
+
+.save-wrapper {
+    display: block;
+    width: 100%;
+    text-align: right;
+}
+
+.save-wrapper button {
+    display: inline;
+}
+
+.save-wrapper.bottom {
+    margin: 0.5em 0 0 0;
+}
+
+.var-details textarea {
+    width: 100%;
+    height: 6em;
+    margin: 0.5em 0;
+}
+
+.var-details .header {
+    clear: both;
+    font-size: 1.4em;
+    padding: 0.5em 0;
+}
+
+
+
+.agreement-summary {
+    font-size: 0.8em;
+    display: block;
+    color: #666;
+    font-weight: normal;
+}
+
+.synonyms {
+    list-style: none;
+}
+
+.synonyms li {
+    display: inline;
+    font-size: 0.8em;
+    color: #aaa !important;
+    font-weight: normal;
+}
+
+/* VARIABLE LIST STYLES */
+
+.unsaved-icon {
+    display: none;
+}
+
+.unsaved .unsaved-icon {
+    display: inline-block;
+}
+
+.variable-list-label {
+	float: left;
+	width: 120px;
+	padding-right: 5px;
+	text-align: right;
+}
+
+li.separator {
+	font-style: italic;
+}
+
+ul.variable-list .config-box {
+	border: solid 1px #dddddd;
+	padding: 5px 8px 4px 8px;
+	background: #eeeeee;
+}
+
+ul.variable-list .config-box-left {
+	margin-left: -1px;
+}
+
+ul.variable-list .config-box-right {
+	margin-right: 5px;
+}
+
+ul.variable-list {
+	width: 100%;
+}
+
+ul.variable-list li.variable-item {
+	padding-left: 0.7em;
+}
+
+ul.variable-list-filter ul.selected-variable-list {
+	width: 350px;
+}
+
+ul.variable-list-filter input[type=checkbox] {
+	margin-left: 5px;
+}
+
+ul.variable-list.selectable .selected {
+	background: #A0E8A0;
+}
+
+ul.variable-list li, ul.selected-variable-list li {
+	padding-top: 3px;
+	padding-bottom: 3px;
+	margin: 0;
+}
+
+.ui-button-text {
+	font-size: 0.8em;
+}
+
+/* PROBLEMS STYLES */
+.btn-toggle-details {
+	margin: 0.3em 0;
+}
+
+ul#redundant-relationship-list .indent li {
+	padding: 0;
+}
+
+/* ELICITING PARENTS STYLES */
+.var-summary {
+    width: 200px;
+    float: right;
+    padding-right: 0.8em;
+}
+
+.var-summary .agreement {
+    display: block;
+    width: 100%;
+    text-align: right;
+}
+
+.var-summary .toggle-details {
+    width: 100%;
+    display: block;
+    text-align: right;
+}
+
+.next-previous-button {
+	width: 125px;
+}
+
+.button-label {
+	display: inline-block;
+	font-style: italic;
+	font-size: 0.9em;
+	color: #bbb;
+	width: 125px;
+	text-align: center;
+}
+
+.quote {
+	padding: 20px 40px;
+}
+
+.elicit-parents .column-left {
+	width: 550px;
+}
+
+.elicit-parents .column-right {
+	margin-left: 560px;
+}
+
+.child-variable {
+	font-size: 1.2em;
+}
+
+ul#potential-parents-list li {
+	height: 50px;
+}
+
+ul#potential-parents-list li.new-var {
+	height: auto;
+}
+
+#new-var-form input[type=text] {
+	width: 90%;
+    margin-bottom: 0.3em;
+}
+
+#new-var-form textarea {
+	width: 90%;
+    height: 100px;
+    margin-bottom: 0.3em;
+    margin-top: 0.3em;
+}
+
+.think-rel-exists {
+
+}
+
+.agreement .previous-description {
+    clear: both;
+    padding-left: 1.3em;
+}
+
+.agreement .previous-description.yes {
+    background: url( ../images/icons/tick.png ) no-repeat;
+}
+
+.agreement .previous-description.no {
+    background: url( ../images/icons/cross.png ) no-repeat;
+}
+
+#potential-parents-list .details {
+	width: 300px;
+	float: right;
+}
+
+#potential-parents-list .agreement {
+    margin-right: 0.5em;
+    font-weight: normal;
+    font-size: 0.8em;
+    text-align: right;
+}
+
+.agreement-summary .long ul {
+    list-style: none;
+}
+
+.agreement-summary .long .agree {
+    color: green;
+    font-weight: bold;
+}
+
+.agreement-summary .long .disagree {
+    color: red;
+    font-weight: bold;
+}
+
+.agreement-summary .long .agree li, .agreement-summary .long .disagree li {
+    margin: 0;
+    padding: 0;
+}
+
+.agreement-summary .long .none {
+    color: grey;
+    font-weight: bold;
+}
+
+.agreement-summary .long table {
+    border-collapse: collapse;
+}
+
+.agreement-summary .long td, .agreement-summary .long th {
+    border: darkgrey solid 1px;
+}
+
+.agreement-summary .long td {
+    padding: 0.5em;
+}
+
+.agreement-summary .long th.empty {
+    border: none;
+}
+
+#potential-parents-list .agreement .disagree {
+    color: red;
+    font-weight: bold;
+}
+
+#potential-parents-list .agreement .agree {
+    color: green;
+}
+
+.bar-label-wrapper {
+    width: 100%;
+    margin: 1em 0;
+}
+
+.bar-chart .ui-slider-range, .my-confidence .ui-slider-range {
+    background: #58d148;
+}
+
+#potential-parents-list li {
+	padding-left: 5px;
+}
+
+.column-left {
+	float: left;
+	width: 350px;
+}
+
+.column-right {
+	margin-left: 355px;
+}

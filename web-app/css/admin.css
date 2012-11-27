@@ -1,0 +1,8 @@
+input[type=button].confirm-advance {
+    float: right;
+}
+
+.button-container {
+    margin-top: 0.5em;
+    width: 100%;
+}

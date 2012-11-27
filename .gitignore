@@ -1,0 +1,6 @@
+.metadata
+*.class
+*.iml
+.idea
+target
+bn-elicitator.properties

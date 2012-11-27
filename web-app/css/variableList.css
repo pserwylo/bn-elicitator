@@ -1,0 +1,7 @@
+ul.variable-list li.variable-item {
+
+    padding: 3px 5px;
+    border: solid 1px #CCC;
+    margin-top: -1px; /* So that we don't double up on the border in between items... */
+
+}
