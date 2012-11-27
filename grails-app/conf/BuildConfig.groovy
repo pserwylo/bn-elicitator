@@ -38,19 +38,6 @@ grails.project.dependency.resolution = {
 
         runtime 'mysql:mysql-connector-java:5.1.16'
         runtime 'NeticaJ:NeticaJ:4.19'
-        runtime 'annas:annas:2.0'
-		runtime 'jung:jung-graph-impl:2.0.1'
-		runtime 'jung:jung-io:2.0.1'
-		runtime 'jung:jung-algorithms:2.0.1'
-		runtime 'jung:jung-api:2.0.1'
-		runtime 'jung:jung-visualization:2.0.1'
-		runtime 'jung:collections-generic:2.0.1'
-		runtime 'jung:collections-generic:4.01'
-		runtime 'jung:colt:1.2.0'
-		runtime 'jung:concurrent:1.3.4'
-		runtime 'jung:stax-api:1.0.1'
-		runtime 'jung:vecmath:1.3.1'
-		runtime 'jung:wstx-asl:3.2.6'
     }
 
     plugins {
