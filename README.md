@@ -1,5 +1,4 @@
-bn-elicitator
-=============
+# bn-elicitator #
 
 Bayesian Network elicitator, using a methodology more akin to a survey then traditional interviews.
 
@@ -9,9 +8,20 @@ In addition to the survey-like methodology, it also makes use of the Delphi meth
 After the first round, they are presented (anonymously) with the responses from each other participant, along with how confident they were and their comments about the decisions they made. 
 It is hoped that this allows the people to converge towards a consensus agreement, without having to go through the workshop-like process.
 
-License
--------
+
+## License ##
 
 http://www.apache.org/licenses/LICENSE-2.0.html
 
 This project is licensed under the Apache 2.0 license, in the hope that other researchers or practitioners will be able to make use of it when it is complete.
+
+
+## Acknowledgements ##
+
+### FamFam icon set ###
+
+http://www.famfamfam.com/lab/icons/silk/
+
+### OWLAPI ###
+
+http://owlapi.sourceforge.net/
