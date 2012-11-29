@@ -87,9 +87,6 @@ class ElicitController {
 		List<BnService.RedundantRelationship> redundantRelationships = bnService.getRedundantRelationships()
 		List<BnService.CyclicalRelationship> cyclicalRelationships = bnService.getCyclicalRelationships()
 
-		println( cyclicalRelationships*.toString().join( "<br />" ) )
-		return
-
 		if ( redundantRelationships.size() > 0 || cyclicalRelationships.size() > 0 )
 		{
 			[

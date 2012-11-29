@@ -30,7 +30,45 @@ class BnService {
 
 		public String toString()
 		{
-			return "Cyclical relationships: " + chains*.readableLabel.join( " -> " )
+			return "Cyclical relationships: " + chain*.readableLabel.join( " -> " )
+		}
+
+		/**
+		 * Two chains are the same if they include the same sequence of variables.
+		 * Because the first and last item should be the same, we remove one of them, and then we iteratively
+		 * rotate one list so that the last item keeps coming to the front. If it eventually looks like our chain,
+		 * then we are the same.
+		 * @param that
+		 * @return
+		 */
+		public boolean equals( Object that )
+		{
+			boolean equal = false
+			if ( that instanceof CyclicalRelationship )
+			{
+				if ( that.chain.size() == chain.size() )
+				{
+					List<Variable> myChain = []
+					List<Variable> otherChain = []
+					myChain.addAll( chain )
+					otherChain.addAll( that.chain )
+
+					myChain.pop()
+					otherChain.pop()
+
+					// Rotate the items in the chain all the way around to see if any rotation matches our pattern...
+					for ( i in 0..(otherChain.size()-1) )
+					{
+						otherChain = otherChain + otherChain.remove( 0 )
+						if ( otherChain == myChain )
+						{
+							equal = true
+							break;
+						}
+					}
+				}
+			}
+			return equal
 		}
 
 	}
@@ -94,7 +132,7 @@ class BnService {
 		{
 			List<TreeNode> leaves = []
 
-			if ( child == null )
+			if ( parents.size() == 0 )
 			{
 				leaves.add( this )
 			}
@@ -143,15 +181,20 @@ class BnService {
 			List<TreeNode> leafNodes = treeOfParents.leaves
 			for ( TreeNode leaf in leafNodes )
 			{
-				List<Variable> descendants = leaf.descendants
+				List<Variable> descendants = leaf.descendantsIncludingSelf
 				List<Variable> leafParents = variableService.getSpecifiedParents( leaf.var )
 				for ( Variable leafParent in leafParents )
 				{
-					if ( descendants.contains( leafParent ) )
+					Integer index = descendants.indexOf( leafParent )
+					if ( index >= 0 )
 					{
+
+						List<Variable> chain = [ leaf.var ]
+						chain.addAll( descendants[ index..descendants.size()-1 ] );
+
 						cyclicalRelationships.add(
 							new CyclicalRelationship(
-								chain: descendants
+								chain: chain
 							)
 						);
 					}
@@ -159,7 +202,7 @@ class BnService {
 			}
 		}
 
-		return cyclicalRelationships
+		return cyclicalRelationships.unique()
 	}
 
 	/**

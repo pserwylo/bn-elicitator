@@ -30,6 +30,13 @@ button:hover {
     color: #CCC;
 }
 
+input[type=button]:disabled,
+input[type=submit]:disabled,
+button:disabled {
+    background-color: #ddd;
+    color: #aaa;
+}
+
 input[type=button]:hover:not( :disabled ),
 input[type=submit]:hover:not( :disabled ),
 button:hover:not( :disabled ) {

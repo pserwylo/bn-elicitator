@@ -83,12 +83,12 @@
 
 				<ul id="cyclical-relationship-list" class="variable-list">
 
-					<g:each in="${cyclicalRelationships}" var="${chain}">
+					<g:each in="${cyclicalRelationships}" var="${rel}">
 
 						<li class="cyclical-relationship variable-item">
 
 							<div class='mediating-chain'>
-								However, you also said that <g:variableChain chain="${chain}" />
+								<g:variableChain chain="${rel.chain}" />
 							</div>
 
 						</li>
