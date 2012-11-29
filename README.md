@@ -2,6 +2,8 @@
 
 Bayesian Network elicitator, using a methodology more akin to a survey then traditional interviews.
 
+## About ##
+
 This is a project I'm working on for my PhD thesis. Traditionally, in order to construct a Bayesian Network, you would sit down with a group of experts and discuss in a workshop-like manner. This software is a survey-like system, where people simply answer questions like a typical survey, with a few twists. Once they have completed the survey, we can use that information to construct a BN.
 
 In addition to the survey-like methodology, it also makes use of the Delphi method, where people answer the survey in rounds. 
