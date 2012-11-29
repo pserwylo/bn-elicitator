@@ -22,8 +22,8 @@ grails.project.dependency.resolution = {
         grailsCentral()
         mavenCentral()
 
-		flatDir name:"netica", dirs:"/home/pete/code/NeticaJ/bin/64_bit"
-		flatDir name:"jung", dirs:"/home/pete/code/jung/"
+		// flatDir name:"netica", dirs:"/home/pete/code/NeticaJ/bin/64_bit"
+		// flatDir name:"jung", dirs:"/home/pete/code/jung/"
 
         // uncomment these to enable remote dependency resolution from public Maven repositories
         // mavenCentral()
@@ -34,10 +34,12 @@ grails.project.dependency.resolution = {
         //mavenRepo "http://repository.jboss.com/maven2/"
     }
     dependencies {
+
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
         runtime 'mysql:mysql-connector-java:5.1.16'
-        runtime 'NeticaJ:NeticaJ:4.19'
+
+        // runtime 'NeticaJ:NeticaJ:4.19'
     }
 
     plugins {

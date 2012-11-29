@@ -85,7 +85,11 @@ class ElicitController {
 	def problems =
 	{
 		List<BnService.RedundantRelationship> redundantRelationships = bnService.getRedundantRelationships()
-		def cyclicalRelationships = []
+		List<BnService.CyclicalRelationship> cyclicalRelationships = bnService.getCyclicalRelationships()
+
+		println( cyclicalRelationships*.toString().join( "<br />" ) )
+		return
+
 		if ( redundantRelationships.size() > 0 || cyclicalRelationships.size() > 0 )
 		{
 			[

@@ -6,9 +6,8 @@ class BnService {
 	def variableService
 
 	/**
-	 * child has both redundantParent and mediator as parents. The redundant one is probably redundant because it is
-	 * also a parent of mediator. It is suggested that we remove the child -> redundantParent relationship and retain
-	 * the redundantParent -> mediator relationship.
+	 * "child" has "redundantParent" as a direct parent, and as an indirect parent by following the list of parents
+	 * in "chains".
 	 */
 	public class RedundantRelationship {
 
@@ -21,6 +20,17 @@ class BnService {
 		public String toString()
 		{
 			return "Redundant relationship ${redundantParent} -> ${child} (due to ${mediatingChain*.readableLabel.join( " -> " )})"
+		}
+
+	}
+
+	public class CyclicalRelationship {
+
+		List<Variable> chain = []
+
+		public String toString()
+		{
+			return "Cyclical relationships: " + chains*.readableLabel.join( " -> " )
 		}
 
 	}
@@ -79,6 +89,24 @@ class BnService {
 			descendants.pop()
 			return descendants
 		}
+
+		List<TreeNode> getLeaves()
+		{
+			List<TreeNode> leaves = []
+
+			if ( child == null )
+			{
+				leaves.add( this )
+			}
+			else
+			{
+				for ( TreeNode parent in parents )
+				{
+					leaves.addAll( parent.getLeaves() )
+				}
+			}
+			return leaves
+		}
 	}
 
 	public void keepRedundantRelationship(RedundantRelationship redundantRelationship) {
@@ -100,6 +128,38 @@ class BnService {
 		redundantRelationship.relationship.isRedundant = Relationship.IS_REDUNDANT_YES
 		redundantRelationship.relationship.exists = false
 		redundantRelationship.relationship.save( flush: true )
+	}
+
+	public List<CyclicalRelationship> getCyclicalRelationships() {
+
+		List<Variable> allVars = Variable.list()
+		List<CyclicalRelationship> cyclicalRelationships = []
+
+		for ( Variable child in allVars )
+		{
+			TreeNode treeOfParents = new TreeNode( var: child )
+			populateAllParents( treeOfParents )
+
+			List<TreeNode> leafNodes = treeOfParents.leaves
+			for ( TreeNode leaf in leafNodes )
+			{
+				List<Variable> descendants = leaf.descendants
+				List<Variable> leafParents = variableService.getSpecifiedParents( leaf.var )
+				for ( Variable leafParent in leafParents )
+				{
+					if ( descendants.contains( leafParent ) )
+					{
+						cyclicalRelationships.add(
+							new CyclicalRelationship(
+								chain: descendants
+							)
+						);
+					}
+				}
+			}
+		}
+
+		return cyclicalRelationships
 	}
 
 	/**
