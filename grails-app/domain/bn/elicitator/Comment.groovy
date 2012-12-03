@@ -10,6 +10,10 @@ class Comment {
 		hiddenBy nullable: true
 	}
 
+	static mapping = {
+		comment type: "text"
+	}
+
 	String comment
 
 	ShiroUser createdBy

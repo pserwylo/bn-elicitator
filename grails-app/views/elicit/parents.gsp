@@ -1,4 +1,4 @@
-<%@ page import="bn.elicitator.AppProperties; bn.elicitator.Variable" %>
+<%@ page import="bn.elicitator.AppProperties; bn.elicitator.Variable; bn.elicitator.Comment" %>
 <!doctype html>
 <html>
 
@@ -260,6 +260,12 @@
 				var allButtonsInDialog = dialog.find( 'button.save' );
 				allButtonsInDialog.html( 'Saving...' ).prop( 'disabled', true );
 
+				var undisable = function() {
+					allButtonsInDialog
+						.prop( 'disabled', false )
+						.html( "Save" );
+				};
+
 				$.ajax({
 
 					type: 'post',
@@ -276,15 +282,16 @@
 
 					dataType: 'text json',
 
+					error: function( data ) {
+						undisable();
+						alert( "Error while saving. The administrator has been notified." );
+					},
+
 					success: function( data ) {
 
 						markSaved( parent );
 
-						allButtonsInDialog
-							.prop( 'disabled', false )
-							.html( "Save" )
-							.filter( ".and-hide" )
-								.html( "Save and Hide" );
+						undisable();
 
 						<g:if test="${delphiPhase > 1}">
 

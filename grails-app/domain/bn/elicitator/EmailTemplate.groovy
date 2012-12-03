@@ -12,11 +12,12 @@ package bn.elicitator
  */
 class EmailTemplate {
 
-	final static Integer CONSTRAINT_BODY_MAX_SIZE = 2000
-
 	static constraints = {
-		description maxSize: 1000
-		body maxSize: CONSTRAINT_BODY_MAX_SIZE
+	}
+
+	static mapping = {
+		description( type: "text" )
+		body( type: "text" )
 	}
 
 	/**

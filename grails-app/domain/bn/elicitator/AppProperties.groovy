@@ -7,6 +7,10 @@ class AppProperties {
 		adminEmail( nullable: true )
 	}
 
+	static mapping = {
+		explanatoryStatement( type: "text" )
+	}
+
 	private static AppProperties instance = null;
 
 	static final ELICIT_1_VARIABLES = 1;

@@ -3,13 +3,13 @@ package bn.elicitator
 class Variable implements Comparable<Variable> {
 	
 	static constraints = {
-		description( maxSize: 1000 )
 	}
 
 	static hasMany = [ synonyms: String ]
 
 	static mapping = {
 		synonyms( lazy: false )
+		description( type: "text" )
 	}
 
 	ShiroUser createdBy

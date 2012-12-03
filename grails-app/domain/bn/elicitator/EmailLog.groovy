@@ -13,8 +13,8 @@ package bn.elicitator
  */
 class EmailLog {
 
-	static constraints = {
-		body maxSize: EmailTemplate.CONSTRAINT_BODY_MAX_SIZE
+	static mapping = {
+		body( type: "text" )
 	}
 
 	ShiroUser recipient
