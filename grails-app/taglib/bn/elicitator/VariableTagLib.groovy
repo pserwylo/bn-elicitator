@@ -118,7 +118,7 @@ class VariableTagLib {
 	 */
 	def variableDescription = { attrs ->
 
-		generateDescription( attrs.var )
+		out << generateDescription( attrs.var )
 
 	}
 
@@ -570,7 +570,7 @@ class VariableTagLib {
 					</tr>
 					<tr>
 						<th>
-							Why you think this?
+							Why do you think this?
 						</th>
 						<td>
 							<div class='my-comment'>

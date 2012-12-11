@@ -498,7 +498,7 @@
 					<input type="hidden" name="isFinished" value="" />
 					<input type="hidden" name="downloadBn" value="0" />
 
-					<fieldset class="default ">
+					<fieldset class="default">
 
 						<legend>
 							${variable.readableLabel} <g:variableDescription var="${variable}" />
