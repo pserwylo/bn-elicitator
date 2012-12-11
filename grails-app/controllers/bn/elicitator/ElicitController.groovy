@@ -86,11 +86,35 @@ class ElicitController {
 	{
 		List<BnService.RedundantRelationship> redundantRelationships = bnService.getRedundantRelationships()
 		def cyclicalRelationships = []
-		if ( redundantRelationships.size() > 0 || cyclicalRelationships.size() > 0 )
+
+		Boolean showProblems = false
+		Boolean displayAll = params["displayAll"] == "true"
+		Integer numKeepers = redundantRelationships.count {
+			it.relationship.isRedundant == Relationship.IS_REDUNDANT_NO
+		}
+
+		if ( cyclicalRelationships.size() > 0 )
+		{
+			showProblems = true;
+		}
+		else if ( redundantRelationships.size() > 0 )
+		{
+			// If all of the relationships have been explicitly marked as okay by the user, don't bother them each time
+			// by reshowing them to the users...
+			if ( numKeepers < redundantRelationships.size() || displayAll )
+			{
+				showProblems = true;
+			}
+
+		}
+
+		if ( showProblems )
 		{
 			[
 				redundantRelationships: redundantRelationships,
-				cyclicalRelationships: cyclicalRelationships
+				cyclicalRelationships: cyclicalRelationships,
+				displayAll: displayAll,
+				numKeepers: numKeepers
 			]
 		}
 		else
@@ -207,6 +231,7 @@ class ElicitController {
 		[
 			delphiPhase: this.delphiService.phase,
 			variables: varList,
+			keptRedunantRelationships: this.bnService.countKeptRedunantRelationships(),
 			hasPreviousPhase: this.delphiService.hasPreviousPhase,
 			stillToVisit: this.delphiService.getStillToVisit( varList ),
 			completed: this.delphiService.completed

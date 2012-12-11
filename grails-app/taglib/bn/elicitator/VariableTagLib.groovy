@@ -21,7 +21,7 @@ class VariableTagLib {
 
 	public static String generateVariable( Variable var, boolean includeDescription )
 	{
-		return """<span class='variable'>${var.readableLabel}${includeDescription ? generateDescription( var ) : ''}</span>"""
+		return """<span class='variable'>${var.readableLabel}${includeDescription ? ' ' + generateDescription( var ) : ''}</span>"""
 
 	}
 
@@ -31,14 +31,8 @@ class VariableTagLib {
 
 		id = id ? "id='${id}'" : ""
 
-		return """
-			<span ${id} class="tooltip ${classes ?: ''}">
-				<a href="javascript:alert( '${jsTooltip}' );">(?)</a>
-				<span class="tip">
-					${tooltip.encodeAsHTML().replaceAll( "\n", " <br /> " )}
-				</span>
-			</span>
-			""".trim().replaceAll( "\n", "" )
+		// Had to fudge the formatting of the HTML so that there was not a space after the tooltip.
+		return """<span ${id} class="tooltip ${classes ?: ''}"><a href="javascript:alert( '${jsTooltip}' );">(?)</a><span class="tip">${tooltip.encodeAsHTML().replaceAll( "\n", " <br /> " )}</span></span>""".trim().replaceAll( "\n", "" )
 	}
 
 	public static String generateDescription( Variable var )
@@ -257,7 +251,7 @@ class VariableTagLib {
 			if ( relationship != null )
 			{
 				Comment comment = relationship.comment
-				if ( comment != null )
+				if ( comment?.comment?.trim()?.size() > 0 )
 				{
 					hasReasons = true;
 

@@ -67,6 +67,15 @@
 			<input type="button" style="margin-top: 0.3em;" id="btnToggleDetails" value="Show details" />
 		</g:if>
 
+		<g:if test="${keptRedunantRelationships > 0}">
+			<input
+				type="button"
+				style="margin-top: 0.3em;"
+				id="btnShowProblems"
+				value="Show ${keptRedunantRelationships} potential problems"
+				onclick="document.location = '${createLink( action: 'problems', params: [ displayAll: true ] )}'" />
+		</g:if>
+
 		<br />
 		<br />
 

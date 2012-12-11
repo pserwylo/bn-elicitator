@@ -81,6 +81,17 @@ class BnService {
 		}
 	}
 
+	/**
+	 * Returns the number of relationships which were marked as (potentially) redunant by the system, but which were
+	 * corrected by the user who decided to keep the relationships anyway.
+	 * @return
+	 */
+	public Integer countKeptRedunantRelationships() {
+
+		return Relationship.countByIsRedundantAndCreatedByAndDelphiPhase( Relationship.IS_REDUNDANT_NO, ShiroUser.current, delphiService.phase )
+
+	}
+
 	public void keepRedundantRelationship(RedundantRelationship redundantRelationship) {
 
 		redundantRelationship.relationship.isRedundant = Relationship.IS_REDUNDANT_NO
@@ -90,22 +101,19 @@ class BnService {
 
 	public void removeRedundantRelationship(RedundantRelationship redundantRelationship) {
 
-		Comment comment = redundantRelationship.relationship.comment
-		if ( comment != null )
-		{
-			comment.delete( flush: true )
-			redundantRelationship.relationship.comment = null
-		}
-
+		redundantRelationship.relationship?.comment?.comment = ""
+		redundantRelationship.relationship?.comment?.save( flush: true )
 		redundantRelationship.relationship.isRedundant = Relationship.IS_REDUNDANT_YES
 		redundantRelationship.relationship.exists = false
 		redundantRelationship.relationship.save( flush: true )
 	}
 
 	/**
-	 * Builds a tree of parents for each variable.
-	 * This tree is traversed, looking for each of the variables direct parents (attempting to find them in a place other
-	 * than a direct parent).
+	 * Look for relationships which are potentially redunant, due to the fact that their direct relationship between
+	 * parent and child is better explained through one or more mediating variables.
+	 *
+	 * It does this by building a tree of parents for each variable, traversing it looking for everyones direct parents.
+	 * If the direct parent is found as an indirect parent also, then it is potentially redundant.
 	 * @return
 	 * @see RedundantRelationship
 	 */
@@ -142,11 +150,11 @@ class BnService {
 						{
 							redundantRelationships.add(
 								new RedundantRelationship(
-										child: child,
-										redundantParent: directParent.var,
-										relationship: Relationship.findByChildAndParentAndDelphiPhase( child, directParent.var, delphiService.phase ),
-										mediatingChain: path,
-										chains: [ path ]
+									child: child,
+									redundantParent: directParent.var,
+									relationship: Relationship.findByChildAndParentAndDelphiPhase( child, directParent.var, delphiService.phase ),
+									mediatingChain: path,
+									chains: [ path ]
 								)
 							)
 						}
