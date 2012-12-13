@@ -49,7 +49,12 @@ class ElicitController {
 	def fixProblems =
 	{
 		List<BnService.RedundantRelationship> redundantRelationships = bnService.getRedundantRelationships()
-		def cyclicalRelationships = []
+		List<BnService.CyclicalRelationship> cyclicalRelationships = bnService.getCyclicalRelationships()
+
+		List<String>                          errors           = []
+		List<BnService.RedundantRelationship> redundantKeepers = []
+		List<BnService.RedundantRelationship> redundantLosers  = []
+		List<List<Variable>>                  cyclicalLosers   = []
 
 		for ( BnService.RedundantRelationship redundantRelationship in redundantRelationships )
 		{
@@ -57,22 +62,54 @@ class ElicitController {
 			String keep = params[ key ];
 			if ( keep == null )
 			{
-				render "Error: Should have specified a relationship for '" + redundantRelationship.relationship + "'";
-				return
+				errors.add( "Error: Should have specified a relationship for '" + redundantRelationship.relationship + "'" );
 			}
 			else
 			{
 				if ( keep == "keep" )
 				{
-					bnService.keepRedundantRelationship( redundantRelationship )
-					render "Keeping: " + redundantRelationship.relationship + "<br />"
+					redundantKeepers.add( redundantRelationship )
 				}
 				else
 				{
-					bnService.removeRedundantRelationship( redundantRelationship )
-					render "Removing: " + redundantRelationship.relationship + "<br />"
+					redundantLosers.add( redundantRelationship )
 				}
 			}
+		}
+
+		for ( BnService.CyclicalRelationship cyclicalRelationship in cyclicalRelationships )
+		{
+			Boolean removeAny = false
+
+			for ( Integer i = 0; i <  cyclicalRelationship.chain.size()-1; i ++ )
+			{
+				Variable parent = cyclicalRelationship.chain.get( i )
+				Variable child = cyclicalRelationship.chain.get( i + 1 )
+
+				String key = "remove-" + parent.label + "-" + child.label
+
+				if ( params[ key ] == "1" )
+				{
+					removeAny = true
+					// TODO: THIS IS BACKWARDS FOR SOME REASON...
+					cyclicalLosers.add( [ parent, child ] )
+				}
+			}
+
+			if ( !removeAny )
+			{
+				errors.add( "Must specify a relationship to remove from: " + VariableTagLib.generateVariableChain( cyclicalRelationship.chain, "&rarr;", false ) )
+			}
+		}
+
+		if ( errors.size() > 0 )
+		{
+			render errors.join( "<br />" )
+			return
+		}
+		else
+		{
+			bnService.fixProblems( redundantKeepers, redundantLosers, cyclicalLosers )
 		}
 
 		redirect( action: 'index' )
@@ -85,7 +122,7 @@ class ElicitController {
 	def problems =
 	{
 		List<BnService.RedundantRelationship> redundantRelationships = bnService.getRedundantRelationships()
-		def cyclicalRelationships = []
+		List<BnService.CyclicalRelationship> cyclicalRelationships = bnService.getCyclicalRelationships()
 
 		Boolean showProblems = false
 		Boolean displayAll = params["displayAll"] == "true"

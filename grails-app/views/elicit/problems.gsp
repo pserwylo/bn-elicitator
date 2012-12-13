@@ -137,6 +137,19 @@
 								<g:variableChain chain="${rel.chain}" />
 							</div>
 
+							<ul class='answers'>
+								<g:each in="${rel.chain}" var="var" status="i">
+									<g:if test="${i < rel.chain.size() - 1}">
+										<li>
+											<label>
+												<input type="checkbox" name="remove-${var.label}-${rel.chain[ i + 1].label}" value="1" />
+												<g:variable var="${var}" /> &rarr; <g:variable var="${rel.chain[i + 1]}" />
+											</label>
+										</li>
+									</g:if>
+								</g:each>
+							</ul>
+
 						</li>
 
 					</g:each>
@@ -149,7 +162,7 @@
 
 				<div class="redundant content">
 
-					<h1>(Potentially) unnecessary relationships</h1>
+					<h1>(Potentially) better explanations</h1>
 
 					<input type="button" class="btn-toggle-details" value="Show detailed explanation" />
 
@@ -158,7 +171,7 @@
 							type="button"
 							style="margin-top: 0.3em;"
 							id="btnToggleKeepers"
-							value="Show ${numKeepers} which you said are in fact necessary" />
+							value="Show ${numKeepers} direct relationships you said are necessary" />
 					</g:if>
 
 					%{--<div class='info details-high'>
@@ -208,7 +221,7 @@
 										</span>
 									</span>
 									<span class="details-low">
-										Potentially unnecessary (due to <g:variableChain chain="${rel.mediatingChain}" separator=" &rarr; "/>)
+										Potentially better explained by <g:variableChain chain="${rel.mediatingChain}" separator=" &rarr; "/>
 									</span>
 								</div>
 

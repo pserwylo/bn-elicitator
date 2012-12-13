@@ -23,6 +23,13 @@ class BnService {
 	def delphiService
 	def variableService
 
+	public void fixProblems( List<RedundantRelationship> redundantsToRemove, List<RedundantRelationship> redundantsToKeep, List<List<Variable>> cyclesToRemove )
+	{
+		redundantsToRemove.each { removeRedundantRelationship( it ) }
+		redundantsToKeep.each   { keepRedundantRelationship  ( it ) }
+		cyclesToRemove.each     { removeCycle                ( it[ 0 ], it[ 1 ] ) }
+	}
+
 	/**
 	 * "child" has "redundantParent" as a direct parent, and as an indirect parent by following the list of parents
 	 * in "chains".
@@ -183,13 +190,23 @@ class BnService {
 
 	}
 
+	public void removeCycle( Variable parent, Variable child ) {
+
+		Relationship rel = delphiService.getMyCurrentRelationship( parent, child )
+
+		rel?.comment?.comment = ""
+		rel?.comment?.save()
+		rel?.exists = false
+		rel?.save()
+	}
+
 	public void removeRedundantRelationship(RedundantRelationship redundantRelationship) {
 
 		redundantRelationship.relationship?.comment?.comment = ""
-		redundantRelationship.relationship?.comment?.save( flush: true )
+		redundantRelationship.relationship?.comment?.save()
 		redundantRelationship.relationship.isRedundant = Relationship.IS_REDUNDANT_YES
 		redundantRelationship.relationship.exists = false
-		redundantRelationship.relationship.save( flush: true )
+		redundantRelationship.relationship.save()
 	}
 
 	public List<CyclicalRelationship> getCyclicalRelationships() {

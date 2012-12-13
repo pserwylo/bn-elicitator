@@ -63,12 +63,12 @@ class VariableTagLib {
 		return description
 	}
 
-	public static String generateVariableChain( List<Variable> chain, String separator ) {
+	public static String generateVariableChain( List<Variable> chain, String separator, Boolean includeTooltip = true ) {
 
 		String output = "";
 		for ( int i = 0; i < chain.size(); i ++ )
 		{
-			output += generateVariable( chain[ i ], true )
+			output += generateVariable( chain[ i ], includeTooltip )
 
 			if ( i < chain.size() - 1 )
 			{
