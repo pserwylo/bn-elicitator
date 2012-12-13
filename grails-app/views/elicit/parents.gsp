@@ -1,4 +1,21 @@
-<%@ page import="bn.elicitator.AppProperties; bn.elicitator.Variable" %>
+%{--
+  - Bayesian Network (BN) Elicitator
+  - Copyright (C) 2012 Peter Serwylo (peter.serwylo@monash.edu)
+  -
+  - This program is free software: you can redistribute it and/or modify
+  - it under the terms of the GNU General Public License as published by
+  - the Free Software Foundation, either version 3 of the License, or
+  - (at your option) any later version.
+  -
+  - This program is distributed in the hope that it will be useful,
+  - but WITHOUT ANY WARRANTY; without even the implied warranty of
+  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  - GNU General Public License for more details.
+  -
+  - You should have received a copy of the GNU General Public License
+  - along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  --}%
+<%@ page import="bn.elicitator.AppProperties; bn.elicitator.Variable; bn.elicitator.Comment" %>
 <!doctype html>
 <html>
 
@@ -260,6 +277,12 @@
 				var allButtonsInDialog = dialog.find( 'button.save' );
 				allButtonsInDialog.html( 'Saving...' ).prop( 'disabled', true );
 
+				var undisable = function() {
+					allButtonsInDialog
+						.prop( 'disabled', false )
+						.html( "Save" );
+				};
+
 				$.ajax({
 
 					type: 'post',
@@ -276,15 +299,16 @@
 
 					dataType: 'text json',
 
+					error: function( data ) {
+						undisable();
+						alert( "Error while saving. The administrator has been notified." );
+					},
+
 					success: function( data ) {
 
 						markSaved( parent );
 
-						allButtonsInDialog
-							.prop( 'disabled', false )
-							.html( "Save" )
-							.filter( ".and-hide" )
-								.html( "Save and Hide" );
+						undisable();
 
 						<g:if test="${delphiPhase > 1}">
 
@@ -474,7 +498,7 @@
 					<input type="hidden" name="isFinished" value="" />
 					<input type="hidden" name="downloadBn" value="0" />
 
-					<fieldset class="default ">
+					<fieldset class="default">
 
 						<legend>
 							${variable.readableLabel} <g:variableDescription var="${variable}" />

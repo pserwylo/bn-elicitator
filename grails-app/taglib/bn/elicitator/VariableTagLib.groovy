@@ -1,3 +1,21 @@
+/*
+ * Bayesian Network (BN) Elicitator
+ * Copyright (C) 2012 Peter Serwylo (peter.serwylo@monash.edu)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package bn.elicitator
 
 class VariableTagLib {
@@ -21,7 +39,7 @@ class VariableTagLib {
 
 	public static String generateVariable( Variable var, boolean includeDescription )
 	{
-		return """<span class='variable'>${var.readableLabel}${includeDescription ? generateDescription( var ) : ''}</span>"""
+		return """<span class='variable'>${var.readableLabel}${includeDescription ? ' ' + generateDescription( var ) : ''}</span>"""
 
 	}
 
@@ -31,14 +49,8 @@ class VariableTagLib {
 
 		id = id ? "id='${id}'" : ""
 
-		return """
-			<span ${id} class="tooltip ${classes ?: ''}">
-				<a href="javascript:alert( '${jsTooltip}' );">(?)</a>
-				<span class="tip">
-					${tooltip.encodeAsHTML().replaceAll( "\n", " <br /> " )}
-				</span>
-			</span>
-			""".trim().replaceAll( "\n", "" )
+		// Had to fudge the formatting of the HTML so that there was not a space after the tooltip.
+		return """<span ${id} class="tooltip ${classes ?: ''}"><a href="javascript:alert( '${jsTooltip}' );">(?)</a><span class="tip">${tooltip.encodeAsHTML().replaceAll( "\n", " <br /> " )}</span></span>""".trim().replaceAll( "\n", "" )
 	}
 
 	public static String generateDescription( Variable var )
@@ -106,7 +118,7 @@ class VariableTagLib {
 	 */
 	def variableDescription = { attrs ->
 
-		generateDescription( attrs.var )
+		out << generateDescription( attrs.var )
 
 	}
 
@@ -257,7 +269,7 @@ class VariableTagLib {
 			if ( relationship != null )
 			{
 				Comment comment = relationship.comment
-				if ( comment != null )
+				if ( comment?.comment?.trim()?.size() > 0 )
 				{
 					hasReasons = true;
 
@@ -558,7 +570,7 @@ class VariableTagLib {
 					</tr>
 					<tr>
 						<th>
-							Why you think this?
+							Why do you think this?
 						</th>
 						<td>
 							<div class='my-comment'>

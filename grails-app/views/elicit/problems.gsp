@@ -1,4 +1,20 @@
-
+%{--
+  - Bayesian Network (BN) Elicitator
+  - Copyright (C) 11/12/12 1:12 PM.$year Peter Serwylo (peter.serwylo@monash.edu)
+  -
+  - This program is free software: you can redistribute it and/or modify
+  - it under the terms of the GNU General Public License as published by
+  - the Free Software Foundation, either version 3 of the License, or
+  - (at your option) any later version.
+  -
+  - This program is distributed in the hope that it will be useful,
+  - but WITHOUT ANY WARRANTY; without even the implied warranty of
+  - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  - GNU General Public License for more details.
+  -
+  - You should have received a copy of the GNU General Public License
+  - along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  --}%
 <%@ page import="bn.elicitator.Relationship" %>
 <!doctype html>
 
@@ -67,6 +83,36 @@
 
 				});
 
+				// TODO: Refactor toggling code out to JS library and perhaps a matching taglib...
+				var keepers = $( '.keeper' );
+				var btnKeepers = $( '#btnToggleKeepers');
+
+				var showKeepers = ${displayAll};
+				if ( !showKeepers )
+				{
+					keepers.hide();
+
+					btnKeepers.click( function() {
+
+						if ( this.value.substring( 0, 4 ) == 'Hide' )
+						{
+							this.value = this.value.replace( 'Hide', 'Show' );
+							keepers.hide( 'fast' );
+						}
+						else
+						{
+							this.value = this.value.replace( 'Show', 'Hide' );
+							keepers.show( 'fast' );
+						}
+
+					});
+				}
+				else
+				{
+					btnKeepers.hide();
+				}
+
+
 			});
 
 		</g:javascript>
@@ -107,7 +153,15 @@
 
 					<input type="button" class="btn-toggle-details" value="Show detailed explanation" />
 
-					<div class='info details-high'>
+					<g:if test="${numKeepers > 0}">
+						<input
+							type="button"
+							style="margin-top: 0.3em;"
+							id="btnToggleKeepers"
+							value="Show ${numKeepers} which you said are in fact necessary" />
+					</g:if>
+
+					%{--<div class='info details-high'>
 						We think the following relationships may be unnecessary. Originally you stated that a variable is <em>directly</em>
 						influenced by another. Later on, you also stated that it is <em>indirectly</em> influenced by that
 						variable, by virtue of it influencing some intermediate variables.
@@ -125,13 +179,13 @@
 							peoples access to tabacco.
 						</span>
 
-					</div>
+					</div>--}%
 
 					<ul id="redundant-relationship-list" class="variable-list">
 
 						<g:each in="${redundantRelationships}" var="${rel}">
 
-							<li class="redundant-relationship variable-item">
+							<li class="redundant-relationship variable-item ${ (rel.relationship.isRedundant == Relationship.IS_REDUNDANT_NO) ? 'keeper' : ''}">
 
 								<div class='header'>
 									<g:variable var="${rel.redundantParent}" /> &rarr; <g:variable var="${rel.child}" />
@@ -154,7 +208,7 @@
 										</span>
 									</span>
 									<span class="details-low">
-										Unnecessary due to <g:variableChain chain="${rel.mediatingChain}" separator=" &rarr; "/>
+										Potentially unnecessary (due to <g:variableChain chain="${rel.mediatingChain}" separator=" &rarr; "/>)
 									</span>
 								</div>
 
@@ -163,6 +217,13 @@
 									<span class='indent'>
 										<g:variable var="${rel.redundantParent}" /> <em>directly</em> influences <g:variable var="${rel.child}" />
 									</span>
+								</div>
+
+								<div class='redundant details-high'>
+									If you think that the way in which <g:variable var="${rel.redundantParent}" /> influences
+									<g:variable var="${rel.child}"/> is purely because it influences <g:variable var="${rel.mediatingChain[ 1 ]}" />,
+									then you should remove this <em>direct</em> relationship (it doesn't provide as useful information as the
+									indirect alternative you provided).
 								</div>
 
 								<div class="answers">
