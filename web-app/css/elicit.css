@@ -64,7 +64,7 @@ ul#all-children-list li.variable-item.doesnt-need-review {
 }
 
 ul#all-children-list li.variable-item.needs-review {
-    background: url("../images/icons/exclamation.png") no-repeat scroll 5px 50% transparent;
+    background: url("../images/icons/lightbulb.png") no-repeat scroll 5px 50% transparent;
 }
 
 ul#all-children-list li.variable-item {
