@@ -28,7 +28,7 @@
 
 		<title>These relationships may not be needed</title>
 
-		<r:require module="elicit" />
+		<r:require module="problems" />
 
 		<bn:preferencesJs />
 
@@ -73,16 +73,6 @@
 					detailsLow.show();
 				}
 
-				var radios = $( 'input:radio' );
-				radios.change( function() {
-
-					if ( radios.filter( ":checked" ).length == radios.length / 2 )
-					{
-						$( 'input:submit' ).prop( 'disabled', false );
-					}
-
-				});
-
 				// TODO: Refactor toggling code out to JS library and perhaps a matching taglib...
 				var keepers = $( '.keeper' );
 				var btnKeepers = $( '#btnToggleKeepers');
@@ -112,6 +102,24 @@
 					btnKeepers.hide();
 				}
 
+				$( '#redundant-relationship-list' ).find( 'button' ).click( function() {
+					var link = $( this ).hasClass( 'keep' ) ? '<g:createLink action="keepRedundant" />' : '<g:createLink action="removeRedundant" />';
+					var parts = this.value.split( '-' );
+					var parentLabel = parts[ 0 ];
+					var childLabel = parts[ 1 ];
+					document.location = link + "?parent=" + parentLabel + "&child=" + childLabel<g:if test="${displayAll}"> + '&displayAll=true'</g:if>;
+					return false;
+				});
+
+				$( '#cyclical-relationship-list' ).find( 'button.remove' ).click( function() {
+					var link = '<g:createLink action="removeCycle" />';
+					var parts = this.value.split( '-' );
+					var parentLabel = parts[ 0 ];
+					var childLabel = parts[ 1 ];
+					document.location = link + "?parent=" + parentLabel + "&child=" + childLabel<g:if test="${displayAll}"> + '&displayAll=true'</g:if>;
+					return false;
+				});
+
 
 			});
 
@@ -137,7 +145,7 @@
 								<bn:relationshipChain chain="${rel.relationships}" />
 							</div>
 
-							<bn:removeCycleCheckboxes cyclicalRelationship="${rel}" />
+							<bn:removeCycleOptions cyclicalRelationship="${rel}" />
 
 						</li>
 
@@ -234,12 +242,24 @@
 									<span class='details-high'>
 										Would you like to:
 									</span>
-									<label>
+
+									<g:if test="${rel.relationship.isRedundant != Relationship.IS_REDUNDANT_NO}">
+										<button class="keep" value="${rel.redundantParent.label}-${rel.child.label}">Keep relationship</button>
+									</g:if>
+
+									<button class="remove" value="${rel.redundantParent.label}-${rel.child.label}">
+										Remove relationship
+										<g:if test="${rel.relationship.isRedundant == Relationship.IS_REDUNDANT_NO}">
+											(previously you decided to keep <it></it>)
+										</g:if>
+									</button>
+
+									%{--<label>
 										<input type="radio" name="${rel.redundantParent.label}-${rel.child.label}-keep" value="remove" /> Remove relationship
 									</label>
 									<label>
 										<input type="radio" name="${rel.redundantParent.label}-${rel.child.label}-keep" value="keep" ${rel.relationship.isRedundant == Relationship.IS_REDUNDANT_NO ? 'checked="checked"' : ''} /> Keep relationship
-									</label>
+									</label>--}%
 								</div>
 
 							</li>
@@ -251,13 +271,6 @@
 				</div>
 
 			</g:if>
-
-			<input
-				%{-- Disabled if there is some which do not have prefilled radio buttons --}%
-				${redundantRelationships*.relationship.count { it.isRedundant == Relationship.IS_REDUNDANT_UNSPECIFIED } > 0 ? 'disabled="disabled"' : '' }
-				type="submit"
-				class="big"
-				value="Continue" />
 
 		</g:form>
 

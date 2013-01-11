@@ -71,7 +71,7 @@ class BnService {
 			{
 				Variable child = this.chain.get( i - 1 )
 				Variable parent = this.chain.get( i )
-				this.relationships.add( delphiService.getMyCurrentRelationship( parent, child ) )
+				this.relationships.add( 0, delphiService.getMyCurrentRelationship( parent, child ) )
 			}
 		}
 

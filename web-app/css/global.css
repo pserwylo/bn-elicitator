@@ -30,6 +30,17 @@
 	height: 16px;
 }
 
+/* ICON BUTTON STYLES */
+button.remove {
+	padding-left: 25px;
+	background: url( "../images/icons/delete.png" ) 2px no-repeat;
+}
+
+button.keep {
+	padding-left: 25px;
+	background: url( "../images/icons/tick.png" ) 2px no-repeat;
+}
+
 /* DEBUG STYLES */
 #app-info {
     font-family: monospace;

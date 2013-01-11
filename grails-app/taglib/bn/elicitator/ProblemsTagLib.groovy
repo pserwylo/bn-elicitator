@@ -43,24 +43,22 @@ class ProblemsTagLib {
 	/**
 	 * @attr cyclicalRelationship REQUIRED
 	 */
-	def removeCycleCheckboxes = { attrs ->
+	def removeCycleOptions = { attrs ->
 		BnService.CyclicalRelationship rel = attrs.cyclicalRelationship
 		out << "<ul class='answers'>"
-		rel.relationships.each{ out << bn.removeCycleCheckboxItem( [ relationship: it ]) }
+		rel.relationships.each{ out << bn.removeCycleItem( [ relationship: it ]) }
 		out << "</ul>"
 	}
 
 	/**
 	 * @attr relationship REQUIRED
 	 */
-	def removeCycleCheckboxItem = { attrs ->
+	def removeCycleItem = { attrs ->
 		Relationship relationship = attrs.relationship
 		out << """
 			<li>
-				<label>
-					<input type="checkbox" name="remove-${relationship.parent.label}-${relationship.child.label}" value="1" />
-					${bn.variable( [ var: relationship.parent ] )} ${bn.rArrow( [ comment: relationship.comment?.comment ] )} ${bn.variable( [ var: relationship.child ] )}
-				</label>
+				<button class='remove' value="${relationship.parent.label}-${relationship.child.label}">Remove</button>
+				<span class='relationship-to-remove'>${bn.variable( [ var: relationship.parent ] )} ${bn.rArrow( [ comment: relationship.comment?.comment ] )} ${bn.variable( [ var: relationship.child ] )}</span>
 			</li>
 		"""
 	}

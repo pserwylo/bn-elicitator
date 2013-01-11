@@ -16,55 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-modules = {
-
-    global {
-
-		dependsOn( [ 'jquery', 'jquery-ui' ] )
-
-		resource url: 'css/global.css'
-
-	}
-
-	variableList {
-
-		resource url: 'css/variableList.css'
-
-	}
-
-	floatingDialog {
-
-		resource url: 'css/floatingDialog.css'
-
-	}
-
-	/**
-	 * Styles for the Elicit controller.
-	 */
-	elicit {
-
-		dependsOn( [ 'variableList', 'floatingDialog' ] )
-
-		resource url: 'css/elicit.css'
-
-	}
-
-	/**
-	 * Styles for the problems/fix-problems view in the elicit controller.
-	 */
-	problems {
-		dependsOn( [ 'elicit' ] )
-		resource url: 'css/problems.css'
-	}
-
-	/**
-	 * Styles for the Admin controller.
-	 */
-	admin {
-
-		dependsOn( [] )
-
-		resource url: 'css/admin.css'
-
-	}
+.answers .relationship-to-remove {
+	padding-left: 0.5em;
 }

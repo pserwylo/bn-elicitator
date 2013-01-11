@@ -573,7 +573,7 @@
 
  - Symptom variables: Observable consequences of problem variables (e.g. shortness of breath).
 
- - Mediating variables: unobservable variables which may also cause the same symptoms as the problem variables (e.g. are they asthmatic?). This helps to correctly model the relationship between problem and symptom variables</g:tooltip>
+ - Mediating variables: unobservable variables which may also cause the same symptoms as the problem variables (e.g. are they asthmatic?). This helps to correctly model the relationship between problem and symptom variables</bn:tooltip>
 
 											</g:else>
 

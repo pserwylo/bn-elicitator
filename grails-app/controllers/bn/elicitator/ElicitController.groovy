@@ -151,6 +151,63 @@ class ElicitController {
 		redirect( action: 'index' )
 	}
 
+	private void fixRedundant( Boolean keep, String parentLabel, String childLabel, Boolean displayAll )
+	{
+		Variable parent = Variable.findByLabel( parentLabel )
+		Variable child  = Variable.findByLabel( childLabel )
+
+		if ( parent == null || child == null )
+		{
+			String label = parent == null ? parentLabel : childLabel
+			response.sendError( 404, "Variable '$label' not found" )
+		}
+		else
+		{
+			List<BnService.RedundantRelationship> redundantRelationships = bnService.getRedundantRelationships()
+			BnService.RedundantRelationship rel = redundantRelationships.find {
+				it.relationship.child == child && it.relationship.parent == parent
+			}
+
+			if ( keep )
+			{
+				bnService.keepRedundantRelationship( rel )
+			}
+			else
+			{
+				bnService.removeRedundantRelationship( rel )
+			}
+		}
+
+		redirect( action: "problems", params: [ displayAll: displayAll ] )
+	}
+
+	def keepRedundant =
+	{
+		fixRedundant( true, (String)params["parent"], (String)params["child"], (Boolean)params["displayAll"] )
+	}
+
+	def removeRedundant =
+	{
+		fixRedundant( false, (String)params["parent"], (String)params["child"], (Boolean)params["displayAll"] )
+	}
+
+	def removeCycle =
+	{
+		Variable parent = Variable.findByLabel( (String)params["parent"] )
+		Variable child  = Variable.findByLabel( (String)params["child"] )
+
+		if ( parent == null || child == null )
+		{
+			String label = parent == null ? (String)params["parent"] : (String)params["child"]
+			response.sendError( 404, "Variable '$label' not found" )
+		}
+		else
+		{
+			bnService.removeCycle( parent, child )
+			redirect( action: "problems", params: [ displayAll: (Boolean)params["displayAll"] ] )
+		}
+	}
+
 	/**
 	 * Check if there are any (potentially) redundant relationships and present them to the user for confirmation.
 	 * @return
