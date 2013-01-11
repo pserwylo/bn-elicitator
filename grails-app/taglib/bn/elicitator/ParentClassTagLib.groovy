@@ -20,6 +20,8 @@ package bn.elicitator
 
 class ParentClassTagLib {
 
+	static namespace = "bn"
+
 	/**
 	 * @attr variables REQUIRED
 	 * @attr matrix REQUIRED

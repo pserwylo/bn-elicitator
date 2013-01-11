@@ -50,7 +50,7 @@ class UserController {
 			}
 			else
 			{
-				[ user: user, roles: ShiroRole.list(), history: Event.findAllByUser( user ), emailLog: EmailLog.findAllByRecipient( user ) ]
+				[ user: user, roles: ShiroRole.list(), history: LoggedEvent.findAllByUser( user ), emailLog: EmailLog.findAllByRecipient( user ) ]
 			}
 		}
 	}

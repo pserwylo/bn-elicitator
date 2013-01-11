@@ -143,10 +143,6 @@ table.form th {
 
 }
 
-.reasons .header {
-    padding-top: 0.3em;
-}
-
 .reasons-list .me.exists, .reasons-list .other.exists {
     color: green;
 }
@@ -228,7 +224,9 @@ table.form th {
     padding: 0.5em 0;
 }
 
-
+.var-details .reasons .header {
+	padding-top: 0.3em;
+}
 
 .agreement-summary {
     font-size: 0.8em;

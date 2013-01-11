@@ -16,6 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+.arrow.right {
+	background: url( "../images/icons/arrow_right.png" ) no-repeat;
+}
+
+.arrow.right.comment {
+	background: url( "../images/icons-custom/arrow_right_comment.png" ) no-repeat;
+}
+
+.arrow {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+}
+
 /* DEBUG STYLES */
 #app-info {
     font-family: monospace;

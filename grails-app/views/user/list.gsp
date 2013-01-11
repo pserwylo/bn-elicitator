@@ -15,8 +15,8 @@
   - You should have received a copy of the GNU General Public License
   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --}%
-<%@ page import="bn.elicitator.ShiroUser" %>
-<%@ page import="bn.elicitator.Event" %>
+<%@ page import="bn.elicitator.LoggedEvent; bn.elicitator.ShiroUser" %>
+<%@ page import="bn.elicitator.LoggedEvent" %>
 <%@ page import="bn.elicitator.VariableService" %>
 <%
 	VariableService variableService = grailsApplication.classLoader.loadClass( 'bn.elicitator.VariableService' ).newInstance()
@@ -164,7 +164,7 @@
 									</span>
 
 									<div class="stats">
-										<g:set var="loginEvent" value="${Event.findByTypeAndUser( Event.Type.LOGIN, user )}" />
+										<g:set var="loginEvent" value="${LoggedEvent.findByTypeAndUser( LoggedEvent.Type.LOGIN, user )}" />
 										Last login: ${loginEvent ? loginEvent.date.format( 'dd/MM/yyyy hh:mm' ) : "Never"}
 										<br />
 										<g:set var="visitedCount" value="${variableService.getVisitedCount( user )}" />

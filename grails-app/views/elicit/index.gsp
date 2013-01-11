@@ -27,7 +27,7 @@
 		<title>Identify relationships between variables</title>
 
 		<g:if test="${hasDetails}">
-			<g:preferencesJs />
+			<bn:preferencesJs />
 			<g:javascript>
 
 				$( document).ready( function() {
@@ -47,18 +47,18 @@
 							{
 								this.value = this.value.replace( 'Hide', 'Show' );
 								itemDescriptions.hide( 'fast' );
-								<g:setPreference key="show-description" value="false" />
+								<bn:setPreference key="show-description" value="false" />
 							}
 							else
 							{
 								this.value = this.value.replace( 'Show', 'Hide' );
 								itemDescriptions.show( 'fast' );
-								<g:setPreference key="show-description" value="true" />
+								<bn:setPreference key="show-description" value="true" />
 							}
 
 						});
 
-						if ( '<g:preferenceValue key="show-description" />' == 'true' )
+						if ( '<bn:preferenceValue key="show-description" />' == 'true' )
 						{
 							btn.trigger( 'click' );
 						}
@@ -97,7 +97,7 @@
 
 		<g:if test="${!hasPreviousPhase}">
 
-			<g:listSummaryFirstPhase variables="${variables}" stillToVisit="${stillToVisit}"/>
+			<bn:listSummaryFirstPhase variables="${variables}" stillToVisit="${stillToVisit}"/>
 
 		</g:if>
 		<g:else>
@@ -108,7 +108,7 @@
 			<br /><br />
 			--}%
 
-			<g:listSummary variables="${variables}" showAgree="${false}" stillToVisit="${stillToVisit}"/>
+			<bn:listSummary variables="${variables}" showAgree="${false}" stillToVisit="${stillToVisit}"/>
 
 		</g:else>
 

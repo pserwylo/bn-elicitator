@@ -1,3 +1,39 @@
+/*
+ * Bayesian Network (BN) Elicitator
+ * Copyright (C) 2012 Peter Serwylo (peter.serwylo@monash.edu)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ * Bayesian Network (BN) Elicitator
+ * Copyright (C) 11/12/12 1:13 PM.$year Peter Serwylo (peter.serwylo@monash.edu)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package bn.elicitator
 
 class ElicitController {
@@ -162,22 +198,22 @@ class ElicitController {
 
 	/**
 	 * Shows a form where one variable is displayed, and a list of all potential parents.
-	 * This does not mean all other variables, as we are trying very hard to reduce this 
+	 * This does not mean all other variables, as we are trying very hard to reduce this
 	 * workload on the expert. Instead, we use the configuration of constraints to restrict
 	 * the variables which are shown as potential parents.
-	 * 
+	 *
 	 * The variable we show is deduced from the 'for' query param. However if none is specified,
 	 * we will try to pull the first variable off the rank and then redirect to a screen which uses that.
 	 */
     def parents = {
-		
+
 		Variable var = null
-		
+
 		if ( params["for"] != null )
 		{
 			var = Variable.findByLabel( params["for"] )
 		}
-		
+
 		if ( var == null )
 		{
 			response.status = 404
@@ -187,13 +223,13 @@ class ElicitController {
 		{
 			List<Variable> potentialParents = this.variableService.getPotentialParents( var )
 
-			[ 
+			[
 				variable: var,
 				delphiPhase: delphiService.phase,
 				potentialParents: potentialParents
 			]
 		}
-		
+
 	}
 
 	/**
@@ -251,7 +287,7 @@ class ElicitController {
 			}
 
 			relationship.save()
-			Event.logSaveRelationship( relationship )
+			LoggedEvent.logSaveRelationship( relationship )
 
 			// Send some output back, so that they can update the view with a "you agree" or "you disagree"...
 			Agreement agreement = this.delphiService.calcAgreement( parent, child, relationship )
@@ -295,7 +331,7 @@ class ElicitController {
 
 		var.save( failOnError: true )
 
-		Event.logCreatedVar( var )
+		LoggedEvent.logCreatedVar( var )
 
 		redirect( action: parents, params: [ for: params['returnToVar'] ] )
 	}

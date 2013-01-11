@@ -227,7 +227,7 @@ class VariableService
 			new VisitedVariable( variable: variable, visitedBy: ShiroUser.current, delphiPhase: delphiService.phase ).save()
 		}
 
-		Event.logViewRelationships( variable )
+		LoggedEvent.logViewRelationships( variable )
 
 	}
 

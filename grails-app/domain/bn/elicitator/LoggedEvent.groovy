@@ -22,18 +22,9 @@ package bn.elicitator
  * Logs events performed by users, e.g. logging in, filling in the form, etc.
  * Because this is first and foremost a research project, we're interested in keeping track of how the system is used.
  */
-class Event {
+class LoggedEvent {
 
-	static enum Type {
-		LOGIN,
-		VIEW_RELATIONSHIPS,
-		SAVE_RELATIONSHIPS,
-		SAVE_RELATIONSHIP,
-		COMPLETE_FORM,
-		CREATED_VAR
-	}
-	
-	Type type
+	LoggedEventType type
 
 	ShiroUser user
 
@@ -55,18 +46,18 @@ class Event {
 		var( nullable: true )
     }
 	
-	static Event logLogin() {
-		new Event( 
-			type: Type.LOGIN, 
+	static LoggedEvent logLogin() {
+		new LoggedEvent(
+			type: LoggedEventType.LOGIN,
 			user: ShiroUser.current, 
 			date: new Date(),
 			delphiPhase: AppProperties.properties.delphiPhase,
 			description: "Logged in" ).save()
 	}
 	
-	static Event logViewRelationships( Variable parent ) {
-		new Event( 
-			type: Type.VIEW_RELATIONSHIPS, 
+	static LoggedEvent logViewRelationships( Variable parent ) {
+		new LoggedEvent(
+			type: LoggedEventType.VIEW_RELATIONSHIPS,
 			user: ShiroUser.current, 
 			date: new Date(),
 			delphiPhase: AppProperties.properties.delphiPhase,
@@ -74,9 +65,9 @@ class Event {
 			var: parent ).save()
 	}
 	
-	static Event logSaveRelationships( Variable parent ) {
-		new Event( 
-			type: Type.SAVE_RELATIONSHIPS, 
+	static LoggedEvent logSaveRelationships( Variable parent ) {
+		new LoggedEvent(
+			type: LoggedEventType.SAVE_RELATIONSHIPS,
 			user: ShiroUser.current, 
 			date: new Date(),
 			delphiPhase: AppProperties.properties.delphiPhase,
@@ -84,9 +75,9 @@ class Event {
 			var: parent ).save()
 	}
 
-	static Event logSaveRelationship( Relationship relationship ) {
-		new Event(
-			type: Type.SAVE_RELATIONSHIP,
+	static LoggedEvent logSaveRelationship( Relationship relationship ) {
+		new LoggedEvent(
+			type: LoggedEventType.SAVE_RELATIONSHIP,
 			user: ShiroUser.current,
 			date: new Date(),
 			delphiPhase: AppProperties.properties.delphiPhase,
@@ -94,9 +85,9 @@ class Event {
 			relationship: relationship ).save()
 	}
 
-	static Event logCompleteForm() {
-		new Event( 
-			type: Type.COMPLETE_FORM,
+	static LoggedEvent logCompleteForm() {
+		new LoggedEvent(
+			type: LoggedEventType.COMPLETE_FORM,
 			user: ShiroUser.current,
 			date: new Date(),
 			delphiPhase: AppProperties.properties.delphiPhase,
@@ -104,8 +95,8 @@ class Event {
 	}
 	
 	static void logCreatedVar( Variable var ) {
-		new Event(
-			type: Type.CREATED_VAR,
+		new LoggedEvent(
+			type: LoggedEventType.CREATED_VAR,
 			user: ShiroUser.current,
 			date: new Date(),
 			delphiPhase: AppProperties.properties.delphiPhase,

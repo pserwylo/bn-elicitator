@@ -30,7 +30,7 @@
 
 		<r:require module="elicit" />
 
-		<g:preferencesJs />
+		<bn:preferencesJs />
 
 		<g:javascript>
 
@@ -49,19 +49,19 @@
 						this.value = this.value.replace( 'Hide', 'Show' );
 						detailsHigh.hide( 'fast' );
 						detailsLow.show( 'fast' );
-						<g:setPreference key="show-detailed-explanation" value="false" />
+						<bn:setPreference key="show-detailed-explanation" value="false" />
 					}
 					else
 					{
 						this.value = this.value.replace( 'Show', 'Hide' );
 						detailsHigh.show( 'fast' );
 						detailsLow.hide( 'fast' );
-						<g:setPreference key="show-detailed-explanation" value="true" />
+						<bn:setPreference key="show-detailed-explanation" value="true" />
 					}
 
 				});
 
-				if ( '<g:preferenceValue key="show-detailed-explanation" />' == 'true' )
+				if ( '<bn:preferenceValue key="show-detailed-explanation" />' == 'true' )
 				{
 					detailsHigh.show();
 					detailsLow.hide();
@@ -134,21 +134,10 @@
 						<li class="cyclical-relationship variable-item">
 
 							<div class='mediating-chain'>
-								<g:variableChain chain="${rel.chain}" />
+								<bn:relationshipChain chain="${rel.relationships}" />
 							</div>
 
-							<ul class='answers'>
-								<g:each in="${rel.chain}" var="var" status="i">
-									<g:if test="${i < rel.chain.size() - 1}">
-										<li>
-											<label>
-												<input type="checkbox" name="remove-${var.label}-${rel.chain[ i + 1].label}" value="1" />
-												<g:variable var="${var}" /> &rarr; <g:variable var="${rel.chain[i + 1]}" />
-											</label>
-										</li>
-									</g:if>
-								</g:each>
-							</ul>
+							<bn:removeCycleCheckboxes cyclicalRelationship="${rel}" />
 
 						</li>
 
@@ -201,7 +190,7 @@
 							<li class="redundant-relationship variable-item ${ (rel.relationship.isRedundant == Relationship.IS_REDUNDANT_NO) ? 'keeper' : ''}">
 
 								<div class='header'>
-									<g:variable var="${rel.redundantParent}" /> &rarr; <g:variable var="${rel.child}" />
+									<bn:variable var="${rel.redundantParent}" /> <bn:rArrow comment="${rel.relationship?.comment?.comment}" /> <bn:variable var="${rel.child}" />
 								</div>
 
 								<div class='mediating-chain'>
@@ -211,7 +200,7 @@
 											<ul>
 												<g:each in="${rel.chains}" var="chain" status="i">
 													<li>
-														<g:variableChain chain="${chain}" />
+														<bn:variableChain chain="${chain}" />
 														<g:if test="${i < rel.chains.size() - 1}">
 															and
 														</g:if>
@@ -220,21 +209,23 @@
 											</ul>
 										</span>
 									</span>
+
 									<span class="details-low">
-										Potentially better explained by <g:variableChain chain="${rel.mediatingChain}" separator=" &rarr; "/>
+										Potentially better explained by
+										<bn:variableChain chain="${rel.mediatingChain}" />
 									</span>
 								</div>
 
 								<div class='redundant details-high'>
 									However, you also said:
 									<span class='indent'>
-										<g:variable var="${rel.redundantParent}" /> <em>directly</em> influences <g:variable var="${rel.child}" />
+										<bn:variable var="${rel.redundantParent}" /> <em>directly</em> influences <bn:variable var="${rel.child}" />
 									</span>
 								</div>
 
 								<div class='redundant details-high'>
-									If you think that the way in which <g:variable var="${rel.redundantParent}" /> influences
-									<g:variable var="${rel.child}"/> is purely because it influences <g:variable var="${rel.mediatingChain[ 1 ]}" />,
+									If you think that the way in which <bn:variable var="${rel.redundantParent}" /> influences
+									<bn:variable var="${rel.child}"/> is purely because it influences <bn:variable var="${rel.mediatingChain[ 1 ]}" />,
 									then you should remove this <em>direct</em> relationship (it doesn't provide as useful information as the
 									indirect alternative you provided).
 								</div>

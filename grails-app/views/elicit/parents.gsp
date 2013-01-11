@@ -501,7 +501,7 @@
 					<fieldset class="default">
 
 						<legend>
-							${variable.readableLabel} <g:variableDescription var="${variable}" />
+							${variable.readableLabel} <bn:variableDescription var="${variable}" />
 						</legend>
 
 						<p>
@@ -511,12 +511,12 @@
 
 
 						<input id="unused-items-btn" class="hidden" style="margin-bottom: 0.3em" type="button" value="Show [NumUnused] unused items" />
-						<g:tooltip id="unused-items-tooltip" classes="hidden">Last round, everybody agreed that some variable had no influence on ${variable.readableLabel}, so they are hidden by default.</g:tooltip>
+						<bn:tooltip id="unused-items-tooltip" classes="hidden">Last round, everybody agreed that some variable had no influence on ${variable.readableLabel}, so they are hidden by default.</bn:tooltip>
 
 
 						<ul id="potential-parents-list" class="variable-list ">
 
-							<g:potentialParentsList potentialParents="${potentialParents}" child="${variable}" />
+							<bn:potentialParentsList potentialParents="${potentialParents}" child="${variable}" />
 
 							<li id="add-variable-item" class=" variable-item new-var">
 
@@ -565,7 +565,7 @@
 													</g:each>
 												</select>
 
-												<g:tooltip>This helps us decide which other variables your new one will be allowed to influence. We will describe them using examples from a model of diagnosing lung cancer:
+												<bn:tooltip>This helps us decide which other variables your new one will be allowed to influence. We will describe them using examples from a model of diagnosing lung cancer:
 
  - Problem Variables: The variables of interest (e.g. does the patient have cancer?).
 

@@ -18,6 +18,10 @@
 
 package bn.elicitator
 
+/**
+ * All methods in this class presume that we are only operating on data for the current user, unless the method
+ * signature says otherwise.
+ */
 class BnService {
 
 	def delphiService
@@ -51,7 +55,25 @@ class BnService {
 
 	public class CyclicalRelationship {
 
+		private List<Relationship> relationships = []
 		List<Variable> chain = []
+
+		List<Relationship> getRelationships()
+		{
+			return this.relationships
+		}
+
+		void setChain( List<Variable> chain )
+		{
+			this.relationships = []
+			this.chain = chain
+			for ( int i = 1; i < this.chain.size(); i ++ )
+			{
+				Variable child = this.chain.get( i - 1 )
+				Variable parent = this.chain.get( i )
+				this.relationships.add( delphiService.getMyCurrentRelationship( parent, child ) )
+			}
+		}
 
 		public String toString()
 		{
@@ -98,15 +120,15 @@ class BnService {
 
 	}
 
+	/**
+	 * This tree is a tree of all parent-child relationships between variables.
+	 * @see BnService#populateAllParents(bn.elicitator.BnService.TreeNode)
+	 */
 	public class TreeNode {
+
 		Variable var
 		TreeNode child = null
 		List<TreeNode> parents = []
-
-		List<Variable> collapseTree()
-		{
-			return []
-		}
 
 		List<Variable> getPathTo( Variable parent )
 		{
@@ -179,11 +201,11 @@ class BnService {
 	 */
 	public Integer countKeptRedunantRelationships() {
 
-		return Relationship.countByIsRedundantAndCreatedByAndDelphiPhase( Relationship.IS_REDUNDANT_NO, ShiroUser.current, delphiService.phase )
+		return Relationship.countByIsRedundantAndCreatedByAndExistsAndDelphiPhase( Relationship.IS_REDUNDANT_NO, ShiroUser.current, true, delphiService.phase )
 
 	}
 
-	public void keepRedundantRelationship(RedundantRelationship redundantRelationship) {
+	public void keepRedundantRelationship( RedundantRelationship redundantRelationship ) {
 
 		redundantRelationship.relationship.isRedundant = Relationship.IS_REDUNDANT_NO
 		redundantRelationship.relationship.save( flush: true )
@@ -191,22 +213,28 @@ class BnService {
 	}
 
 	public void removeCycle( Variable parent, Variable child ) {
-
 		Relationship rel = delphiService.getMyCurrentRelationship( parent, child )
-
-		rel?.comment?.comment = ""
-		rel?.comment?.save()
-		rel?.exists = false
-		rel?.save()
+		if ( rel != null ) {
+			if ( rel.comment != null ) {
+				rel.comment.comment = ""
+				rel.comment.save()
+			}
+			rel.exists = false
+			rel.save()
+		}
 	}
 
-	public void removeRedundantRelationship(RedundantRelationship redundantRelationship) {
-
-		redundantRelationship.relationship?.comment?.comment = ""
-		redundantRelationship.relationship?.comment?.save()
-		redundantRelationship.relationship.isRedundant = Relationship.IS_REDUNDANT_YES
-		redundantRelationship.relationship.exists = false
-		redundantRelationship.relationship.save()
+	public void removeRedundantRelationship( RedundantRelationship redundantRelationship ) {
+		Relationship rel = redundantRelationship.relationship
+		if ( rel != null ) {
+			if ( rel.comment != null ) {
+				rel.comment.comment = ""
+				rel.comment.save()
+			}
+			rel.isRedundant = Relationship.IS_REDUNDANT_YES
+			rel.exists = false
+			rel.save()
+		}
 	}
 
 	public List<CyclicalRelationship> getCyclicalRelationships() {
@@ -290,7 +318,7 @@ class BnService {
 								new RedundantRelationship(
 									child: child,
 									redundantParent: directParent.var,
-									relationship: Relationship.findByChildAndParentAndDelphiPhase( child, directParent.var, delphiService.phase ),
+									relationship: Relationship.findByChildAndParentAndDelphiPhaseAndCreatedBy( child, directParent.var, delphiService.phase, ShiroUser.current ),
 									mediatingChain: path,
 									chains: [ path ]
 								)
