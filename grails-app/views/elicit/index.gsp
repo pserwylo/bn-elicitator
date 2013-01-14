@@ -41,29 +41,30 @@
 					}
 					else
 					{
+
+						var msgShow = '<g:message code="general.show" />';
+						var msgHide = '<g:message code="general.hide" />';
+
 						btn.click( function() {
 
-							if ( this.value.substring( 0, 4 ) == 'Hide' )
+							if ( this.value.substring( 0, 4 ) == msgHide )
 							{
-								this.value = this.value.replace( 'Hide', 'Show' );
+								this.value = this.value.replace( msgHide, msgShow );
 								itemDescriptions.hide( 'fast' );
 								<bn:setPreference key="show-description" value="false" />
 							}
 							else
 							{
-								this.value = this.value.replace( 'Show', 'Hide' );
+								this.value = this.value.replace( msgShow, msgHide );
 								itemDescriptions.show( 'fast' );
 								<bn:setPreference key="show-description" value="true" />
 							}
 
 						});
 
-						if ( '<bn:preferenceValue key="show-description" />' == 'true' )
-						{
+						if ( '<bn:preferenceValue key="show-description" />' == 'true' ) {
 							btn.trigger( 'click' );
-						}
-						else
-						{
+						} else {
 							itemDescriptions.hide();
 						}
 					}
@@ -80,16 +81,23 @@
 	<body>
 
 		<g:if test="${hasDetails}">
-			<input type="button" style="margin-top: 0.3em;" id="btnToggleDetails" value="Show details" />
+			<button type="button" style="margin-top: 0.3em;" id="btnToggleDetails">
+			 	<g:message code="general.show" />
+				<g:message code="elicit.list.details" />
+			</button>
 		</g:if>
 
 		<g:if test="${keptRedunantRelationships > 0}">
-			<input
+			<button
 				type="button"
 				style="margin-top: 0.3em;"
 				id="btnShowProblems"
-				value="Show ${keptRedunantRelationships} potential problems"
-				onclick="document.location = '${createLink( action: 'problems', params: [ displayAll: true ] )}'" />
+				onclick="document.location = '${createLink( action: 'problems', params: [ displayAll: true ] )}'">
+
+				<g:message code="general.show" />
+				<g:message code="elicit.list.potential-problems" args="${[ keptRedunantRelationships ]}" />
+
+			</button>
 		</g:if>
 
 		<br />

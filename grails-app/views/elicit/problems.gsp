@@ -42,18 +42,21 @@
 				var btn = $( '.btn-toggle-details');
 				var animate = false;
 
+				var msgShow = "<g:message code='general.show' />";
+				var msgHide = "<g:message code='general.hide' />";
+
 				btn.click( function() {
 
-					if ( this.value.substring( 0, 4 ) == 'Hide' )
+					if ( this.value.substring( 0, 4 ) == msgHide )
 					{
-						this.value = this.value.replace( 'Hide', 'Show' );
+						this.value = this.value.replace( msgHide, msgShow );
 						detailsHigh.hide( 'fast' );
 						detailsLow.show( 'fast' );
 						<bn:setPreference key="show-detailed-explanation" value="false" />
 					}
 					else
 					{
-						this.value = this.value.replace( 'Show', 'Hide' );
+						this.value = this.value.replace( msgShow, msgHide );
 						detailsHigh.show( 'fast' );
 						detailsLow.hide( 'fast' );
 						<bn:setPreference key="show-detailed-explanation" value="true" />
@@ -84,14 +87,14 @@
 
 					btnKeepers.click( function() {
 
-						if ( this.value.substring( 0, 4 ) == 'Hide' )
+						if ( this.value.substring( 0, 4 ) == msgHide )
 						{
-							this.value = this.value.replace( 'Hide', 'Show' );
+							this.value = this.value.replace( msgHide, msgShow );
 							keepers.hide( 'fast' );
 						}
 						else
 						{
-							this.value = this.value.replace( 'Show', 'Hide' );
+							this.value = this.value.replace( msgShow, msgHide );
 							keepers.show( 'fast' );
 						}
 
@@ -133,7 +136,7 @@
 
 			<g:if test="${cyclicalRelationships?.size() > 0}">
 
-				<h1>Illegal relationships (which cause cycles)</h1>
+				<h1><g:message code="problems.cyclical.header" /></h1>
 
 				<ul id="cyclical-relationship-list" class="variable-list">
 
@@ -159,9 +162,9 @@
 
 				<div class="redundant content">
 
-					<h1>(Potentially) better explanations</h1>
+					<h1><g:message code="problems.redundant.header" /></h1>
 
-					<input type="button" class="btn-toggle-details" value="Show detailed explanation" />
+					<input type="button" class="btn-toggle-details" value="${message( code: "general.show")} ${message( code: "general.detailed-explanation")}" />
 
 					<g:if test="${numKeepers > 0}">
 						<input
@@ -171,25 +174,9 @@
 							value="Show ${numKeepers} direct relationships you said are necessary" />
 					</g:if>
 
-					%{--<div class='info details-high'>
-						We think the following relationships may be unnecessary. Originally you stated that a variable is <em>directly</em>
-						influenced by another. Later on, you also stated that it is <em>indirectly</em> influenced by that
-						variable, by virtue of it influencing some intermediate variables.
-					</div>
-
 					<div class='info details-high'>
-						We presume that the more accurate way to think about the relationships is the indirect version. However,
-						there may be times where a variable influences another both directly and indirectly through its
-						influence on other variables. An example might be:
-
-						<span class="indent">
-							A specific law banning smoking may <em>directly</em> decrease smoking rates, because most people
-							do not engage in illegal activities. In addition, it may <em>indirectly</em> decrease smoking rates,
-							through extra law enforcement officials to fight under-the-counter tobacco sales therefore reducing
-							peoples access to tabacco.
-						</span>
-
-					</div>--}%
+						<g:message code="problems.redundant.desc" />
+					</div>
 
 					<ul id="redundant-relationship-list" class="variable-list">
 
@@ -219,8 +206,8 @@
 									</span>
 
 									<span class="details-low">
-										Potentially better explained by
-										<bn:variableChain chain="${rel.mediatingChain}" />
+										<g:message code="problems.redundant.better-explained-by" args="${[ bn.variableChain( chain: rel.mediatingChain ) ]}" />
+										%{--<bn:variableChain chain="${rel.mediatingChain}" />--}%
 									</span>
 								</div>
 
@@ -244,13 +231,15 @@
 									</span>
 
 									<g:if test="${rel.relationship.isRedundant != Relationship.IS_REDUNDANT_NO}">
-										<button class="keep" value="${rel.redundantParent.label}-${rel.child.label}">Keep relationship</button>
+										<button class="keep" value="${rel.redundantParent.label}-${rel.child.label}">
+											<g:message code="problems.redundant.keep" />
+										</button>
 									</g:if>
 
 									<button class="remove" value="${rel.redundantParent.label}-${rel.child.label}">
-										Remove relationship
+										<g:message code="problems.redundant.remove" />
 										<g:if test="${rel.relationship.isRedundant == Relationship.IS_REDUNDANT_NO}">
-											(previously you decided to keep <it></it>)
+											<g:message code="problems.redundant.previously-kept" />
 										</g:if>
 									</button>
 

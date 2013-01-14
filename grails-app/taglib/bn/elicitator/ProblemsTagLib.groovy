@@ -57,7 +57,9 @@ class ProblemsTagLib {
 		Relationship relationship = attrs.relationship
 		out << """
 			<li>
-				<button class='remove' value="${relationship.parent.label}-${relationship.child.label}">Remove</button>
+				<button class='remove' value="${relationship.parent.label}-${relationship.child.label}">
+					${message( code: "problems.cyclical.remove" )}
+				</button>
 				<span class='relationship-to-remove'>${bn.variable( [ var: relationship.parent ] )} ${bn.rArrow( [ comment: relationship.comment?.comment ] )} ${bn.variable( [ var: relationship.child ] )}</span>
 			</li>
 		"""

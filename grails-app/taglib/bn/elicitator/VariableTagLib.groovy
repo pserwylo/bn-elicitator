@@ -270,7 +270,7 @@ class VariableTagLib {
 	{
 		String output = ""
 		output += "<div class='reasons'>\n"
-		output += "	<span class='header'>Reasons ${img( [ dir: "images/icons", file: "comments.png" ] )}</span>\n"
+		output += "	<span class='header'>${message( code: "elicit.parents.reason.header" )} ${img( [ dir: "images/icons", file: "comments.png" ] )}</span>\n"
 
 		boolean hasReasons = false
 
@@ -536,7 +536,10 @@ class VariableTagLib {
 		out << """
 			<div id='${parent.label}-summary' class='var-summary'>
 				<span class="toggle-details">
-					<input type="button" value="Show details" class="show-var-details " onclick="showVarDetails( '${parent.label}' )" />
+					<button type="button" class="show-var-details " onclick="showVarDetails( '${parent.label}' )">
+						${message( code: "general.show" )}
+						${message( code: "elicit.parents.info" )}
+					</button>
 				</span>
 			</div>
 			"""

@@ -57,7 +57,7 @@
 		<div id="heading">${AppProperties.properties.title}</div>
 
 		<shiro:authenticated>
-			<div id="user-info">Welcome <shiro:principal />! (<g:link controller="auth" action="logout">logout</g:link>)</div>
+			<div id="user-info"><g:message code="main.welcome" args="${[ shiro.principal() ]}" /> (<g:link controller="auth" action="logout">logout</g:link>)</div>
 		</shiro:authenticated>
 
 		<g:layoutBody/>
