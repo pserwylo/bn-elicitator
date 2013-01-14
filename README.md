@@ -13,9 +13,9 @@ It is hoped that this allows the people to converge towards a consensus agreemen
 
 ## License ##
 
-http://www.apache.org/licenses/LICENSE-2.0.html
+This project is licensed under the GPLv3 license.
 
-This project is licensed under the Apache 2.0 license, in the hope that other researchers or practitioners will be able to make use of it when it is complete.
+http://www.gnu.org/licenses/gpl.html
 
 
 ## Acknowledgements ##
@@ -24,6 +24,8 @@ This project is licensed under the Apache 2.0 license, in the hope that other re
 
 http://www.famfamfam.com/lab/icons/silk/
 
-### OWLAPI ###
+### Libraries ###
 
 http://owlapi.sourceforge.net/
+http://www.jquery.com
+http://www.grails.org
