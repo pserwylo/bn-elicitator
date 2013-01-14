@@ -18,15 +18,25 @@
 
 package bn.elicitator
 
+/**
+ * All methods in this class presume that we are only operating on data for the current user, unless the method
+ * signature says otherwise.
+ */
 class BnService {
 
 	def delphiService
 	def variableService
 
+	public void fixProblems( List<RedundantRelationship> redundantsToRemove, List<RedundantRelationship> redundantsToKeep, List<List<Variable>> cyclesToRemove )
+	{
+		redundantsToRemove.each { removeRedundantRelationship( it ) }
+		redundantsToKeep.each   { keepRedundantRelationship  ( it ) }
+		cyclesToRemove.each     { removeCycle                ( it[ 0 ], it[ 1 ] ) }
+	}
+
 	/**
-	 * child has both redundantParent and mediator as parents. The redundant one is probably redundant because it is
-	 * also a parent of mediator. It is suggested that we remove the child -> redundantParent relationship and retain
-	 * the redundantParent -> mediator relationship.
+	 * "child" has "redundantParent" as a direct parent, and as an indirect parent by following the list of parents
+	 * in "chains".
 	 */
 	public class RedundantRelationship {
 
@@ -43,15 +53,82 @@ class BnService {
 
 	}
 
+	public class CyclicalRelationship {
+
+		private List<Relationship> relationships = []
+		List<Variable> chain = []
+
+		List<Relationship> getRelationships()
+		{
+			return this.relationships
+		}
+
+		void setChain( List<Variable> chain )
+		{
+			this.relationships = []
+			this.chain = chain
+			for ( int i = 1; i < this.chain.size(); i ++ )
+			{
+				Variable child = this.chain.get( i - 1 )
+				Variable parent = this.chain.get( i )
+				this.relationships.add( 0, delphiService.getMyCurrentRelationship( parent, child ) )
+			}
+		}
+
+		public String toString()
+		{
+			return "Cyclical relationships: " + chain*.readableLabel.join( " -> " )
+		}
+
+		/**
+		 * Two chains are the same if they include the same sequence of variables.
+		 * Because the first and last item should be the same, we remove one of them, and then we iteratively
+		 * rotate one list so that the last item keeps coming to the front. If it eventually looks like our chain,
+		 * then we are the same.
+		 * @param that
+		 * @return
+		 */
+		public boolean equals( Object that )
+		{
+			boolean equal = false
+			if ( that instanceof CyclicalRelationship )
+			{
+				if ( that.chain.size() == chain.size() )
+				{
+					List<Variable> myChain = []
+					List<Variable> otherChain = []
+					myChain.addAll( chain )
+					otherChain.addAll( that.chain )
+
+					myChain.pop()
+					otherChain.pop()
+
+					// Rotate the items in the chain all the way around to see if any rotation matches our pattern...
+					for ( i in 0..(otherChain.size()-1) )
+					{
+						otherChain = otherChain + otherChain.remove( 0 )
+						if ( otherChain == myChain )
+						{
+							equal = true
+							break;
+						}
+					}
+				}
+			}
+			return equal
+		}
+
+	}
+
+	/**
+	 * This tree is a tree of all parent-child relationships between variables.
+	 * @see BnService#populateAllParents(bn.elicitator.BnService.TreeNode)
+	 */
 	public class TreeNode {
+
 		Variable var
 		TreeNode child = null
 		List<TreeNode> parents = []
-
-		List<Variable> collapseTree()
-		{
-			return []
-		}
 
 		List<Variable> getPathTo( Variable parent )
 		{
@@ -97,6 +174,24 @@ class BnService {
 			descendants.pop()
 			return descendants
 		}
+
+		List<TreeNode> getLeaves()
+		{
+			List<TreeNode> leaves = []
+
+			if ( parents.size() == 0 )
+			{
+				leaves.add( this )
+			}
+			else
+			{
+				for ( TreeNode parent in parents )
+				{
+					leaves.addAll( parent.getLeaves() )
+				}
+			}
+			return leaves
+		}
 	}
 
 	/**
@@ -106,24 +201,77 @@ class BnService {
 	 */
 	public Integer countKeptRedunantRelationships() {
 
-		return Relationship.countByIsRedundantAndCreatedByAndDelphiPhase( Relationship.IS_REDUNDANT_NO, ShiroUser.current, delphiService.phase )
+		return Relationship.countByIsRedundantAndCreatedByAndExistsAndDelphiPhase( Relationship.IS_REDUNDANT_NO, ShiroUser.current, true, delphiService.phase )
 
 	}
 
-	public void keepRedundantRelationship(RedundantRelationship redundantRelationship) {
+	public void keepRedundantRelationship( RedundantRelationship redundantRelationship ) {
 
 		redundantRelationship.relationship.isRedundant = Relationship.IS_REDUNDANT_NO
 		redundantRelationship.relationship.save( flush: true )
 
 	}
 
-	public void removeRedundantRelationship(RedundantRelationship redundantRelationship) {
+	public void removeCycle( Variable parent, Variable child ) {
+		Relationship rel = delphiService.getMyCurrentRelationship( parent, child )
+		if ( rel != null ) {
+			if ( rel.comment != null ) {
+				rel.comment.comment = ""
+				rel.comment.save()
+			}
+			rel.exists = false
+			rel.save()
+		}
+	}
 
-		redundantRelationship.relationship?.comment?.comment = ""
-		redundantRelationship.relationship?.comment?.save( flush: true )
-		redundantRelationship.relationship.isRedundant = Relationship.IS_REDUNDANT_YES
-		redundantRelationship.relationship.exists = false
-		redundantRelationship.relationship.save( flush: true )
+	public void removeRedundantRelationship( RedundantRelationship redundantRelationship ) {
+		Relationship rel = redundantRelationship.relationship
+		if ( rel != null ) {
+			if ( rel.comment != null ) {
+				rel.comment.comment = ""
+				rel.comment.save()
+			}
+			rel.isRedundant = Relationship.IS_REDUNDANT_YES
+			rel.exists = false
+			rel.save()
+		}
+	}
+
+	public List<CyclicalRelationship> getCyclicalRelationships() {
+
+		List<Variable> allVars = Variable.list()
+		List<CyclicalRelationship> cyclicalRelationships = []
+
+		for ( Variable child in allVars )
+		{
+			TreeNode treeOfParents = new TreeNode( var: child )
+			populateAllParents( treeOfParents )
+
+			List<TreeNode> leafNodes = treeOfParents.leaves
+			for ( TreeNode leaf in leafNodes )
+			{
+				List<Variable> descendants = leaf.descendantsIncludingSelf
+				List<Variable> leafParents = variableService.getSpecifiedParents( leaf.var )
+				for ( Variable leafParent in leafParents )
+				{
+					Integer index = descendants.indexOf( leafParent )
+					if ( index >= 0 )
+					{
+
+						List<Variable> chain = [ leaf.var ]
+						chain.addAll( descendants[ index..descendants.size()-1 ] );
+
+						cyclicalRelationships.add(
+							new CyclicalRelationship(
+								chain: chain
+							)
+						);
+					}
+				}
+			}
+		}
+
+		return cyclicalRelationships.unique()
 	}
 
 	/**
@@ -170,7 +318,7 @@ class BnService {
 								new RedundantRelationship(
 									child: child,
 									redundantParent: directParent.var,
-									relationship: Relationship.findByChildAndParentAndDelphiPhase( child, directParent.var, delphiService.phase ),
+									relationship: Relationship.findByChildAndParentAndDelphiPhaseAndCreatedBy( child, directParent.var, delphiService.phase, ShiroUser.current ),
 									mediatingChain: path,
 									chains: [ path ]
 								)

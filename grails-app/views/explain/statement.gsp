@@ -26,7 +26,7 @@
 
 		<div id="explanatory-statement">
 
-			<g:top />
+			<bn:top />
 			<h1>Explanatory Statement</h1>
 
 			<g:if test="${flash.mustCheckRead}">

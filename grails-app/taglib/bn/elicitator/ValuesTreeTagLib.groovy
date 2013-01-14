@@ -20,6 +20,8 @@ package bn.elicitator
 
 class ValuesTreeTagLib {
 
+	static namespace = "bn"
+
 	/**
 	 * @attr values REQUIRED
 	 */

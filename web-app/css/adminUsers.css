@@ -16,37 +16,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package bn.elicitator
+button.show-details {
+	float: right;
+}
 
-class ParentClassTagLib {
+ul.variable-list li.selected {
+	box-shadow: #48802C 0 0 5px;
+}
 
-	static namespace = "bn"
+ul.form-items li {
+	margin: 0.5em 0;
+}
 
-	/**
-	 * @attr variables REQUIRED
-	 * @attr matrix REQUIRED
-	 * @attr x REQUIRED
-	 * @attr y REQUIRED
-	 */
-	def hasParentClass = { attrs, body ->
+ul.form-items > li > label, ul.form-items > li > .label {
+	font-weight: bold;
+	width: 100px;
+}
 
-		def variables = attrs.variables
-		def matrix = attrs.matrix
-		Integer x = attrs.x
-		Integer y = attrs.y
+ul.roles {
+	margin-left: 1em;
+}
 
-		String parent = "";
-		if ( x > 0 )
-		{
-			parent = "has-parent";
-			for ( int i = 0; i < x; i ++ )
-			{
-				parent += "-" + variables[ i ].label + "-" + matrix[ y ][ i ]
-			}
-		}
+ul.log-item-list li {
+	font-family: monospace;
+	font-size: 0.9em;
+}
 
-		out << parent
+ul.log-item-list .date {
+	display: block;
+}
 
-	}
-
+ul.log-item-list .log {
+	display: block;
+	margin: 0.5em 0.5em 1em 0.5em;
 }

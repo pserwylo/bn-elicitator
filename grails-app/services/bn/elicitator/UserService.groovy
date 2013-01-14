@@ -53,7 +53,7 @@ class UserService {
 	 * @return
 	 */
 	boolean isUserFinished( ShiroUser user = ShiroUser.current, Integer delphiPhase = AppProperties.properties.delphiPhase ) {
-		return Event.findByTypeAndUserAndDelphiPhase( Event.Type.COMPLETE_FORM, user, delphiPhase ) != null
+		return LoggedEvent.findByTypeAndUserAndDelphiPhase( LoggedEvent.Type.COMPLETE_FORM, user, delphiPhase ) != null
 	}
 
 	/**
@@ -68,6 +68,12 @@ class UserService {
 	}
 
 	List<ShiroUser> getCompletedUsers( Integer delphiPhase = AppProperties.properties.delphiPhase ) {
-		List<CompletedPhase> completed = CompletedPhase.findAllByDelphiPhase( delphiPhase )*.completedBy
+		return CompletedPhase.findAllByDelphiPhase( delphiPhase )*.completedBy
+	}
+
+	void deleteUser( ShiroUser user ) {
+		if ( user && user.username != "admin" ) {
+			user.delete()
+		}
 	}
 }

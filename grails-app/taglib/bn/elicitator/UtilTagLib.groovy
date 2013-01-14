@@ -20,12 +20,22 @@ package bn.elicitator
 
 class UtilTagLib {
 
+	static namespace = "bn"
+
 	def backToTop = { attrs, body ->
 		out << "<span class='back-to-top'><a href='#top'>(back to top)</a></span>"
 	}
 
 	def top = { attrs, body ->
 		out << "<a name='top'></a>	"
+	}
+
+	/**
+	 * @attr date REQUIRED
+	 */
+	def date = { attrs ->
+		Date date = attrs.date
+		out << "<span class='date'>${date.format( 'dd/MM/yyyy hh:mm' )}</span>"
 	}
 
 }

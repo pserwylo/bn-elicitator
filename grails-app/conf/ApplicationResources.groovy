@@ -18,45 +18,39 @@
 
 modules = {
 
+	/* Global and utility styles */
     global {
-
 		dependsOn( [ 'jquery', 'jquery-ui' ] )
-
 		resource url: 'css/global.css'
-
 	}
 
 	variableList {
-
 		resource url: 'css/variableList.css'
-
 	}
 
 	floatingDialog {
-
 		resource url: 'css/floatingDialog.css'
-
 	}
 
-	/**
-	 * Styles for the Elicit controller.
-	 */
+	/* Controller- and View-specific modules. */
+
 	elicit {
-
-		dependsOn( [ 'variableList', 'floatingDialog' ] )
-
+		dependsOn( [ 'variableList' ] )
 		resource url: 'css/elicit.css'
-
 	}
 
-	/**
-	 * Styles for the Admin controller.
-	 */
+	elicitProblems {
+		dependsOn( [ 'elicit', 'floatingDialog' ] )
+		resource url: 'css/elicitProblems.css'
+	}
+
 	admin {
-
-		dependsOn( [] )
-
+		dependsOn( [ 'variableList' ] )
 		resource url: 'css/admin.css'
+	}
 
+	adminUsers {
+		dependsOn( [ 'admin', 'floatingDialog' ] )
+		resource url: 'css/adminUsers.css'
 	}
 }

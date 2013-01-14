@@ -85,7 +85,12 @@ class ElicitController {
 	def fixProblems =
 	{
 		List<BnService.RedundantRelationship> redundantRelationships = bnService.getRedundantRelationships()
-		def cyclicalRelationships = []
+		List<BnService.CyclicalRelationship> cyclicalRelationships = bnService.getCyclicalRelationships()
+
+		List<String>                          errors           = []
+		List<BnService.RedundantRelationship> redundantKeepers = []
+		List<BnService.RedundantRelationship> redundantLosers  = []
+		List<List<Variable>>                  cyclicalLosers   = []
 
 		for ( BnService.RedundantRelationship redundantRelationship in redundantRelationships )
 		{
@@ -93,25 +98,114 @@ class ElicitController {
 			String keep = params[ key ];
 			if ( keep == null )
 			{
-				render "Error: Should have specified a relationship for '" + redundantRelationship.relationship + "'";
-				return
+				errors.add( "Error: Should have specified a relationship for '" + redundantRelationship.relationship + "'" );
 			}
 			else
 			{
 				if ( keep == "keep" )
 				{
-					bnService.keepRedundantRelationship( redundantRelationship )
-					render "Keeping: " + redundantRelationship.relationship + "<br />"
+					redundantKeepers.add( redundantRelationship )
 				}
 				else
 				{
-					bnService.removeRedundantRelationship( redundantRelationship )
-					render "Removing: " + redundantRelationship.relationship + "<br />"
+					redundantLosers.add( redundantRelationship )
 				}
 			}
 		}
 
+		for ( BnService.CyclicalRelationship cyclicalRelationship in cyclicalRelationships )
+		{
+			Boolean removeAny = false
+
+			for ( Integer i = 0; i <  cyclicalRelationship.chain.size()-1; i ++ )
+			{
+				Variable parent = cyclicalRelationship.chain.get( i )
+				Variable child = cyclicalRelationship.chain.get( i + 1 )
+
+				String key = "remove-" + parent.label + "-" + child.label
+
+				if ( params[ key ] == "1" )
+				{
+					removeAny = true
+					// TODO: THIS IS BACKWARDS FOR SOME REASON...
+					cyclicalLosers.add( [ parent, child ] )
+				}
+			}
+
+			if ( !removeAny )
+			{
+				errors.add( "Must specify a relationship to remove from: " + VariableTagLib.generateVariableChain( cyclicalRelationship.chain, "&rarr;", false ) )
+			}
+		}
+
+		if ( errors.size() > 0 )
+		{
+			render errors.join( "<br />" )
+			return
+		}
+		else
+		{
+			bnService.fixProblems( redundantKeepers, redundantLosers, cyclicalLosers )
+		}
+
 		redirect( action: 'index' )
+	}
+
+	private void fixRedundant( Boolean keep, String parentLabel, String childLabel, Boolean displayAll )
+	{
+		Variable parent = Variable.findByLabel( parentLabel )
+		Variable child  = Variable.findByLabel( childLabel )
+
+		if ( parent == null || child == null )
+		{
+			String label = parent == null ? parentLabel : childLabel
+			response.sendError( 404, "Variable '$label' not found" )
+		}
+		else
+		{
+			List<BnService.RedundantRelationship> redundantRelationships = bnService.getRedundantRelationships()
+			BnService.RedundantRelationship rel = redundantRelationships.find {
+				it.relationship.child == child && it.relationship.parent == parent
+			}
+
+			if ( keep )
+			{
+				bnService.keepRedundantRelationship( rel )
+			}
+			else
+			{
+				bnService.removeRedundantRelationship( rel )
+			}
+		}
+
+		redirect( action: "problems", params: [ displayAll: displayAll ] )
+	}
+
+	def keepRedundant =
+	{
+		fixRedundant( true, (String)params["parent"], (String)params["child"], (Boolean)params["displayAll"] )
+	}
+
+	def removeRedundant =
+	{
+		fixRedundant( false, (String)params["parent"], (String)params["child"], (Boolean)params["displayAll"] )
+	}
+
+	def removeCycle =
+	{
+		Variable parent = Variable.findByLabel( (String)params["parent"] )
+		Variable child  = Variable.findByLabel( (String)params["child"] )
+
+		if ( parent == null || child == null )
+		{
+			String label = parent == null ? (String)params["parent"] : (String)params["child"]
+			response.sendError( 404, "Variable '$label' not found" )
+		}
+		else
+		{
+			bnService.removeCycle( parent, child )
+			redirect( action: "problems", params: [ displayAll: (Boolean)params["displayAll"] ] )
+		}
 	}
 
 	/**
@@ -121,7 +215,7 @@ class ElicitController {
 	def problems =
 	{
 		List<BnService.RedundantRelationship> redundantRelationships = bnService.getRedundantRelationships()
-		def cyclicalRelationships = []
+		List<BnService.CyclicalRelationship> cyclicalRelationships = bnService.getCyclicalRelationships()
 
 		Boolean showProblems = false
 		Boolean displayAll = params["displayAll"] == "true"
@@ -161,22 +255,22 @@ class ElicitController {
 
 	/**
 	 * Shows a form where one variable is displayed, and a list of all potential parents.
-	 * This does not mean all other variables, as we are trying very hard to reduce this 
+	 * This does not mean all other variables, as we are trying very hard to reduce this
 	 * workload on the expert. Instead, we use the configuration of constraints to restrict
 	 * the variables which are shown as potential parents.
-	 * 
+	 *
 	 * The variable we show is deduced from the 'for' query param. However if none is specified,
 	 * we will try to pull the first variable off the rank and then redirect to a screen which uses that.
 	 */
     def parents = {
-		
+
 		Variable var = null
-		
+
 		if ( params["for"] != null )
 		{
 			var = Variable.findByLabel( params["for"] )
 		}
-		
+
 		if ( var == null )
 		{
 			response.status = 404
@@ -186,13 +280,13 @@ class ElicitController {
 		{
 			List<Variable> potentialParents = this.variableService.getPotentialParents( var )
 
-			[ 
+			[
 				variable: var,
 				delphiPhase: delphiService.phase,
 				potentialParents: potentialParents
 			]
 		}
-		
+
 	}
 
 	/**
@@ -250,7 +344,7 @@ class ElicitController {
 			}
 
 			relationship.save()
-			Event.logSaveRelationship( relationship )
+			LoggedEvent.logSaveRelationship( relationship )
 
 			// Send some output back, so that they can update the view with a "you agree" or "you disagree"...
 			Agreement agreement = this.delphiService.calcAgreement( parent, child, relationship )
@@ -294,7 +388,7 @@ class ElicitController {
 
 		var.save( failOnError: true )
 
-		Event.logCreatedVar( var )
+		LoggedEvent.logCreatedVar( var )
 
 		redirect( action: parents, params: [ for: params['returnToVar'] ] )
 	}

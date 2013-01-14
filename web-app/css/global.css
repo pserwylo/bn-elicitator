@@ -16,6 +16,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* EXTRA INFO TO SHOW IN LIST, below main title */
+
+.info, .stats {
+	font-size: 11pt;
+	color: #888;
+}
+
+
+/* ARROWS USED TO INDICATE RELATIONSHIPS */
+
+.arrow.right {
+	background: url( "../images/icons/arrow_right.png" ) no-repeat;
+}
+
+.arrow.right.comment {
+	background: url( "../images/icons-custom/arrow_right_comment.png" ) no-repeat;
+}
+
+.arrow {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+}
+
+/* ICON BUTTON STYLES */
+button.remove {
+	padding-left: 25px;
+	background: url( "../images/icons/delete.png" ) 2px no-repeat;
+}
+
+button.keep {
+	padding-left: 25px;
+	background: url( "../images/icons/tick.png" ) 2px no-repeat;
+}
+
 /* DEBUG STYLES */
 #app-info {
     font-family: monospace;
@@ -46,6 +81,13 @@ input[type=submit]:hover,
 button:hover {
     background-color: #EEE;
     color: #CCC;
+}
+
+input[type=button]:disabled,
+input[type=submit]:disabled,
+button:disabled {
+    background-color: #ddd;
+    color: #aaa;
 }
 
 input[type=button]:hover:not( :disabled ),
@@ -295,12 +337,6 @@ ul.bullet {
 
 /* GENERAL */
 .content {
-}
-
-.content h1 {
-	border-bottom: 1px solid #CCCCCC;
-	margin: 0.8em 1em 0.3em;
-	padding: 0 0.25em;
 }
 
 .spinner {

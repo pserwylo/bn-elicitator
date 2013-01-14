@@ -20,6 +20,7 @@ package bn.elicitator
 
 class VariableTagLib {
 
+	static namespace = "bn"
 
 	VariableService variableService
 	DelphiService delphiService
@@ -37,20 +38,28 @@ class VariableTagLib {
 		out << generateTooltip( (String)(body()), id, classes )
 	}
 
-	public static String generateVariable( Variable var, boolean includeDescription )
-	{
-		return """<span class='variable'>${var.readableLabel}${includeDescription ? ' ' + generateDescription( var ) : ''}</span>"""
-
+	/**
+	 * @attr var REQUIRED
+	 * @attr includeDescription Defaults to true
+	 */
+	def variable = { attrs ->
+		Variable var = attrs.var
+		boolean includeDescription = attrs.containsKey( "includeDescription" ) ? attrs.includeDescription : true
+		out << """<span class='variable'>${var.readableLabel}${includeDescription ? ' ' + generateDescription( var ) : ''}</span>"""
 	}
 
-	public static String generateTooltip( String tooltip, String id = null, String classes = null )
+	public static String generateTooltip( String tooltip, String id = null, String classes = null, String content = null )
 	{
 		String jsTooltip = tooltip.replaceAll( "'", "\\\\'" ).replaceAll( "\n", "\\\\n" )
 
 		id = id ? "id='${id}'" : ""
 
+		if ( content == null ) {
+			content = "(?)"
+		}
+
 		// Had to fudge the formatting of the HTML so that there was not a space after the tooltip.
-		return """<span ${id} class="tooltip ${classes ?: ''}"><a href="javascript:alert( '${jsTooltip}' );">(?)</a><span class="tip">${tooltip.encodeAsHTML().replaceAll( "\n", " <br /> " )}</span></span>""".trim().replaceAll( "\n", "" )
+		return """<span ${id} class="tooltip ${classes ?: ''}"><a href="javascript:alert( '${jsTooltip}' );">${content}</a><span class="tip">${tooltip.encodeAsHTML().replaceAll( "\n", " <br /> " )}</span></span>""".trim().replaceAll( "\n", "" )
 	}
 
 	public static String generateDescription( Variable var )
@@ -63,53 +72,56 @@ class VariableTagLib {
 		return description
 	}
 
-	public static String generateVariableChain( List<Variable> chain, String separator ) {
+	/**
+	 * @attr chain REQUIRED
+	 * @attr includeTooltip
+	 */
+	def relationshipChain = { attrs ->
 
-		String output = "";
+		List<Relationship> chain = attrs.chain
+		Boolean includeTooltip = attrs.hasProperty( "includeTooltip" ) ? attrs.includeTooltip : true
+
 		for ( int i = 0; i < chain.size(); i ++ )
 		{
-			output += generateVariable( chain[ i ], true )
+			Relationship rel = chain.get( i )
 
-			if ( i < chain.size() - 1 )
+			if ( i == 0 )
 			{
-				if ( separator != null )
-				{
-					output += separator
-				}
-				else
-				{
-					if ( i == 0 )
-					{
-						output += " influences "
-					}
-					else
-					{
-						output += ", which influences "
-					}
-				}
+				out << bn.variable( [ var: rel.parent, includeDescription: includeTooltip ] )
 			}
+
+			out << bn.rArrow( [ comment: rel.comment?.comment ] )
+			out << bn.variable( [ var: rel.child, includeDescription: includeTooltip ] )
+
 		}
-		return output
-
-	}
-
-	/**
-	 * @attr var REQUIRED
-	 */
-	def variable = { attrs ->
-		out << generateVariable( attrs.var, true )
 	}
 
 	/**
 	 * @attr chain REQUIRED
-	 * @attr separator
+	 * @attr includeTooltip
 	 */
 	def variableChain = { attrs ->
 
 		List<Variable> chain = attrs.chain
-		String separator = attrs?.separator
+		Boolean includeTooltip = attrs.hasProperty( "includeTooltip" ) ? attrs.includeTooltip : true
 
-		out << generateVariableChain( chain, separator )
+		String output = "";
+		for ( int i = 0; i < chain.size(); i ++ )
+		{
+			output += bn.variable( [ var: chain[ i ], includeDescription: includeTooltip ] )
+
+			if ( i < chain.size() - 1 )
+			{
+				Relationship rel = Relationship.findByCreatedByAndDelphiPhaseAndExistsAndParentAndChild( ShiroUser.current, AppProperties.properties.delphiPhase, true, chain[ i ], chain[ i + 1 ] )
+				String comment = rel?.comment?.comment
+				if ( comment == null ) {
+					output += bn.rArrow()
+				} else {
+					output += generateTooltip( comment, null, null, r.img( [ dir: "images/icons-custom", file: "arrow_right_comment.png" ] ).toString() )
+				}
+			}
+		}
+		out << output
 
 	}
 
@@ -258,7 +270,7 @@ class VariableTagLib {
 	{
 		String output = ""
 		output += "<div class='reasons'>\n"
-		output += "	<span class='header'>Reasons</span>\n"
+		output += "	<span class='header'>Reasons ${img( [ dir: "images/icons", file: "comments.png" ] )}</span>\n"
 
 		boolean hasReasons = false
 
@@ -453,7 +465,7 @@ class VariableTagLib {
 			String needsReview = hasVisited ? '' : '<span class="info">(needs review)</span>'
 
 			out << "<li class='variable-item  ${classes}'>\n"
-			out << "	<a href='${createLink( controller: 'elicit', action: 'parents', params: [ for: child.label ] )}'>${generateVariable( child, false )}</a>\n"
+			out << "	<a href='${createLink( controller: 'elicit', action: 'parents', params: [ for: child.label ] )}'>${bn.variable( [ var: child, includeDescription: false ] )}</a>\n"
 			out << "	" + needsReview + "\n"
 			out << "	" + this.generateListsOfRelations( child ) + "\n";
 			out << "</li>\n"
@@ -506,7 +518,7 @@ class VariableTagLib {
 					class='potential-parent'
 					${selected ? "checked='checked'" : ''} />
 
-				${generateVariable( parent, false )}
+				${bn.variable( [ var: parent, includeDescription: false ] )}
 				${generateDescription( parent )}
 				${generateSynonyms( parent )}
 
@@ -534,10 +546,10 @@ class VariableTagLib {
 	{
 
 		out << """
-			<div id='${parent.label}-details' class='var-details'>
+			<div id='${parent.label}-details' class='var-details floating-dialog'>
 				<div class='header-wrapper'>
 					${delphiService.hasPreviousPhase && agreement != null ? "<span class='header'>This time</span>" : ''}
-					${generateSaveButtons( true )}
+					${bn.saveButtons( [ atTop: true ] )}
 				</div>
 				<table width="100%" class="form">
 					<tr>
@@ -598,7 +610,7 @@ class VariableTagLib {
 
 		out << """
 			${generateReasonsList( relationshipsToShowCommentsFor )}
-			${generateSaveButtons( false )}
+			${bn.saveButtons( [ atTop: false ] )}
 		</div>
 		"""
 
@@ -650,14 +662,26 @@ class VariableTagLib {
 		
 	}
 
-	private String generateSaveButtons( boolean atTop )
-	{
-		return """
-
+	/**
+	 * @attr atTop REQUIRED Specifies whether to style the buttons as if they are at the top of the form or the bottom.
+	 * @attr includeDelete
+	 */
+	def saveButtons = { attrs ->
+		Boolean atTop = attrs.atTop
+		Boolean includeDelete = attrs.containsKey( 'includeDelete' ) ? attrs.includeDelete : false
+		out << """
 			<span class='save-wrapper ${atTop ? "top" : "bottom"}'>
-					<button class='close '>Close</button>
-					<button class='save '>Save</button>
-			</span>"""
+				<button class='close' type='button'>Close</button>
+				"""
+
+		if ( includeDelete ) {
+			out << "<button class='delete' type='button'>Delete</button>"
+		}
+
+		out << """
+				<button class='save' type='submit'>Save</button>
+			</span>
+			"""
 	}
 
 	/**

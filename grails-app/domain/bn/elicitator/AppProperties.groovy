@@ -55,14 +55,14 @@ class AppProperties {
 	{
 		if ( AppProperties.instance == null )
 		{
-			AppProperties properties = AppProperties.findById( 1 );
-			if ( properties == null )
-			{
-				properties = new AppProperties();
-				properties.id = 1;
-				properties.save();
+			List<AppProperties> list = AppProperties.list()
+			if ( list.size() == 0 ) {
+				AppProperties.instance = new AppProperties()
+				AppProperties.instance.id = 1
+				AppProperties.instance.save()
+			} else {
+				AppProperties.instance = list.get( 0 )
 			}
-			AppProperties.instance = properties;
 		}
 		return AppProperties.instance;
 	}

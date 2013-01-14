@@ -23,6 +23,8 @@ package bn.elicitator
  */
 class PreferencesTagLib {
 
+	static namespace = "bn"
+
 	PreferenceService preferenceService
 
 	def preferencesJs = {

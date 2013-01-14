@@ -15,8 +15,8 @@
   - You should have received a copy of the GNU General Public License
   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --}%
-<%@ page import="bn.elicitator.ShiroUser" %>
-<%@ page import="bn.elicitator.Event" %>
+<%@ page import="bn.elicitator.LoggedEvent; bn.elicitator.ShiroUser" %>
+<%@ page import="bn.elicitator.LoggedEvent" %>
 <%@ page import="bn.elicitator.VariableService" %>
 <%
 	VariableService variableService = grailsApplication.classLoader.loadClass( 'bn.elicitator.VariableService' ).newInstance()
@@ -27,14 +27,44 @@
 
 	<head>
 		<meta name="layout" content="main">
+		<r:require module="adminUsers" />
 		<title>Users</title>
 		
 		<g:javascript>
 		
 			var selectedLi = null;
-		
+
+			function confirmDeleteUser( username ) {
+
+				if ( username == 'admin' ) {
+					throw new Error( "Attempted to delete admin user." );
+				}
+
+				var li = $( '#user-' + username );
+
+				if ( selectedLi == null || li.attr( "id" ) != selectedLi.attr( "id" ) ) {
+					throw new Error( "Trying to delete '" + username + "', but they are not selected." )
+				}
+
+				doneEditingUser( false );
+
+				li.remove();
+
+				if ( username != '' ) {
+					$.post( "${createLink( action: "remove" )}", { username: username } );
+				}
+			}
+
 			function deleteUser( username ) {
-				var result = confirm( "Are you sure you want to delete\n\n    User: " + username + "?" );
+
+				var confirmationMessage = "Are you sure you want to delete\n\n    User: " + username + "?";
+
+				// Empty username means the 'New User' which doesn't exist in the database, only in this browser...
+				var allowDelete = username == "" ? true : confirm( confirmationMessage );
+
+				if ( allowDelete ) {
+					confirmDeleteUser( username );
+				}
 			}
 		
 			function editUser( username ) {
@@ -49,19 +79,21 @@
 				
 				if ( selectedLi.length == 0 )
 				{
-					console.log( "Error finding li node for user '" + username + "'" );
-					return;
+					throw new Error( "Error finding li node for user '" + username + "'" );
 				}
 				
 				selectedLi.addClass( 'selected' );
-				
-				$( '#form-contents' ).html( "<img src='${resource(dir: 'images', file: 'spinner.gif')}' />" );
-				$( '.edit-dialog-user' ).hide( 'fast' );
-				var offset = selectedLi.offset().top - $( '.edit-dialog-user' ).parent().offset().top - 30;
+
+				var formContents = $( '#form-contents' );
+				var editDialog = $( '#edit-dialog-user' );
+
+				formContents.html( "<img src='${resource(dir: 'images', file: 'spinner.gif')}' />" );
+				editDialog.hide( 'fast' );
+				var offset = selectedLi.offset().top - editDialog.parent().offset().top - 30;
 				
 				var isNew = selectedLi.find( 'input[name=isNew]' ).length > 0;
 				
-				$( '#form-contents' ).load( 
+				formContents.load(
 					'${createLink( action: 'details' )}', 
 					{ 
 						username: username,
@@ -69,8 +101,8 @@
 					},
 					function( response ) {
 						// Need to move the dialog before showing, or it doesn't work...
-						$( '.edit-dialog-user' ).css( 'padding-top', offset + 'px' ); 
-						$( '.edit-dialog-user' ).show( 'fast' ) 
+						editDialog.css( 'padding-top', offset + 'px' );
+						editDialog.show( 'fast' )
 					}
 				);
 				
@@ -79,16 +111,11 @@
 			function addUser() {
 				var newLi = 
 					'<li id="user-NewUser" class=" variable-item">' +
-					'	<span id="new-user" class="config-box config-box-left" onclick="editUser( \'NewUser\' );">' + 
-					'		<img src="${resource(dir: 'images/icons', file: 'pencil.png')}" />' + 
-					'	</span>' + 
-					'	<span class="config-box config-box-right" onclick="deleteUser( this );">' + 
-					'		<img src="${resource(dir: 'images/icons', file: 'cross.png')}" />' + 
-					'	</span>' + 
 					'	<span class="username">' + 
 					'		New User' + 
 					'	</span>' + 
-					'	<input type="hidden" name="isNew" value="true" />' + 
+					'	<input type="hidden" name="isNew" value="true" />' +
+					'	<button class="show-details" onclick="editUser( \'NewUser\' );">Show details</button>' +
 					'</li>';
 				$( '.variable-list' ).append( newLi );
 				$( '#add-user' ).prop( 'disabled', true );
@@ -99,13 +126,13 @@
 			function doneEditingUser( save ) {
 				// the selectedLi should represent the one currently being edited...
 				selectedLi.removeClass( 'selected' );
-				$( '.edit-dialog-user' ).hide( 'fast' );
+				$( '#edit-dialog-user' ).hide( 'fast' );
 			}
 			
 			<g:if test="${showUser}">
-			$( function() {
-				editUser( '${showUser.username}' );
-			});
+				(function() {
+					editUser( '${showUser.username}' );
+				})();
 			</g:if>
 			
 		</g:javascript>
@@ -144,32 +171,19 @@
 							<g:each var="user" in="${userList}">
 								<li id="user-${user.username}" class=" variable-item">
 
-									<span
-										class="config-box config-box-left ${user.username == 'admin' ? 'config-box-right' : ''}"
-										onclick="editUser( $( this ).closest( 'li' ).find( '.username' ).text().trim() );">
-										<img src='${resource(dir: 'images/icons', file: 'pencil.png')}' />
-									</span>
-
-
-									<g:if test="${user.username != 'admin'}">
-										<span
-											class="config-box config-box-right"
-											onclick="deleteUser( this );">
-											<img src='${resource(dir: 'images/icons', file: 'cross.png')}' />
-										</span>
-									</g:if>
+									<button class="show-details" onclick="editUser( '${user.username}' );">Show details</button>
 
 									<span class="username">
 										${user.username}
 									</span>
 
 									<div class="stats">
-										<g:set var="loginEvent" value="${Event.findByTypeAndUser( Event.Type.LOGIN, user )}" />
-										Last login: ${loginEvent ? loginEvent.date.format( 'dd/MM/yyyy hh:mm' ) : "Never"}
+										Last login: ${user.lastLoginDate ? user.lastLoginDate.format( 'dd/MM/yyyy hh:mm' ) : "Never"}
 										<br />
 										<g:set var="visitedCount" value="${variableService.getVisitedCount( user )}" />
 										Completed: ${(int)( ( (double)visitedCount / totalNumberOfVars ) * 100 )}%
 									</div>
+
 								</li>
 							</g:each>
 						</ul>
@@ -179,7 +193,7 @@
 
 				<div class="column-right">
 
-					<div class="edit-dialog-user " style="display: none;">
+					<div id="edit-dialog-user" class="floating-dialog" style="display: none;">
 
 						<fieldset class="default ">
 

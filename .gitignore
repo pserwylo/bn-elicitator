@@ -33,3 +33,7 @@ bn-elicitator.properties
 
 # other
 *.iws
+
+# IntelliJ files
+.idea
+*.iml
