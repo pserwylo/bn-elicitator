@@ -16,6 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* EXTRA INFO TO SHOW IN LIST, below main title */
+
+.info, .stats {
+	font-size: 11pt;
+	color: #888;
+}
+
+
+/* ARROWS USED TO INDICATE RELATIONSHIPS */
+
 .arrow.right {
 	background: url( "../images/icons/arrow_right.png" ) no-repeat;
 }

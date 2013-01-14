@@ -18,6 +18,7 @@
 
 package bn.elicitator
 
+import org.apache.log4j.spi.LoggingEvent
 import org.apache.shiro.*
 
 /**
@@ -55,7 +56,13 @@ class ShiroUser {
 	{
 		this.username = value.replace( ' ', '_' )
 	}
-	
+
+	Date getLastLoginDate()
+	{
+		LoggedEvent lastLoginEvent = LoggedEvent.findByTypeAndUser( LoggedEventType.LOGIN, this )
+		return lastLoginEvent?.date
+	}
+
 	static ShiroUser getCurrent()
 	{
 		return ShiroUser.findByUsername( (String)SecurityUtils.subject?.principal )

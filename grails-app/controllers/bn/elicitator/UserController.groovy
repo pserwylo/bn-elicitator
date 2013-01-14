@@ -25,13 +25,33 @@ class UserController {
     static defaultAction = "list"
 	
 	VariableService variableService
-	
+	UserService userService
+
 	def list = {
-		
-		ShiroUser toShow = params['showUser'] ? ShiroUser.findByUsername( params['showUser'] ) : null
+
+		ShiroUser toShow = null
+
+		if ( params.containsKey( "showUser" ) ) {
+			toShow = ShiroUser.findByUsername( params.showUser )
+		}
+
 		int totalNumberOfVars = variableService.getAllChildVars().size() /* Used for progress counter of users. */
-		[ userList : ShiroUser.list(), roleList : ShiroRole.list(), showUser: toShow, totalNumberOfVars: totalNumberOfVars ]
+
+		[
+			userList : ShiroUser.list(),
+			roleList : ShiroRole.list(),
+			showUser: toShow,
+			totalNumberOfVars: totalNumberOfVars
+		]
 	
+	}
+
+	/**
+	 * Called from an ajax context, so need not render anything when done.
+	 */
+	def remove = {
+		String username = (String)params['username'];
+		this.userService.deleteUser( ShiroUser.findByUsername( username ) )
 	}
 	
 	def details = {
@@ -42,7 +62,7 @@ class UserController {
 		}
 		else
 		{
-			ShiroUser user = ShiroUser.findByUsername( params['username'] )
+			ShiroUser user = ShiroUser.findByUsername( (String)params['username'] )
 			if ( user == null )
 			{
 				response.status = 404

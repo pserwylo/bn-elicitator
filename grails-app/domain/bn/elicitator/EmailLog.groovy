@@ -41,6 +41,8 @@ class EmailLog {
 
 	String body
 
+	String date
+
 	EmailTemplate template
 
 }

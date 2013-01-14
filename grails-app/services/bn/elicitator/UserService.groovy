@@ -68,6 +68,12 @@ class UserService {
 	}
 
 	List<ShiroUser> getCompletedUsers( Integer delphiPhase = AppProperties.properties.delphiPhase ) {
-		List<CompletedPhase> completed = CompletedPhase.findAllByDelphiPhase( delphiPhase )*.completedBy
+		return CompletedPhase.findAllByDelphiPhase( delphiPhase )*.completedBy
+	}
+
+	void deleteUser( ShiroUser user ) {
+		if ( user && user.username != "admin" ) {
+			user.delete()
+		}
 	}
 }

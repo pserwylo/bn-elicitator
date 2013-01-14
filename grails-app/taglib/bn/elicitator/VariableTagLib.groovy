@@ -546,10 +546,10 @@ class VariableTagLib {
 	{
 
 		out << """
-			<div id='${parent.label}-details' class='var-details'>
+			<div id='${parent.label}-details' class='var-details floating-dialog'>
 				<div class='header-wrapper'>
 					${delphiService.hasPreviousPhase && agreement != null ? "<span class='header'>This time</span>" : ''}
-					${generateSaveButtons( true )}
+					${bn.saveButtons( [ atTop: true ] )}
 				</div>
 				<table width="100%" class="form">
 					<tr>
@@ -610,7 +610,7 @@ class VariableTagLib {
 
 		out << """
 			${generateReasonsList( relationshipsToShowCommentsFor )}
-			${generateSaveButtons( false )}
+			${bn.saveButtons( [ atTop: false ] )}
 		</div>
 		"""
 
@@ -662,14 +662,26 @@ class VariableTagLib {
 		
 	}
 
-	private String generateSaveButtons( boolean atTop )
-	{
-		return """
-
+	/**
+	 * @attr atTop REQUIRED Specifies whether to style the buttons as if they are at the top of the form or the bottom.
+	 * @attr includeDelete
+	 */
+	def saveButtons = { attrs ->
+		Boolean atTop = attrs.atTop
+		Boolean includeDelete = attrs.containsKey( 'includeDelete' ) ? attrs.includeDelete : false
+		out << """
 			<span class='save-wrapper ${atTop ? "top" : "bottom"}'>
-					<button class='close '>Close</button>
-					<button class='save '>Save</button>
-			</span>"""
+				<button class='close' type='button'>Close</button>
+				"""
+
+		if ( includeDelete ) {
+			out << "<button class='delete' type='button'>Delete</button>"
+		}
+
+		out << """
+				<button class='save' type='submit'>Save</button>
+			</span>
+			"""
 	}
 
 	/**

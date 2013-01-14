@@ -30,4 +30,12 @@ class UtilTagLib {
 		out << "<a name='top'></a>	"
 	}
 
+	/**
+	 * @attr date REQUIRED
+	 */
+	def date = { attrs ->
+		Date date = attrs.date
+		out << "<span class='date'>${date.format( 'dd/MM/yyyy hh:mm' )}</span>"
+	}
+
 }

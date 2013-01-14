@@ -94,7 +94,7 @@ class EmailService {
 			body( replacedBody )
 		}
 
-		new EmailLog( template: template, subject: replacedSubject, body: replacedBody ).save()
+		new EmailLog( template: template, subject: replacedSubject, body: replacedBody, date: new Date() ).save()
 
 	}
 

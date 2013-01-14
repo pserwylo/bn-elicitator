@@ -28,7 +28,7 @@
 
 		<title>These relationships may not be needed</title>
 
-		<r:require module="problems" />
+		<r:require module="elicitProblems" />
 
 		<bn:preferencesJs />
 

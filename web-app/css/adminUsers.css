@@ -16,41 +16,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-modules = {
+button.show-details {
+	float: right;
+}
 
-	/* Global and utility styles */
-    global {
-		dependsOn( [ 'jquery', 'jquery-ui' ] )
-		resource url: 'css/global.css'
-	}
+ul.variable-list li.selected {
+	box-shadow: #48802C 0 0 5px;
+}
 
-	variableList {
-		resource url: 'css/variableList.css'
-	}
+ul.form-items li {
+	margin: 0.5em 0;
+}
 
-	floatingDialog {
-		resource url: 'css/floatingDialog.css'
-	}
+ul.form-items > li > label, ul.form-items > li > .label {
+	font-weight: bold;
+	width: 100px;
+}
 
-	/* Controller- and View-specific modules. */
+ul.roles {
+	margin-left: 1em;
+}
 
-	elicit {
-		dependsOn( [ 'variableList' ] )
-		resource url: 'css/elicit.css'
-	}
+ul.log-item-list li {
+	font-family: monospace;
+	font-size: 0.9em;
+}
 
-	elicitProblems {
-		dependsOn( [ 'elicit', 'floatingDialog' ] )
-		resource url: 'css/elicitProblems.css'
-	}
+ul.log-item-list .date {
+	display: block;
+}
 
-	admin {
-		dependsOn( [ 'variableList' ] )
-		resource url: 'css/admin.css'
-	}
-
-	adminUsers {
-		dependsOn( [ 'admin', 'floatingDialog' ] )
-		resource url: 'css/adminUsers.css'
-	}
+ul.log-item-list .log {
+	display: block;
+	margin: 0.5em 0.5em 1em 0.5em;
 }
