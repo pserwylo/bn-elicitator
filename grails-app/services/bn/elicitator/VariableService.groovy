@@ -255,6 +255,11 @@ class VariableService
 		return getSpecifiedRelationshipsByChild( child )*.parent
 	}
 
+	List<Relationship> getSpecifiedRelationshipsByParent( Variable parent )
+	{
+		return Relationship.findAllByCreatedByAndDelphiPhaseAndParentAndExists( ShiroUser.current, delphiService.phase, parent, true )
+	}
+
 	List<Relationship> getSpecifiedRelationshipsByChild( Variable child )
 	{
 		return Relationship.findAllByCreatedByAndDelphiPhaseAndChildAndExists( ShiroUser.current, delphiService.phase, child, true )
