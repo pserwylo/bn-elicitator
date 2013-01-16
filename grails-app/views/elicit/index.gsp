@@ -74,7 +74,7 @@
 			</g:javascript>
 		</g:if>
 
-		<r:require module="elicit" />
+		<r:require module="elicitList" />
 
 	</head>
 	

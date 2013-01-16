@@ -16,46 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-modules = {
+.list-of-relations ul li {
+	margin: 0;
+	padding: 0;
+}
 
-	/* Global and utility styles */
-    global {
-		dependsOn( [ 'jquery', 'jquery-ui' ] )
-		resource url: 'css/global.css'
-	}
+.list-of-relations .parents, .list-of-relations .children {
+	width: 180px;
+}
 
-	variableList {
-		resource url: 'css/variableList.css'
-	}
+.list-of-relations .variable {
+	width: 100px;
+	text-align: center;
+}
 
-	floatingDialog {
-		resource url: 'css/floatingDialog.css'
-	}
-
-	/* Controller- and View-specific modules. */
-
-	elicit {
-		dependsOn( [ 'variableList' ] )
-		resource url: 'css/elicit.css'
-	}
-
-	elicitProblems {
-		dependsOn( [ 'elicit', 'floatingDialog' ] )
-		resource url: 'css/elicitProblems.css'
-	}
-
-	elicitList {
-		dependsOn( [ 'elicit' ] )
-		resource url: 'css/elicitList.css'
-	}
-
-	admin {
-		dependsOn( [ 'variableList' ] )
-		resource url: 'css/admin.css'
-	}
-
-	adminUsers {
-		dependsOn( [ 'admin', 'floatingDialog' ] )
-		resource url: 'css/adminUsers.css'
-	}
+.list-of-relations .parents li {
+	text-align: right;
 }

@@ -695,22 +695,49 @@ class VariableTagLib {
 	 */
 	private String generateListsOfRelations( Variable child )
 	{
-		String output = "";
+		List<Relationship> parentRelationships = this.variableService.getSpecifiedRelationshipsByChild( child )
+		List<Relationship> childRelationships  = this.variableService.getSpecifiedRelationshipsByParent( child )
 
-		List<Variable> parents = this.variableService.getSpecifiedParents( child )
-		if ( parents.size() > 0 )
+		String output = ""
+
+		if ( parentRelationships.size() == 0 || childRelationships.size() == 0 )
 		{
-			output += "	<div class='list-of-parents item-description'>\n";
-			output += "		Is influenced by: " + parents*.readableLabel.join( ', ' );
-			output += "	</div>\n"
+			output = "<div class='item-description'>No relationships</div>"
 		}
-
-		List<Variable> children = this.variableService.getSpecifiedChildren( child )
-		if ( children.size() > 0 )
+		else
 		{
-			output += "	<div class='list-of-children item-description'>\n";
-			output += "		Has influence on: " + children*.readableLabel.join( ', ' );
-			output += "	</div>\n"
+			output = """
+				<table class='list-of-relations item-description'>
+					<tr>
+						<td class='parents'>
+						"""
+
+			if ( parentRelationships.size() > 0 )
+			{
+				output += "<ul>"
+				parentRelationships.each {
+					output += "<li>$it.parent.readableLabel ${bn.rArrow( [ comment: it.comment?.comment ] )}</li>\n"
+				}
+				output += "</ul>"
+			}
+
+			output += """
+				</td>
+				<td class='variable'>$child.readableLabel</td>
+				<td class='children'>
+				"""
+
+			if ( childRelationships.size() > 0 )
+			{
+				output += "<ul>"
+				childRelationships.each {
+					output += "<li>" + bn.rArrow( [ comment: it.comment?.comment ] ) + " " + it.parent + "</li>\n"
+				}
+				output += "</ul>"
+			}
+
+			output += """</td></tr></table>"""
+
 		}
 
 		return output
