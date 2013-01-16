@@ -16,20 +16,57 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.list-of-relations ul li {
+table {
+	border-spacing:0;
+	border-collapse:collapse;
+}
+
+.list-of-parents ul li, .list-of-children ul li {
 	margin: 0;
 	padding: 0;
 }
 
-.list-of-relations .parents, .list-of-relations .children {
+.list-of-children, .list-of-parents {
+	display: inline-block;
 	width: 180px;
 }
 
-.list-of-relations .variable {
-	width: 100px;
+.variable-cell.restricted-width {
+	width: 140px;
 	text-align: center;
 }
 
-.list-of-relations .parents li {
+.list-of-parents {
 	text-align: right;
+}
+
+
+#all-children-list li.variable-item {
+	height: auto;
+}
+
+#all-children-list li.variable-item.doesnt-need-review {
+	background: url("../images/icons/accept.png") no-repeat scroll 5px 50% transparent;
+}
+
+#all-children-list li.variable-item.needs-review {
+	background: url("../images/icons/lightbulb.png") no-repeat scroll 5px 50% transparent;
+}
+
+#all-children-list li.variable-item {
+	padding: 5px 0 5px 30px;
+}
+
+#all-children-list li.variable-item a .variable {
+	font-style: normal;
+}
+
+#all-children-list li.variable-item a:hover {
+	text-decoration: underline;
+}
+
+ul#all-children-list li.variable-item a {
+	text-decoration: none;
+	font-size: 13.5pt;
+	font-style: normal;
 }

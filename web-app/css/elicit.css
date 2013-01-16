@@ -52,39 +52,6 @@ ul#potential-parents-list li.variable-item.disagree {
     color: #da8f8f;
 }
 
-/* splash screen - variables have icons on the left, a 'needs review' status message to the right, and some info
-about relationships below. */
-
-ul#all-children-list li.variable-item {
-    height: auto;
-}
-
-ul#all-children-list li.variable-item.doesnt-need-review {
-    background: url("../images/icons/accept.png") no-repeat scroll 5px 50% transparent;
-}
-
-ul#all-children-list li.variable-item.needs-review {
-    background: url("../images/icons/lightbulb.png") no-repeat scroll 5px 50% transparent;
-}
-
-ul#all-children-list li.variable-item {
-    padding: 5px 0 5px 30px;
-}
-
-ul#all-children-list li.variable-item a .variable {
-    font-style: normal;
-}
-
-ul#all-children-list li.variable-item a:hover {
-    text-decoration: underline;
-}
-
-ul#all-children-list li.variable-item a {
-    text-decoration: none;
-    font-size: 13.5pt;
-    font-style: normal;
-}
-
 /* main list sub-items (other stuff below the variable label) */
 
 .item-description {

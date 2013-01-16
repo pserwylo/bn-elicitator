@@ -428,23 +428,42 @@ class VariableTagLib {
 			String classes = hasVisited ? 'doesnt-need-review' : 'needs-review'
 			String needsReview = hasVisited ? '' : '<span class="stats">(needs review)</span>'
 
-			out << "<li class='variable-item  ${classes}'>\n"
-			out << "	<a href='" + createLink( controller: "elicit", action: "parents", params: [ for: child.label ] ) + "'>${child.readableLabel}</a> ${needsReview}\n"
-			out << "	<span class='agreement-summary item-description'>\n"
-			out << "		<span class='short'>\n"
-			out << "			Disagree with " + agreements.count{ it -> !it.agree } + " of " + potentialParents.size() + " relationships\n"
-			out << "		</span>\n"
-			/*
-			out << "		<span class='long' style='display: none'>\n"
-			out << 				generateAgreementMatrix( agreements, showDisagreements )
-			out << "		</span>\n"
-			*/
-			out << "	</span>\n"
-			out << "	" + this.generateListsOfRelations( child ) + "\n";
-			out << "</li>\n"
+			out << """
+				<li class='variable-item  ${classes}'>
+					${bn.variableInListWithRelationships( [ variable: child ] )}
+					${needsReview}
+					<span class='agreement-summary item-description'>
+						<span class='short'>
+							Disagree with ${agreements.count{ it -> !it.agree }} of ${potentialParents.size()} relationships
+						</span>
+					</span>
+				</li>
+				"""
 		}
 		out << "</ul>"
 
+	}
+
+	/**
+	 * @attr variable REQUIRED
+	 */
+	def variableInListWithRelationships = { attrs ->
+		Variable variable = attrs.variable
+		out << """
+			<table>
+				<tr>
+					<td>
+						${this.generateListOfParents( variable )}
+					</td>
+					<td class='variable-cell'>
+						<a href='${createLink( controller: 'elicit', action: 'parents', params: [ for: variable.label ] )}'>${bn.variable( [ var: variable, includeDescription: false ] )}</a>
+					</td>
+					<td>
+						${this.generateListOfChildren( variable )}
+					</td>
+				</tr>
+			</table>
+		"""
 	}
 
 	/**
@@ -464,11 +483,12 @@ class VariableTagLib {
 			String classes = hasVisited ? 'doesnt-need-review' : 'needs-review'
 			String needsReview = hasVisited ? '' : '<span class="info">(needs review)</span>'
 
-			out << "<li class='variable-item  ${classes}'>\n"
-			out << "	<a href='${createLink( controller: 'elicit', action: 'parents', params: [ for: child.label ] )}'>${bn.variable( [ var: child, includeDescription: false ] )}</a>\n"
-			out << "	" + needsReview + "\n"
-			out << "	" + this.generateListsOfRelations( child ) + "\n";
-			out << "</li>\n"
+			out << """
+				<li class='variable-item  ${classes}'>
+					${bn.variableInListWithRelationships( [ variable: child ] )}
+					${needsReview}
+				</li>
+				"""
 		}
 
 		out << "</ul>\n"
@@ -687,6 +707,54 @@ class VariableTagLib {
 			"""
 	}
 
+	private String generateListOfChildren( Variable var )
+	{
+		List<Relationship> childRelationships  = this.variableService.getSpecifiedRelationshipsByParent( var )
+
+		String output = "<div class='list-of-children item-description'>"
+
+		if ( childRelationships.size() > 0 )
+		{
+			output += "<ul>"
+			childRelationships.each {
+				output += "<li>" + bn.rArrow( [ comment: it.comment?.comment ] ) + " " + it.child + "</li>\n"
+			}
+			output += "</ul>"
+		}
+		else
+		{
+			output += bn.rArrow() + " " + g.message( [ code: "elicit.list.no-variables" ] )
+		}
+
+		output += "</div>"
+
+		return output
+	}
+
+	private String generateListOfParents( Variable var )
+	{
+		List<Relationship> parentRelationships = this.variableService.getSpecifiedRelationshipsByChild( var )
+
+		String output = "<div class='list-of-parents item-description'>"
+
+		if ( parentRelationships.size() > 0 )
+		{
+			output += "<ul>"
+			parentRelationships.each {
+				output += "<li>$it.parent.readableLabel ${bn.rArrow( [ comment: it.comment?.comment ] )}</li>\n"
+			}
+			output += "</ul>"
+		}
+		else
+		{
+			output += g.message( [ code: "elicit.list.no-variables" ] ) + " " + bn.rArrow()
+		}
+
+		output += "</div>"
+
+		return output
+	}
+
 	/**
 	 * Builds a comma separated string of the parents this user has specified for child (in this round or the previous
 	 * round). It is wrapped in a &lt;span&gt; with class 'item-description'. Then builds another list of the children.
@@ -695,52 +763,7 @@ class VariableTagLib {
 	 */
 	private String generateListsOfRelations( Variable child )
 	{
-		List<Relationship> parentRelationships = this.variableService.getSpecifiedRelationshipsByChild( child )
-		List<Relationship> childRelationships  = this.variableService.getSpecifiedRelationshipsByParent( child )
-
-		String output = ""
-
-		if ( parentRelationships.size() == 0 || childRelationships.size() == 0 )
-		{
-			output = "<div class='item-description'>No relationships</div>"
-		}
-		else
-		{
-			output = """
-				<table class='list-of-relations item-description'>
-					<tr>
-						<td class='parents'>
-						"""
-
-			if ( parentRelationships.size() > 0 )
-			{
-				output += "<ul>"
-				parentRelationships.each {
-					output += "<li>$it.parent.readableLabel ${bn.rArrow( [ comment: it.comment?.comment ] )}</li>\n"
-				}
-				output += "</ul>"
-			}
-
-			output += """
-				</td>
-				<td class='variable'>$child.readableLabel</td>
-				<td class='children'>
-				"""
-
-			if ( childRelationships.size() > 0 )
-			{
-				output += "<ul>"
-				childRelationships.each {
-					output += "<li>" + bn.rArrow( [ comment: it.comment?.comment ] ) + " " + it.parent + "</li>\n"
-				}
-				output += "</ul>"
-			}
-
-			output += """</td></tr></table>"""
-
-		}
-
-		return output
+		return generateListOfParents( child ) + " " + child.readableLabel + " " + generateListOfChildren( child )
 	}
 
 }

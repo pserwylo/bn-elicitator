@@ -32,7 +32,8 @@
 
 				$( document).ready( function() {
 
-					var itemDescriptions = $( '.item-description:not( .agreement-summary )' );
+					var itemDescriptions = $( '.list-of-parents, .list-of-children' );
+					var variableCells = $( '.variable-cell' );
 					var showToggleDetails = itemDescriptions.length > 0;
 					var btn = $( '#btnToggleDetails');
 					if ( !showToggleDetails )
@@ -47,19 +48,22 @@
 
 						btn.click( function() {
 
-							if ( this.value.substring( 0, 4 ) == msgHide )
+							var label = this.innerHTML.trim();
+							if ( label.substring( 0, 4 ) == msgHide )
 							{
-								this.value = this.value.replace( msgHide, msgShow );
+								label = label.replace( msgHide, msgShow );
 								itemDescriptions.hide( 'fast' );
+								variableCells.removeClass( 'restricted-width' );
 								<bn:setPreference key="show-description" value="false" />
 							}
 							else
 							{
-								this.value = this.value.replace( msgShow, msgHide );
+								label = label.replace( msgShow, msgHide );
 								itemDescriptions.show( 'fast' );
+								variableCells.addClass( 'restricted-width' );
 								<bn:setPreference key="show-description" value="true" />
 							}
-
+							this.innerHTML = label;
 						});
 
 						if ( '<bn:preferenceValue key="show-description" />' == 'true' ) {
@@ -79,6 +83,11 @@
 	</head>
 	
 	<body>
+
+		<g:if test="${completed}">
+			<br />
+			<div class="message"><g:message code="elicit.list.info.round-complete" /></div>
+		</g:if>
 
 		<g:if test="${hasDetails}">
 			<button type="button" style="margin-top: 0.3em;" id="btnToggleDetails">
@@ -121,14 +130,38 @@
 		</g:else>
 
 		<g:if test="${completed}">
-			<div class="message">Thank you for completing this round. You are free to modify your answers until the round finishes, at which point you will be notified via email.</div>
+			<div class="message">
+				<ul>
+					<li>
+						<g:message code="elicit.list.info.round-complete" />
+					</li>
+				</ul>
+			</div>
 		</g:if>
 		<g:elseif test="${stillToVisit.size() > 0}">
-			<div class="message"><ul><li>Please review all variables before completing the round.</li></ul></div>
+			<div class="message">
+				<ul>
+					<li>
+						<g:message code="elicit.list.info.round-incomplete" />
+					</li>
+				</ul>
+			</div>
 		</g:elseif>
 		<g:else>
-			<div class="message">Once you've finished the survey, you will be free to modify your answers until the round finishes, at which point you will be notified via email.</div>
-			<input type="button" onclick="document.location = '${createLink( action: 'completed' )}'" value="Finish survey" class='big ' ${stillToVisit.size() > 0 ? 'disabled="disabled"' : ''} />
+			<div class="message">
+				<ul>
+					<li>
+						<g:message code="elicit.list.info.round-ready-to-complete" />
+					</li>
+				</ul>
+			</div>
+			<button
+				type="button"
+				onclick="document.location = '${createLink( action: 'completed' )}'"
+				class='big '
+				${stillToVisit.size() > 0 ? 'disabled="disabled"' : ''}>
+				<g:message code="elicit.list.finish-round" />
+			</button>
 		</g:else>
 
 	</body>
