@@ -44,6 +44,10 @@ modules = {
 		resource url: 'css/elicitProblems.css'
 	}
 
+	elicitParents {
+		dependsOn( [ 'elicit', 'floatingDialog' ] )
+	}
+
 	elicitList {
 		dependsOn( [ 'elicit' ] )
 		resource url: 'css/elicitList.css'

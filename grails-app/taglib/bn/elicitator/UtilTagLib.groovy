@@ -38,4 +38,26 @@ class UtilTagLib {
 		out << "<span class='date'>${date.format( 'dd/MM/yyyy hh:mm' )}</span>"
 	}
 
+	/**
+	 * @attr atTop REQUIRED Specifies whether to style the buttons as if they are at the top of the form or the bottom.
+	 * @attr includeDelete
+	 */
+	def saveButtons = { attrs ->
+		Boolean atTop = attrs.atTop
+		Boolean includeDelete = attrs.containsKey( 'includeDelete' ) ? attrs.includeDelete : false
+		out << """
+			<span class='save-wrapper ${atTop ? "top" : "bottom"}'>
+				<button class='close' type='button'>Close</button>
+				"""
+
+		if ( includeDelete ) {
+			out << "<button class='delete' type='button'>Delete</button>"
+		}
+
+		out << """
+				<button class='save' type='submit'>Save</button>
+			</span>
+			"""
+	}
+
 }

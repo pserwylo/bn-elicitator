@@ -68,14 +68,13 @@ class Variable implements Comparable<Variable> {
 	 * specific examples for each variable.
 	 *
 	 * Default:
-	 *  "Which of the following variables have an influence on [This]?"
+	 *  i18n message: elicit.parents.desc=Which of the following variables have an influence on [This]?
 	 *
 	 * Example:
 	 * 	"Which of the following variables would increase or decrease the chance of your next casualty being somebody
 	 * 	 with a Cardiac Arrest?"
 	 */
-	String usageDescription =
-		"Which of the following variables have an influence on [This]?"
+	String usageDescription = ""
 
 	String toString()
 	{

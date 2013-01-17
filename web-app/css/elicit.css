@@ -18,15 +18,15 @@
 
 /* MAIN LIST STYLES */
 
-ul#potential-parents-list li.variable-item {
+ul.potential-parents-list li.variable-item {
     height: 30px;
 }
 
-ul#potential-parents-list li.variable-item .variable:hover {
+ul.potential-parents-list li.variable-item .variable:hover {
     text-decoration: underline;
 }
 
-ul#potential-parents-list li.variable-item .variable,
+ul.potential-parents-list li.variable-item .variable,
 ul#redundant-relationship-list li.variable-item .header .variable {
     font-size: 13.5pt;
     font-style: normal;
@@ -38,15 +38,15 @@ ul#redundant-relationship-list li.variable-item .header .variable {
 
 /* List items which indicate disagreement */
 
-ul#potential-parents-list li.variable-item.disagree .variable {
+ul.potential-parents-list li.variable-item.disagree .variable {
     color: #793838;
 }
 
-ul#potential-parents-list li.variable-item.disagree input[type=button] {
+ul.potential-parents-list li.variable-item.disagree input[type=button] {
     border: solid 1px #da8f8f;
 }
 
-ul#potential-parents-list li.variable-item.disagree {
+ul.potential-parents-list li.variable-item.disagree {
     background-color: #eecbcb;
     border: solid 1px #da8f8f;
     color: #da8f8f;
@@ -301,11 +301,11 @@ ul#redundant-relationship-list .indent li {
 	font-size: 1.2em;
 }
 
-ul#potential-parents-list li {
+ul.potential-parents-list li {
 	height: 50px;
 }
 
-ul#potential-parents-list li.new-var {
+ul.potential-parents-list li.new-var {
 	height: auto;
 }
 
@@ -338,17 +338,24 @@ ul#potential-parents-list li.new-var {
     background: url( ../images/icons/cross.png ) no-repeat;
 }
 
-#potential-parents-list .details {
+ul.potential-parents-list .details {
 	width: 300px;
 	float: right;
 }
 
-#potential-parents-list .agreement {
+ul.potential-parents-list .agreement {
     margin-right: 0.5em;
     font-weight: normal;
     font-size: 0.8em;
     text-align: right;
 }
+
+ul.potential-parents-list li.hide,
+ul.potential-parents-list li.hide .variable,
+ul.potential-parents-list li.hide button {
+	color: #999;
+}
+
 
 .agreement-summary .long ul {
     list-style: none;
@@ -390,12 +397,12 @@ ul#potential-parents-list li.new-var {
     border: none;
 }
 
-#potential-parents-list .agreement .disagree {
+ul.potential-parents-list .agreement .disagree {
     color: red;
     font-weight: bold;
 }
 
-#potential-parents-list .agreement .agree {
+ul.potential-parents-list .agreement .agree {
     color: green;
 }
 
@@ -408,7 +415,7 @@ ul#potential-parents-list li.new-var {
     background: #58d148;
 }
 
-#potential-parents-list li {
+ul.potential-parents-list li {
 	padding-left: 5px;
 }
 

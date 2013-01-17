@@ -41,7 +41,7 @@
 		function setSliderValue( parentLabel, value ) {
 			var sliderDiv = $( '#' + parentLabel + '-confidence-slider' );
 			sliderDiv.slider( 'value', value );
-			$( '#potential-parents-list' ).find( 'input[name=' + parentLabel + '-confidence]' ).val( value );
+			$( '.potential-parents-list' ).find( 'input[name=' + parentLabel + '-confidence]' ).val( value );
 
 			var minDistance = 1000;
 			var smallestIndex = -1;
@@ -92,7 +92,7 @@
 
 		$( document ).ready( function() {
 
-			var potentialParentsList = $( '#potential-parents-list' );
+			var potentialParentsList = $( '.potential-parents-list' );
 
             /*
              * Setup sliders for each slider in the form. We add a listener which updates the span that shows an English
@@ -146,40 +146,6 @@
 					console.log( i + " - " + label );
 				}
 			});
-
-			// Add listeners to anything which signifies change, so that we can mark them as unsaved...
-
-			function onChange( variable )
-			{
-
-			}
-
-			var itemsToHide = $( 'li.hidden' );
-			if ( itemsToHide.length > 0 )
-			{
-				var numUnused = itemsToHide.length;
-				var plural = numUnused == 1 ? '' : 's';
-
-				$( '#unused-items-tooltip' ).show();
-				var btn = $( '#unused-items-btn' );
-				btn.show();
-				btn.val( btn.val().replace( "[NumUnused]", numUnused ) );
-
-				btn.click( function() {
-
-					if ( btn.val().substr( 0, 4 ) == 'Show' )
-					{
-						btn.val( btn.val().replace( 'Show', 'Hide' ) );
-						itemsToHide.show( 'fast' );
-					}
-					else
-					{
-						btn.val( btn.val().replace( 'Hide', 'Show' ) );
-						itemsToHide.hide( 'fast' );
-					}
-
-				});
-			}
 
 			$( '.unsaved-icon' ).click( function() {
 				alert( 'This variable has unsaved changes.\n\nClick "Show Details" and save them before continuing.' )
@@ -469,10 +435,6 @@
 			document.location = '${createLink( action: 'finished' )}';
 		}
 
-		function showDescription( description ) {
-			alert( description );
-		}
-
 		<shiro:hasRole name="admin">
 		function download() {
 			document.location = '${createLink( controller: 'bn', action: 'download' )}';
@@ -481,7 +443,7 @@
 
 		</g:javascript>
 
-		<r:require module="elicit" />
+		<r:require module="elicitParents" />
 
 	</head>
 	
@@ -505,7 +467,12 @@
 						</legend>
 
 						<p>
-							${variable.usageDescription.replace( '\n', '<br />' )}
+							<g:if test="${variable.usageDescription?.length() > 0}">
+								${variable.usageDescription.replace( '\n', '<br />' )}
+							</g:if>
+							<g:else>
+								<g:message code="elicit.parents.desc" args="${[variable.readableLabel]}" />
+							</g:else>
 						</p>
 						<br />
 
@@ -513,84 +480,8 @@
 						<input id="unused-items-btn" class="hidden" style="margin-bottom: 0.3em" type="button" value="Show [NumUnused] unused items" />
 						<bn:tooltip id="unused-items-tooltip" classes="hidden">Last round, everybody agreed that some variable had no influence on ${variable.readableLabel}, so they are hidden by default.</bn:tooltip>
 
+						<bnElicit:potentialParentsList potentialParents="${potentialParents}" child="${variable}" />
 
-						<ul id="potential-parents-list" class="variable-list ">
-
-							<bn:potentialParentsList potentialParents="${potentialParents}" child="${variable}" />
-
-							<li id="add-variable-item" class=" variable-item new-var">
-
-								<a href="javascript:toggleAddVariable( true )">
-									<img src='${resource(dir: 'images/icons', file: 'pencil.png')}' />
-									Add another variable which is not listed
-								</a>
-
-								<div id="new-var-form" class="dialog" style="display: none;">
-
-									%{--
-										I guess if we're getting picky, we really shouldn't be here (because we
-										can't elicit parents for variables with no potential parents
-									--}%
-									<g:if test="${variable.variableClass.potentialParents.size() == 0}">
-
-										<p>
-											Sorry, but because ${variable.readableLabel} is a ${variable.variableClass.name}
-											variable, we wont be modelling any other variables which influence it.
-										</p>
-
-										<input type="button" value="Okay" onclick="toggleAddVariable( false )" class="" />
-
-									</g:if>
-									<g:else>
-
-										<g:form action="addVariable">
-
-											<g:hiddenField name="returnToVar" value="${variable.label}" />
-
-											<label for="inputNewVariableLabel">Name:</label>
-											<g:textField id="inputNewVariableLabel" name="label" />
-
-											<g:if test="${variable.variableClass.potentialParents.size() == 1}">
-
-												%{-- We don't need to ask if there is only one possibility --}%
-												<g:hiddenField name="variableClassName" value="${variable.variableClass.potentialParents[ 0 ].name}" />
-
-											</g:if>
-											<g:else>
-
-												<label for="newVarClass">Type</label>
-												<select id="newVarClass" name="variableClassName">
-													<g:each in="${variable.variableClass.potentialParents}" var="${variableClass}">
-														<option value="${variableClass.name}">${variableClass.niceName} variable</option>
-													</g:each>
-												</select>
-
-												<bn:tooltip>This helps us decide which other variables your new one will be allowed to influence. We will describe them using examples from a model of diagnosing lung cancer:
-
- - Problem Variables: The variables of interest (e.g. does the patient have cancer?).
-
- - Background variables: Information available before the problem variables occur (e.g. does the patient smoke?).
-
- - Symptom variables: Observable consequences of problem variables (e.g. shortness of breath).
-
- - Mediating variables: unobservable variables which may also cause the same symptoms as the problem variables (e.g. are they asthmatic?). This helps to correctly model the relationship between problem and symptom variables</bn:tooltip>
-
-											</g:else>
-
-											<label for="newVarDescription">Description:</label>
-											<g:textArea id="newVarDescription" name="description"></g:textArea>
-
-											<input type="button" value="Cancel" onclick="toggleAddVariable( false )" class="" />
-											<input type="submit" value="Save" class="" />
-
-										</g:form>
-
-									</g:else>
-								</div>
-
-							</li>
-
-						</ul>
 					</fieldset>
 
 					<input type="button" style="margin-top: 5px;" value="Finished with ${variable.readableLabel}" class="big " onclick="onFinish()"/>
