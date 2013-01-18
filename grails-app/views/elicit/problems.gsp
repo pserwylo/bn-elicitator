@@ -145,10 +145,10 @@
 						<li class="cyclical-relationship variable-item">
 
 							<div class='mediating-chain'>
-								<bn:relationshipChain chain="${rel.relationships}" />
+								<bn:relationshipChain includeTooltip="false" chain="${rel.relationships}" />
 							</div>
 
-							<bn:removeCycleOptions cyclicalRelationship="${rel}" />
+							<bnProblems:removeCycleOptions cyclicalRelationship="${rel}" />
 
 						</li>
 
@@ -185,42 +185,31 @@
 							<li class="redundant-relationship variable-item ${ (rel.relationship.isRedundant == Relationship.IS_REDUNDANT_NO) ? 'keeper' : ''}">
 
 								<div class='header'>
-									<bn:variable var="${rel.redundantParent}" /> <bn:rArrow comment="${rel.relationship?.comment?.comment}" /> <bn:variable var="${rel.child}" />
+									<bn:variable includeDescription="false" var="${rel.redundantParent}" /> <bn:rArrow comment="${rel.relationship?.comment?.comment}" /> <bn:variable includeDescription="false" var="${rel.child}" />
 								</div>
 
 								<div class='mediating-chain'>
 									<span class="details-high">
 										You said:
-										<span class='indent'>
-											<ul>
-												<g:each in="${rel.chains}" var="chain" status="i">
-													<li>
-														<bn:variableChain chain="${chain}" />
-														<g:if test="${i < rel.chains.size() - 1}">
-															and
-														</g:if>
-													</li>
-												</g:each>
-											</ul>
-										</span>
+										<bnProblems:listOfVariableChains chains="${rel.chains}" separator="and" />
 									</span>
 
 									<span class="details-low">
-										<g:message code="problems.redundant.better-explained-by" args="${[ bn.variableChain( chain: rel.mediatingChain ) ]}" />
-										%{--<bn:variableChain chain="${rel.mediatingChain}" />--}%
+										<g:message code="problems.redundant.better-explained-by" />
+										<bnProblems:listOfVariableChains chains="${rel.chains}" separator="BLEH" />
 									</span>
 								</div>
 
 								<div class='redundant details-high'>
 									However, you also said:
 									<span class='indent'>
-										<bn:variable var="${rel.redundantParent}" /> <em>directly</em> influences <bn:variable var="${rel.child}" />
+										<bn:variable includeDescription="false" var="${rel.redundantParent}" /> <em>directly</em> influences <bn:variable includeDescription="false" var="${rel.child}" />
 									</span>
 								</div>
 
 								<div class='redundant details-high'>
-									If you think that the way in which <bn:variable var="${rel.redundantParent}" /> influences
-									<bn:variable var="${rel.child}"/> is purely because it influences <bn:variable var="${rel.mediatingChain[ 1 ]}" />,
+									If you think that the way in which <bn:variable includeDescription="false" var="${rel.redundantParent}" /> influences
+									<bn:variable includeDescription="false" var="${rel.child}"/> is purely because it influences <bn:variable includeDescription="false" var="${rel.mediatingChain[ 1 ]}" />,
 									then you should remove this <em>direct</em> relationship (it doesn't provide as useful information as the
 									indirect alternative you provided).
 								</div>
@@ -243,12 +232,14 @@
 										</g:if>
 									</button>
 
-									%{--<label>
+									%{--
+									<label>
 										<input type="radio" name="${rel.redundantParent.label}-${rel.child.label}-keep" value="remove" /> Remove relationship
 									</label>
 									<label>
 										<input type="radio" name="${rel.redundantParent.label}-${rel.child.label}-keep" value="keep" ${rel.relationship.isRedundant == Relationship.IS_REDUNDANT_NO ? 'checked="checked"' : ''} /> Keep relationship
-									</label>--}%
+									</label>
+									--}%
 								</div>
 
 							</li>

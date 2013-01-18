@@ -178,7 +178,13 @@ class ElicitController {
 			}
 		}
 
-		redirect( action: "problems", params: [ displayAll: displayAll ] )
+		def params = [:]
+		if ( displayAll )
+		{
+			params["displayAll"] = true
+		}
+
+		redirect( action: "problems", params: params )
 	}
 
 	def keepRedundant =
@@ -212,20 +218,25 @@ class ElicitController {
 	 * Check if there are any (potentially) redundant relationships and present them to the user for confirmation.
 	 * @return
 	 */
-	def problems =
-	{
+	def problems = {
+
 		List<BnService.RedundantRelationship> redundantRelationships = bnService.getRedundantRelationships()
 		List<BnService.CyclicalRelationship> cyclicalRelationships = bnService.getCyclicalRelationships()
 
-		Boolean showProblems = false
-		Boolean displayAll = params["displayAll"] == "true"
+		def showProblems = false
+		def displayAll = false
+		if ( params.containsKey( "displayAll" ) )
+		{
+			displayAll = params.remove( "displayAll" )
+		}
+		
 		Integer numKeepers = redundantRelationships.count {
 			it.relationship.isRedundant == Relationship.IS_REDUNDANT_NO
 		}
 
 		if ( cyclicalRelationships.size() > 0 )
 		{
-			showProblems = true;
+			showProblems = true
 		}
 		else if ( redundantRelationships.size() > 0 )
 		{
@@ -233,9 +244,8 @@ class ElicitController {
 			// by reshowing them to the users...
 			if ( numKeepers < redundantRelationships.size() || displayAll )
 			{
-				showProblems = true;
+				showProblems = true
 			}
-
 		}
 
 		if ( showProblems )
@@ -361,7 +371,7 @@ class ElicitController {
 		[
 			delphiPhase: this.delphiService.phase,
 			variables: varList,
-			keptRedunantRelationships: this.bnService.countKeptRedunantRelationships(),
+			keptRedunantRelationships: this.bnService.countKeptRedundantRelationships(),
 			hasPreviousPhase: this.delphiService.hasPreviousPhase,
 			stillToVisit: this.delphiService.getStillToVisit( varList ),
 			completed: this.delphiService.completed

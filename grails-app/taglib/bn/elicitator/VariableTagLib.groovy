@@ -41,7 +41,11 @@ class VariableTagLib {
 	 */
 	def variable = { attrs ->
 		Variable var = attrs.var
-		boolean includeDescription = attrs.containsKey( "includeDescription" ) ? attrs.includeDescription : true
+		def includeDescription = true
+		if ( attrs.containsKey( "includeDescription" ) )
+		{
+			includeDescription = attrs.remove( "includeDescription" )
+		}
 		out << """<span class='variable'>${var.readableLabel}${includeDescription ? ' ' + bn.variableDescription( [ var: var ] ) : ''}</span>"""
 	}
 
@@ -79,7 +83,11 @@ class VariableTagLib {
 	def relationshipChain = { attrs ->
 
 		List<Relationship> chain = attrs.chain
-		Boolean includeTooltip = attrs.hasProperty( "includeTooltip" ) ? attrs.includeTooltip : true
+		def includeTooltip = true
+		if ( attrs.containsKey( "includeTooltip" ) )
+		{
+			includeTooltip = attrs.remove( "includeTooltip" )
+		}
 
 		for ( int i = 0; i < chain.size(); i ++ )
 		{
@@ -103,7 +111,11 @@ class VariableTagLib {
 	def variableChain = { attrs ->
 
 		List<Variable> chain = attrs.chain
-		Boolean includeTooltip = attrs.hasProperty( "includeTooltip" ) ? attrs.includeTooltip : true
+		def includeTooltip = true
+		if ( attrs.containsKey( "includeTooltip" ) )
+		{
+			includeTooltip = attrs.remove( "includeTooltip" )
+		}
 
 		String output = "";
 		for ( int i = 0; i < chain.size(); i ++ )

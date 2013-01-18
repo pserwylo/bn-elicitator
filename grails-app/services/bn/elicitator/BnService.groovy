@@ -199,7 +199,7 @@ class BnService {
 	 * corrected by the user who decided to keep the relationships anyway.
 	 * @return
 	 */
-	public Integer countKeptRedunantRelationships() {
+	public Integer countKeptRedundantRelationships() {
 
 		return Relationship.countByIsRedundantAndCreatedByAndExistsAndDelphiPhase( Relationship.IS_REDUNDANT_NO, ShiroUser.current, true, delphiService.phase )
 
