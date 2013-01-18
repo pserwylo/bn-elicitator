@@ -26,7 +26,7 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLEntity;
 
-class ConfigController {
+class 	ConfigController {
 
 	OwlService owlService
 	

@@ -29,9 +29,9 @@ class BnService {
 
 	public void fixProblems( List<RedundantRelationship> redundantsToRemove, List<RedundantRelationship> redundantsToKeep, List<List<Variable>> cyclesToRemove )
 	{
+		cyclesToRemove.each     { removeCycle                ( it[ 0 ], it[ 1 ] ) }
 		redundantsToRemove.each { removeRedundantRelationship( it ) }
 		redundantsToKeep.each   { keepRedundantRelationship  ( it ) }
-		cyclesToRemove.each     { removeCycle                ( it[ 0 ], it[ 1 ] ) }
 	}
 
 	/**
@@ -43,12 +43,11 @@ class BnService {
 		Variable child
 		Variable redundantParent
 		Relationship relationship
-		List<Variable> mediatingChain
 		List<List<Variable>> chains = []
 
 		public String toString()
 		{
-			return "Redundant relationship ${redundantParent} -> ${child} (due to ${mediatingChain*.readableLabel.join( " -> " )})"
+			return "Redundant relationship ${redundantParent} -> ${child} (due to ${chains.join( " and " )})"
 		}
 
 	}
@@ -220,7 +219,7 @@ class BnService {
 				rel.comment.save()
 			}
 			rel.exists = false
-			rel.save()
+			rel.save( flush: true )
 		}
 	}
 
@@ -233,7 +232,7 @@ class BnService {
 			}
 			rel.isRedundant = Relationship.IS_REDUNDANT_YES
 			rel.exists = false
-			rel.save()
+			rel.save( flush: true )
 		}
 	}
 
@@ -319,7 +318,6 @@ class BnService {
 									child: child,
 									redundantParent: directParent.var,
 									relationship: Relationship.findByChildAndParentAndDelphiPhaseAndCreatedBy( child, directParent.var, delphiService.phase, ShiroUser.current ),
-									mediatingChain: path,
 									chains: [ path ]
 								)
 							)

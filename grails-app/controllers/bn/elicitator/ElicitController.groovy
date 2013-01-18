@@ -229,7 +229,7 @@ class ElicitController {
 		{
 			displayAll = params.remove( "displayAll" )
 		}
-		
+
 		Integer numKeepers = redundantRelationships.count {
 			it.relationship.isRedundant == Relationship.IS_REDUNDANT_NO
 		}

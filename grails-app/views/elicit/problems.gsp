@@ -80,7 +80,7 @@
 				var keepers = $( '.keeper' );
 				var btnKeepers = $( '#btnToggleKeepers');
 
-				var showKeepers = ${displayAll};
+				var showKeepers = ${displayAll?.toString()};
 				if ( !showKeepers )
 				{
 					keepers.hide();
