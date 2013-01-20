@@ -209,7 +209,13 @@
 
 								<div class='redundant details-high'>
 									If you think that the way in which <bn:variable includeDescription="false" var="${rel.redundantParent}" /> influences
-									<bn:variable includeDescription="false" var="${rel.child}"/> is purely because it influences <bn:variable includeDescription="false" var="${rel.mediatingChain[ 1 ]}" />,
+									<bn:variable includeDescription="false" var="${rel.child}"/> is purely because it influences
+									<g:each in="${rel.chains*.get( 1 )}" var="var" status="i">
+										<bn:variable includeDescription="false" var="${var}" />
+										<g:if test="${i < rel.chains.size() - 1}">
+											or
+										</g:if>
+									</g:each>
 									then you should remove this <em>direct</em> relationship (it doesn't provide as useful information as the
 									indirect alternative you provided).
 								</div>
