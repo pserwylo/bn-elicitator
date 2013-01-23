@@ -18,3 +18,12 @@ Add ticks to confidence slider.
 Prompt if they click next without finding any variables which are useful.
 
 Write about Self selection of participants, and how they are netizens
+
+
+
+ROUND TWO STUFF:
+
+Make the comment in the relationship chain be the last comment that was made, regardless of which round its in.
+Sort the main list by disagreement (asc) to make users get that feeling of progress straight away.
+Message explaining the agreement/disagreement/nobody cares.
+Message when there is zero agreement/disagreement/discontentness.

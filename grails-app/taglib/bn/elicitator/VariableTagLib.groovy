@@ -167,17 +167,17 @@ class VariableTagLib {
 				}
 			}
 
+			Integer disagreementCount = agreements.count{ it -> !it.agree }
+
 			Boolean hasVisited = !stillToVisit.contains( child )
 			String classes = hasVisited ? 'doesnt-need-review' : 'needs-review'
-			String needsReview = hasVisited ? '' : '<span class="stats">(needs review)</span>'
 
 			out << """
 				<li class='variable-item  ${classes}'>
-					${bn.variableInListWithRelationships( [ variable: child ] )}
-					${needsReview}
+					${bn.variableInListWithRelationships( [ variable: child, needsReview: !hasVisited ] )}
 					<span class='agreement-summary item-description'>
 						<span class='short'>
-							Disagree with ${agreements.count{ it -> !it.agree }} of ${potentialParents.size()} relationships
+							Disagree with ${disagreementCount} of ${potentialParents.size()} relationships
 						</span>
 					</span>
 				</li>
@@ -189,9 +189,11 @@ class VariableTagLib {
 
 	/**
 	 * @attr variable REQUIRED
+	 * @attr needsReview REQUIRED
 	 */
 	def variableInListWithRelationships = { attrs ->
 		Variable variable = attrs.variable
+		Boolean needsReview = attrs.needsReview
 		out << """
 			<table>
 				<tr>
@@ -200,6 +202,7 @@ class VariableTagLib {
 					</td>
 					<td class='variable-cell'>
 						<a href='${createLink( controller: 'elicit', action: 'parents', params: [ for: variable.label ] )}'>${bn.variable( [ var: variable, includeDescription: false ] )}</a>
+						${needsReview ? '<span class="stats">(needs review)</span>' : ''}
 					</td>
 					<td>
 						${this.generateListOfChildren( variable )}
@@ -228,8 +231,7 @@ class VariableTagLib {
 
 			out << """
 				<li class='variable-item  ${classes}'>
-					${bn.variableInListWithRelationships( [ variable: child ] )}
-					${needsReview}
+					${bn.variableInListWithRelationships( [ variable: child, needsReview: !hasVisited ] )}
 				</li>
 				"""
 		}

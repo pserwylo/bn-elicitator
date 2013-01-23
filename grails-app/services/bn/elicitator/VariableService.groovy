@@ -202,12 +202,13 @@ class VariableService
 				Relationship oldRelationship = this.delphiService.getMyPreviousRelationship( parent, child );
 
 				new Relationship(
-					child: child,
-					parent: parent,
-					createdBy: ShiroUser.current,
+					child:       child,
+					parent:      parent,
+					createdBy:   ShiroUser.current,
 					delphiPhase: AppProperties.properties.delphiPhase,
-					exists: oldRelationship?.exists,
-					confidence: oldRelationship?.exists ? oldRelationship.confidence : null
+					exists:      oldRelationship?.exists,
+					isRedundant: oldRelationship?.exists ? oldRelationship?.isRedundant : Relationship.IS_REDUNDANT_UNSPECIFIED,
+					confidence:  oldRelationship?.exists ? oldRelationship.confidence : null
 				).save()
 			}
 		}

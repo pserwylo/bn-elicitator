@@ -47,6 +47,13 @@ grails.project.dependency.resolution = {
         runtime ":jquery:1.7.1"
         runtime ":resources:1.1.6"
 
+		compile ":mail:1.0.1"
+		compile ":jquery:1.7.1"
+		compile ":jquery-ui:1.8.24"
+		compile ":resources:1.1.6"
+		compile ":shiro:1.1.3"
+
+
         // Uncomment these (or add new ones) to enable additional resources capabilities
         //runtime ":zipped-resources:1.0"
         //runtime ":cached-resources:1.0"
