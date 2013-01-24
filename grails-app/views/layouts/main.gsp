@@ -36,6 +36,12 @@
 		<link rel="apple-touch-icon" href="${resource(dir: 'images', file: 'apple-touch-icon.png')}">
 		<link rel="apple-touch-icon" sizes="114x114" href="${resource(dir: 'images', file: 'apple-touch-icon-retina.png')}">
 
+		<g:javascript>
+			window.config = {
+				webroot: '<g:resource absolute="true" dir="/" />'
+			}
+		</g:javascript>
+
 		<g:javascript library="global"/>
         <r:layoutResources />
 		<g:layoutHead/>

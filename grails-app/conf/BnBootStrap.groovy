@@ -122,8 +122,8 @@ class BnBootStrap {
 		adminRole.save()
 
 		ShiroRole expertRole = new ShiroRole( name: "expert" )
-		expertRole.addToPermissions( "explain:*" ) // explanitory statement`
-		expertRole.addToPermissions( "preference:*" ) // explanitory statement`
+		expertRole.addToPermissions( "explain:*" ) // explanatory statement`
+		expertRole.addToPermissions( "preference:*" )
 		expertRole.save()
 
 		// Once a user has consented, then they are allowed to view the rest of the system...

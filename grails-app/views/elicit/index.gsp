@@ -84,9 +84,17 @@
 	
 	<body>
 
-	<h:help for="btnToggleDetails" title="Help title" location="right">
-		Here is some help text!
-	</h:help>
+		<h:help title="Welcome!" index="1">
+			Thank you for participating in the survey. We'll quickly run you through some concepts to get you started.
+		</h:help>
+
+		<h:help for="btnToggleDetails" title="Help title" location="right" index="2">
+			Here is some help text!
+		</h:help>
+
+		<h:help for="all-children-list" title="List of variables" location="right" index="3" width="200px">
+			You need to go through these variables, one at a time, and do cool stuff in response to their presence.
+		</h:help>
 
 		<g:if test="${completed}">
 			<br />

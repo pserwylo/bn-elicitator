@@ -24,8 +24,10 @@
 	color: #fff;
 	border-radius: 5px;
 	box-shadow: 1px 1px 3px #777;
-	background-color: #2a9aec;
-	border: solid 2px #1d57ec;
+	/*background-color: #2a9aec;
+	border: solid 2px #1d57ec;*/
+	background-color: #4c882f;
+	border: solid 2px #396623;
 
 }
 
@@ -36,14 +38,20 @@
 }
 
 .help-overlay .button-wrapper button {
+	background-color: #c75456;
+	border: solid 2px #8e0513;
+	color: #fff;
+}
 
+.help-overlay .button-wrapper button:hover {
+	background-color: #fe9e9f;
+	border: solid 2px #8e0513;
+	color: #fff;
 }
 
 .help-overlay .title {
 	padding-bottom: 0.3em;
 	font-size: 1.2em;
-	background: url("../images/icons/help.png") no-repeat scroll 3px 30% transparent;
-	padding-left: 24px;
 }
 
 .help-overlay .pointer {
@@ -53,16 +61,20 @@
 	border-top: 10px solid transparent;
 }
 
+.help-overlay.doesnt-fit .pointer {
+	display: none;
+}
+
 .help-overlay.direction-left .pointer {
 	border-left:none;
-	border-right: 20px solid #2a9aec;
+	border-right: 20px solid #4c882f;
 	position: absolute;
 	left: -20px;
 	top: 20px;
 }
 
 .help-overlay.direction-right .pointer {
-	border-left: 20px solid #2a9aec;
+	border-left: 20px solid #4c882f;
 	border-right:none;
 	position: absolute;
 	right: -20px;
