@@ -16,6 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+.column-left .description {
+	padding: 0 1em 0.5em 1em;
+	font-size: 0.9em;
+	color: #444;
+}
+
 /* MAIN LIST STYLES */
 
 ul.potential-parents-list li.variable-item {

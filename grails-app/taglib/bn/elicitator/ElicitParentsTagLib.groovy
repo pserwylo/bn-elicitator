@@ -247,7 +247,7 @@ class ElicitParentsTagLib {
 
 		( delphiService.phase == 1
 			? [ firstRound ]
-			: [ agree, disagree, hidden ]
+			: [ disagree, agree, hidden ]
 		).each { variableLists.put( it, [] ) }
 
 		for ( Variable parent in potentialParents )
@@ -284,6 +284,12 @@ class ElicitParentsTagLib {
 			}
 		}
 
+		def descriptions = [
+				(agree)   : g.message( code: "elicit.parents.agree-with-others.desc"   , args: [ child.readableLabel ] ),
+				(disagree): g.message( code: "elicit.parents.disagree-with-others.desc", args: [ child.readableLabel ] ),
+				(hidden)  : g.message( code: "elicit.parents.nobody-wants-these.desc"  , args: [ child.readableLabel ] ),
+		]
+
 		if ( delphiService.phase == 1 )
 		{
 			variableLists[ firstRound ].add(
@@ -297,16 +303,31 @@ class ElicitParentsTagLib {
 
 		variableLists.each { entry ->
 
-			if ( entry.key != firstRound )
-			{
-				out << "<h2>$entry.key</h2>"
-			}
+			String label = entry.key
+			List<String> items = entry.value
 
-			out << """
-				<ul class="potential-parents-list variable-list">
-					${entry.value.join( '\n' )}
-				</ul>
-				"""
+			if ( label != firstRound && items.size() == 0 )
+			{
+				// Don't show anything...
+			}
+			else
+			{
+				if ( label != firstRound )
+				{
+					out << """
+						<h2>$label</h2>
+						<div class='description'>
+							${descriptions[ label ]}
+						</div>
+						"""
+				}
+
+				out << """
+					<ul class="potential-parents-list variable-list">
+						${items.join( '\n' )}
+					</ul>
+					"""
+			}
 		}
 
 	}

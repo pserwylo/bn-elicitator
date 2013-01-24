@@ -27,3 +27,8 @@ Make the comment in the relationship chain be the last comment that was made, re
 Sort the main list by disagreement (asc) to make users get that feeling of progress straight away.
 Message explaining the agreement/disagreement/nobody cares.
 Message when there is zero agreement/disagreement/discontentness.
+
+Comments from Mark:
+Mandatory comments
+Force people to view disagtreements, put less influence on agreement, and hide the useless ones. Use the same "needs review" metaphore as in the main list.
+

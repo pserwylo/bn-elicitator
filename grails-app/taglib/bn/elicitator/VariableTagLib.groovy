@@ -24,6 +24,7 @@ class VariableTagLib {
 
 	VariableService variableService
 	DelphiService delphiService
+	DisagreementService disagreementService
 
 	/**
 	 * @attr id
@@ -153,31 +154,24 @@ class VariableTagLib {
 		List<Variable> stillToVisit = attrs.stillToVisit
 		out << "<ul id='all-children-list' class='variable-list '>\n"
 
+		List<Disagreement> disagreementList = delphiService.hasPreviousPhase ? disagreementService.getDisagreements( variables ) : []
+
 		for( Variable child in variables )
 		{
-			List<Agreement> agreements = []
-			List<Variable> potentialParents = this.variableService.getPotentialParents( child )
-
-			if ( delphiService.hasPreviousPhase )
-			{
-				for ( Variable parent in potentialParents )
-				{
-					Agreement agreement = this.delphiService.calcAgreement( parent, child )
-					agreements.add( agreement )
-				}
-			}
-
-			Integer disagreementCount = agreements.count{ it -> !it.agree }
-
 			Boolean hasVisited = !stillToVisit.contains( child )
 			String classes = hasVisited ? 'doesnt-need-review' : 'needs-review'
+			Disagreement disagreement = disagreementList.find{ it.child == child }
+
+			if ( delphiService.hasPreviousPhase && disagreement == null ) {
+				disagreement = disagreementService.recalculateDisagreement( child )
+			}
 
 			out << """
 				<li class='variable-item  ${classes}'>
 					${bn.variableInListWithRelationships( [ variable: child, needsReview: !hasVisited ] )}
 					<span class='agreement-summary item-description'>
 						<span class='short'>
-							Disagree with ${disagreementCount} of ${potentialParents.size()} relationships
+							${g.message( code: "elicit.list.disagree-with", args: [ disagreement?.disagreeCount, disagreement?.totalCount])}
 						</span>
 					</span>
 				</li>

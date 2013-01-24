@@ -38,9 +38,10 @@ package bn.elicitator
 
 class ElicitController {
 
-	VariableService variableService
-	DelphiService delphiService
-	BnService bnService
+	VariableService     variableService
+	DelphiService       delphiService
+	BnService           bnService
+	DisagreementService disagreementService
 
 	/**
 	 * Mark this user as completed (for this round), then redirect to the main list so that they can still play around
@@ -134,7 +135,7 @@ class ElicitController {
 
 			if ( !removeAny )
 			{
-				errors.add( "Must specify a relationship to remove from: " + VariableTagLib.generateVariableChain( cyclicalRelationship.chain, "&rarr;", false ) )
+				errors.add( "Must specify a relationship to remove from: " + bn.variableChain( chain: cyclicalRelationship.chain, includeTooltip: false ) )
 			}
 		}
 
@@ -175,6 +176,7 @@ class ElicitController {
 			else
 			{
 				bnService.removeRedundantRelationship( rel )
+				disagreementService.recalculateDisagreement( child )
 			}
 		}
 
@@ -210,6 +212,7 @@ class ElicitController {
 		else
 		{
 			bnService.removeCycle( parent, child )
+			disagreementService.recalculateDisagreement( child )
 			redirect( action: "problems", params: [ displayAll: (Boolean)params["displayAll"] ] )
 		}
 	}
@@ -353,11 +356,13 @@ class ElicitController {
 				relationship.comment = null;
 			}
 
-			relationship.save()
+			relationship.save( flush: true )
 			LoggedEvent.logSaveRelationship( relationship )
 
+			disagreementService.recalculateDisagreement( child )
+
 			// Send some output back, so that they can update the view with a "you agree" or "you disagree"...
-			Agreement agreement = this.delphiService.calcAgreement( parent, child, relationship )
+			Agreement agreement = delphiService.calcAgreement( parent, child, relationship )
 			render '{ "agree": ' + agreement.agree + ', "relationship": "' + agreement.myRelationship.toString() + '" }'
 		}
 	}
@@ -369,12 +374,12 @@ class ElicitController {
 		List<Variable> varList = this.variableService.getAllChildVars()
 
 		[
-			delphiPhase: this.delphiService.phase,
-			variables: varList,
-			keptRedunantRelationships: this.bnService.countKeptRedundantRelationships(),
-			hasPreviousPhase: this.delphiService.hasPreviousPhase,
-			stillToVisit: this.delphiService.getStillToVisit( varList ),
-			completed: this.delphiService.completed
+			delphiPhase              : delphiService.phase,
+			variables                : varList,
+			keptRedunantRelationships: bnService.countKeptRedundantRelationships(),
+			hasPreviousPhase         : delphiService.hasPreviousPhase,
+			stillToVisit             : delphiService.getStillToVisit( varList ),
+			completed                : delphiService.completed
 		]
 
 	}

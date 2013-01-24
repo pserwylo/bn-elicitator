@@ -3,6 +3,7 @@ bn-elicitator.properties
 
 # I keep a db dump here for testing...
 *.sql
+*.sql.gz
 
 
 # web application files
