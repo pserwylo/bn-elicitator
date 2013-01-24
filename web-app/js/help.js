@@ -149,7 +149,9 @@ var HelpOverlay = klass( function( domElement ) {
 		} else if (a.getIndex() > b.getIndex() ) {
 			return 1;
 		} else {
-			console.log( "Error: Two help messages have the same index on this page." );
+			if ( typeof console !== "undefined" ) {
+				console.log( "Error: Two help messages have the same index on this page." );
+			}
 			return 0;
 		}
 	};

@@ -52,7 +52,9 @@
 				var success = true;
 				if ( selectedLi.length == 0 )
 				{
-					console.log( "Error finding li node for user '" + emailName + "'" );
+					if ( typeof console !== "undefined" ) {
+						console.log( "Error finding li node for user '" + emailName + "'" );
+					}
 					success = false;
 				}
 				else

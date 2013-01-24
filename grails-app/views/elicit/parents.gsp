@@ -123,7 +123,7 @@
 				source: "<g:createLink action='getVariablesFromOntology' controller='data'/>",
 				minLength: 2,
 				select: function( event, ui ) {
-					console.log( ui );
+
 				}
 			});
 
@@ -140,11 +140,6 @@
 				$( item ).find( '#' + label + '-confidence-slider' ).bind( 'slide', function() { markUnsaved( label ); } );
 
 				detailsDivs[ label ] = item;
-
-				if ( label == 'Age' )
-				{
-					console.log( i + " - " + label );
-				}
 			});
 
 			$( '.unsaved-icon' ).click( function() {
@@ -325,7 +320,7 @@
 		 */
 		function markUnsaved( variableLabel ) {
 
-			if ( unsavedVariables.indexOf( variableLabel ) == -1 )
+			if ( $.inArray( variableLabel, unsavedVariables ) == -1 )
 			{
 				unsavedVariables.push( variableLabel );
 				$( '#' + variableLabel + '-variable-item' ).addClass( 'unsaved' );
@@ -335,7 +330,7 @@
 
 		function markSaved( variableLabel ) {
 
-			var index = unsavedVariables.indexOf( variableLabel );
+			var index = $.inArray( variableLabel, unsavedVariables );
 			if ( index >= 0 )
 			{
 				unsavedVariables.splice( index, 1 );
@@ -345,7 +340,7 @@
 		}
 
 		function isUnsaved( variableLabel ) {
-			return ( unsavedVariables.indexOf( variableLabel ) != -1 );
+			return ( $.inArray( variableLabel, unsavedVariables ) != -1 );
 		}
 
         /**
