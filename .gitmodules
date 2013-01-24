@@ -1,0 +1,3 @@
+[submodule "web-app/js/lib/klass"]
+	path = web-app/js/lib/klass
+	url = https://github.com/ded/klass.git

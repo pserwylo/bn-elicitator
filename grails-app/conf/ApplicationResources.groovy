@@ -19,9 +19,16 @@
 modules = {
 
 	/* Global and utility styles */
+
     global {
-		dependsOn( [ 'jquery', 'jquery-ui' ] )
+		dependsOn( [ 'jquery', 'jquery-ui', 'help' ] )
 		resource url: 'css/global.css'
+	}
+
+	help {
+		dependsOn( [ 'jquery', 'jquery-ui' ] )
+		resource url: "css/help.css"
+		resource url: "js/help.js"
 	}
 
 	variableList {

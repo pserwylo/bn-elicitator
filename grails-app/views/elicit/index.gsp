@@ -84,6 +84,10 @@
 	
 	<body>
 
+	<h:help for="btnToggleDetails" title="Help title" location="right">
+		Here is some help text!
+	</h:help>
+
 		<g:if test="${completed}">
 			<br />
 			<div class="message"><g:message code="elicit.list.info.round-complete" /></div>
