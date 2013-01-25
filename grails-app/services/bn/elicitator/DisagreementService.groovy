@@ -31,6 +31,14 @@ class DisagreementService {
 			disagreement.disagreeCount = agreements.count{ it -> !it.agree }
 			disagreement.totalCount    = potentialParents.size()
 			disagreement.save( flush: true )
+
+			if ( disagreement.disagreeCount == 0 ) {
+
+				// No longer requires review...
+				variableService.visitVariable( child )
+
+			}
+
 		}
 		return disagreement
 	}

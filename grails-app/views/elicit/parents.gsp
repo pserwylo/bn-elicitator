@@ -444,11 +444,20 @@
 	
 	<body>
 
+		<g:if test="${delphiPhase > 1}">
+			%{--<h:help forId="testId" title="bleh" index="100" location="right">
+				Sneh
+			</h:help>
+			<h:help forId="testId" title="bleh1" index="101" location="right">
+				Sneh1
+			</h:help>--}%
+		</g:if>
+
 		<div class="elicit-parents">
 
 			<div class="column-wrapper">
 
-				<div class="column-left">
+				<div id="testId" class="column-left">
 
 					<input type="hidden" name="currentVar" value="${variable.label}" />
 					<input type="hidden" name="nextVar" value="" />

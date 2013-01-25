@@ -94,7 +94,7 @@
 			 	<g:message code="general.show" />
 				<g:message code="elicit.list.details" />
 			</button>
-			<h:help title="${g.message( code: "help.elicit.list.show-details.title" )}" for="btnToggleDetails" index="10000" location="right">
+			<h:help title="${g.message( code: "help.elicit.list.show-details.title" )}" forId="btnToggleDetails" index="10000" location="right">
 				<g:message code="help.elicit.list.show-details" />
 			</h:help>
 		</g:if>
@@ -110,7 +110,7 @@
 				<g:message code="elicit.list.potential-problems" args="${[ keptRedunantRelationships ]}" />
 
 			</button>
-			<h:help title="${g.message( code: "help.elicit.list.show-redundant.title" )}" for="btnShowProblems" index="10001" location="right">
+			<h:help title="${g.message( code: "help.elicit.list.show-redundant.title" )}" forId="btnShowProblems" index="10001" location="right">
 				<g:message code="help.elicit.list.show-redundant" />
 			</h:help>
 		</g:if>
@@ -139,6 +139,10 @@
 
 			<h:help title="${g.message( code: "help.elicit.list.round2.title" )}" index="100">
 				<g:message code="help.elicit.list.round2" />
+			</h:help>
+
+			<h:help title="${g.message( code: "help.elicit.list.disagreement.title" )}" forId="disagree-label-0" location="right" index="101">
+				<g:message code="help.elicit.list.disagreement" />
 			</h:help>
 
 		</g:else>
@@ -170,7 +174,7 @@
 				${stillToVisit.size() > 0 ? 'disabled="disabled"' : ''}>
 				<g:message code="elicit.list.finish-round" />
 			</button>
-			<h:help title="${g.message( code: "help.elicit.list.complete.title" )}" for="btnCompleteRound" location="right">
+			<h:help title="${g.message( code: "help.elicit.list.complete.title" )}" forId="btnCompleteRound" location="right">
 				<g:message code="help.elicit.list.complete" />
 			</h:help>
 		</g:else>

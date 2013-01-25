@@ -78,7 +78,7 @@ var HelpOverlay = klass( function( domElement ) {
 	},
 
 	getIndex: function() {
-		return $( this.domElement ).find( 'input:hidden[name=index]' ).val();
+		return parseInt( $( this.domElement ).find( 'input:hidden[name=index]' ).val() );
 	},
 
 	setNext: function( next ) {
@@ -96,8 +96,8 @@ var HelpOverlay = klass( function( domElement ) {
 			return false;
 		}
 
-		var forValue = $( this.domElement ).find( 'input:hidden[name=for]').val();
-		if ( typeof forValue === "undefined" ) {
+		var forSelector = $( this.domElement ).find( 'input:hidden[name=forSelector]').val();
+		if ( typeof forSelector === "undefined" ) {
 
 			$( this.domElement )
 				.css( 'display' , 'block' )
@@ -107,7 +107,7 @@ var HelpOverlay = klass( function( domElement ) {
 
 		} else {
 
-			var forItem = $( '#' + forValue );
+			var forItem = $( forSelector );
 			var top = forItem.offset().top - 20;
 
 			var locationValue = $( this.domElement ).find( 'input:hidden[name=location]' ).val();
@@ -151,21 +151,38 @@ var HelpOverlay = klass( function( domElement ) {
 	}
 });
 
-(function() {
+var HelpOverlayManager = klass( function() {
 
-	var overlays = [];
+	var self = this;
+	self.overlays = [];
+
+	$( '.help-overlay' ).each( function() {
+		self.overlays.push( new HelpOverlay( this ) );
+	});
+
+	if ( self.overlays.length > 0 ) {
+		$( window ).resize( function() { self.positionAll() } );
+		setTimeout( function(){ self.delayedInit() }, 10 );
+		self.overlays.sort( self.compareOverlays );
+		for ( var i = 1; i < self.overlays.length; i ++ ) {
+			self.overlays[ i - 1 ].setNext( self.overlays[ i ] );
+			self.overlays[ i ].hide( false );
+		}
+	}
+
+}).methods({
 
 	/**
 	 * In response to a window resize, and also after an initial timeout (so that we position stuff after any
 	 * hiding/showing due to toggle buttons is performed).
 	 */
-	var positionAll = function() {
-		for ( var i = 0; i < overlays.length; i ++ ) {
-			if ( overlays[ i ].position() ) {
+	positionAll: function() {
+		for ( var i = 0; i < this.overlays.length; i ++ ) {
+			if ( this.overlays[ i ].position() ) {
 				return;
 			}
 		}
-	};
+	},
 
 	/**
 	 * Used for the array.sort method, to sort a list of HelpOverlay objects.
@@ -173,10 +190,10 @@ var HelpOverlay = klass( function( domElement ) {
 	 * @param b {HelpOverlay}
 	 * @return {number}
 	 */
-	var compareOverlays = function( a, b ) {
+	compareOverlays: function( a, b ) {
 		if ( a.getIndex() < b.getIndex() ) {
 			return -1;
-		} else if (a.getIndex() > b.getIndex() ) {
+		} else if ( a.getIndex() > b.getIndex() ) {
 			return 1;
 		} else {
 			if ( typeof console !== "undefined" ) {
@@ -184,26 +201,17 @@ var HelpOverlay = klass( function( domElement ) {
 			}
 			return 0;
 		}
-	};
+	},
 
-	$( '.help-overlay' ).each( function() {
-		overlays.push( new HelpOverlay( this ) );
-	});
-
-	$( window ).resize( positionAll );
-	setTimeout(
-		function() {
-			positionAll();
-			overlays[ 0 ].scrollTo();
-		}, 10
-	);
-
-	overlays.sort( compareOverlays );
-
-	for ( var i = 1; i < overlays.length; i ++ ) {
-		overlays[ i - 1 ].setNext( overlays[ i ] );
-		overlays[ i ].hide( false );
+	delayedInit: function() {
+		this.positionAll();
+		this.overlays[ 0 ].scrollTo();
 	}
 
+});
+
+(function() {
+
+	new HelpOverlayManager();
 
 })();

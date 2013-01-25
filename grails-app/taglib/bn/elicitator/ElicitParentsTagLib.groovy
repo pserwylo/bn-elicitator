@@ -464,13 +464,15 @@ class ElicitParentsTagLib {
 
 		if ( relationship != null )
 		{
-			out << """
-				<script type='text/javascript'>
-					\$( document ).ready( function(){
-						sliderValues.${parent.label} = ${relationship.confidence == null ? 0 : relationship.confidence};
-					});
-				</script>
-				"""
+			if ( parent.label ) {
+				out << """
+					<script type='text/javascript'>
+						\$( document ).ready( function(){
+							sliderValues.${parent.label} = ${relationship.confidence == null ? 0 : relationship.confidence};
+						});
+					</script>
+					"""
+			}
 		}	
 	}
 

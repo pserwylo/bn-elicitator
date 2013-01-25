@@ -374,13 +374,13 @@ class ElicitController {
 		List<Variable> varList = this.variableService.getAllChildVars()
 
 		[
-			user                     : ShiroUser.current,
-			delphiPhase              : delphiService.phase,
-			variables                : varList,
-			keptRedunantRelationships: bnService.countKeptRedundantRelationships(),
-			hasPreviousPhase         : delphiService.hasPreviousPhase,
-			stillToVisit             : delphiService.getStillToVisit( varList ),
-			completed                : delphiService.completed,
+			user                      : ShiroUser.current,
+			delphiPhase               : delphiService.phase,
+			variables                 : varList,
+			keptRedunantRelationships : bnService.countKeptRedundantRelationships(),
+			hasPreviousPhase          : delphiService.hasPreviousPhase,
+			stillToVisit              : delphiService.getStillToVisit( varList ),
+			completed                 : delphiService.completed,
 		]
 
 	}
@@ -392,14 +392,14 @@ class ElicitController {
 	def addVariable = { AddVariableCommand cmd ->
 
 		Variable var = new Variable(
-			createdBy: ShiroUser.current,
-			createdDate: new Date(),
-			lastModifiedBy:  ShiroUser.current,
-			lastModifiedDate:  new Date(),
-			readableLabel: cmd.label,
-			label: cmd.label,
-			description: cmd.description,
-			variableClass: cmd.variableClass
+			createdBy        : ShiroUser.current,
+			createdDate      : new Date(),
+			lastModifiedBy   : ShiroUser.current,
+			lastModifiedDate : new Date(),
+			readableLabel    : cmd.label,
+			label            : cmd.label,
+			description      : cmd.description,
+			variableClass    : cmd.variableClass
 		)
 
 		var.save( failOnError: true )

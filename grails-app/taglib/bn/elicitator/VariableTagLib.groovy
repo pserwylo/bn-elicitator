@@ -154,26 +154,41 @@ class VariableTagLib {
 
 		List<Disagreement> disagreementList = delphiService.hasPreviousPhase ? disagreementService.getDisagreements( variables ) : []
 
-		for( Variable child in variables )
-		{
-			Boolean hasVisited = !stillToVisit.contains( child )
-			String classes = hasVisited ? 'doesnt-need-review' : 'needs-review'
-			Disagreement disagreement = disagreementList.find{ it.child == child }
+		if ( delphiService.hasPreviousPhase ) {
 
-			if ( delphiService.hasPreviousPhase && disagreement == null ) {
-				disagreement = disagreementService.recalculateDisagreement( child )
+			if ( disagreementList.size() == 0 ) {
+				variables.each { disagreementService.recalculateDisagreement( it ) }
+				disagreementList = disagreementService.getDisagreements( variables )
 			}
 
+			// Sort based on disagreement. Disagreement
+			variables.sort { var1, var2 ->
+				def disagreement1 = disagreementList.find { it.child == var1 }
+				def disagreement2 = disagreementList.find { it.child == var2 }
+				disagreement2.disagreeCount <=> disagreement1.disagreeCount
+			}
+		}
+
+		variables.eachWithIndex { child, i ->
+
+			Boolean hasVisited = !stillToVisit.contains( child )
+			String classNeedsReview = hasVisited ? 'doesnt-need-review' : 'needs-review'
+			Disagreement disagreement = disagreementList.find{ it.child == child }
+
+			Integer disagreementPercent = ( Math.min( disagreement.disagreeCount, (Integer)( disagreement.totalCount / 2 ) ) / ( disagreement.totalCount / 2 ) ) * 4
+			String classDisagreement = "disagree-by-" + disagreementPercent
+
 			out << """
-				<li class='variable-item  ${classes}'>
+				<li class='variable-item  ${classNeedsReview}'>
 					${bn.variableInListWithRelationships( [ variable: child, needsReview: !hasVisited ] )}
 					<span class='agreement-summary item-description'>
-						<span class='short'>
+						<span id='disagree-label-${i}' class='short ${classDisagreement}'>
 							${g.message( code: "elicit.list.disagree-with", args: [ disagreement?.disagreeCount, disagreement?.totalCount])}
 						</span>
 					</span>
 				</li>
 				"""
+
 		}
 		out << "</ul>"
 
@@ -219,7 +234,6 @@ class VariableTagLib {
 		{
 			Boolean hasVisited = !stillToVisit.contains( child )
 			String classes = hasVisited ? 'doesnt-need-review' : 'needs-review'
-			String needsReview = hasVisited ? '' : '<span class="info">(needs review)</span>'
 
 			out << """
 				<li class='variable-item  ${classes}'>
