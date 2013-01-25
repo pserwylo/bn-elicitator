@@ -15,7 +15,7 @@
   - You should have received a copy of the GNU General Public License
   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --}%
-<%@ page import="bn.elicitator.Variable" %>
+<%@ page import="bn.elicitator.ShiroUser; bn.elicitator.Variable" %>
 <!doctype html>
 
 <g:set var="hasDetails" value="${delphiPhase > 1 || variables.size() > stillToVisit?.size()}" />
@@ -84,18 +84,6 @@
 	
 	<body>
 
-		<h:help title="Welcome!" index="1">
-			Thank you for participating in the survey. We'll quickly run you through some concepts to get you started.
-		</h:help>
-
-		<h:help for="btnToggleDetails" title="Help title" location="right" index="2">
-			Here is some help text!
-		</h:help>
-
-		<h:help for="all-children-list" title="List of variables" location="right" index="3" width="200px">
-			You need to go through these variables, one at a time, and do cool stuff in response to their presence.
-		</h:help>
-
 		<g:if test="${completed}">
 			<br />
 			<div class="message"><g:message code="elicit.list.info.round-complete" /></div>
@@ -106,6 +94,9 @@
 			 	<g:message code="general.show" />
 				<g:message code="elicit.list.details" />
 			</button>
+			<h:help title="${g.message( code: "help.elicit.list.show-details.title" )}" for="btnToggleDetails" index="10000" location="right">
+				<g:message code="help.elicit.list.show-details" />
+			</h:help>
 		</g:if>
 
 		<g:if test="${keptRedunantRelationships > 0}">
@@ -119,6 +110,9 @@
 				<g:message code="elicit.list.potential-problems" args="${[ keptRedunantRelationships ]}" />
 
 			</button>
+			<h:help title="${g.message( code: "help.elicit.list.show-redundant.title" )}" for="btnShowProblems" index="10001" location="right">
+				<g:message code="help.elicit.list.show-redundant" />
+			</h:help>
 		</g:if>
 
 		<br />
@@ -127,6 +121,10 @@
 		<g:if test="${!hasPreviousPhase}">
 
 			<bn:listSummaryFirstPhase variables="${variables}" stillToVisit="${stillToVisit}"/>
+
+			<h:help title="${g.message( code: "help.elicit.list.welcome.title" )}" index="1">
+				<g:message code="help.elicit.list.welcome" />
+			</h:help>
 
 		</g:if>
 		<g:else>
@@ -137,7 +135,11 @@
 			<br /><br />
 			--}%
 
-			<bn:listSummary variables="${variables}" showAgree="${false}" stillToVisit="${stillToVisit}"/>
+			<bn:listSummary variables="${variables}" stillToVisit="${stillToVisit}"/>
+
+			<h:help title="${g.message( code: "help.elicit.list.round2.title" )}" index="100">
+				<g:message code="help.elicit.list.round2" />
+			</h:help>
 
 		</g:else>
 
@@ -160,20 +162,17 @@
 			</div>
 		</g:elseif>
 		<g:else>
-			<div class="message">
-				<ul>
-					<li>
-						<g:message code="elicit.list.info.round-ready-to-complete" />
-					</li>
-				</ul>
-			</div>
 			<button
+				id="btnCompleteRound"
 				type="button"
 				onclick="document.location = '${createLink( action: 'completed' )}'"
 				class='big '
 				${stillToVisit.size() > 0 ? 'disabled="disabled"' : ''}>
 				<g:message code="elicit.list.finish-round" />
 			</button>
+			<h:help title="${g.message( code: "help.elicit.list.complete.title" )}" for="btnCompleteRound" location="right">
+				<g:message code="help.elicit.list.complete" />
+			</h:help>
 		</g:else>
 
 	</body>

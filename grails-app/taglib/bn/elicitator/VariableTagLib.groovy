@@ -145,8 +145,6 @@ class VariableTagLib {
 	 *  - if we are past the first delphi round, show variables which you agree/disagree about
 	 * @attr variables REQUIRED
 	 * @attr stillToVisit REQUIRED Variables which are yet to be seen, so we should so some sort of info telling them this...
-	 * @attr hideAgree
-	 * @attr hideDisagree
 	 */
 	def listSummary = { attrs ->
 

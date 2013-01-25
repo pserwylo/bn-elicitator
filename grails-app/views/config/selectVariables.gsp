@@ -43,7 +43,6 @@
 			
 			function filter( filterText )
 			{
-				console.log( "FILTERING: " + filterText );
 				$( '.variable-list > li' ).each( function( i, item ) {
 				
 					var isChecked = $( item ).children( 'input' ).prop( 'checked' );

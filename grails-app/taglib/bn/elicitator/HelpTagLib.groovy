@@ -1,30 +1,28 @@
 package bn.elicitator
 
-import org.apache.commons.codec.digest.DigestUtils
-
-
 class HelpTagLib {
 
 	static namespace = "h"
 
-	private static String generateHash( String title, String message ) {
+	private static String generateHash( title, message ) {
 		title = title.trim()
 		message = message.trim()
 		return DigestUtils.md5Hex( title + message )
 	}
 
-	private static Boolean hasRead( String title, String message ) {
+	private static Boolean hasRead( title, message ) {
 		String hash = generateHash( title, message )
 		return HelpRead.findByMessageHashAndReadBy( hash, ShiroUser.current ) != null
 	}
 
 	/**
-	 * @attrs index    REQUIRED
-	 * @attrs for
-	 * @attrs title
-	 * @attrs location
-	 * @attrs width
-	 * @attrs height
+	 * @attrs index    REQUIRED Relative to other help messages on the page, what order do you want this one to show up?
+	 * @attrs title    The title string for the message. Shown above the body and more prominently.
+	 * @attrs for      The ID of a DOM element on the screen.
+	 * @attrs location Either to the "left" or "right" of the DOM element specified by the "for" attribute.
+	 * @attrs width    Sets the max-width  proeprty on the overlay (therefore, you should append units to this to, like "500px")
+	 * @attrs height   Sets the max-height property on the overlay (therefore, you should append units to this to, like "500px")
+	 * @attrs persist  Don't remove the message once viewed. Persist for each page load.
 	 */
 	def help = { attrs, body ->
 
@@ -35,18 +33,20 @@ class HelpTagLib {
 		String location = ""
 		String width    = ""
 		String height   = ""
+		def    persist  = false
 
 		if ( attrs.containsKey( "for"      ) ) helpFor  = attrs.for
 		if ( attrs.containsKey( "title"    ) ) title    = attrs.title
 		if ( attrs.containsKey( "location" ) ) location = attrs.location
 		if ( attrs.containsKey( "width"    ) ) width    = attrs.width
 		if ( attrs.containsKey( "height"   ) ) height   = attrs.height
+		if ( attrs.containsKey( "persist"  ) ) persist  = attrs.persist
 
-		if ( hasRead( title, body() ) ) {
+		if ( !params.containsKey( "showHelp" ) && !persist && hasRead( title, body() ) ) {
 			return;
 		}
 
-			String pointDirectionClass = ""
+		String pointDirectionClass = ""
 		if ( location == "right" ) {
 			pointDirectionClass = "direction-left"
 		} else if ( location == "left" ) {
@@ -76,3 +76,6 @@ class HelpTagLib {
 	}
 
 }
+
+
+import org.apache.commons.codec.digest.DigestUtils

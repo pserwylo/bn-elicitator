@@ -374,12 +374,13 @@ class ElicitController {
 		List<Variable> varList = this.variableService.getAllChildVars()
 
 		[
+			user                     : ShiroUser.current,
 			delphiPhase              : delphiService.phase,
 			variables                : varList,
 			keptRedunantRelationships: bnService.countKeptRedundantRelationships(),
 			hasPreviousPhase         : delphiService.hasPreviousPhase,
 			stillToVisit             : delphiService.getStillToVisit( varList ),
-			completed                : delphiService.completed
+			completed                : delphiService.completed,
 		]
 
 	}

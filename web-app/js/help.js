@@ -22,22 +22,44 @@ var HelpOverlay = klass( function( domElement ) {
 	this.domElement  = domElement;
 	this.isAlive     = true;
 	this.nextOverlay = null;
+	this.isVisible   = true;
 
 	$( this.domElement ).find( 'button.dismiss').click( function() {
 		self.remove();
 	});
 
-	this.position();
+	var detached = $( this.domElement ).detach();
+	$( 'body' ).append( detached );
 
 }).methods({
 
 	hide: function( animate ) {
 		$( this.domElement ).hide();
+		this.isVisible = false;
 	},
 
 	show: function() {
 		if ( this.isAlive ) {
 			$( this.domElement ).show( 'fade', 'slow' );
+			this.isVisible = true;
+			this.position();
+			this.scrollTo();
+		}
+	},
+
+	scrollTo: function() {
+		if ( this.isAlive ) {
+
+			var overlayTop = $( this.domElement ).offset().top;
+			var overlayHeight = $( this.domElement ).outerHeight();
+
+			var viewportScroll = $( window ).scrollTop();
+			var viewportHeight = $( window ).height();
+
+			// If the item is too far below the screen viewport, we need to scroll down to it, until the bottom of it is visible...
+			if ( overlayTop + overlayHeight > viewportScroll + viewportHeight || overlayTop < viewportScroll) {
+				$( 'body' ).animate( { scrollTop: overlayTop } );
+			}
 		}
 	},
 
@@ -70,8 +92,8 @@ var HelpOverlay = klass( function( domElement ) {
 	 */
 	position: function() {
 
-		if ( !this.isAlive ) {
-			return;
+		if ( !this.isAlive || !this.isVisible ) {
+			return false;
 		}
 
 		var forValue = $( this.domElement ).find( 'input:hidden[name=for]').val();
@@ -100,7 +122,6 @@ var HelpOverlay = klass( function( domElement ) {
 			}
 
 			$( this.domElement )
-				.css( 'display' , 'block' )
 				.css( 'position', 'absolute' )
 				.css( 'top'     , top )
 				.css( 'left'    , left );
@@ -125,24 +146,33 @@ var HelpOverlay = klass( function( domElement ) {
 			}
 
 		}
-	}
 
+		return true;
+	}
 });
 
 (function() {
 
 	var overlays = [];
 
-	$( '.help-overlay' ).each( function() {
-		overlays.push( new HelpOverlay( this ) );
-	});
-
-	$( window ).resize( function() {
+	/**
+	 * In response to a window resize, and also after an initial timeout (so that we position stuff after any
+	 * hiding/showing due to toggle buttons is performed).
+	 */
+	var positionAll = function() {
 		for ( var i = 0; i < overlays.length; i ++ ) {
-			overlays[ i ].position();
+			if ( overlays[ i ].position() ) {
+				return;
+			}
 		}
-	});
+	};
 
+	/**
+	 * Used for the array.sort method, to sort a list of HelpOverlay objects.
+	 * @param a {HelpOverlay}
+	 * @param b {HelpOverlay}
+	 * @return {number}
+	 */
 	var compareOverlays = function( a, b ) {
 		if ( a.getIndex() < b.getIndex() ) {
 			return -1;
@@ -155,6 +185,18 @@ var HelpOverlay = klass( function( domElement ) {
 			return 0;
 		}
 	};
+
+	$( '.help-overlay' ).each( function() {
+		overlays.push( new HelpOverlay( this ) );
+	});
+
+	$( window ).resize( positionAll );
+	setTimeout(
+		function() {
+			positionAll();
+			overlays[ 0 ].scrollTo();
+		}, 10
+	);
 
 	overlays.sort( compareOverlays );
 
