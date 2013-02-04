@@ -15,8 +15,13 @@ class HelpTagLib {
 		return HelpRead.findByMessageHashAndReadBy( hash, ShiroUser.current ) != null
 	}
 
+	private static Boolean hasReadId( id ) {
+		return hasRead( id, "" )
+	}
+
 	/**
 	 * @attrs index REQUIRED Relative to other help messages on the page, what order do you want this one to show up?
+	 * @attrs id             Uniquely identifies this message. Will be used (instead of message contact) to mark as read.
 	 * @attrs title          The title string for the message. Shown above the body and more prominently.
 	 * @attrs forId          The ID of a DOM element on the screen.
 	 * @attrs forSelector    The ID of a DOM element on the screen.
@@ -29,6 +34,7 @@ class HelpTagLib {
 
 		def index       = attrs.index
 
+		String id               = ""
 		String helpForSelector  = ""
 		String title            = ""
 		String location         = ""
@@ -36,6 +42,7 @@ class HelpTagLib {
 		String height           = ""
 		def    persist          = false
 
+		if ( attrs.containsKey( "id"          ) ) id              = attrs.id
 		if ( attrs.containsKey( "forId"       ) ) helpForSelector = "#${attrs.forId}"
 		if ( attrs.containsKey( "forSelector" ) ) helpForSelector = attrs.forSelector
 		if ( attrs.containsKey( "title"       ) ) title           = attrs.title
@@ -44,7 +51,8 @@ class HelpTagLib {
 		if ( attrs.containsKey( "height"      ) ) height          = attrs.height
 		if ( attrs.containsKey( "persist"     ) ) persist         = attrs.persist
 
-		if ( !params.containsKey( "showHelp" ) && !persist && hasRead( title, body() ) ) {
+		Boolean read = id ? hasReadId( id ) : hasRead( title, body() );
+		if ( !( params.containsKey( "showHelp" ) || persist ) && read ) {
 			return;
 		}
 
@@ -58,13 +66,14 @@ class HelpTagLib {
 		}
 
 		String style = "style='${width ? "max-width: $width;" : ''} ${height ? "max-height: $height;" : ''}'"
-
 		String globalClass = ( helpForSelector == "" ) ? "global" : ""
+		String idAttr = id ? "id='$id'" : ""
+		String hash = id ? generateHash( id, "" ) : generateHash( title, body() )
 
 		out << """
-			<div class='help-overlay $globalClass $pointDirectionClass' $style>
+			<div $idAttr class='help-overlay $globalClass $pointDirectionClass' $style>
 				<input type='hidden' name='index' value='$index' />
-				<input type='hidden' name='hash' value='${generateHash( title, body() )}' />
+				<input type='hidden' name='hash' value='$hash' />
 				${helpForSelector  == "" ? "" : "<input type='hidden' name='forSelector' value='$helpForSelector' />"}
 				${location         == "" ? "" : "<input type='hidden' name='location' value='$location' />"}
 				${location         == "" ? "" : "<div class='pointer'></div>"}

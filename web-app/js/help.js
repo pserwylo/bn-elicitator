@@ -86,6 +86,24 @@ var HelpOverlay = klass( function( domElement ) {
 		return this;
 	},
 
+	getForSelector: function() {
+		return $( this.domElement ).find( 'input:hidden[name=forSelector]').val();
+	},
+
+	shouldDisplay: function() {
+		var needsDisplay = false;
+		var forSelector = this.getForSelector();
+		if ( typeof forSelector === "undefined" ) {
+			needsDisplay = true;
+		} else {
+			var forItem = $( forSelector );
+			if ( forItem.length > 0 ) {
+				needsDisplay = true;
+			}
+		}
+		return needsDisplay;
+	},
+
 	/**
 	 * Position the overlay.
 	 * Take into account whether it is to the left or to the right of the item it is attached to.
@@ -96,7 +114,7 @@ var HelpOverlay = klass( function( domElement ) {
 			return false;
 		}
 
-		var forSelector = $( this.domElement ).find( 'input:hidden[name=forSelector]').val();
+		var forSelector = this.getForSelector();
 		if ( typeof forSelector === "undefined" ) {
 
 			$( this.domElement )
@@ -108,6 +126,11 @@ var HelpOverlay = klass( function( domElement ) {
 		} else {
 
 			var forItem = $( forSelector );
+
+			if ( forItem.length == 0 ) {
+				throw new Error( "HelpOverlay: Could not find selector '" + forSelector + "'" );
+			}
+
 			var top = forItem.offset().top - 20;
 
 			var locationValue = $( this.domElement ).find( 'input:hidden[name=location]' ).val();
@@ -122,22 +145,26 @@ var HelpOverlay = klass( function( domElement ) {
 			}
 
 			$( this.domElement )
+				.css( 'display' , 'block' )
 				.css( 'position', 'absolute' )
 				.css( 'top'     , top )
 				.css( 'left'    , left );
 
+			var overlaywidth = $( this.domElement ).width();
+			var windowWidth  = $( window ).width();
+
 			// If we end up off the screen for some reason, then just centre the message on the screen.
-			if ( $( this.domElement ).offset().left < 5 ) {
+			if ( left < 5 ) {
 
 				$( this.domElement )
 					.addClass( 'doesnt-fit' )
 					.css     ( 'left', 5 );
 
-			} else if ( $( this.domElement ).offset().left + $( this.domElement ).width() > $( window ).width() - 30 ) {
+			} else if ( left + overlaywidth > windowWidth - 30 ) {
 
 				$( this.domElement )
 					.addClass( 'doesnt-fit' )
-					.css     ( 'left', $( window ).width() - 30 - $( this.domElement ).width() );
+					.css     ( 'left', windowWidth - 30 - overlaywidth );
 
 			} else {
 
@@ -157,7 +184,10 @@ var HelpOverlayManager = klass( function() {
 	self.overlays = [];
 
 	$( '.help-overlay' ).each( function() {
-		self.overlays.push( new HelpOverlay( this ) );
+		var overlay = new HelpOverlay( this );
+		if ( overlay.shouldDisplay() ) {
+			self.overlays.push( overlay );
+		}
 	});
 
 	if ( self.overlays.length > 0 ) {

@@ -445,12 +445,15 @@
 	<body>
 
 		<g:if test="${delphiPhase > 1}">
-			%{--<h:help forId="testId" title="bleh" index="100" location="right">
-				Sneh
+			<h:help id="elicit.parents.disagree-with-others" forSelector="#list-disagree li:first" title="What are these?" index="101" location="right">
+				<g:message code="elicit.parents.disagree-with-others.desc" args="${[variable.readableLabel]}" />
 			</h:help>
-			<h:help forId="testId" title="bleh1" index="101" location="right">
-				Sneh1
-			</h:help>--}%
+			<h:help id="elicit.parents.agree-with-others" forSelector="#list-agree    li:first" title="What are these?" index="102" location="right">
+				<g:message code="elicit.parents.agree-with-others.desc" args="${[variable.readableLabel]}" />
+			</h:help>
+			<h:help id="elicit.parents.nobody-wants-these" forSelector="#list-hidden   li:first" title="What are these?" index="103" location="right">
+				<g:message code="elicit.parents.nobody-wants-these.desc" args="${[variable.readableLabel]}" />
+			</h:help>
 		</g:if>
 
 		<div class="elicit-parents">

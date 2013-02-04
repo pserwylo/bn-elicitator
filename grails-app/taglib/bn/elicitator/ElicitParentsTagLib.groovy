@@ -241,9 +241,9 @@ class ElicitParentsTagLib {
 		Map<String,List<String>> variableLists = [:]
 
 		String firstRound = "firstRound"
-		String agree      = g.message( code: 'elicit.parents.agree-with-others' )
-		String disagree   = g.message( code: 'elicit.parents.disagree-with-others' )
-		String hidden     = g.message( code: 'elicit.parents.nobody-wants-these', args: [ child.readableLabel ] )
+		String agree      = "agree"
+		String disagree   = "disagree"
+		String hidden     = "hidden"
 
 		( delphiService.phase == 1
 			? [ firstRound ]
@@ -285,9 +285,15 @@ class ElicitParentsTagLib {
 		}
 
 		def descriptions = [
-				(agree)   : g.message( code: "elicit.parents.agree-with-others.desc"   , args: [ child.readableLabel ] ),
-				(disagree): g.message( code: "elicit.parents.disagree-with-others.desc", args: [ child.readableLabel ] ),
-				(hidden)  : g.message( code: "elicit.parents.nobody-wants-these.desc"  , args: [ child.readableLabel ] ),
+			(agree)   : g.message( code: "elicit.parents.agree-with-others.desc"   , args: [ child.readableLabel ] ),
+			(disagree): g.message( code: "elicit.parents.disagree-with-others.desc", args: [ child.readableLabel ] ),
+			(hidden)  : g.message( code: "elicit.parents.nobody-wants-these.desc"  , args: [ child.readableLabel ] ),
+		]
+
+		def labels = [
+			(agree)   : g.message( code: "elicit.parents.agree-with-others"   , args: [ child.readableLabel ] ),
+			(disagree): g.message( code: "elicit.parents.disagree-with-others", args: [ child.readableLabel ] ),
+			(hidden)  : g.message( code: "elicit.parents.nobody-wants-these"  , args: [ child.readableLabel ] ),
 		]
 
 		if ( delphiService.phase == 1 )
@@ -303,27 +309,24 @@ class ElicitParentsTagLib {
 
 		variableLists.each { entry ->
 
-			String label = entry.key
+			String key = entry.key
 			List<String> items = entry.value
 
-			if ( label != firstRound && items.size() == 0 )
+			if ( key != firstRound && items.size() == 0 )
 			{
 				// Don't show anything...
 			}
 			else
 			{
-				if ( label != firstRound )
+				if ( key != firstRound )
 				{
 					out << """
-						<h2>$label</h2>
-						<div class='description'>
-							${descriptions[ label ]}
-						</div>
+						<h2 id='header-$key'>${labels[key]}</h2>
 						"""
 				}
 
 				out << """
-					<ul class="potential-parents-list variable-list">
+					<ul id='list-$key' class="potential-parents-list variable-list">
 						${items.join( '\n' )}
 					</ul>
 					"""
