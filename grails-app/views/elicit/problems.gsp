@@ -36,49 +36,13 @@
 
 			$( document).ready( function() {
 
-				var detailsHigh = $( '.details-high' );
-				var detailsLow = $( '.details-low' );
+				// TODO: Refactor toggling code out to JS library and perhaps a matching taglib...
 
-				var btn = $( '.btn-toggle-details');
-				var animate = false;
+				var keepers = $( '.keeper' );
+				var btnKeepers = $( '#btnToggleKeepers');
 
 				var msgShow = "<g:message code='general.show' />";
 				var msgHide = "<g:message code='general.hide' />";
-
-				btn.click( function() {
-
-					if ( this.value.substring( 0, 4 ) == msgHide )
-					{
-						this.value = this.value.replace( msgHide, msgShow );
-						detailsHigh.hide( 'fast' );
-						detailsLow.show( 'fast' );
-						<bn:setPreference key="show-detailed-explanation" value="false" />
-					}
-					else
-					{
-						this.value = this.value.replace( msgShow, msgHide );
-						detailsHigh.show( 'fast' );
-						detailsLow.hide( 'fast' );
-						<bn:setPreference key="show-detailed-explanation" value="true" />
-					}
-
-				});
-
-				if ( '<bn:preferenceValue key="show-detailed-explanation" />' == 'true' )
-				{
-					detailsHigh.show();
-					detailsLow.hide();
-					btn.trigger( 'click' );
-				}
-				else
-				{
-					detailsHigh.hide();
-					detailsLow.show();
-				}
-
-				// TODO: Refactor toggling code out to JS library and perhaps a matching taglib...
-				var keepers = $( '.keeper' );
-				var btnKeepers = $( '#btnToggleKeepers');
 
 				var showKeepers = ${displayAll?.toString()};
 				if ( !showKeepers )
@@ -164,8 +128,6 @@
 
 					<h1><g:message code="problems.redundant.header" /></h1>
 
-					<input type="button" class="btn-toggle-details" value="${message( code: "general.show")} ${message( code: "general.detailed-explanation")}" />
-
 					<g:if test="${numKeepers > 0}">
 						<input
 							type="button"
@@ -173,10 +135,6 @@
 							id="btnToggleKeepers"
 							value="Show ${numKeepers} direct relationships you said are necessary" />
 					</g:if>
-
-					<div class='info details-high'>
-						<g:message code="problems.redundant.desc" />
-					</div>
 
 					<ul id="redundant-relationship-list" class="variable-list">
 
@@ -189,42 +147,15 @@
 								</div>
 
 								<div class='mediating-chain'>
-									<span class="details-high">
-										You said:
-										<bnProblems:listOfVariableChains chains="${rel.chains}" separator="and" />
-									</span>
+									<g:if test="${rel.relationship.isRedundant == Relationship.IS_REDUNDANT_NO}">
+											<g:message code="problems.redundant.previously-kept" />
+									</g:if>
 
-									<span class="details-low">
-										<g:message code="problems.redundant.better-explained-by" />
-										<bnProblems:listOfVariableChains chains="${rel.chains}" separator="BLEH" />
-									</span>
-								</div>
-
-								<div class='redundant details-high'>
-									However, you also said:
-									<span class='indent'>
-										<bn:variable includeDescription="false" var="${rel.redundantParent}" /> <em>directly</em> influences <bn:variable includeDescription="false" var="${rel.child}" />
-									</span>
-								</div>
-
-								<div class='redundant details-high'>
-									If you think that the way in which <bn:variable includeDescription="false" var="${rel.redundantParent}" /> influences
-									<bn:variable includeDescription="false" var="${rel.child}"/> is purely because it influences
-									<g:each in="${rel.chains*.get( 1 )}" var="var" status="i">
-										<bn:variable includeDescription="false" var="${var}" />
-										<g:if test="${i < rel.chains.size() - 1}">
-											or
-										</g:if>
-									</g:each>
-									then you should remove this <em>direct</em> relationship (it doesn't provide as useful information as the
-									indirect alternative you provided).
+									<g:message code="problems.redundant.better-explained-by" />
+									<bnProblems:listOfVariableChains chains="${rel.chains}" />
 								</div>
 
 								<div class="answers">
-									<span class='details-high'>
-										Would you like to:
-									</span>
-
 									<g:if test="${rel.relationship.isRedundant != Relationship.IS_REDUNDANT_NO}">
 										<button class="keep" value="${rel.redundantParent.label}-${rel.child.label}">
 											<g:message code="problems.redundant.keep" />
@@ -233,19 +164,7 @@
 
 									<button class="remove" value="${rel.redundantParent.label}-${rel.child.label}">
 										<g:message code="problems.redundant.remove" />
-										<g:if test="${rel.relationship.isRedundant == Relationship.IS_REDUNDANT_NO}">
-											<g:message code="problems.redundant.previously-kept" />
-										</g:if>
 									</button>
-
-									%{--
-									<label>
-										<input type="radio" name="${rel.redundantParent.label}-${rel.child.label}-keep" value="remove" /> Remove relationship
-									</label>
-									<label>
-										<input type="radio" name="${rel.redundantParent.label}-${rel.child.label}-keep" value="keep" ${rel.relationship.isRedundant == Relationship.IS_REDUNDANT_NO ? 'checked="checked"' : ''} /> Keep relationship
-									</label>
-									--}%
 								</div>
 
 							</li>

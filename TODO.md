@@ -39,12 +39,6 @@ Roger that. I'll add a button.
 > 2. Overall I think both tabs are much too wordy.  People won't read all the lenghy words!
 Alrighty, I recently refactored the code to replace all of the strings with i18n messages, so they are very easy to change.
 
-> 3. Under tab "Show X potential problems", Just delete all the self explanatory explanations "If you think that the way in which ...", and may be replace with "Which one would you choose?" if you really want the user to choose one not both"
-Yeah, I've noticed that they tend to repeat themselves. I'll look into that wording.
-
-> 3.a. Also remove on button " ... (previously you decided to keep)"
-As above. Will do, but I'll probably put it next to the button, in a smaller font. I still think its somewhat important, but also I agree that the button is grossly oversized.
-
 > 4. After you press a bottom to keep or remove a relationship, the screen always goes to the top.  If you have a long list of relationships to fix, it is really tedious to have to scroll back down bypassing all the relationships you have fixed.   Can you save the cursor position so that the screen refreshes back to where you left off and not the top?
 Gotcha. I can make it sent through the index location as well as the relationship we're removing. Then when it redirects back, I'll send the page to where it was.
 
