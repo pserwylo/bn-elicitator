@@ -213,7 +213,20 @@ class ElicitController {
 	}
 
 	def redirectToProblems = {
-		redirect( action: "problems", params: params )
+
+		def newParams = [:]
+
+		if ( params.containsKey( "scroll" ) )
+		{
+			flash.scroll = params.remove( "scroll" )
+		}
+
+		if ( params.containsKey( "displayAll" ) )
+		{
+			newParams.put( "displayAll", params.remove( "displayAll" ) )
+		}
+
+		redirect( action: "problems", params: newParams )
 	}
 
 	/**
@@ -257,7 +270,7 @@ class ElicitController {
 				cyclicalRelationships: cyclicalRelationships,
 				displayAll: displayAll,
 				numKeepers: numKeepers,
-				scroll: params.containsKey( "scroll" ) ? params["scroll"] : 0
+				scroll: flash.containsKey( "scroll" ) ? flash["scroll"] : 0
 			]
 		}
 		else
