@@ -225,10 +225,10 @@ class DelphiService {
 	 */
 	float calcConsensusScore( Agreement agreement )
 	{
-		float y = (float)agreement.othersCount / userService.expertCount
 		float x = agreement.othersConfidence / 100
+		float y = (float)agreement.othersCount / userService.expertCount
 
-		return x + y / 2
+		return ( x + y * 2 ) / 3
 	}
 
 	/**
