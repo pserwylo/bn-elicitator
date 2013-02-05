@@ -33,14 +33,8 @@ Mandatory comments
 Force people to view disagtreements, put less influence on agreement, and hide the useless ones. Use the same "needs review" metaphore as in the main list.
 
 Comments from Grace:
-> 1. Why is there no button to go back to the previous menu once you choose "show details" or "Show X potential problems"?  What if I change my mind once I see what one tab looks like and want to use the other tab instead?
-Roger that. I'll add a button.
-
 > 2. Overall I think both tabs are much too wordy.  People won't read all the lenghy words!
 Alrighty, I recently refactored the code to replace all of the strings with i18n messages, so they are very easy to change.
-
-> 4. After you press a bottom to keep or remove a relationship, the screen always goes to the top.  If you have a long list of relationships to fix, it is really tedious to have to scroll back down bypassing all the relationships you have fixed.   Can you save the cursor position so that the screen refreshes back to where you left off and not the top?
-Gotcha. I can make it sent through the index location as well as the relationship we're removing. Then when it redirects back, I'll send the page to where it was.
 
 > 5. What about if I want to remove one of the alternative relationships? Like the second under "You said" below?
 >
@@ -54,7 +48,3 @@ Yeah, I've had this mentioned to me by a couple of others to. The problem is tha
 
 > 6. Where should I go after I have fixed all the relationships?  No button to go further!
 Hmmm. This sounds like a bug. There will need to be a button on the page, and I should probably add a menu at the top too, though if I can get away without a menu I'd be happy.
-
-> 7.  There need to be an intro at the beginning on what is expected from this round.  And a finish "thank you" screen to show that the user has completed this round.
-
-Yup, I've implemented some help overlays which you see the first time you load up the page. They are contextual, in that they are able to point at specific elements on the page, but there are also ones which centre on the page (e.g. when you start a new round, it explains why you are seeing the same thing again):

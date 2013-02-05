@@ -36,6 +36,16 @@
 
 			$( document).ready( function() {
 
+				<g:if test="${scroll != null}">
+					$( window ).scrollTop( ${scroll} );
+				</g:if>
+
+				<g:if test="${displayAll}">
+					$( '#btnBack' ).click( function() {
+						document.location = '<g:createLink action="index" />'
+					});
+				</g:if>
+
 				// TODO: Refactor toggling code out to JS library and perhaps a matching taglib...
 
 				var keepers = $( '.keeper' );
@@ -74,7 +84,7 @@
 					var parts = this.value.split( '-' );
 					var parentLabel = parts[ 0 ];
 					var childLabel = parts[ 1 ];
-					document.location = link + "?parent=" + parentLabel + "&child=" + childLabel<g:if test="${displayAll}"> + '&displayAll=true'</g:if>;
+					document.location = link + "?parent=" + parentLabel + "&child=" + childLabel<g:if test="${displayAll}"> + '&displayAll=true'</g:if> + "&scroll=" + $( window ).scrollTop();
 					return false;
 				});
 
@@ -83,7 +93,7 @@
 					var parts = this.value.split( '-' );
 					var parentLabel = parts[ 0 ];
 					var childLabel = parts[ 1 ];
-					document.location = link + "?parent=" + parentLabel + "&child=" + childLabel<g:if test="${displayAll}"> + '&displayAll=true'</g:if>;
+					document.location = link + "?parent=" + parentLabel + "&child=" + childLabel<g:if test="${displayAll}"> + '&displayAll=true'</g:if> + "&scroll=" + $( window ).scrollTop();
 					return false;
 				});
 
@@ -178,6 +188,10 @@
 			</g:if>
 
 		</g:form>
+
+		<g:if test="${displayAll}">
+			<button id="btnBack" class="big"><g:message code="main.back-to-list" /></button>
+		</g:if>
 
 	</body>
 	

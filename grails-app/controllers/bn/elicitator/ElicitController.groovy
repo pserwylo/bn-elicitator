@@ -180,13 +180,8 @@ class ElicitController {
 			}
 		}
 
-		def params = [:]
-		if ( displayAll )
-		{
-			params["displayAll"] = true
-		}
+		redirectToProblems()
 
-		redirect( action: "problems", params: params )
 	}
 
 	def keepRedundant =
@@ -213,8 +208,12 @@ class ElicitController {
 		{
 			bnService.removeCycle( parent, child )
 			disagreementService.recalculateDisagreement( child )
-			redirect( action: "problems", params: [ displayAll: (Boolean)params["displayAll"] ] )
+			redirectToProblems()
 		}
+	}
+
+	def redirectToProblems = {
+		redirect( action: "problems", params: params )
 	}
 
 	/**
@@ -257,7 +256,8 @@ class ElicitController {
 				redundantRelationships: redundantRelationships,
 				cyclicalRelationships: cyclicalRelationships,
 				displayAll: displayAll,
-				numKeepers: numKeepers
+				numKeepers: numKeepers,
+				scroll: params.containsKey( "scroll" ) ? params["scroll"] : 0
 			]
 		}
 		else
