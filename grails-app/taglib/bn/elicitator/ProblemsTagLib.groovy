@@ -88,7 +88,7 @@ class ProblemsTagLib {
 				<button class='remove' value="${relationship.parent.label}-${relationship.child.label}">
 					${message( code: "problems.cyclical.remove" )}
 				</button>
-				<span class='relationship-to-remove'>${bn.variable( [ var: relationship.parent ] )} ${bn.rArrow( [ comment: relationship.comment?.comment ] )} ${bn.variable( [ var: relationship.child ] )}</span>
+				<span class='relationship-to-remove'>${bn.variable( [ var: relationship.parent ] )} ${bn.rArrow( [ comment: relationship.mostRecentComment?.comment ] )} ${bn.variable( [ var: relationship.child ] )}</span>
 			</li>
 		"""
 	}

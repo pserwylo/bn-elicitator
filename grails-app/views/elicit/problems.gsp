@@ -153,7 +153,7 @@
 							<li class="redundant-relationship variable-item ${ (rel.relationship.isRedundant == Relationship.IS_REDUNDANT_NO) ? 'keeper' : ''}">
 
 								<div class='header'>
-									<bn:variable includeDescription="false" var="${rel.redundantParent}" /> <bn:rArrow comment="${rel.relationship?.comment?.comment}" /> <bn:variable includeDescription="false" var="${rel.child}" />
+									<bn:variable includeDescription="false" var="${rel.redundantParent}" /> <bn:rArrow comment="${rel.relationship?.mostRecentComment?.comment}" /> <bn:variable includeDescription="false" var="${rel.child}" />
 								</div>
 
 								<div class='mediating-chain'>

@@ -99,7 +99,7 @@ class VariableTagLib {
 				out << bn.variable( [ var: rel.parent, includeDescription: includeTooltip ] )
 			}
 
-			out << bn.rArrow( [ comment: rel.comment?.comment ] )
+			out << bn.rArrow( [ comment: rel.mostRecentComment?.comment ] )
 			out << bn.variable( [ var: rel.child, includeDescription: includeTooltip ] )
 
 		}
@@ -126,7 +126,7 @@ class VariableTagLib {
 			if ( i < chain.size() - 1 )
 			{
 				Relationship rel = Relationship.findByCreatedByAndDelphiPhaseAndExistsAndParentAndChild( ShiroUser.current, AppProperties.properties.delphiPhase, true, chain[ i ], chain[ i + 1 ] )
-				String comment = rel?.comment?.comment
+				String comment = rel?.mostRecentComment?.comment
 				if ( comment == null ) {
 					output += bn.rArrow()
 				} else {
@@ -255,7 +255,7 @@ class VariableTagLib {
 		{
 			output += "<ul>"
 			childRelationships.each {
-				output += "<li>" + bn.rArrow( [ comment: it.comment?.comment ] ) + " " + it.child + "</li>\n"
+				output += "<li>" + bn.rArrow( [ comment: it.mostRecentComment?.comment ] ) + " " + it.child + "</li>\n"
 			}
 			output += "</ul>"
 		}
@@ -279,7 +279,7 @@ class VariableTagLib {
 		{
 			output += "<ul>"
 			parentRelationships.each {
-				output += "<li>$it.parent.readableLabel ${bn.rArrow( [ comment: it.comment?.comment ] )}</li>\n"
+				output += "<li>$it.parent.readableLabel ${bn.rArrow( [ comment: it.mostRecentComment?.comment ] )}</li>\n"
 			}
 			output += "</ul>"
 		}

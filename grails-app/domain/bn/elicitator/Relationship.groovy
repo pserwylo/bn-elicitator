@@ -102,8 +102,24 @@ class Relationship {
 
 	}
 
-	public Boolean isCurrent()
+	Boolean isCurrent()
 	{
 		return delphiPhase == AppProperties.properties.delphiPhase
 	}
+
+	Comment getMostRecentComment()
+	{
+		Comment c     = this.comment
+		Integer phase = AppProperties.properties.delphiPhase
+
+		while ( !c?.comment?.length() && phase > 0 )
+		{
+			phase --
+			Relationship relationship = Relationship.findByChildAndParentAndCreatedByAndDelphiPhase( child, parent, createdBy, phase )
+			c = relationship?.comment
+		}
+
+		return c
+	}
+
 }
