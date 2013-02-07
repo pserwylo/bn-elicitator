@@ -39,3 +39,24 @@ Yeah, I've had this mentioned to me by a couple of others to. The problem is tha
 
 > 6. Where should I go after I have fixed all the relationships?  No button to go further!
 Hmmm. This sounds like a bug. There will need to be a button on the page, and I should probably add a menu at the top too, though if I can get away without a menu I'd be happy.
+
+
+
+
+# Meetings comments:
+
+Change the "Which of the following variables have an influence..." text for subsequent rounds, to highlight that they have already made a decision, and just need to review.
+
+Change "Show details" to "review" or something more consise for subsequent rounds.
+
+Group variables into "Has influence" and "doesn't have influence" groups, and show the number of people who said the same thing on the right hand side.
+
+Remove all variables that 0% of people were interested in.
+
+Clean up form on the right ("show details form") so that it only hase checkbox, text area, and other peoples reasons. Rename the question up the top to invite them to review.
+
+REMOVE CONFIDENCE
+
+No more agree/disagree. 
+
+Add key up to the top of the index page, so that the lightbulb means "needs review" and the tick doesn't. Then remove the "(needs review)" text (but add to alt tag of lightbupb)."

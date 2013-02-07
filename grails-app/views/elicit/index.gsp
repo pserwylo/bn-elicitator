@@ -99,22 +99,6 @@
 			</h:help>
 		</g:if>
 
-		<g:if test="${keptRedunantRelationships > 0}">
-			<button
-				type="button"
-				style="margin-top: 0.3em;"
-				id="btnShowProblems"
-				onclick="document.location = '${createLink( action: 'problems', params: [ displayAll: true ] )}'">
-
-				<g:message code="general.show" />
-				<g:message code="elicit.list.potential-problems" args="${[ keptRedunantRelationships ]}" />
-
-			</button>
-			<h:help title="${g.message( code: "help.elicit.list.show-redundant.title" )}" forId="btnShowProblems" index="10001" location="right">
-				<g:message code="help.elicit.list.show-redundant" />
-			</h:help>
-		</g:if>
-
 		<br />
 		<br />
 
@@ -178,6 +162,22 @@
 				<g:message code="help.elicit.list.complete" />
 			</h:help>
 		</g:else>
+
+		<g:if test="${keptRedunantRelationships > 0}">
+			<button
+				type="button"
+				style="margin-top: 0.3em;"
+				id="btnShowProblems"
+				onclick="document.location = '${createLink( action: 'problems', params: [ displayAll: true ] )}'">
+
+				<g:message code="general.show" />
+				<g:message code="elicit.list.potential-problems" args="${[ keptRedunantRelationships ]}" />
+
+			</button>
+			<h:help title="${g.message( code: "help.elicit.list.show-redundant.title" )}" forId="btnShowProblems" index="10001" location="right">
+				<g:message code="help.elicit.list.show-redundant" />
+			</h:help>
+		</g:if>
 
 	</body>
 	
