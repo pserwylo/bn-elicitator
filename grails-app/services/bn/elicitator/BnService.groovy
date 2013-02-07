@@ -236,6 +236,18 @@ class BnService {
 		}
 	}
 
+	public void removeRegularRelationship( Variable parent, Variable child ) {
+		Relationship rel = Relationship.findByCreatedByAndDelphiPhaseAndParentAndChild( ShiroUser.current, delphiService.phase, parent, child )
+		if ( rel != null ) {
+			if ( rel.comment != null ) {
+				rel.comment.comment = ""
+				rel.comment.save()
+			}
+			rel.exists = false
+			rel.save( flush: true )
+		}
+	}
+
 	public List<CyclicalRelationship> getCyclicalRelationships() {
 
 		List<Variable> allVars = Variable.list()

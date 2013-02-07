@@ -41,35 +41,35 @@ class ArrowTagLib {
 	static namespace = "bn"
 
 	/**
-	 * @attr direction REQUIRED
-	 */
-	def arrow = { attrs ->
-
-		String direction = attrs.direction
-		out << generateArrow( direction )
-
-	}
-
-	/**
 	 * @attr comment
+	 * @attr onclick
 	 */
 	def rArrow = { attrs ->
-
-		String comment = attrs.containsKey( "comment" ) && attrs.comment?.trim()?.length() > 0 ? attrs.comment.trim(): null;
+		String comment = attrs.containsKey( "comment" ) && attrs.comment?.trim()?.length() > 0 ? attrs.comment.trim() : null
+		String onclick = attrs.containsKey( "onclick" ) ? attrs.onclick : null
+		Boolean isDeletable = onclick != null
 
 		if ( comment == null ) {
-			out << generateArrow( "right" )
+			out << generateArrow( "right", false, isDeletable )
 		} else {
-			out << VariableTagLib.generateTooltip( comment, null, null, generateArrow( "right", true ) )
-		}
 
+			if ( onclick != null ) {
+				out << "<a href=\"javascript:$onclick\">"
+			}
+
+			out << VariableTagLib.generateTooltip( comment, null, null, generateArrow( "right", true, isDeletable ), !isDeletable )
+
+			if ( onclick != null ) {
+				out << "</a>"
+			}
+		}
 	}
 
-	static String generateArrow( String direction, boolean hasComment = false ) {
+	static String generateArrow( String direction, boolean hasComment = false, boolean isDeletable = false ) {
 		assert [ "left", "right", "up", "down" ].contains( direction )
-
 		String commentClass = hasComment ? "comment" : ""
-		return "<span class='arrow ${direction} ${commentClass}'></span>"
+		String deletableClass = isDeletable ? "deletable" : ""
+		return "<span class='arrow ${direction} ${commentClass} ${deletableClass}'></span>"
 	}
 
 }
