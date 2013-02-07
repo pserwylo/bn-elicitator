@@ -99,6 +99,22 @@
 			</h:help>
 		</g:if>
 
+		<g:if test="${keptRedunantRelationships > 0}">
+			<button
+				type="button"
+				style="margin-top: 0.3em;"
+				id="btnShowProblems"
+				onclick="document.location = '${createLink( action: 'problems', params: [ displayAll: true ] )}'">
+
+				<g:message code="general.show" />
+				<g:message code="elicit.list.potential-problems" args="${[ keptRedunantRelationships ]}" />
+
+			</button>
+			<h:help title="${g.message( code: "help.elicit.list.show-redundant.title" )}" forId="btnShowProblems" index="10001" location="right">
+				<g:message code="help.elicit.list.show-redundant" />
+			</h:help>
+		</g:if>
+
 		<br />
 		<br />
 
@@ -113,20 +129,10 @@
 		</g:if>
 		<g:else>
 
-			%{--
-			<h2>Do you agree with the other participants?</h2>
-			<button id="btnToggleDetails" onclick="toggleDetails()">Show <span style="color: green;">Agreements</span> and <span style="color: red;">Disagreements</span></button>
-			<br /><br />
-			--}%
-
 			<bn:listSummary variables="${variables}" stillToVisit="${stillToVisit}"/>
 
 			<h:help title="${g.message( code: "help.elicit.list.round2.title" )}" index="100">
 				<g:message code="help.elicit.list.round2" />
-			</h:help>
-
-			<h:help title="${g.message( code: "help.elicit.list.disagreement.title" )}" forId="disagree-label-0" location="right" index="101">
-				<g:message code="help.elicit.list.disagreement" />
 			</h:help>
 
 		</g:else>
@@ -162,22 +168,6 @@
 				<g:message code="help.elicit.list.complete" />
 			</h:help>
 		</g:else>
-
-		<g:if test="${keptRedunantRelationships > 0}">
-			<button
-				type="button"
-				style="margin-top: 0.3em;"
-				id="btnShowProblems"
-				onclick="document.location = '${createLink( action: 'problems', params: [ displayAll: true ] )}'">
-
-				<g:message code="general.show" />
-				<g:message code="elicit.list.potential-problems" args="${[ keptRedunantRelationships ]}" />
-
-			</button>
-			<h:help title="${g.message( code: "help.elicit.list.show-redundant.title" )}" forId="btnShowProblems" index="10001" location="right">
-				<g:message code="help.elicit.list.show-redundant" />
-			</h:help>
-		</g:if>
 
 	</body>
 	

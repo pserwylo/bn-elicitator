@@ -41,7 +41,6 @@ class ElicitController {
 	VariableService     variableService
 	DelphiService       delphiService
 	BnService           bnService
-	DisagreementService disagreementService
 
 	/**
 	 * Mark this user as completed (for this round), then redirect to the main list so that they can still play around
@@ -152,8 +151,7 @@ class ElicitController {
 		redirect( action: 'index' )
 	}
 
-	private void fixRedundant( Boolean keep, String parentLabel, String childLabel, Boolean displayAll )
-	{
+	private void fixRedundant( Boolean keep, String parentLabel, String childLabel, Boolean displayAll ) {
 		Variable parent = Variable.findByLabel( parentLabel )
 		Variable child  = Variable.findByLabel( childLabel )
 
@@ -169,14 +167,10 @@ class ElicitController {
 				it.relationship.child == child && it.relationship.parent == parent
 			}
 
-			if ( keep )
-			{
+			if ( keep ) {
 				bnService.keepRedundantRelationship( rel )
-			}
-			else
-			{
+			} else {
 				bnService.removeRedundantRelationship( rel )
-				disagreementService.recalculateDisagreement( child )
 			}
 		}
 
@@ -184,30 +178,23 @@ class ElicitController {
 
 	}
 
-	def keepRedundant =
-	{
+	def keepRedundant = {
 		fixRedundant( true, (String)params["parent"], (String)params["child"], (Boolean)params["displayAll"] )
 	}
 
-	def removeRedundant =
-	{
+	def removeRedundant = {
 		fixRedundant( false, (String)params["parent"], (String)params["child"], (Boolean)params["displayAll"] )
 	}
 
-	def removeCycle =
-	{
+	def removeCycle = {
 		Variable parent = Variable.findByLabel( (String)params["parent"] )
 		Variable child  = Variable.findByLabel( (String)params["child"] )
 
-		if ( parent == null || child == null )
-		{
+		if ( parent == null || child == null ) {
 			String label = parent == null ? (String)params["parent"] : (String)params["child"]
 			response.sendError( 404, "Variable '$label' not found" )
-		}
-		else
-		{
+		} else {
 			bnService.removeCycle( parent, child )
-			disagreementService.recalculateDisagreement( child )
 			redirectToProblems()
 		}
 	}
@@ -343,7 +330,6 @@ class ElicitController {
 				)
 			}
 
-			relationship.confidence = cmd.confidence
 			relationship.exists = cmd.exists
 
 			String commentText = cmd.comment?.trim()
@@ -372,11 +358,7 @@ class ElicitController {
 			relationship.save( flush: true )
 			LoggedEvent.logSaveRelationship( relationship )
 
-			disagreementService.recalculateDisagreement( child )
-
-			// Send some output back, so that they can update the view with a "you agree" or "you disagree"...
-			Agreement agreement = delphiService.calcAgreement( parent, child, relationship )
-			render '{ "agree": ' + agreement.agree + ', "relationship": "' + agreement.myRelationship.toString() + '" }'
+			render 'Relationship saved'
 		}
 	}
 
@@ -453,11 +435,6 @@ class SaveRelationshipCommand {
 	 * The label of the parent variable.
 	 */
 	String parent
-
-	/**
-	 * A number between 0 and 100 determining how confident they are that there is a relationship from parent to child.s
-	 */
-	Integer confidence
 
 	/**
 	 * Textarea input which gives them the chance to explain why they feel the way they do.

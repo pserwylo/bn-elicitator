@@ -27,7 +27,6 @@ package bn.elicitator
 class Relationship {
 
     static constraints = {
-		confidence nullable: true
 		comment nullable: true
     }
 
@@ -88,16 +87,8 @@ class Relationship {
 	
 	String toString()
 	{
-
 		String string = exists ? "Relationship" : "No relationship";
-
 		string += " from " + parent + " to " + child;
-
-		if ( exists && confidence != null )
-		{
-			string += " (confidence: " + confidence + ")"
-		}
-
 		return string
 
 	}

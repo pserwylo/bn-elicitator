@@ -24,9 +24,6 @@ class ElicitParentsTagLib {
 
 	VariableService variableService
 	DelphiService delphiService
-	UserService userService
-
-	static Integer idCounter = 1
 
 	/**
 	 * @attr var REQUIRED
@@ -120,114 +117,6 @@ class ElicitParentsTagLib {
 	}
 
 	/**
-	 * @attr agreement REQUIRED
-	 */
-	def agreementCharts = { attrs ->
-
-		Agreement agreement = attrs.agreement
-
-		if ( agreement.current )
-		{
-			agreement = this.delphiService.calcAgreement( agreement.parent, agreement.child, this.delphiService.getMyPreviousRelationship( agreement.parent, agreement.child ) )
-		}
-
-		boolean byMe = ( ( agreement.specifiedBy & Agreement.BY_ME ) == Agreement.BY_ME );
-		boolean byOthers = ( ( agreement.specifiedBy & Agreement.BY_OTHERS ) == Agreement.BY_OTHERS );
-
-		out << "<div class='me'>"
-
-		if ( byMe )
-		{
-			out << """
-				<div class='previous-description yes'>
-					I thought it does and I was ${ConfidenceValue.create( agreement.myConfidence ).toString()}
-					${bnElicit.indicatorBar( [ widthPercent: agreement.myConfidence ] )}
-				</div>
-				"""
-		}
-		else
-		{
-			out << """
-				<div class='previous-description no'>
-					I thought it doesn't
-				</div>
-				${bnElicit.indicatorBar( [ widthPercent: 0 ] )}
-				"""
-		}
-
-		out << "</div><div class='others'>"
-
-		if ( byOthers )
-		{
-			boolean isMajority = agreement.othersCount > userService.expertCount / 2;
-			boolean isGoodConfidence = agreement.othersConfidence > 50;
-
-			String description = isMajority ? "" : "Only";
-
-			Integer othersPercent = (Double)agreement.othersCount / userService.expertCount * 100;
-
-			String andOrBut = "and"
-			if ( isMajority && !isGoodConfidence || !isMajority && isGoodConfidence )
-			{
-				andOrBut = "but"
-			}
-			String only = isGoodConfidence ? "" : "only"
-
-			out << """
-				<div class='previous-description yes'>
-					${description} ${agreement.othersCount} of ${userService.expertCount} others thought it does
-				</div>
-				${bnElicit.indicatorBar( widthPercent: othersPercent )}
-				${bnElicit.indicatorBar(
-					widthPercent: agreement.othersConfidence,
-					label: "${andOrBut} they were (on average) ${only} ${ConfidenceValue.create( agreement.othersConfidence )}"
-				)}
-				"""
-		}
-		else
-		{
-			out << """
-				<div class='previous-description no'>
-					All others thought it doesn't
-				</div>
-				${bnElicit.indicatorBar( [ widthPercent: 0 ] )}
-				${bnElicit.indicatorBar( [ widthPercent: 0 ] )}
-				"""
-		}
-
-		out << "</div>"
-	}
-
-	/**
-	 * @attr widthPercent REQUIRED
-	 * @attr label
-	 */
-	def indicatorBar = { attrs ->
-
-		Integer widthPercent = attrs.widthPercent
-		String label = attrs.containsKey( 'label' ) ? attrs.label : ""
-
-		String id = ++idCounter
-		String output = ""
-
-		output += "<div class='bar-label-wrapper'>\n"
-		output += "	<div id='bar-${id}' class='bar-chart'></div>\n"
-		if ( label )
-		{
-			output += "	<div class='var-confidence-label'>${label}</div>\n"
-		}
-		output += "</div>\n"
-
-		output += "<script type='text/javascript'>\n"
-		output += "	\$( document ).ready( function(){ \n"
-		output += "		\$( '#bar-${id}' ).slider({ range: 'min', min: 0, max: 100, value: ${widthPercent} } ).slider( 'disable' );\n"
-		output += "	});\n"
-		output += "</script>\n"
-
-		out << output;
-	}
-
-	/**
 	 * Iterates over each potentialParents and invokes the potentialParent taglib.
 	 * If we are in subsequent phases, we don't show variables which received no love from anybody in the previous phase.
 	 * @attr child REQUIRED
@@ -238,113 +127,32 @@ class ElicitParentsTagLib {
 		List<Variable> potentialParents = attrs.potentialParents
 		Variable child = attrs.child
 
-		Map<String,List<String>> variableLists = [:]
-
-		String firstRound = "firstRound"
-		String agree      = "agree"
-		String disagree   = "disagree"
-		String hidden     = "hidden"
-
-		( delphiService.phase == 1
-			? [ firstRound ]
-			: [ disagree, agree, hidden ]
-		).each { variableLists.put( it, [] ) }
+		out << "<ul id='list-$key' class='potential-parents-list variable-list'>"
 
 		for ( Variable parent in potentialParents )
 		{
 			if ( parent != child )
 			{
-				Agreement agreement = null
-				if ( delphiService.hasPreviousPhase )
-				{
-					agreement = delphiService.calcAgreement( parent, child )
-				}
-
-				String item = bnElicit.potentialParent( child: child, parent: parent, agreement: agreement )
-				String listToPut
-
-				if ( delphiService.phase == 1 )
-				{
-					listToPut = firstRound
-				}
-				else if ( !showParent( agreement ) )
-				{
-					listToPut = hidden
-				}
-				else if ( agreement?.agree )
-				{
-					listToPut = agree
-				}
-				else
-				{
-					listToPut = disagree
-				}
-
-				variableLists[ listToPut ].add( item )
+				out << bnElicit.potentialParent( child: child, parent: parent )
 			}
 		}
 
-		def descriptions = [
-			(agree)   : g.message( code: "elicit.parents.agree-with-others.desc"   , args: [ child.readableLabel ] ),
-			(disagree): g.message( code: "elicit.parents.disagree-with-others.desc", args: [ child.readableLabel ] ),
-			(hidden)  : g.message( code: "elicit.parents.nobody-wants-these.desc"  , args: [ child.readableLabel ] ),
-		]
-
-		def labels = [
-			(agree)   : g.message( code: "elicit.parents.agree-with-others"   , args: [ child.readableLabel ] ),
-			(disagree): g.message( code: "elicit.parents.disagree-with-others", args: [ child.readableLabel ] ),
-			(hidden)  : g.message( code: "elicit.parents.nobody-wants-these"  , args: [ child.readableLabel ] ),
-		]
-
 		if ( delphiService.phase == 1 )
 		{
-			variableLists[ firstRound ].add(
-				"""
+			out << """
 				<li id="add-variable-item" class=" variable-item new-var">
 					${bnElicit.newVariableForm( var: child )}
 				</li>
 				"""
-			)
 		}
 
-		variableLists.each { entry ->
-
-			String key = entry.key
-			List<String> items = entry.value
-
-			if ( key != firstRound && items.size() == 0 )
-			{
-				// Don't show anything...
-			}
-			else
-			{
-				if ( key != firstRound )
-				{
-					out << """
-						<h2 id='header-$key'>${labels[key]}</h2>
-						"""
-				}
-
-				out << """
-					<ul id='list-$key' class="potential-parents-list variable-list">
-						${items.join( '\n' )}
-					</ul>
-					"""
-			}
-		}
-
-	}
-
-	private static Boolean showParent( Agreement agreement )
-	{
-		return !( agreement && agreement.specifiedBy == Agreement.BY_NEITHER )
+		out << "</ul>"
 	}
 
 	private void dumpPotentialParentLabel( Variable parent, Boolean selected )
 	{
 
 		out << """
-			<input type='hidden' name='confidence[${parent.label}]' value='' />
 			<label for='input-${parent.label}'>
 				<input
 					id='input-${parent.label}'
@@ -369,6 +177,7 @@ class ElicitParentsTagLib {
 
 	private void dumpPotentialParentSummary( Variable parent )
 	{
+		// TODO: Change this to something like "Review" for subsequent rounds...
 		out << """
 			<div id='${parent.label}-summary' class='var-summary'>
 				<span class="toggle-details">
@@ -385,7 +194,6 @@ class ElicitParentsTagLib {
 	 * @attr child        REQUIRED
 	 * @attr parent       REQUIRED
 	 * @attr relationship REQUIRED
-	 * @attr agreement    REQUIRED
 	 * @attr isSelected   REQUIRED
 	 */
 	def potentialParentDialog = { attrs ->
@@ -393,13 +201,11 @@ class ElicitParentsTagLib {
 		Variable child            = attrs.child
 		Variable parent           = attrs.parent
 		Relationship relationship = attrs.relationship
-		Agreement agreement       = attrs.agreement
 		Boolean isSelected        = attrs.isSelected
 
 		out << """
 			<div id='${parent.label}-details' class='var-details floating-dialog'>
 				<div class='header-wrapper'>
-					${delphiService.hasPreviousPhase && agreement != null ? "<span class='header'>This time</span>" : ''}
 					${bn.saveButtons( [ atTop: true ] )}
 				</div>
 				<table width="100%" class="form">
@@ -420,17 +226,6 @@ class ElicitParentsTagLib {
 							</label>
 						</td>
 					</tr>
-					<tr class='my-confidence ${relationship?.exists ? '' : 'hidden'}'>
-						<th>
-							<span class='confidence-label'>How confident are you?</span>
-						</th>
-						<td>
-							<div
-								id='${parent.label}-confidence-slider'
-								class='slider var-confidence-slider'>
-							</div>
-						</td>
-					</tr>
 					<tr>
 						<th>
 							Why do you think this?
@@ -444,19 +239,6 @@ class ElicitParentsTagLib {
 				</table>
 				"""
 
-		if ( agreement != null )
-		{
-			String agreeClass = ( agreement.specifiedBy == Agreement.BY_ME || agreement.specifiedBy == Agreement.BY_OTHERS ) ? "disagree" : "agree"
-			out << """
-				<div class='agreement'>
-					<div class='header'>Last time</div>
-					<span class='${agreeClass}'>
-						${bnElicit.agreementCharts( [ agreement: agreement ] )}
-					</span>
-				</div>
-				"""
-		}
-
 		List<Relationship> relationshipsToShowCommentsFor = this.delphiService.hasPreviousPhase ? this.delphiService.getAllPreviousRelationshipsAndMyCurrent( parent, child ) : [ relationship ]
 
 		out << """
@@ -464,64 +246,34 @@ class ElicitParentsTagLib {
 			${bn.saveButtons( [ atTop: false ] )}
 		</div>
 		"""
-
-		if ( relationship != null )
-		{
-			if ( parent.label ) {
-				out << """
-					<script type='text/javascript'>
-						\$( document ).ready( function(){
-							sliderValues.${parent.label} = ${relationship.confidence == null ? 0 : relationship.confidence};
-						});
-					</script>
-					"""
-			}
-		}	
 	}
 
 	/**
 	 * Displays a list element which portrays a variable which is primed to be selected as a parent of child.
 	 * If the user has already viewed and saved a relationship for this pair of variables, we will retrieve that.
-	 * If an agreement is specified, we will just not look it up ourself.
 	 * @attrs child REQUIRED
 	 * @attrs parent REQUIRED
-	 * @attrs agreement
 	 */
 	def potentialParent = { attrs ->
 
-		Variable varChild   = attrs.child
-		Variable varParent  = attrs.parent
-		Agreement agreement = attrs.containsKey( 'agreement' ) ? attrs.agreement : null
+		Variable child   = attrs.child
+		Variable parent  = attrs.parent
 
-		Relationship relationship = this.delphiService.getMyCurrentRelationship( varParent, varChild )
-
-		if ( delphiService.hasPreviousPhase && relationship == null && !agreement?.myRelationship?.isCurrent() )
-		{
-			// Display their answer from last round if they haven't already provided one here.
-			relationship = agreement.myRelationship
-		}
-
-		Boolean isVisible = showParent( agreement )
+		Relationship relationship = this.delphiService.getMyCurrentRelationship( parent, child )
 		Boolean isSelected = relationship?.exists
+		Boolean isVisible = true // TODO: Make invisible when all people said it doesn't exist...
 
-		String agreementClass = "";
-		if ( delphiService.phase > 1 )
+		out << "<li id='${parent.label}-variable-item' class='variable-item ${isVisible ? '' : 'hide'}'>"
 		{
-			agreementClass = agreement?.agree ? 'agree' : 'disagree'
+			dumpPotentialParentSummary( parent )
+			dumpPotentialParentLabel( parent, isSelected )
 		}
-
-		out << "<li id='${varParent.label}-variable-item' class='variable-item ${isVisible ? '' : 'hide'} ${agreementClass}'>"
-
-			dumpPotentialParentSummary( varParent )
-			dumpPotentialParentLabel( varParent, isSelected )
-
 		out << "</li>"
 
 		out << bnElicit.potentialParentDialog([
-			child: varChild,
-			parent: varParent,
+			child: child,
+			parent: parent,
 			relationship: relationship,
-			agreement: agreement,
 			isSelected: isSelected
 		])
 		

@@ -208,7 +208,6 @@ class VariableService
 					delphiPhase: AppProperties.properties.delphiPhase,
 					exists:      oldRelationship?.exists,
 					isRedundant: oldRelationship?.exists ? oldRelationship?.isRedundant : Relationship.IS_REDUNDANT_UNSPECIFIED,
-					confidence:  oldRelationship?.exists ? oldRelationship.confidence : null
 				).save()
 			}
 		}

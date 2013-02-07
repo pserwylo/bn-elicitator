@@ -81,7 +81,7 @@ class LoggedEvent {
 			user: ShiroUser.current,
 			date: new Date(),
 			delphiPhase: AppProperties.properties.delphiPhase,
-			description: "Saved relationship from '" + relationship.parent + "' to '" + relationship.child + "' with " + relationship.confidence + " confidence.",
+			description: "Saved relationship from '" + relationship.parent + "' to '" + relationship.child + "'.",
 			relationship: relationship ).save()
 	}
 

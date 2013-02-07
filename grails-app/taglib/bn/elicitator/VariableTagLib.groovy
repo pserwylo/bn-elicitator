@@ -23,8 +23,6 @@ class VariableTagLib {
 	static namespace = "bn"
 
 	VariableService variableService
-	DelphiService delphiService
-	DisagreementService disagreementService
 
 	/**
 	 * @attr id
@@ -152,43 +150,14 @@ class VariableTagLib {
 		List<Variable> stillToVisit = attrs.stillToVisit
 		out << "<ul id='all-children-list' class='variable-list '>\n"
 
-		List<Disagreement> disagreementList = delphiService.hasPreviousPhase ? disagreementService.getDisagreements( variables ) : []
-
-		if ( delphiService.hasPreviousPhase ) {
-
-			if ( disagreementList.size() == 0 ) {
-				variables.each { disagreementService.recalculateDisagreement( it ) }
-				disagreementList = disagreementService.getDisagreements( variables )
-			}
-
-			// Sort based on disagreement. Disagreement
-			variables.sort { var1, var2 ->
-				def disagreement1 = disagreementList.find { it.child == var1 }
-				def disagreement2 = disagreementList.find { it.child == var2 }
-				disagreement2.disagreeCount <=> disagreement1.disagreeCount
-			}
-		}
-
 		variables.eachWithIndex { child, i ->
-
 			Boolean hasVisited = !stillToVisit.contains( child )
 			String classNeedsReview = hasVisited ? 'doesnt-need-review' : 'needs-review'
-			Disagreement disagreement = disagreementList.find{ it.child == child }
-
-			Integer disagreementPercent = ( Math.min( disagreement.disagreeCount, (Integer)( disagreement.totalCount / 2 ) ) / ( disagreement.totalCount / 2 ) ) * 4
-			String classDisagreement = "disagree-by-" + disagreementPercent
-
 			out << """
 				<li class='variable-item  ${classNeedsReview}'>
 					${bn.variableInListWithRelationships( [ variable: child, needsReview: !hasVisited ] )}
-					<span class='agreement-summary item-description'>
-						<span id='disagree-label-${i}' class='short ${classDisagreement}'>
-							${g.message( code: "elicit.list.disagree-with", args: [ disagreement?.disagreeCount, disagreement?.totalCount])}
-						</span>
-					</span>
 				</li>
 				"""
-
 		}
 		out << "</ul>"
 
