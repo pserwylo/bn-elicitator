@@ -9,6 +9,9 @@ bn-elicitator.properties
 # web application files
 /web-app/WEB-INF
 
+# Ontology files
+*.owl
+
 # default HSQL database files for production mode
 /prodDb.*
 
