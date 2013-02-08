@@ -23,7 +23,8 @@ class ElicitParentsTagLib {
 	static namespace = "bnElicit"
 
 	VariableService variableService
-	DelphiService delphiService
+	DelphiService   delphiService
+	UserService     userService
 
 	/**
 	 * @attr var REQUIRED
@@ -63,7 +64,6 @@ class ElicitParentsTagLib {
 	def reasonsList = { attrs ->
 
 		List<Relationship> relationships = attrs.relationships
-
 
 		out << """
 			<div class='reasons'>
@@ -117,6 +117,89 @@ class ElicitParentsTagLib {
 	}
 
 	/**
+	 * Produces three lists:
+	 *  - I said yes
+	 *  - I said no
+	 *  - We *all* said no (which is hidden)
+	 * @attr child REQUIRED
+	 * @attr potentialParents REQUIRED
+	 */
+	def potentialParentsListLaterRounds = { attrs ->
+
+		List<Variable> potentialParents = attrs.potentialParents
+		Variable child = attrs.child
+
+		List<Variable> listYes   = []
+		List<Variable> listNo    = []
+		List<Variable> listNoAll = []
+		Map<Variable, List<Relationship>> allRelationships = [:]
+		Map<Variable, Integer>            allOthersCount   = [:]
+
+		potentialParents.each { parent ->
+
+			List<Relationship> relationships = delphiService.getAllPreviousRelationshipsAndMyCurrent( parent, child )
+
+			Relationship       myCurrent      = relationships.find    { it.createdBy == ShiroUser.current && it.delphiPhase == delphiService.phase }
+			Relationship       myPrevious     = relationships.find    { it.createdBy == ShiroUser.current && it.delphiPhase == delphiService.previousPhase }
+			List<Relationship> othersPrevious = relationships.findAll { it.createdBy != ShiroUser.current }
+			Relationship       myMostRecent   = myCurrent ?: myPrevious
+			Integer            othersCount    = othersPrevious.count { it?.exists }
+
+			allRelationships.put( parent, relationships )
+			allOthersCount.put( parent, othersCount )
+
+			if ( myMostRecent?.exists ) {
+				listYes.add( parent )
+			} else if ( othersCount == 0 ) {
+				listNoAll.add( parent )
+			} else {
+				listNo.add( parent )
+			}
+		}
+
+		Integer totalUsers = userService.expertCount
+
+		def sortYes  = { low, high ->              allOthersCount.get( low ) <=>              allOthersCount.get( high ) }
+		def sortNo   = { low, high -> totalUsers - allOthersCount.get( low ) <=> totalUsers - allOthersCount.get( high ) }
+		def listItem = { parent, count ->
+
+			List<String> countClasses = [ "low", "medium", "high" ]
+			float   countPercent    = count / totalUsers
+			int     countClassIndex = countClasses.size() - 1 - ( countPercent * countClasses.size() )
+
+			out << """
+			<li id='${parent.label}-variable-item' class='variable-item'>
+				<span class='var-summary'>
+					<span class='count ${countClasses[ countClassIndex ]}'>$count</span>
+					<button class='review' value='${parent.label}'>Review</button>
+				</span>
+				${bn.variable( [ var: parent ] )}
+			</li>
+			"""
+		}
+
+		out << """
+			<h2 style='font-size: 1.0em; float: right;'># of others who also said "<strong>Yes</strong>"</h2>
+			<h2>I said "Yes"</h2>
+			<ul id='list-yes' class='potential-parents-list variable-list'>
+			"""
+		listYes.sort( sortYes ).each { parent ->
+			listItem( parent, allOthersCount.get( parent ) )
+		}
+		out << "</ul>"
+
+		out << """
+			<h2 style='font-size: 1.0em; float: right;'># of others who also said "<strong>No</strong>"</h2>
+			<h2>I said "No"</h2>
+			<ul id='list-no' class='potential-parents-list variable-list'>
+			"""
+		listNo.sort( sortNo ).each { parent ->
+			listItem( parent, totalUsers - allOthersCount.get( parent ) )
+		}
+		out << "</ul>"
+	}
+
+	/**
 	 * Iterates over each potentialParents and invokes the potentialParent taglib.
 	 * If we are in subsequent phases, we don't show variables which received no love from anybody in the previous phase.
 	 * @attr child REQUIRED
@@ -127,7 +210,12 @@ class ElicitParentsTagLib {
 		List<Variable> potentialParents = attrs.potentialParents
 		Variable child = attrs.child
 
-		out << "<ul id='list-$key' class='potential-parents-list variable-list'>"
+		if ( delphiService.hasPreviousPhase ) {
+			out << bnElicit.potentialParentsListLaterRounds( [ potentialParents: potentialParents, child: child ] )
+			return
+		}
+
+		out << "<ul class='potential-parents-list variable-list'>"
 
 		for ( Variable parent in potentialParents )
 		{
@@ -177,13 +265,12 @@ class ElicitParentsTagLib {
 
 	private void dumpPotentialParentSummary( Variable parent )
 	{
-		// TODO: Change this to something like "Review" for subsequent rounds...
+		String message = delphiService.hasPreviousPhase ? message( code: "elicit.parents.review" ) : message( code:  "general.show" ) + " " + message( code: "elicit.parents.info" )
 		out << """
 			<div id='${parent.label}-summary' class='var-summary'>
 				<span class="toggle-details">
 					<button type="button" class="show-var-details " onclick="showVarDetails( '${parent.label}' )">
-						${message( code: "general.show" )}
-						${message( code: "elicit.parents.info" )}
+						$message
 					</button>
 				</span>
 			</div>
@@ -191,35 +278,49 @@ class ElicitParentsTagLib {
 	}
 
 	/**
-	 * @attr child        REQUIRED
-	 * @attr parent       REQUIRED
-	 * @attr relationship REQUIRED
-	 * @attr isSelected   REQUIRED
+	 * If no attributes are specified, then we will render an empty form, prime to be populated via JSON objects.
+	 * @attr child
+	 * @attr parent
+	 * @attr relationship
+	 * @attr isSelected
 	 */
 	def potentialParentDialog = { attrs ->
 
-		Variable child            = attrs.child
-		Variable parent           = attrs.parent
-		Relationship relationship = attrs.relationship
-		Boolean isSelected        = attrs.isSelected
+		Variable child            = null
+		Variable parent           = null
+		Relationship relationship = null
+		Boolean isSelected        = null
+
+		if ( attrs.containsKey( 'child' ) && attrs.containsKey( 'parent' ) && attrs.containsKey( 'relationship' ) && attrs.containsKey( 'isSelected' ) ) {
+			child        = attrs.remove( 'child' )
+			parent       = attrs.remove( 'parent' )
+			relationship = attrs.remove( 'relationship' )
+			isSelected   = attrs.remove( 'isSelected' )
+		}
+
+		String dialogId     = parent ? parent.label + "-details"    : "details-form"
+		String inputIdAttr  = parent ? "id='input-${parent.label}-form'" : ""
+		String inputName    = parent ? "parents" : "exists"
+		String inputValue   = parent ? parent.label : "1"
+		String comment      = relationship?.delphiPhase == delphiService.phase && relationship?.comment?.comment?.length() > 0 ? relationship.comment.comment : ''
+		String commentLabel = parent ? "Why do you think this?" : "Do you have any further comments?"
 
 		out << """
-			<div id='${parent.label}-details' class='var-details floating-dialog'>
+			<div id='$dialogId' class='var-details floating-dialog'>
 				<div class='header-wrapper'>
 					${bn.saveButtons( [ atTop: true ] )}
 				</div>
 				<table width="100%" class="form">
 					<tr>
-						<th>
-						</th>
+						<th></th>
 						<td>
 							<label>
 								<input
-									id='input-${parent.label}-form'
+									$inputIdAttr
 									type='checkbox'
 									${isSelected ? "checked='checked'" : ''}
-									name='parents'
-									value='${parent.label}'
+									name='$inputName'
+									value='$inputValue'
 									/>
 
 								I think it does
@@ -228,18 +329,22 @@ class ElicitParentsTagLib {
 					</tr>
 					<tr>
 						<th>
-							Why do you think this?
+							$commentLabel
 						</th>
 						<td>
 							<div class='my-comment'>
-								<textarea name='comment'>${relationship?.delphiPhase == delphiService.phase && relationship?.comment?.comment?.length() > 0 ? relationship.comment.comment : ''}</textarea>
+								<textarea name='comment'>$comment</textarea>
 							</div>
 						</td>
 					</tr>
 				</table>
 				"""
 
-		List<Relationship> relationshipsToShowCommentsFor = this.delphiService.hasPreviousPhase ? this.delphiService.getAllPreviousRelationshipsAndMyCurrent( parent, child ) : [ relationship ]
+		List<Relationship> relationshipsToShowCommentsFor = parent ?
+			( this.delphiService.hasPreviousPhase ?
+				this.delphiService.getAllPreviousRelationshipsAndMyCurrent( parent, child ) :
+				[ relationship ] ) :
+			[]
 
 		out << """
 			${bnElicit.reasonsList( [ relationships: relationshipsToShowCommentsFor ] )}
@@ -261,13 +366,12 @@ class ElicitParentsTagLib {
 
 		Relationship relationship = this.delphiService.getMyCurrentRelationship( parent, child )
 		Boolean isSelected = relationship?.exists
-		Boolean isVisible = true // TODO: Make invisible when all people said it doesn't exist...
 
-		out << "<li id='${parent.label}-variable-item' class='variable-item ${isVisible ? '' : 'hide'}'>"
-		{
+		out << "<li id='${parent.label}-variable-item' class='variable-item'>"
+
 			dumpPotentialParentSummary( parent )
 			dumpPotentialParentLabel( parent, isSelected )
-		}
+
 		out << "</li>"
 
 		out << bnElicit.potentialParentDialog([

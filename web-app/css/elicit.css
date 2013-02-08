@@ -16,6 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+.no-for-all {
+	display: none;
+}
+
 .column-left .description {
 	padding: 0 1em 0.5em 1em;
 	font-size: 0.9em;
@@ -263,8 +267,21 @@ ul#redundant-relationship-list .indent li {
 .var-summary {
     width: 200px;
     float: right;
+	text-align: right;
     padding-right: 0.8em;
 }
+
+.var-summary .count {
+	height: 100%;
+	padding-right: 0.4em;
+	margin-right: 0.3em;
+	border-right: solid 1px #ddd;
+	font-weight: bold;
+}
+
+.var-summary .count.high   { color: #D7191C; }
+.var-summary .count.medium { color: #FDAE61;}
+.var-summary .count.low    { color: #1A9641;}
 
 .var-summary .agreement {
     display: block;

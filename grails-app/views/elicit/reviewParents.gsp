@@ -25,74 +25,6 @@
 
 		<g:javascript>
 
-        /**
-        * Keep track of all of the dialogs here, indexed by their parent label. We store them here because we'll be
-        * detatching them from the DOM (rather than removing them completely), and don't want to lose them when we do so.
-        * @type {Object}
-        */
-		var detailsDivs = {};
-
-		/**
-		 * The currently showing variable dialog...
-		 * @type {string}
-		 */
-		var currentVariable = null;
-
-		/**
-		 * If they do any sort of modification to a variable (e.g. check the relationship checkbox, or modify their
-		 * reason), we store it here until they hit save. This allows us to both add visual feedback
-		 * to the screen and also prevent them clicking the 'finished' button down the bottom.
-		 * @type {Array}
-		 */
-		var unsavedVariables = [];
-
-		function onFinish() {
-			if ( unsavedVariables.length > 0 )
-			{
-				var plural = unsavedVariables.length == 1 ? '' : 's';
-				alert( "Cannot finish yet.\n\nYou still have " + unsavedVariables.length + " unsaved variable" + plural + ".\n\nClick 'Show Details' next to the variables with a red exclamation mark, then save the details." );
-			}
-			else
-			{
-				document.location = '${createLink( action: 'completedVariable', params: [ variable: "${variable.label}" ] )}';
-			}
-		}
-
-		<g:if test="${delphiPhase == 1}">
-
-		$( document ).ready( function() {
-
-			var potentialParentsList = $( '.potential-parents-list' );
-			potentialParentsList.find( 'input[class=potential-parent]' ).change( onToggleListCheckbox );
-
-			$( '#inputNewVariableLabel' ).autocomplete( {
-				source: "<g:createLink action='getVariablesFromOntology' controller='data'/>",
-				minLength: 2,
-				select: function( event, ui ) {
-
-				}
-			});
-
-			// There are several 'save' buttons (two per form, and two 'save and hide') per form...
-			var btnHolders = $( '.save-wrapper' );
-			btnHolders.find( 'button.save' ).click( onSave );
-			btnHolders.find( 'button.close' ).click( hideVarDetails );
-
-			$( '.var-details' ).detach().each( function( i, item ) {
-				var label = item.id.substring( 0, item.id.length - '-details'.length );
-				$( item ).find( '#input-' + label + '-form' ).change( onToggleFormCheckbox );
-				$( item ).find( 'textarea[name=comment]' ).change( function(){ markUnsaved( label ); } );
-				detailsDivs[ label ] = item;
-			});
-
-			$( '.unsaved-icon' ).click( function() {
-				alert( 'This variable has unsaved changes.\n\nClick "Show Details" and save them before continuing.' )
-			})
-
-		});
-
-		</g:if>
-
 		/**
 		 * Adds a new comment to the top of the list of comments for the dialog belonging to 'variable'.
 		 * The comment will be styled differently if the relationship is stated as existing or not.
@@ -189,28 +121,6 @@
 		}
 
 		/**
-		 * Show the details form for the variable which the li belongs to.
-		 * @param event
-		 */
-        function onToggleListCheckbox( event ) {
-            var checked = $( event.target ).prop( 'checked' );
-            var label = $( event.target ).attr( 'value' );
-            showVarDetails( label );
-			toggleRelationship( label, checked );
-        }
-
-        /**
-         * Apart from toggling the appropriate stuff in the form , we will also make sure the list checkbox is kept
-         * up to date.
-		 * @param event
-		 */
-        function onToggleFormCheckbox( event ) {
-            var checked = $( event.target ).prop( 'checked' );
-            var label = $( event.target ).attr( 'value' );
-        	toggleRelationship( label, checked );
-        }
-
-		/**
 		 * Takes a variable and adds it to the unsavedVariables array (if it isn't already in there).
 		 * @param variableLabel
 		 */
@@ -291,89 +201,29 @@
 		}
 
 		<g:if test="${delphiPhase > 1 }">
-
-			$( document ).ready( function() {
-
-				var unsaved = false;
-
-				var form = $( '#var-details-dialog' );
-				var checkbox = form.find( 'input:checkbox' );
-				var textarea = form.find( 'textarea' );
-
-				var currentVar = null;
-
-				checkbox.change( function() { unsaved = true; } );
-				textarea.blur  ( function() { unsaved = true; } );
-
-				form.find( 'button.save' ).click( function() {
+			$( 'button.review' ).each( function() {
+				$( this ).click( function() {
 					$.ajax({
 						type: 'post',
-						url: '${createLink( action: 'save' )}',
+						url: '<g:createLink action='ajaxGetReviewDetails' />',
 						data: {
 							child: '${variable.label}',
-							parent: currentVar,
-							comment: textarea.text(),
-							exists: checkbox.prop( 'checked' )
+							parent: this.value
 						},
 						dataType: 'text json',
 						error: function( data ) {
-							undisable();
 							alert( "Error while saving. The administrator has been notified." );
 						},
 						success: function( data ) {
-							
+							console.log( data );
+							var form = $( '#var-details-dialog' );
+
+							var reasonsList = form;
+
+							form.show();
 						}
-					);
-				});
-
-				$( 'button.review' ).each( function() {
-
-					$( this ).click( function() {
-
-						if ( unsaved ) {
-							alert( "Must save changes first (click the save button on the right)." );
-							return;
-						}
-
-						$.ajax({
-							type: 'post',
-							url: '<g:createLink action='ajaxGetReviewDetails' />',
-							data: {
-								child: '${variable.label}',
-								parent: this.value
-							},
-							dataType: 'text json',
-							error: function( data ) {
-								alert( "Error while saving. The administrator has been notified." );
-							},
-							success: function( data ) {
-
-								var reasons     = form.find( '.reasons' );
-								var reasonsList = reasons.find( '.reasons-list' );
-
-								reasons.find( '.no-reasons' ).remove();
-								reasonsList.children().remove();
-
-								checkbox.prop( 'checked', data.exists );
-
-								if ( data.comments.length == 0 ) {
-									reasons.append( '<div class="no-reasons">No reasons given.</div>' );
-								} else {
-									for ( var i = 0; i < data.comments.length; i ++ ) {
-										var comment = data.comments[ i ];
-										var author  = comment.byMe ? "Myself" : "Other participant";
-										var classes = [ 'phase-${delphiPhase}' ];
-										classes.push( comment.byMe   ? 'me' : 'other' );
-										classes.push( comment.exists ? 'exists' : 'doesnt-exist' );
-										reasonsList.append( '<li class="' + classes.join( ' ' ) + '">' + comment.comment + '<div class="author"> - ' + author + '</div></li>' );
-									}
-								}
-
-								form.show();
-							}
-						});
-
 					});
+
 				});
 			});
 		</g:if>

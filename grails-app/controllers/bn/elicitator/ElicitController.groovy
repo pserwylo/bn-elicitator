@@ -36,6 +36,8 @@
 
 package bn.elicitator
 
+import grails.converters.JSON
+
 class ElicitController {
 
 	VariableService     variableService
@@ -266,6 +268,48 @@ class ElicitController {
 		}
 	}
 
+	def ajaxGetReviewDetails = {
+
+		if ( !delphiService.hasPreviousPhase ) {
+			return
+		}
+
+		Variable parent = null
+		Variable child  = null
+
+		if ( params.containsKey( "parent" ) && params.containsKey( "child" ) ) {
+			parent = Variable.findByLabel( (String)params['parent'] )
+			child  = Variable.findByLabel( (String)params['child'] )
+		}
+
+		if ( parent == null || child == null )
+		{
+			String label = parent == null ? params['parent'] : params['child']
+			response.sendError( 404, "Variable '$label' not found" )
+		}
+		else
+		{
+			List<Relationship> relationships = delphiService.getAllPreviousRelationshipsAndMyCurrent( parent, child )
+			def comments = relationships.findAll { it.comment?.comment?.size() > 0 }.collect { rel ->
+				[
+					comment : rel.comment.comment,
+					exists  : rel.exists,
+					byMe    : rel.createdBy == ShiroUser.current,
+				]
+			}
+
+			def result = [
+				parentLabel         : parent.label,
+				parentLabelReadable : parent.readableLabel,
+				exists              : relationships.find { it.createdBy == ShiroUser.current }?.exists ? true : false,
+				comments            : comments
+			]
+
+			render result as JSON
+		}
+
+	}
+
 	/**
 	 * Shows a form where one variable is displayed, and a list of all potential parents.
 	 * This does not mean all other variables, as we are trying very hard to reduce this
@@ -358,7 +402,7 @@ class ElicitController {
 			relationship.save( flush: true )
 			LoggedEvent.logSaveRelationship( relationship )
 
-			render 'Relationship saved'
+			render '{ "message": "Relationship saved" }'
 		}
 	}
 
