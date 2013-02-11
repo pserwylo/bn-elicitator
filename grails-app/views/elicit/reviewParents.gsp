@@ -48,6 +48,14 @@
 				return changeExists || changeComment;
 			};
 
+			var hasChangedWithAlert = function() {
+				var changed = hasChanged();
+				if ( changed ) {
+					alert( "You have unsaved changes. Please save these changes first (click the save button on the right)." );
+				}
+				return changed;
+			};
+
 			var generateComment = function( comment ) {
 				var delphiPhase = comment.delphiPhase;
 				var author      = comment.byMe ? "Myself" : "Other participant";
@@ -56,6 +64,12 @@
 				classes.push( comment.exists ? 'exists' : 'doesnt-exist' );
 				return '<li class="' + classes.join( ' ' ) + '">' + comment.comment + '<div class="author">- ' + author + '</div></li>';
 			};
+
+			$( '#btnFinished' ).click( function() {
+				if ( !hasChangedWithAlert() ) {
+					document.location = '${createLink( action: 'completedVariable', params: [ variable : variable.label ])}';
+				}
+			});
 
 			form.find( 'button.save' ).click( function() {
 				var btnSave = this;
@@ -102,68 +116,65 @@
 			});
 
 			form.find( 'button.close' ).click( function() {
-
+				if ( !hasChangedWithAlert() ) {
+					form.hide();
+				}
 			});
 
-			$( 'button.review' ).each( function() {
+			$( 'button.review' ).click( function() {
 				var btnReview = this;
-				$( btnReview ).click( function() {
 
-					if ( hasChanged() ) {
-						alert( "You have unsaved changes. Please save these changes first (click the save button on the right)." );
-						return;
-					}
+				if ( hasChangedWithAlert() ) {
+					return;
+				}
 
-					checkbox.prop( 'checked', false );
-					textarea.val( "" );
+				checkbox.prop( 'checked', false );
+				textarea.val( "" );
 
-					$.ajax({
-						type: 'post',
-						url: '<g:createLink action='ajaxGetReviewDetails'/>',
-						data: {
-							child: '${variable.label}',
-							parent: btnReview.value
-						},
-						dataType: 'text json',
-						error: function( data ) {
-							alert( "Error while saving. The administrator has been notified." );
-						},
-						success: function( data ) {
+				$.ajax({
+					type: 'post',
+					url: '<g:createLink action='ajaxGetReviewDetails'/>',
+					data: {
+						child: '${variable.label}',
+						parent: $( btnReview ).val()
+					},
+					dataType: 'text json',
+					error: function( data ) {
+						alert( "Error while loading details. The administrator has been notified." );
+					},
+					success: function( data ) {
 
-							reasons.find( '.no-reasons' ).remove();
-							reasonsList.children().remove();
-							checkbox.prop( 'checked', data.exists );
-							var currentCommentText = null;
+						reasons.find( '.no-reasons' ).remove();
+						reasonsList.children().remove();
+						checkbox.prop( 'checked', data.exists );
+						var currentCommentText = null;
 
-							if ( data.comments.length == 0 ) {
-								reasons.append( '<div class="no-reasons">No reasons given.</div>' );
-							} else {
-								for ( var i = 0; i < data.comments.length; i ++ ) {
-									var comment = data.comments[ i ];
-									reasonsList.append( generateComment( comment ) );
-									if ( comment.delphiPhase == ${delphiPhase} && comment.byMe ) {
-										currentCommentText = comment.comment;
-										textarea.val( currentCommentText );
-									}
+						if ( data.comments.length == 0 ) {
+							reasons.append( '<div class="no-reasons">No reasons given.</div>' );
+						} else {
+							for ( var i = 0; i < data.comments.length; i ++ ) {
+								var comment = data.comments[ i ];
+								reasonsList.append( generateComment( comment ) );
+								if ( comment.delphiPhase == ${delphiPhase} && comment.byMe ) {
+									currentCommentText = comment.comment;
+									textarea.val( currentCommentText );
 								}
 							}
-
-							currentVar = {
-								label         : btnReview.value,
-								readableLabel : data.parentLabelReadable,
-								exists        : data.exists,
-								comment       : currentCommentText == null ? "" : currentCommentText
-							};
-
-							form.find( 'legend' ).html( "Does " + data.parentLabelReadable + " directly influence ${variable.readableLabel}?" );
-
-							var offset = $( btnReview ).closest( 'li' ).offset().top - form.parent().offset().top;
-							form.css( 'padding-top', offset + 'px' );
-							form.show( 'fast' );
-
 						}
-					});
 
+						currentVar = {
+							label         : $( btnReview ).val(),
+							readableLabel : data.parentLabelReadable,
+							exists        : data.exists,
+							comment       : currentCommentText == null ? "" : currentCommentText
+						};
+
+						form.find( 'legend' ).html( "Does " + data.parentLabelReadable + "<br />directly influence<br />${variable.readableLabel}?" );
+
+						var offset = $( btnReview ).closest( 'li' ).offset().top - form.parent().offset().top;
+						form.show();
+						form.css( 'padding-top', offset + 'px' );
+					}
 				});
 			});
 		});
@@ -197,8 +208,8 @@
 
 					</fieldset>
 
-					<input type="button" style="margin-top: 5px;" value="Finished with ${variable.readableLabel}" class="big "
-						   onclick="document.location = '${createLink( action: 'completedVariable', params: [ variable : variable.label ])}'" />
+					<input id="btnFinished"
+						   type="button" style="margin-top: 5px;" value="Finished with ${variable.readableLabel}" class="big" />
 
 				</div>
 

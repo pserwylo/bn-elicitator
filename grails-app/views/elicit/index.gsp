@@ -48,7 +48,7 @@
 
 						btn.click( function() {
 
-							var label = this.innerHTML.trim();
+							var label = $.trim( this.innerHTML );
 							if ( label.substring( 0, 4 ) == msgHide )
 							{
 								label = label.replace( msgHide, msgShow );
@@ -94,25 +94,6 @@
 			 	<g:message code="general.show" />
 				<g:message code="elicit.list.details" />
 			</button>
-			<h:help title="${g.message( code: "help.elicit.list.show-details.title" )}" forId="btnToggleDetails" index="10000" location="right">
-				<g:message code="help.elicit.list.show-details" />
-			</h:help>
-		</g:if>
-
-		<g:if test="${keptRedunantRelationships > 0}">
-			<button
-				type="button"
-				style="margin-top: 0.3em;"
-				id="btnShowProblems"
-				onclick="document.location = '${createLink( action: 'problems', params: [ displayAll: true ] )}'">
-
-				<g:message code="general.show" />
-				<g:message code="elicit.list.potential-problems" args="${[ keptRedunantRelationships ]}" />
-
-			</button>
-			<h:help title="${g.message( code: "help.elicit.list.show-redundant.title" )}" forId="btnShowProblems" index="10001" location="right">
-				<g:message code="help.elicit.list.show-redundant" />
-			</h:help>
 		</g:if>
 
 		<br />
@@ -122,18 +103,10 @@
 
 			<bn:listSummaryFirstPhase variables="${variables}" stillToVisit="${stillToVisit}"/>
 
-			<h:help title="${g.message( code: "help.elicit.list.welcome.title" )}" index="1">
-				<g:message code="help.elicit.list.welcome" />
-			</h:help>
-
 		</g:if>
 		<g:else>
 
 			<bn:listSummary variables="${variables}" stillToVisit="${stillToVisit}"/>
-
-			<h:help title="${g.message( code: "help.elicit.list.round2.title" )}" index="100">
-				<g:message code="help.elicit.list.round2" />
-			</h:help>
 
 		</g:else>
 
@@ -164,10 +137,22 @@
 				${stillToVisit.size() > 0 ? 'disabled="disabled"' : ''}>
 				<g:message code="elicit.list.finish-round" />
 			</button>
-			<h:help title="${g.message( code: "help.elicit.list.complete.title" )}" forId="btnCompleteRound" location="right">
-				<g:message code="help.elicit.list.complete" />
-			</h:help>
 		</g:else>
+
+
+		<g:if test="${keptRedunantRelationships > 0}">
+			<button
+					type="button"
+					style="margin-top: 0.3em;"
+					id="btnShowProblems"
+					onclick="document.location = '${createLink( action: 'problems', params: [ displayAll: true ] )}'">
+
+				<g:message code="general.show" />
+				<g:message code="elicit.list.potential-problems" args="${[ keptRedunantRelationships ]}" />
+
+			</button>
+		</g:if>
+
 
 	</body>
 	
