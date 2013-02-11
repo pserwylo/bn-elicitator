@@ -58,8 +58,6 @@
 			}
 		}
 
-		<g:if test="${delphiPhase == 1}">
-
 		$( document ).ready( function() {
 
 			var potentialParentsList = $( '.potential-parents-list' );
@@ -90,8 +88,6 @@
 			})
 
 		});
-
-		</g:if>
 
 		/**
 		 * Adds a new comment to the top of the list of comments for the dialog belonging to 'variable'.
@@ -289,94 +285,6 @@
 		function finish() {
 			document.location = '${createLink( action: 'finished' )}';
 		}
-
-		<g:if test="${delphiPhase > 1 }">
-
-			$( document ).ready( function() {
-
-				var unsaved = false;
-
-				var form = $( '#var-details-dialog' );
-				var checkbox = form.find( 'input:checkbox' );
-				var textarea = form.find( 'textarea' );
-
-				var currentVar = null;
-
-				checkbox.change( function() { unsaved = true; } );
-				textarea.blur  ( function() { unsaved = true; } );
-
-				form.find( 'button.save' ).click( function() {
-					$.ajax({
-						type: 'post',
-						url: '${createLink( action: 'save' )}',
-						data: {
-							child: '${variable.label}',
-							parent: currentVar,
-							comment: textarea.text(),
-							exists: checkbox.prop( 'checked' )
-						},
-						dataType: 'text json',
-						error: function( data ) {
-							undisable();
-							alert( "Error while saving. The administrator has been notified." );
-						},
-						success: function( data ) {
-							
-						}
-					);
-				});
-
-				$( 'button.review' ).each( function() {
-
-					$( this ).click( function() {
-
-						if ( unsaved ) {
-							alert( "Must save changes first (click the save button on the right)." );
-							return;
-						}
-
-						$.ajax({
-							type: 'post',
-							url: '<g:createLink action='ajaxGetReviewDetails' />',
-							data: {
-								child: '${variable.label}',
-								parent: this.value
-							},
-							dataType: 'text json',
-							error: function( data ) {
-								alert( "Error while saving. The administrator has been notified." );
-							},
-							success: function( data ) {
-
-								var reasons     = form.find( '.reasons' );
-								var reasonsList = reasons.find( '.reasons-list' );
-
-								reasons.find( '.no-reasons' ).remove();
-								reasonsList.children().remove();
-
-								checkbox.prop( 'checked', data.exists );
-
-								if ( data.comments.length == 0 ) {
-									reasons.append( '<div class="no-reasons">No reasons given.</div>' );
-								} else {
-									for ( var i = 0; i < data.comments.length; i ++ ) {
-										var comment = data.comments[ i ];
-										var author  = comment.byMe ? "Myself" : "Other participant";
-										var classes = [ 'phase-${delphiPhase}' ];
-										classes.push( comment.byMe   ? 'me' : 'other' );
-										classes.push( comment.exists ? 'exists' : 'doesnt-exist' );
-										reasonsList.append( '<li class="' + classes.join( ' ' ) + '">' + comment.comment + '<div class="author"> - ' + author + '</div></li>' );
-									}
-								}
-
-								form.show();
-							}
-						});
-
-					});
-				});
-			});
-		</g:if>
 
 		</g:javascript>
 

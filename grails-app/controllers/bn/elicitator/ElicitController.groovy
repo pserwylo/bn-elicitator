@@ -292,9 +292,10 @@ class ElicitController {
 			List<Relationship> relationships = delphiService.getAllPreviousRelationshipsAndMyCurrent( parent, child )
 			def comments = relationships.findAll { it.comment?.comment?.size() > 0 }.collect { rel ->
 				[
-					comment : rel.comment.comment,
-					exists  : rel.exists,
-					byMe    : rel.createdBy == ShiroUser.current,
+					comment     : rel.comment.comment,
+					delphiPhase : rel.delphiPhase,
+					exists      : rel.exists,
+					byMe        : rel.createdBy == ShiroUser.current,
 				]
 			}
 
@@ -325,23 +326,28 @@ class ElicitController {
 
 		if ( params["for"] != null )
 		{
-			var = Variable.findByLabel( params["for"] )
+			var = Variable.findByLabel( (String)params["for"] )
 		}
 
 		if ( var == null )
 		{
-			response.status = 404
-			render "Not Found"
+			response.sendError( 404, "Could not find variable '${params["for"]}" )
+			return null
 		}
 		else
 		{
 			List<Variable> potentialParents = this.variableService.getPotentialParents( var )
 
-			[
-				variable: var,
-				delphiPhase: delphiService.phase,
-				potentialParents: potentialParents
-			]
+			String view = delphiService.hasPreviousPhase ? "reviewParents" : "parents"
+			render(
+				view: view,
+				model: [
+					variable         : var,
+					delphiPhase      : delphiService.phase,
+					potentialParents : potentialParents,
+					totalUsers       : ShiroUser.count()
+				]
+			)
 		}
 
 	}
@@ -402,7 +408,11 @@ class ElicitController {
 			relationship.save( flush: true )
 			LoggedEvent.logSaveRelationship( relationship )
 
-			render '{ "message": "Relationship saved" }'
+			def data = [
+				exists  : relationship.exists,
+				comment : relationship.comment?.comment ?: ""
+			]
+			render data as JSON
 		}
 	}
 
