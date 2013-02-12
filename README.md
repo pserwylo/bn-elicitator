@@ -22,10 +22,11 @@ http://www.gnu.org/licenses/gpl.html
 
 ### FamFam icon set ###
 
-http://www.famfamfam.com/lab/icons/silk/
+http://www.famfamfam.com/lab/icons/silk
 
-### Libraries ###
+### Libraries / Dependencies ###
 
-http://owlapi.sourceforge.net/
+http://owlapi.sourceforge.net
 http://www.jquery.com
 http://www.grails.org
+http://www.graphviz.org - Required for generating SVG's for the BN (uses the commandline 'dot' command).
