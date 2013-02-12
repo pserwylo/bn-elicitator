@@ -97,15 +97,20 @@ class GraphvizOutputGraph extends OutputGraph {
 
 	@Override
 	String generateGraph() {
-		File file = File.createTempFile( "bn-dot-", ".dot" )
-		file.write( generateDot() );
+		String svg = ""
+		File file = null
+		try {
+			file = File.createTempFile( "bn-dot-", ".dot" )
+			file.write( generateDot() );
 
-		Process dotProcess = new ProcessBuilder().command( "dot", "-Tsvg", file.absolutePath ).start()
-		BufferedInputStream input = new BufferedInputStream( dotProcess.inputStream )
-		dotProcess.waitFor()
-		String svg = input.readLines().join( "\n" )
-
-		// file.delete()
+			Process dotProcess = new ProcessBuilder().command( "dot", "-Tsvg", file.absolutePath ).start()
+			BufferedInputStream input = new BufferedInputStream( dotProcess.inputStream )
+			dotProcess.waitFor()
+			svg = input.readLines().join( "\n" )
+		} catch ( Exception ioe ) {
+		} finally {
+			file?.delete()
+		}
 		return svg
 	}
 
