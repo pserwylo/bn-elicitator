@@ -1,6 +1,7 @@
 package bn.elicitator
 
 import grails.converters.JSON
+import groovy.util.logging.Log
 
 class OutputController {
 
@@ -21,13 +22,13 @@ class OutputController {
 		List<Relationship> relationships = Relationship.findAllByExistsAndDelphiPhase( true, cmd.phase ).sort()
 		Integer totalUsers               = ShiroUser.list().findAll { it.roles.contains( ShiroRole.expert ) }.size()
 
-		if ( cmd.minUsers > 0 && cmd.phase > 0 && cmd.phase <= delphiService.phase ) {
+			if ( cmd.minUsers > 0 && cmd.phase > 0 && cmd.phase <= delphiService.phase ) {
 			variables.each { parent ->
 				variables.each { child ->
 					if ( parent != child ) {
-						Integer count    = relationships.count { it.parent == parent && it.child == child }
+						Integer count = relationships.count { it.parent == parent && it.child == child }
 						if ( count >= cmd.minUsers ) {
-							Float   strength = (Float)( count / totalUsers )
+							Float strength = Math.min( (Float)( count / totalUsers ), 1.0f )
 							output.addEdge( parent, child, strength )
 						}
 					}
@@ -35,8 +36,8 @@ class OutputController {
 			}
 		}
 
-		String outputString = output.generateGraph()
-		response.contentType = output.contentType
+		String outputString    = output.generateGraph()
+		response.contentType   = output.contentType
 		response.contentLength = outputString.size()
 		render outputString
 
@@ -108,6 +109,7 @@ class GraphvizOutputGraph extends OutputGraph {
 			dotProcess.waitFor()
 			svg = input.readLines().join( "\n" )
 		} catch ( Exception ioe ) {
+			println ioe
 		} finally {
 			file?.delete()
 		}
