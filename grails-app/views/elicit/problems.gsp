@@ -81,7 +81,7 @@
 
 				$( '#redundant-relationship-list' ).find( 'button' ).click( function() {
 					var link = $( this ).hasClass( 'keep' ) ? '<g:createLink action="keepRedundant" />' : '<g:createLink action="removeRedundant" />';
-					var parts = this.value.split( '-' );
+					var parts = $( this ).val().split( '-' );
 					var parentLabel = parts[ 0 ];
 					var childLabel = parts[ 1 ];
 					document.location = link + "?parent=" + parentLabel + "&child=" + childLabel<g:if test="${displayAll}"> + '&displayAll=true'</g:if> + "&scroll=" + $( window ).scrollTop();
@@ -90,7 +90,7 @@
 
 				$( '#cyclical-relationship-list' ).find( 'button.remove' ).click( function() {
 					var link = '<g:createLink action="removeCycle" />';
-					var parts = this.value.split( '-' );
+					var parts = $( this ).val().split( '-' );
 					var parentLabel = parts[ 0 ];
 					var childLabel = parts[ 1 ];
 					document.location = link + "?parent=" + parentLabel + "&child=" + childLabel<g:if test="${displayAll}"> + '&displayAll=true'</g:if> + "&scroll=" + $( window ).scrollTop();

@@ -36,12 +36,13 @@
 
 package bn.elicitator
 
+import grails.converters.JSON
+
 class ElicitController {
 
 	VariableService     variableService
 	DelphiService       delphiService
 	BnService           bnService
-	DisagreementService disagreementService
 
 	/**
 	 * Mark this user as completed (for this round), then redirect to the main list so that they can still play around
@@ -152,8 +153,7 @@ class ElicitController {
 		redirect( action: 'index' )
 	}
 
-	private void fixRedundant( Boolean keep, String parentLabel, String childLabel, Boolean displayAll )
-	{
+	private void fixRedundant( Boolean keep, String parentLabel, String childLabel, Boolean displayAll ) {
 		Variable parent = Variable.findByLabel( parentLabel )
 		Variable child  = Variable.findByLabel( childLabel )
 
@@ -169,14 +169,10 @@ class ElicitController {
 				it.relationship.child == child && it.relationship.parent == parent
 			}
 
-			if ( keep )
-			{
+			if ( keep ) {
 				bnService.keepRedundantRelationship( rel )
-			}
-			else
-			{
+			} else {
 				bnService.removeRedundantRelationship( rel )
-				disagreementService.recalculateDisagreement( child )
 			}
 		}
 
@@ -184,13 +180,11 @@ class ElicitController {
 
 	}
 
-	def keepRedundant =
-	{
+	def keepRedundant = {
 		fixRedundant( true, (String)params["parent"], (String)params["child"], (Boolean)params["displayAll"] )
 	}
 
-	def removeRegular =
-	{
+	def removeRegular = {
 		Variable parent = Variable.findByLabel( (String)params["parent"] )
 		Variable child = Variable.findByLabel( (String)params["child"] )
 
@@ -206,25 +200,19 @@ class ElicitController {
 		}
 	}
 
-	def removeRedundant =
-	{
+	def removeRedundant = {
 		fixRedundant( false, (String)params["parent"], (String)params["child"], (Boolean)params["displayAll"] )
 	}
 
-	def removeCycle =
-	{
+	def removeCycle = {
 		Variable parent = Variable.findByLabel( (String)params["parent"] )
 		Variable child  = Variable.findByLabel( (String)params["child"] )
 
-		if ( parent == null || child == null )
-		{
+		if ( parent == null || child == null ) {
 			String label = parent == null ? (String)params["parent"] : (String)params["child"]
 			response.sendError( 404, "Variable '$label' not found" )
-		}
-		else
-		{
+		} else {
 			bnService.removeCycle( parent, child )
-			disagreementService.recalculateDisagreement( child )
 			redirectToProblems()
 		}
 	}
@@ -296,6 +284,49 @@ class ElicitController {
 		}
 	}
 
+	def ajaxGetReviewDetails = {
+
+		if ( !delphiService.hasPreviousPhase ) {
+			return
+		}
+
+		Variable parent = null
+		Variable child  = null
+
+		if ( params.containsKey( "parent" ) && params.containsKey( "child" ) ) {
+			parent = Variable.findByLabel( (String)params['parent'] )
+			child  = Variable.findByLabel( (String)params['child'] )
+		}
+
+		if ( parent == null || child == null )
+		{
+			String label = parent == null ? params['parent'] : params['child']
+			response.sendError( 404, "Variable '$label' not found" )
+		}
+		else
+		{
+			List<Relationship> relationships = delphiService.getAllPreviousRelationshipsAndMyCurrent( parent, child )
+			def comments = relationships.findAll { it.comment?.comment?.size() > 0 }.collect { rel ->
+				[
+					comment     : rel.comment.comment,
+					delphiPhase : rel.delphiPhase,
+					exists      : rel.exists,
+					byMe        : rel.createdBy == ShiroUser.current,
+				]
+			}
+
+			def result = [
+				parentLabel         : parent.label,
+				parentLabelReadable : parent.readableLabel,
+				exists              : relationships.find { it.createdBy == ShiroUser.current }?.exists ? true : false,
+				comments            : comments
+			]
+
+			render result as JSON
+		}
+
+	}
+
 	/**
 	 * Shows a form where one variable is displayed, and a list of all potential parents.
 	 * This does not mean all other variables, as we are trying very hard to reduce this
@@ -311,23 +342,28 @@ class ElicitController {
 
 		if ( params["for"] != null )
 		{
-			var = Variable.findByLabel( params["for"] )
+			var = Variable.findByLabel( (String)params["for"] )
 		}
 
 		if ( var == null )
 		{
-			response.status = 404
-			render "Not Found"
+			response.sendError( 404, "Could not find variable '${params["for"]}" )
+			return null
 		}
 		else
 		{
 			List<Variable> potentialParents = this.variableService.getPotentialParents( var )
 
-			[
-				variable: var,
-				delphiPhase: delphiService.phase,
-				potentialParents: potentialParents
-			]
+			String view = delphiService.hasPreviousPhase ? "reviewParents" : "parents"
+			render(
+				view: view,
+				model: [
+					variable         : var,
+					delphiPhase      : delphiService.phase,
+					potentialParents : potentialParents,
+					totalUsers       : ShiroUser.count()
+				]
+			)
 		}
 
 	}
@@ -360,7 +396,6 @@ class ElicitController {
 				)
 			}
 
-			relationship.confidence = cmd.confidence
 			relationship.exists = cmd.exists
 
 			String commentText = cmd.comment?.trim()
@@ -389,11 +424,11 @@ class ElicitController {
 			relationship.save( flush: true )
 			LoggedEvent.logSaveRelationship( relationship )
 
-			disagreementService.recalculateDisagreement( child )
-
-			// Send some output back, so that they can update the view with a "you agree" or "you disagree"...
-			Agreement agreement = delphiService.calcAgreement( parent, child, relationship )
-			render '{ "agree": ' + agreement.agree + ', "relationship": "' + agreement.myRelationship.toString() + '" }'
+			def data = [
+				exists  : relationship.exists,
+				comment : relationship.comment?.comment ?: ""
+			]
+			render data as JSON
 		}
 	}
 
@@ -470,11 +505,6 @@ class SaveRelationshipCommand {
 	 * The label of the parent variable.
 	 */
 	String parent
-
-	/**
-	 * A number between 0 and 100 determining how confident they are that there is a relationship from parent to child.s
-	 */
-	Integer confidence
 
 	/**
 	 * Textarea input which gives them the chance to explain why they feel the way they do.

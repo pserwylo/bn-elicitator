@@ -46,6 +46,10 @@ table {
 	text-align: right;
 }
 
+#all-children-list {
+	clear: both;
+	padding-top: 0.3em;
+}
 
 #all-children-list li.variable-item {
 	height: auto;

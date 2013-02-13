@@ -16,6 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* ICON KEY stuff - to the top right of screen */
+.icon-keys {
+	float: right;
+	font-size: 0.85em;
+}
+
+.icon-keys ul li {
+	padding-left: 20px;
+}
+
+
 /* EXTRA INFO TO SHOW IN LIST, below main title */
 
 .info, .stats {
@@ -190,14 +201,17 @@ h2 {
 	text-align: center;
 	border-bottom: 1px solid #bbb;
 	margin-bottom: 10px;
-    clear: both;
+}
+
+#headingWrapper {
+	position: relative;
 }
 
 #user-info {
 	padding-top: 5px;
-	width: 100%;
 	text-align: right;
-	margin-bottom: -30px;
+	position: absolute;
+	right: 10px;
 }
 
 /* FONT STACK */
@@ -313,18 +327,23 @@ a:hover, a:active {
 	outline: none; /* prevents outline in webkit on active links but retains it for tab focus */
 }
 
-h1 {
+h1, h2, h3 {
 	color: #48802c;
 	font-weight: normal;
+}
+
+h1 {
 	font-size: 1.25em;
 	margin: 0.8em 0 0.3em 0;
 }
 
 h2 {
-	color: #48802c;
-	font-weight: normal;
 	font-size: 1.1em;
 	margin: 0.8em 0 0.3em 0;
+}
+
+h3 {
+	font-size: 1em;
 }
 
 ul {

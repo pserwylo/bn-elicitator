@@ -27,14 +27,13 @@
 		<title>Identify relationships between variables</title>
 
 		<g:if test="${hasDetails}">
-			<bn:preferencesJs />
 			<g:javascript>
 
 				$( document).ready( function() {
 
-					var itemDescriptions = $( '.list-of-parents, .list-of-children' );
+					var itemsToToggle = $( '.list-of-parents, .list-of-children, .icon-key-details' );
 					var variableCells = $( '.variable-cell' );
-					var showToggleDetails = itemDescriptions.length > 0;
+					var showToggleDetails = itemsToToggle.length > 0;
 					var btn = $( '#btnToggleDetails');
 					if ( !showToggleDetails )
 					{
@@ -42,35 +41,28 @@
 					}
 					else
 					{
-
 						var msgShow = '<g:message code="general.show" />';
 						var msgHide = '<g:message code="general.hide" />';
 
 						btn.click( function() {
 
-							var label = this.innerHTML.trim();
+							var label = $.trim( this.innerHTML );
 							if ( label.substring( 0, 4 ) == msgHide )
 							{
 								label = label.replace( msgHide, msgShow );
-								itemDescriptions.hide( 'fast' );
+								itemsToToggle.hide( 'fast' );
 								variableCells.removeClass( 'restricted-width' );
-								<bn:setPreference key="show-description" value="false" />
 							}
 							else
 							{
 								label = label.replace( msgShow, msgHide );
-								itemDescriptions.show( 'fast' );
+								itemsToToggle.show( 'fast' );
 								variableCells.addClass( 'restricted-width' );
-								<bn:setPreference key="show-description" value="true" />
 							}
 							this.innerHTML = label;
 						});
 
-						if ( '<bn:preferenceValue key="show-description" />' == 'true' ) {
-							btn.trigger( 'click' );
-						} else {
-							itemDescriptions.hide();
-						}
+						itemsToToggle.hide();
 					}
 
 				});
@@ -94,56 +86,38 @@
 			 	<g:message code="general.show" />
 				<g:message code="elicit.list.details" />
 			</button>
-			<h:help title="${g.message( code: "help.elicit.list.show-details.title" )}" forId="btnToggleDetails" index="10000" location="right">
-				<g:message code="help.elicit.list.show-details" />
-			</h:help>
 		</g:if>
 
-		<g:if test="${keptRedunantRelationships > 0}">
-			<button
-				type="button"
-				style="margin-top: 0.3em;"
-				id="btnShowProblems"
-				onclick="document.location = '${createLink( action: 'problems', params: [ displayAll: true ] )}'">
+		<bnIcons:key>
 
-				<g:message code="general.show" />
-				<g:message code="elicit.list.potential-problems" args="${[ keptRedunantRelationships ]}" />
+			<bnIcons:icon
+				label="${message( code: "icon-key.needs-review.label")}"
+				iconPath="${resource([ dir: "images/icons/", file: "lightbulb.png" ])}"><g:message code="icon-key.needs-review" /></bnIcons:icon>
 
-			</button>
-			<h:help title="${g.message( code: "help.elicit.list.show-redundant.title" )}" forId="btnShowProblems" index="10001" location="right">
-				<g:message code="help.elicit.list.show-redundant" />
-			</h:help>
-		</g:if>
+			<bnIcons:icon
+				label="${message( code: "icon-key.doesnt-need-review.label")}"
+				iconPath="${resource([ dir: "images/icons/", file: "accept.png" ])}"><g:message code="icon-key.doesnt-need-review" /></bnIcons:icon>
 
-		<br />
-		<br />
+			<bnIcons:icon
+				label="${message( code: "icon-key.relationship.label")}"
+				iconPath="${resource([ dir: "images/icons/", file: "arrow_right.png" ])}"
+				classes="icon-key-details"><g:message code="icon-key.relationship" /></bnIcons:icon>
+
+			<bnIcons:icon
+				label="${message( code: "icon-key.relationship-with-comment.label")}"
+				iconPath="${resource([ dir: "images/icons-custom/", file: "arrow_right_comment.png" ])}"
+				classes="icon-key-details"><g:message code="icon-key.relationship-with-comment" /></bnIcons:icon>
+
+		</bnIcons:key>
 
 		<g:if test="${!hasPreviousPhase}">
 
 			<bn:listSummaryFirstPhase variables="${variables}" stillToVisit="${stillToVisit}"/>
 
-			<h:help title="${g.message( code: "help.elicit.list.welcome.title" )}" index="1">
-				<g:message code="help.elicit.list.welcome" />
-			</h:help>
-
 		</g:if>
 		<g:else>
 
-			%{--
-			<h2>Do you agree with the other participants?</h2>
-			<button id="btnToggleDetails" onclick="toggleDetails()">Show <span style="color: green;">Agreements</span> and <span style="color: red;">Disagreements</span></button>
-			<br /><br />
-			--}%
-
 			<bn:listSummary variables="${variables}" stillToVisit="${stillToVisit}"/>
-
-			<h:help title="${g.message( code: "help.elicit.list.round2.title" )}" index="100">
-				<g:message code="help.elicit.list.round2" />
-			</h:help>
-
-			<h:help title="${g.message( code: "help.elicit.list.disagreement.title" )}" forId="disagree-label-0" location="right" index="101">
-				<g:message code="help.elicit.list.disagreement" />
-			</h:help>
 
 		</g:else>
 
@@ -174,10 +148,20 @@
 				${stillToVisit.size() > 0 ? 'disabled="disabled"' : ''}>
 				<g:message code="elicit.list.finish-round" />
 			</button>
-			<h:help title="${g.message( code: "help.elicit.list.complete.title" )}" forId="btnCompleteRound" location="right">
-				<g:message code="help.elicit.list.complete" />
-			</h:help>
 		</g:else>
+
+		<g:if test="${keptRedunantRelationships > 0}">
+			<button
+				type="button"
+				style="margin-top: 0.3em;"
+				id="btnShowProblems"
+				onclick="document.location = '${createLink( action: 'problems', params: [ displayAll: true ] )}'">
+
+				<g:message code="general.show" />
+				<g:message code="elicit.list.potential-problems" args="${[ keptRedunantRelationships ]}" />
+
+			</button>
+		</g:if>
 
 	</body>
 	

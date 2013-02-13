@@ -576,7 +576,6 @@ class BnBootStrap {
 						delphiPhase:  AppProperties.properties.delphiPhase,
 						parent: Variable.findByLabel( "Seating" ),
 						child:  Variable.findByLabel( "Asthma" ),
-						confidence: 65,
 						createdBy: user,
 						comment: new Comment(
 								createdBy: user,
@@ -591,7 +590,6 @@ class BnBootStrap {
 						delphiPhase:  AppProperties.properties.delphiPhase,
 						parent: Variable.findByLabel( "AlcoholUse" ),
 						child:  Variable.findByLabel( "Asthma" ),
-						confidence: 20,
 						createdBy: user,
 						comment: new Comment(
 								createdBy: user,
@@ -606,7 +604,6 @@ class BnBootStrap {
 						delphiPhase:  AppProperties.properties.delphiPhase,
 						parent: Variable.findByLabel( "RelativeHumidity" ),
 						child:  Variable.findByLabel( "Asthma" ),
-						confidence: 85,
 						createdBy: user,
 						comment: new Comment(
 								createdBy: user,
@@ -637,7 +634,6 @@ class BnBootStrap {
 									delphiPhase: AppProperties.properties.delphiPhase,
 									parent: Variable.findByLabel( enviroVar ),
 									child: Variable.findByLabel( injury ),
-									confidence: i * 10,
 									createdBy: user,
 									comment: new Comment(
 										createdBy: user,

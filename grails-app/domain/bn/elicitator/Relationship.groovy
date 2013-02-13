@@ -27,7 +27,6 @@ package bn.elicitator
 class Relationship {
 
     static constraints = {
-		confidence nullable: true
 		comment nullable: true
     }
 
@@ -45,19 +44,10 @@ class Relationship {
 
 	/**
 	 * If this is false, it is the same as there being no relationship object between {@link Relationship#parent} and
-	 * {@link Relationship#child}. As such, the {@link Relationship#confidence} property is meaningless when this is
-	 * false (we are not asking people to say how sure they are if a relationship doesn't exist).
-	 *
+	 * {@link Relationship#child}.
 	 * The value defaults to true.
 	 */
 	Boolean exists = true;
-
-	/**
-	 * How sure is the user that there *IS* a relationship between {@link Relationship#parent} and {@link Relationship#child}.
-	 *
-	 * This value has no relevance/meaning if {@link Relationship#exists} is not true.
-	 */
-	Integer confidence
 
 	/**
 	 * This will always reference the person who thinks that there is/isn't a relationship.
@@ -88,16 +78,8 @@ class Relationship {
 	
 	String toString()
 	{
-
 		String string = exists ? "Relationship" : "No relationship";
-
 		string += " from " + parent + " to " + child;
-
-		if ( exists && confidence != null )
-		{
-			string += " (confidence: " + confidence + ")"
-		}
-
 		return string
 
 	}

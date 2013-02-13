@@ -33,10 +33,14 @@ class AdminDashController {
 	 */
 	def index() {
 
+		List<ShiroUser> userList = ShiroUser.list()
+		Integer totalExperts = userList.count { it.roles.contains( ShiroRole.expert ) }
+
 		[
-			appProperties: AppProperties.properties,
-			userList: ShiroUser.list(),
-			completedCurrentRound: delphiService.completedCurrentRound
+			appProperties         : AppProperties.properties,
+			userList              : userList,
+			totalExperts          : totalExperts,
+			completedCurrentRound : delphiService.completedCurrentRound,
 		]
 
 	}

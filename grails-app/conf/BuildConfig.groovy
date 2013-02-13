@@ -46,6 +46,7 @@ grails.project.dependency.resolution = {
         runtime ":hibernate:$grailsVersion"
         runtime ":jquery:1.7.1"
         runtime ":resources:1.1.6"
+		runtime ":database-migration:1.3.2"
 
 		compile ":mail:1.0.1"
 		compile ":jquery:1.7.1"

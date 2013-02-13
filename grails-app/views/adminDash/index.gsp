@@ -23,7 +23,7 @@
 		<title>Admin Dashboard</title>
 		<style type="text/css">
 			.column-left {
-				width: 350px;
+				width  : 250px;
 			}
 
 			.variable-item {
@@ -37,7 +37,54 @@
 			.overview .info .label {
 				font-weight: bold;
 			}
+
+			.widgets {
+				margin-bottom: 0.3em;
+			}
+
 		</style>
+
+		<g:javascript>
+
+		$( document).ready( function() {
+
+			var mainContainer  = $( '.column-footer' );
+			var imageContainer = mainContainer.find( '.image' );
+
+			var scaleSvg = function() {
+				var svg          = imageContainer.find( 'svg' );
+				var targetWidth  = mainContainer.width() - 40;
+				var ratio        = targetWidth / svg.width();
+				svg.width( targetWidth );
+				svg.height( svg.height() * ratio );
+			};
+
+			var loadImage = function( delphiPhase, minUsers ) {
+				var graphStats = $( '#graphStats' );
+
+				graphStats.html( "Loading statistics..." );
+				imageContainer.html( "Loading image..." );
+
+				var svgLink    = "${createLink( controller: 'output', action: 'graph' )}";
+				var statsLink  = "${createLink( controller: 'output', action: 'graphStats' )}";
+				var params     = { phase : delphiPhase, minUsers : minUsers };
+				imageContainer.load( svgLink, params, scaleSvg );
+				$.get( statsLink, params, function( data ) { graphStats.html( "Variables: " + data.totalNodes + ", relationships: " + data.totalEdges) } );
+			};
+
+			$( window ).resize( scaleSvg );
+
+			mainContainer.find( 'select' ).change( function() {
+				var phase    = $( '#graphPhase'    ).val();
+				var strength = $( '#graphMinUsers' ).val();
+				loadImage( phase, strength );
+			});
+
+			loadImage( ${appProperties.delphiPhase}, 1 );
+
+		});
+
+		</g:javascript>
 	</head>
 	
 	<body>
@@ -114,7 +161,32 @@
 			</div>
 
 
-			<div class="column-right">
+			<div class="column-footer">
+
+				<fieldset class="default ">
+
+					<legend>Results</legend>
+
+					<div class="widgets">
+						<form>
+							<select id="graphPhase" name="phase">
+								<g:each in="${1..appProperties.delphiPhase}" var="phase">
+									<option value="${phase}" ${phase == appProperties.delphiPhase ? 'selected="selected"' : ''}>Phase ${phase}</option>
+								</g:each>
+							</select>
+							<select id="graphMinUsers" name="minUsers">
+								<g:each in="${1..totalExperts}" var="count">
+									<option value="${count}">Min ${count} experts</option>
+								</g:each>
+							</select>
+							<span id="graphStats" class="info"></span>
+						</form>
+					</div>
+					
+					<div class="image stats">
+					</div>
+					
+				</fieldset>
 
 			</div>
 		</div>

@@ -24,27 +24,22 @@ package bn.elicitator
  */
 class LoggedEvent {
 
+	static constraints = {
+		var( nullable: true )
+		relationship( nullable: true )
+	}
+
 	LoggedEventType type
-
-	ShiroUser user
-
-	Date date
-
-	Integer delphiPhase
-
-	String description
-
-	Variable var = null
-
-	Relationship relationship = null
+	ShiroUser       user
+	Date            date
+	Integer         delphiPhase
+	String          description
+	Variable        var          = null
+	Relationship    relationship = null
 
 	String toString() {
 		date.format( 'dd/MM/yyyy hh:mm' ) + ": " + description
 	}
-	
-    static constraints = {
-		var( nullable: true )
-    }
 	
 	static LoggedEvent logLogin() {
 		new LoggedEvent(
@@ -81,7 +76,7 @@ class LoggedEvent {
 			user: ShiroUser.current,
 			date: new Date(),
 			delphiPhase: AppProperties.properties.delphiPhase,
-			description: "Saved relationship from '" + relationship.parent + "' to '" + relationship.child + "' with " + relationship.confidence + " confidence.",
+			description: "Saved relationship from '" + relationship.parent + "' to '" + relationship.child + "'.",
 			relationship: relationship ).save()
 	}
 

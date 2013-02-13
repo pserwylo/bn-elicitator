@@ -111,17 +111,6 @@ class DelphiService {
 	}
 
 	/**
-	 * Calculate the number of users who have completed the round specified by 'delphiPhase'.
-	 * These are people who have explicitly stated that they have completed.
-	 * @param delphiPhase
-	 * @return
-	 */
-	Integer completedUsers( Integer delphiPhase = phase )
-	{
-		// TODO: Implement this...
-	}
-
-	/**
 	 * Build a list of variables which have not yet been visited.
 	 * @param varList
 	 * @return
@@ -141,94 +130,6 @@ class DelphiService {
 	 */
 	def countOthersPreviousRelationships( Variable parent, Variable child ) {
 		return Relationship.countByCreatedByNotEqualAndDelphiPhaseAndParentAndChild( ShiroUser.current, previousPhase, parent, child )
-	}
-
-	/**
-	 * Same as other, but will always compare last times relationships to each other.
-	 * @param parent
-	 * @param child
-	 * @return
-	 * @see DelphiService#calcAgreement(bn.elicitator.Variable, bn.elicitator.Variable, bn.elicitator.Relationship)
-	 */
-	Agreement calcAgreement( Variable parent, Variable child ) {
-
-		Relationship relationship = this.getMyCurrentRelationship( parent, child )
-
-		if ( !relationship )
-		{
-			relationship = this.getMyPreviousRelationship( parent, child )
-		}
-
-		return this.calcAgreement( parent, child, relationship )
-
-	}
-
-	/**
-	 * Same as other version, but allows us to do a comparison with any relationship, not just with last rounds...
-	 * @param parent
-	 * @param child
-	 * @param myRelationship
-	 * @return
-	 * @see DelphiService#calcAgreement(bn.elicitator.Variable, bn.elicitator.Variable)
-	 */
-	Agreement calcAgreement( Variable parent, Variable child, Relationship myRelationship ) {
-
-		List<Relationship> othersRelationships = this.getOthersPreviousRelationships( parent, child )
-		Boolean isCurrent = ( myRelationship?.delphiPhase == phase )
-
-		Agreement agreement = new Agreement(
-			parent: parent,
-			child: child,
-			myRelationship: myRelationship,
-			othersRelationships: othersRelationships,
-			current: isCurrent
-		)
-
-		if ( myRelationship?.exists && myRelationship?.confidence != null )
-		{
-			agreement.myConfidence = myRelationship.confidence
-		}
-
-		if ( agreement.othersRelationshipsWhichExist.size() > 0 )
-		{
-			agreement.othersConfidence = (Double)agreement.othersRelationshipsWhichExist*.confidence.sum() / agreement.othersRelationshipsWhichExist.size()
-			agreement.othersCount = agreement.othersRelationshipsWhichExist.size()
-		}
-
-        // Whether or not you agree with others is a function of both how many other people state the relationship exists,
-        // along with how confident they are...
-		float score = calcConsensusScore( agreement )
-		boolean byMe = ( agreement.specifiedBy & Agreement.BY_ME ) == Agreement.BY_ME
-		agreement.agree = ( byMe && score > 0.6f || !byMe && score < 0.4f )
-
-		return agreement
-	}
-
-	/**
-	 * A function of both what percentage of participants specified a relationship, and their average confidence.
-	 *  - If everyone is 100% certain, then we have a score of 1.0
-	 *  - If nobody thinks the relationship exists, we have a score of 0.0
-	 * At this time, we will simply sum the two values together, and then divide by two.
-	 *
-	 * <pre>
-	 *        all
-	 *         |
-	 *  # of   |*     agree
-	 *  others |   *
-	 *   (y)   |      *
-	 *         | disagree *
-	 *         +-------------- 100%
-	            confidence (x)
-	 * </pre>
-	 * @param agreement
-	 * @return
-	 */
-	float calcConsensusScore( Agreement agreement )
-	{
-		float x = agreement.othersConfidence / 100
-		float y = (float)agreement.othersCount / userService.expertCount
-
-		return ( x + y * 2 ) / 3
 	}
 
 	/**

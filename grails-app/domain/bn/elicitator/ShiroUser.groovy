@@ -28,7 +28,7 @@ import org.apache.shiro.*
 class ShiroUser {
 
 	static hasMany = [
-			roles: ShiroRole, permissions: String
+		roles: ShiroRole, permissions: String
 	]
 
 	static constraints = {
