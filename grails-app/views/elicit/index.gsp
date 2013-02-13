@@ -27,14 +27,13 @@
 		<title>Identify relationships between variables</title>
 
 		<g:if test="${hasDetails}">
-			<bn:preferencesJs />
 			<g:javascript>
 
 				$( document).ready( function() {
 
-					var itemDescriptions = $( '.list-of-parents, .list-of-children' );
+					var itemsToToggle = $( '.list-of-parents, .list-of-children, .icon-key-details' );
 					var variableCells = $( '.variable-cell' );
-					var showToggleDetails = itemDescriptions.length > 0;
+					var showToggleDetails = itemsToToggle.length > 0;
 					var btn = $( '#btnToggleDetails');
 					if ( !showToggleDetails )
 					{
@@ -42,7 +41,6 @@
 					}
 					else
 					{
-
 						var msgShow = '<g:message code="general.show" />';
 						var msgHide = '<g:message code="general.hide" />';
 
@@ -52,25 +50,19 @@
 							if ( label.substring( 0, 4 ) == msgHide )
 							{
 								label = label.replace( msgHide, msgShow );
-								itemDescriptions.hide( 'fast' );
+								itemsToToggle.hide( 'fast' );
 								variableCells.removeClass( 'restricted-width' );
-								<bn:setPreference key="show-description" value="false" />
 							}
 							else
 							{
 								label = label.replace( msgShow, msgHide );
-								itemDescriptions.show( 'fast' );
+								itemsToToggle.show( 'fast' );
 								variableCells.addClass( 'restricted-width' );
-								<bn:setPreference key="show-description" value="true" />
 							}
 							this.innerHTML = label;
 						});
 
-						if ( '<bn:preferenceValue key="show-description" />' == 'true' ) {
-							btn.trigger( 'click' );
-						} else {
-							itemDescriptions.hide();
-						}
+						itemsToToggle.hide();
 					}
 
 				});
@@ -96,8 +88,27 @@
 			</button>
 		</g:if>
 
-		<br />
-		<br />
+		<bnIcons:key>
+
+			<bnIcons:icon
+				label="${message( code: "icon-key.needs-review.label")}"
+				iconPath="${resource([ dir: "images/icons/", file: "lightbulb.png" ])}"><g:message code="icon-key.needs-review" /></bnIcons:icon>
+
+			<bnIcons:icon
+				label="${message( code: "icon-key.doesnt-need-review.label")}"
+				iconPath="${resource([ dir: "images/icons/", file: "accept.png" ])}"><g:message code="icon-key.doesnt-need-review" /></bnIcons:icon>
+
+			<bnIcons:icon
+				label="${message( code: "icon-key.relationship.label")}"
+				iconPath="${resource([ dir: "images/icons/", file: "arrow_right.png" ])}"
+				classes="icon-key-details"><g:message code="icon-key.relationship" /></bnIcons:icon>
+
+			<bnIcons:icon
+				label="${message( code: "icon-key.relationship-with-comment.label")}"
+				iconPath="${resource([ dir: "images/icons-custom/", file: "arrow_right_comment.png" ])}"
+				classes="icon-key-details"><g:message code="icon-key.relationship-with-comment" /></bnIcons:icon>
+
+		</bnIcons:key>
 
 		<g:if test="${!hasPreviousPhase}">
 

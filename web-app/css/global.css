@@ -16,6 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* ICON KEY stuff - to the top right of screen */
+.icon-keys {
+	float: right;
+	font-size: 0.85em;
+}
+
+.icon-keys ul li {
+	padding-left: 20px;
+}
+
+
 /* EXTRA INFO TO SHOW IN LIST, below main title */
 
 .info, .stats {
@@ -178,14 +189,17 @@ h2 {
 	text-align: center;
 	border-bottom: 1px solid #bbb;
 	margin-bottom: 10px;
-    clear: both;
+}
+
+#headingWrapper {
+	position: relative;
 }
 
 #user-info {
 	padding-top: 5px;
-	width: 100%;
 	text-align: right;
-	margin-bottom: -30px;
+	position: absolute;
+	right: 10px;
 }
 
 /* FONT STACK */

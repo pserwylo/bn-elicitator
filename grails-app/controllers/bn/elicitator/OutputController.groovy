@@ -1,7 +1,6 @@
 package bn.elicitator
 
 import grails.converters.JSON
-import groovy.util.logging.Log
 
 class OutputController {
 

@@ -50,7 +50,7 @@
 
 	<body>
 
-		<g:if test="${Environment.getCurrent().equals( Environment.DEVELOPMENT )}">
+		%{--<g:if test="${Environment.getCurrent().equals( Environment.DEVELOPMENT )}">
 			<div id="app-info">
 				<ul class="">
 					<li>App Info - </li>
@@ -58,13 +58,14 @@
 					<li>Elicitation phase: ${AppProperties.properties.elicitationPhase}</li>
 				</ul>
 			</div>
-		</g:if>
+		</g:if>--}%
 
-		<div id="heading">${AppProperties.properties.title}</div>
-
-		<shiro:authenticated>
-			<div id="user-info"><g:message code="main.welcome" args="${[ shiro.principal() ]}" /> (<g:link controller="auth" action="logout">logout</g:link>)</div>
-		</shiro:authenticated>
+		<div id="headingWrapper">
+			<shiro:authenticated>
+				<div id="user-info"><g:message code="main.welcome" args="${[ shiro.principal() ]}" /> (<g:link controller="auth" action="logout">logout</g:link>)</div>
+			</shiro:authenticated>
+			<div id="heading">${AppProperties.properties.title}</div>
+		</div>
 
 		<g:layoutBody/>
 

@@ -155,7 +155,7 @@ class VariableTagLib {
 			String classNeedsReview = hasVisited ? 'doesnt-need-review' : 'needs-review'
 			out << """
 				<li class='variable-item  ${classNeedsReview}'>
-					${bn.variableInListWithRelationships( [ variable: child, needsReview: !hasVisited ] )}
+					${bn.variableInListWithRelationships( [ variable: child ] )}
 				</li>
 				"""
 		}
@@ -165,11 +165,9 @@ class VariableTagLib {
 
 	/**
 	 * @attr variable REQUIRED
-	 * @attr needsReview REQUIRED
 	 */
 	def variableInListWithRelationships = { attrs ->
 		Variable variable = attrs.variable
-		Boolean needsReview = attrs.needsReview
 		out << """
 			<table>
 				<tr>
@@ -178,7 +176,6 @@ class VariableTagLib {
 					</td>
 					<td class='variable-cell'>
 						<a href='${createLink( controller: 'elicit', action: 'parents', params: [ for: variable.label ] )}'>${bn.variable( [ var: variable, includeDescription: false ] )}</a>
-						${needsReview ? '<span class="stats">(needs review)</span>' : ''}
 					</td>
 					<td>
 						${this.generateListOfChildren( variable )}
@@ -206,7 +203,7 @@ class VariableTagLib {
 
 			out << """
 				<li class='variable-item  ${classes}'>
-					${bn.variableInListWithRelationships( [ variable: child, needsReview: !hasVisited ] )}
+					${bn.variableInListWithRelationships( [ variable: child ] )}
 				</li>
 				"""
 		}
