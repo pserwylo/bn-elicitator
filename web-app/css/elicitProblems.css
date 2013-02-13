@@ -19,3 +19,12 @@
 .answers .relationship-to-remove {
 	padding-left: 0.5em;
 }
+
+.overview {
+	padding: 0.5em;
+	width: 66%;
+}
+
+.variable-list {
+	margin: 0.5em 0;
+}

@@ -21,6 +21,7 @@ package bn.elicitator
 class VariableTagLib {
 
 	static namespace = "bn"
+	static returnObjectForTags = ['mostRecentComment']
 
 	VariableService variableService
 
@@ -48,7 +49,7 @@ class VariableTagLib {
 		out << """<span class='variable'>${var.readableLabel}${includeDescription ? ' ' + bn.variableDescription( [ var: var ] ) : ''}</span>"""
 	}
 
-	public static String generateTooltip( String tooltip, String id = null, String classes = null, String content = null )
+	public static String generateTooltip( String tooltip, String id = null, String classes = null, String content = null, Boolean includeAlert = true )
 	{
 		String jsTooltip = tooltip.replaceAll( "'", "\\\\'" ).replaceAll( "\n", "\\\\n" )
 
@@ -58,8 +59,11 @@ class VariableTagLib {
 			content = "(?)"
 		}
 
+		String a    = includeAlert ? "<a href='javascript:alert( \"${jsTooltip}\" );'>" : ""
+		String aEnd = includeAlert ? "</a>" : ""
+
 		// Had to fudge the formatting of the HTML so that there was not a space after the tooltip.
-		return """<span ${id} class="tooltip ${classes ?: ''}"><a href="javascript:alert( '${jsTooltip}' );">${content}</a><span class="tip">${tooltip.encodeAsHTML().replaceAll( "\n", " <br /> " )}</span></span>""".trim().replaceAll( "\n", "" )
+		return """<span ${id} class="tooltip ${classes ?: ''}">${a}${content}${aEnd}<span class="tip">${tooltip.encodeAsHTML().replaceAll( "\n", " <br /> " )}</span></span>""".trim().replaceAll( "\n", "" )
 	}
 
 	/**
@@ -76,31 +80,26 @@ class VariableTagLib {
 	}
 
 	/**
-	 * @attr chain REQUIRED
-	 * @attr includeTooltip
+	 * @attr relationship
+	 * @attr child
+	 * @attr parent
 	 */
-	def relationshipChain = { attrs ->
+	def mostRecentComment = { attrs ->
 
-		List<Relationship> chain = attrs.chain
-		def includeTooltip = true
-		if ( attrs.containsKey( "includeTooltip" ) )
-		{
-			includeTooltip = attrs.remove( "includeTooltip" )
+		assert attrs.containsKey( "relationship" ) || ( attrs.containsKey( "child" ) && attrs.containsKey( "parent" ) )
+
+		Relationship relationship = null;
+		if ( attrs.containsKey( "relationship" ) ) {
+			relationship = attrs.remove( "relationship" )
 		}
 
-		for ( int i = 0; i < chain.size(); i ++ )
-		{
-			Relationship rel = chain.get( i )
-
-			if ( i == 0 )
-			{
-				out << bn.variable( [ var: rel.parent, includeDescription: includeTooltip ] )
-			}
-
-			out << bn.rArrow( [ comment: rel.mostRecentComment?.comment ] )
-			out << bn.variable( [ var: rel.child, includeDescription: includeTooltip ] )
-
+		if ( relationship == null ) {
+			Variable child = attrs.child
+			Variable parent = attrs.parent
+			relationship = Relationship.findByCreatedByAndDelphiPhaseAndExistsAndParentAndChild( ShiroUser.current, AppProperties.properties.delphiPhase, true, parent, child )
 		}
+
+		relationship?.mostRecentComment?.comment
 	}
 
 	/**

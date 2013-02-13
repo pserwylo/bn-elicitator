@@ -45,10 +45,22 @@
 	background: url( "../images/icons-custom/arrow_right_comment.png" ) no-repeat;
 }
 
+.arrow.right.deletable:hover {
+	background: url( "../images/icons-custom/arrow_right_deletable_hover.png" ) no-repeat;
+}
+
+.arrow.right.comment.deletable:hover {
+	background: url( "../images/icons-custom/arrow_right_comment_deletable_hover.png" ) no-repeat;
+}
+
 .arrow {
 	display: inline-block;
 	width: 16px;
 	height: 16px;
+}
+
+.arrow.deletable {
+	width: 20px;
 }
 
 /* ICON BUTTON STYLES */

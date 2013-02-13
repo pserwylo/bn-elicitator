@@ -184,6 +184,22 @@ class ElicitController {
 		fixRedundant( true, (String)params["parent"], (String)params["child"], (Boolean)params["displayAll"] )
 	}
 
+	def removeRegular = {
+		Variable parent = Variable.findByLabel( (String)params["parent"] )
+		Variable child = Variable.findByLabel( (String)params["child"] )
+
+		if ( parent == null || child == null )
+		{
+			String label = parent == null ? parentLabel : childLabel
+			response.sendError( 404, "Variable '$label' not found" )
+		}
+		else
+		{
+			bnService.removeRegularRelationship( parent, child )
+			redirectToProblems()
+		}
+	}
+
 	def removeRedundant = {
 		fixRedundant( false, (String)params["parent"], (String)params["child"], (Boolean)params["displayAll"] )
 	}

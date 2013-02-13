@@ -41,34 +41,6 @@ class ProblemsTagLib {
 	static namespace = "bnProblems"
 
 	/**
-	 * @attr chains REQUIRED
-	 * @attr separator
-	 */
-	def listOfVariableChains = { attrs ->
-
-		List<List<Variable>> chains = attrs.chains
-		String separator = ""
-		if ( attrs.containsKey( "separator" ) )
-		{
-			attrs.remove( "separator" )
-		}
-
-		out << "<ul class='indent item-count-${chains.size()}'>\n"
-		chains.eachWithIndex { it, i ->
-
-			out << "<li>\n"
-			out << bn.variableChain( includeTooltip: false, chain: it )
-			if ( i < chains.size() && separator )
-			{
-				out << separator
-			}
-			out << "</li>\n"
-
-		}
-		out << "</ul>\n"
-	}
-
-	/**
 	 * @attr cyclicalRelationship REQUIRED
 	 */
 	def removeCycleOptions = { attrs ->
