@@ -17,20 +17,11 @@
   --}%
 <%@ page import="bn.elicitator.Relationship" %>
 <!doctype html>
-
-<g:set var="hasDetails" value="${delphiPhase > 1 || variables.size() > stillToVisit?.size()}" />
-
 <html>
-
 	<head>
-
 		<meta name="layout" content="main">
-
 		<title>These relationships may not be needed</title>
-
 		<r:require module="elicitProblems" />
-
-		<bn:preferencesJs />
 
 		<g:javascript>
 
@@ -54,33 +45,35 @@
 				var msgShow = "<g:message code='general.show' />";
 				var msgHide = "<g:message code='general.hide' />";
 
-				var showKeepers = ${displayAll?.toString()};
-				if ( !showKeepers )
-				{
-					keepers.hide();
+				keepers.detach().appendTo( $( '#keepers' ) );
 
+				var showKeepers = ${displayAll?.toString()};
+				if ( !showKeepers ) {
+
+					keepers.hide();
 					btnKeepers.click( function() {
 
-						if ( this.value.substring( 0, 4 ) == msgHide )
-						{
+						if ( this.value.substring( 0, 4 ) == msgHide ) {
+
 							this.value = this.value.replace( msgHide, msgShow );
 							keepers.hide( 'fast' );
-						}
-						else
-						{
+
+						} else {
+
 							this.value = this.value.replace( msgShow, msgHide );
 							keepers.show( 'fast' );
+
 						}
-
 					});
-				}
-				else
-				{
+
+				} else {
+
 					btnKeepers.hide();
+
 				}
 
-				$( '#redundant-relationship-list' ).find( 'button' ).click( function() {
-					var link = $( this ).hasClass( 'keep' ) ? '<g:createLink action="keepRedundant" />' : '<g:createLink action="removeRedundant" />';
+				$( '#redundant-relationship-list' ).find( 'button.keep' ).click( function() {
+					var link = '<g:createLink action="keepRedundant" />';
 					var parts = $( this ).val().split( '-' );
 					var parentLabel = parts[ 0 ];
 					var childLabel = parts[ 1 ];
@@ -129,7 +122,7 @@
 				var message = "Are you sure you want to remove the following relationship?\n\n";
 				message    += "  " + parentLabel + " influences " + childLabel + "\n\n";
 
-				if ( typeof comment !== "undefined" ) {
+				if ( typeof comment !== "undefined" && comment != null && comment.length > 0 ) {
 					message += "  Reason: " + comment;
 				}
 
@@ -186,19 +179,20 @@
 
 					<h1><g:message code="problems.redundant.header" /></h1>
 
-					<g:if test="${numKeepers > 0}">
-						<input
-							type="button"
-							style="margin-top: 0.3em;"
-							id="btnToggleKeepers"
-							value="Show ${numKeepers} direct relationships you said are necessary" />
-					</g:if>
+					<div class="overview">
+						You can remove any relationship below by clicking on a
+						<bn:rArrow comment="Clicking these arrows below will allow you to delete the relationship it represents." onclick="(function(){})()" />
+						image. If you think that a relationship is <em>not</em> better explained by any of the proposed
+						alternatives, click the "<g:message code="problems.redundant.keep" />" button.
+					</div>
 
 					<ul id="redundant-relationship-list" class="variable-list">
 
 						<g:each in="${redundantRelationships}" var="${rel}">
 
-							<li class="redundant-relationship variable-item ${ (rel.relationship.isRedundant == Relationship.IS_REDUNDANT_NO) ? 'keeper' : ''}">
+							<g:set var="notRedundant" value="${rel.relationship.isRedundant != Relationship.IS_REDUNDANT_NO}" />
+
+							<li class="redundant-relationship variable-item ${ !notRedundant ? 'keeper' : ''}">
 
 								<div class='header'>
 									<bn:variable includeDescription="false" var="${rel.redundantParent}" />
@@ -224,16 +218,28 @@
 									</ul>
 								</div>
 
-								<g:if test="${rel.relationship.isRedundant != Relationship.IS_REDUNDANT_NO}">
+								<g:if test="${notRedundant}">
 									<div class="answers">
-										<button>Keep direct relationship</button>
-										<span class="info"> or remove any relationships by clicking the green arrows</span>
+										<button class="keep"><g:message code="problems.redundant.keep" /></button>
 									</div>
 								</g:if>
 
 							</li>
 
 						</g:each>
+
+					</ul>
+
+					<g:if test="${numKeepers > 0}">
+						<input
+							type="button"
+							style="margin-top: 0.3em;"
+							id="btnToggleKeepers"
+							value="Show ${numKeepers} more direct relationships" />
+						<span class="info">that you previously chose not to remove</span>
+					</g:if>
+
+					<ul id="keepers" class="variable-list">
 
 					</ul>
 
