@@ -146,7 +146,10 @@
 				<h1><g:message code="problems.cyclical.header" /></h1>
 
 				<div class="info">
-					The following lists of variables are cycles. To proceed, remove a relationship in the cycle by clicking the green arrows.
+					The following lists of variables cause cycles, which we are unfortunately unable to allow.
+					To proceed, remove one of the relationships which cause the cycle by clicking a
+					<bn:rArrow comment="Hover over these to see the comments you had about this relationship.\n\nClick them to delete the relationship." onclick="(function(){})()" />
+					image.
 				</div>
 
 				<ul id="cyclical-relationship-list" class="variable-list">
@@ -180,10 +183,9 @@
 					<h1><g:message code="problems.redundant.header" /></h1>
 
 					<div class="overview">
-						You can remove any relationship below by clicking on a
-						<bn:rArrow comment="Clicking these arrows below will allow you to delete the relationship it represents." onclick="(function(){})()" />
-						image. If you think that a relationship is <em>not</em> better explained by any of the proposed
-						alternatives, click the "<g:message code="problems.redundant.keep" />" button.
+						If any of the more detailed relationships explains the same thing as the direct relationship, then remove the direct relationship by clicking on the
+						<bn:rArrow comment="Hover over these to see the comments you had about this relationship.\n\nClick them to delete the relationship." onclick="(function(){})()" />
+						image.
 					</div>
 
 					<ul id="redundant-relationship-list" class="variable-list">
@@ -220,7 +222,7 @@
 
 								<g:if test="${notRedundant}">
 									<div class="answers">
-										<button class="keep"><g:message code="problems.redundant.keep" /></button>
+										<button class="keep" value="${rel.relationship.parent.label}-${rel.relationship.child.label}"><g:message code="problems.redundant.keep" /></button>
 									</div>
 								</g:if>
 
@@ -236,7 +238,9 @@
 							style="margin-top: 0.3em;"
 							id="btnToggleKeepers"
 							value="Show ${numKeepers} more direct relationships" />
-						<span class="info">that you previously chose not to remove</span>
+							<g:if test="${!displayAll}">
+								<span class="info">that you previously chose not to remove</span>
+							</g:if>
 					</g:if>
 
 					<ul id="keepers" class="variable-list">

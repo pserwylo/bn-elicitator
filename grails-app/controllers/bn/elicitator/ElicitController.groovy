@@ -240,8 +240,9 @@ class ElicitController {
 	 */
 	def problems = {
 
-		List<BnService.RedundantRelationship> redundantRelationships = bnService.getRedundantRelationships()
 		List<BnService.CyclicalRelationship> cyclicalRelationships = bnService.getCyclicalRelationships()
+		List<BnService.RedundantRelationship> redundantRelationships = []
+		Integer numKeepers = 0
 
 		def showProblems = false
 		def displayAll = false
@@ -250,21 +251,25 @@ class ElicitController {
 			displayAll = params.remove( "displayAll" )
 		}
 
-		Integer numKeepers = redundantRelationships.count {
-			it.relationship.isRedundant == Relationship.IS_REDUNDANT_NO
-		}
-
 		if ( cyclicalRelationships.size() > 0 )
 		{
 			showProblems = true
 		}
-		else if ( redundantRelationships.size() > 0 )
+		else
 		{
-			// If all of the relationships have been explicitly marked as okay by the user, don't bother them each time
-			// by reshowing them to the users...
-			if ( numKeepers < redundantRelationships.size() || displayAll )
-			{
-				showProblems = true
+			redundantRelationships = bnService.getRedundantRelationships()
+
+			numKeepers = redundantRelationships.count {
+				it.relationship.isRedundant == Relationship.IS_REDUNDANT_NO
+			}
+
+			if ( redundantRelationships.size() > 0 ) {
+				// If all of the relationships have been explicitly marked as okay by the user, don't bother them each time
+				// by reshowing them to the users...
+				if ( numKeepers < redundantRelationships.size() || displayAll )
+				{
+					showProblems = true
+				}
 			}
 		}
 
