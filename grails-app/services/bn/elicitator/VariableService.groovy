@@ -76,9 +76,16 @@ class VariableService
 		List<Variable> toExclude = []
 		List<Variable> parents = findAllRelatedVars( initialChildren, toExclude )
 		initialChildren.addAll( parents )
+		initialChildren = initialChildren.toSet().toList() // Hacky way to filter non-unique members out...
 
-		// Hacky way to filter non-unique members out...
-		return initialChildren.toSet().toList().sort( new Comparator<Variable>() {
+		if ( delphiService.hasPreviousPhase ) {
+			initialChildren = initialChildren.findAll { child ->
+				Relationship.countByDelphiPhaseAndChildAndExists( delphiService.previousPhase, child, true ) > 0
+			}
+		}
+
+
+		return initialChildren.sort( new Comparator<Variable>() {
 
 			@Override
 			int compare( Variable first, Variable second )
@@ -140,8 +147,6 @@ class VariableService
 	public List<Variable> getPotentialParents( Variable child )
 	{
 		Variable.findAllByVariableClassInList( child.variableClass.potentialParents )
-
-
 	}
 
 	/**

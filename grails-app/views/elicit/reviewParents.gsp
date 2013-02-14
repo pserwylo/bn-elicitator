@@ -39,6 +39,23 @@
 
 			var currentVar = null;
 
+			var reviewYes = $( '.review-yes' );
+			var reviewNo  = $( '.review-no'  );
+
+			var showHideLists = function() {
+				if ( reviewYes.find( 'li' ).length == 0 ) {
+					reviewYes.hide();
+				} else {
+					reviewYes.show();
+				}
+
+				if ( reviewNo.find( 'li' ).length == 0 ) {
+					reviewNo.hide();
+				} else {
+					reviewNo.show();
+				}
+			};
+
 			var hasChanged = function() {
 				if ( currentVar == null ) {
 					return false;
@@ -71,6 +88,8 @@
 				}
 			});
 
+			showHideLists();
+
 			form.find( 'button.save' ).click( function() {
 				var btnSave = this;
 				if ( hasChanged() ) {
@@ -96,6 +115,8 @@
 
 								var ul = $( '#list-' + ( data.exists ? 'yes' : 'no' ) );
 								ul.append( li );
+
+								showHideLists();
 							}
 
 							reasonsList.find( 'li.me.phase-${delphiPhase}' ).remove();
@@ -130,6 +151,10 @@
 
 				checkbox.prop( 'checked', false );
 				textarea.val( "" );
+
+				if ( currentVar != null ) {
+					$( '#' + currentVar.label + "-variable-item" ).removeClass( 'highlighted' );
+				}
 
 				$.ajax({
 					type: 'post',
@@ -169,9 +194,13 @@
 							comment       : currentCommentText == null ? "" : currentCommentText
 						};
 
+						if ( currentVar != null ) {
+							$( '#' + currentVar.label + "-variable-item" ).addClass( 'highlighted' );
+						}
+
 						form.find( 'legend' ).html( "Does " + data.parentLabelReadable + "<br />directly influence<br />${variable.readableLabel}?" );
 
-						var offset = $( btnReview ).closest( 'li' ).offset().top - form.parent().offset().top;
+						var offset = $( btnReview ).closest( 'li' ).offset().top - form.parent().offset().top - 50;
 						form.show();
 						form.css( 'padding-top', offset + 'px' );
 					}

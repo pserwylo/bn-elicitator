@@ -39,33 +39,6 @@ Hmmm. This sounds like a bug. There will need to be a button on the page, and I 
 > If the "I said Yes/No" lists are empty, don't show them. Make sure to switch them on if they get populated via JS.
 
 
-> There needs to be an indication of what the users can or is expected to do when they review the variables.
-
-
-> May be change:
-
-> [Variable Label] Here is a summary of how your answers from last time compare to other participants. Click "Review" to see comments from the others.
-
-> - I said "Yes"
-
->    to
-
-> [Variable Label] On the question of variables that directly influence Age of Client, you may want to revisit your previous answer to each of these variables:
-> - You said "Yes"
-
-This sounds like a plan.
-
-
-> Why are the combinations are just YES vs YES and NO vs NO.  I thought you are highlighting for differences (disagreements), so YES vs NO and NO vs YES?
-
-I can do it either way, they are much over muchness as far as I'm concerned. If we switch to focus on the differences, then the colours may be a little wrong ("Why are high numbers red and low numbers green?"). 
-
-
-> If a combination has no entry then don't show it
-
-Will do this with a quick JavaScript check.
-
-
 > I don't understand this.  For variable Accident below, no one says YES except me for variable Driving Skill as a cause, but the comments by others seem to indicate that they would say YES.
 
 It seems that in this case, it is because you actually said "NO" for driving skill, and they all said "YES" (i.e. 0 other people said "NO")
@@ -76,16 +49,6 @@ It seems that in this case, it is because you actually said "NO" for driving ski
 I need to fix the first round, because I think people accidentally unchecked them by clicking the checkbox in the list. I should remove that checkbox completely.
 Perhaps a quick "click yes or no" for each variable, which classifies it into two lists below, which they can then review.
 This has the added benefit of ensuring that all "No" options are intentional, not by default.
-
-
-> It is better to also show total number of responses so that the users can see the numbers in perspective.
-
-This could be one of "2/4", "2 of 4" or "2 (50%)"
-
-
-> In the review of direct relationship, didn't you say that a link can be individually deleted in the longer links of relationship, not just the whole direct relationship?
-
-This is in another branch which has now been merged and released.
 
 
 > The systems bombed out when I pressed the "keep direct relationship" button on the screen below after using the go back and go forward arrows on Firefox.
@@ -101,11 +64,6 @@ Good question. This will need some thought. At the least, I can add a notificati
 > Once all of the variables haven been reviewed.  Do you want people to review the "x potential problems"?  Or it is optional?
 
 It is optional, so perhaps I should emphasise that.
-
-
-> When going thorough the relationships, there should be an indication of which relationship I am at next.
-
-I can add a highlight to the relationship which is currently being reviewed.
 
 
 > Placing the changing "Problematic relationships (which cause cycles)" at the top  is not a good idea when you have pages of relationship to go through.  You cannot expect the user to go back up to the top of the list.  Chances are they will just hit the button back to the list.

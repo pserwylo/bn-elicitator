@@ -264,7 +264,24 @@ ul#redundant-relationship-list .indent li {
 }
 
 /* ELICITING PARENTS STYLES */
+ul.potential-parents-list li.variable-item.highlighted + li {
+	border-top: none;
+}
+
+ul.potential-parents-list .variable-item.highlighted {
+	background-color: #fff;
+	border: solid #85cc43 1px;
+	z-index: -100;
+	margin-bottom: 1px;
+}
+
+ul.potential-parents-list .variable-item.highlighted button.review {
+	color: #888;
+	background-color: #eee;
+}
+
 .var-summary {
+	display: inline-block;
     width: 200px;
     float: right;
 	text-align: right;

@@ -22,18 +22,8 @@ class UserService {
 
 	private List<ShiroUser> cachedExpertList = null;
 
-	private void loadExpertList()
-	{
-		if ( cachedExpertList == null )
-		{
-			// Does GORM provide a way to say findAllByRolesContains( ... )?
-			cachedExpertList = ShiroUser.findAll().findAll { it -> it.roles.contains( ShiroRole.expert ) }
-		}
-	}
-
 	List<ShiroUser> getExpertList() {
-		loadExpertList()
-		return cachedExpertList
+		ShiroUser.findAll().findAll { it -> it.roles.contains( ShiroRole.expert ) }
 	}
 
 	/**
@@ -42,8 +32,7 @@ class UserService {
 	 * @return
 	 */
 	Integer getExpertCount() {
-		loadExpertList()
-		return cachedExpertList.size()
+		expertList.size()
 	}
 
 	/**

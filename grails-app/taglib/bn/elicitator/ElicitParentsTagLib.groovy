@@ -170,7 +170,7 @@ class ElicitParentsTagLib {
 			out << """
 			<li id='${parent.label}-variable-item' class='variable-item'>
 				<span class='var-summary'>
-					<span class='count ${countClasses[ countClassIndex ]}'>$count</span>
+					<span class='count ${countClasses[ countClassIndex ]}'>$count of $totalUsers</span>
 					<button class='review' value='${parent.label}'>Review</button>
 				</span>
 				${bn.variable( [ var: parent ] )}
@@ -179,24 +179,28 @@ class ElicitParentsTagLib {
 		}
 
 		out << """
-			<h2 style='font-size: 1.0em; float: right;'># of others who also said "<strong>Yes</strong>"</h2>
-			<h2>I said "Yes"</h2>
-			<ul id='list-yes' class='potential-parents-list variable-list'>
+				<h2 class='review-yes' style='font-size: 1.0em; float: right;'>Others who also said "<strong>Yes</strong>"</h2>
+				<h2 class='review-yes'>I said "Yes"</h2>
+				<ul id='list-yes' class='review-yes potential-parents-list variable-list'>
+				"""
+			listYes.sort( sortYes ).each { parent ->
+				listItem( parent, allOthersCount.get( parent ) )
+			}
+			out << """
+				</ul>
 			"""
-		listYes.sort( sortYes ).each { parent ->
-			listItem( parent, allOthersCount.get( parent ) )
-		}
-		out << "</ul>"
 
 		out << """
-			<h2 style='font-size: 1.0em; float: right;'># of others who also said "<strong>No</strong>"</h2>
-			<h2>I said "No"</h2>
-			<ul id='list-no' class='potential-parents-list variable-list'>
-			"""
+				<h2 class='review-no' style='font-size: 1.0em; float: right;'>Others who also said "<strong>No</strong>"</h2>
+				<h2 class='review-no'>I said "No"</h2>
+				<ul id='list-no' class='review-no potential-parents-list variable-list'>
+				"""
 		listNo.sort( sortNo ).each { parent ->
 			listItem( parent, totalUsers - allOthersCount.get( parent ) )
 		}
-		out << "</ul>"
+		out << """
+				</ul>
+			"""
 	}
 
 	/**

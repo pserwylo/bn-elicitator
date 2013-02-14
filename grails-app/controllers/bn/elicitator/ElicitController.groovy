@@ -353,7 +353,6 @@ class ElicitController {
 		else
 		{
 			List<Variable> potentialParents = this.variableService.getPotentialParents( var )
-
 			String view = delphiService.hasPreviousPhase ? "reviewParents" : "parents"
 			render(
 				view: view,
