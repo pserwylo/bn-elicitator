@@ -43,12 +43,15 @@ Hmmm. This sounds like a bug. There will need to be a button on the page, and I 
 
 
 > May be change:
-> 
+
 > [Variable Label] Here is a summary of how your answers from last time compare to other participants. Click "Review" to see comments from the others.
-> I said "Yes"
+
+> - I said "Yes"
+
 >    to
+
 > [Variable Label] On the question of variables that directly influence Age of Client, you may want to revisit your previous answer to each of these variables:
-> You said "Yes"
+> - You said "Yes"
 
 This sounds like a plan.
 
