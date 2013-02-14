@@ -8,15 +8,14 @@ import java.awt.Point
 
 class NeticaOutputGraph extends OutputGraph {
 
-
 	// Use this to calculate the layout of our nodes (it has better algorithms than most BN software...
 	GraphvizOutputGraph graphvizOutput = new GraphvizOutputGraph()
 
-	Map<Variable,VariableFamily> variablesWithParents = [:]
+	Map<Variable,VariableFamily> variableFamilies = [:]
 
 	private void putVar( Variable var ) {
-		if ( !variablesWithParents.containsKey( var ) ) {
-			variablesWithParents.put( var, new VariableFamily( variable: var ) )
+		if ( !variableFamilies.containsKey( var ) ) {
+			variableFamilies.put( var, new VariableFamily( variable: var ) )
 		}
 	}
 
@@ -24,15 +23,18 @@ class NeticaOutputGraph extends OutputGraph {
 	void addEdge(Variable parent, Variable child, Float strength) {
 		putVar( parent )
 		putVar( child  )
-		variablesWithParents.get( child  ).parents.add( parent )
-		variablesWithParents.get( parent ).children.add( child )
+		variableFamilies.get( child  ).parents.add( parent )
+		variableFamilies.get( parent ).children.add( child )
 		graphvizOutput.addEdge( parent, child, strength )
 	}
 
+	/**
+	 * Uses the Kahn (1962) algorithm explained at https://en.wikipedia.org/wiki/Topological_sorting.
+	 */
 	List<Variable> calcVariableOrder() {
 
 		Map<Variable,VariableFamily> allVariableFamilies = [:]
-		variablesWithParents.each { entry ->
+		variableFamilies.each { entry ->
 			VariableFamily familyCopy = new VariableFamily( variable : entry.key )
 			familyCopy.parents.addAll( entry.value.parents )
 			familyCopy.children.addAll( entry.value.children )
@@ -42,10 +44,8 @@ class NeticaOutputGraph extends OutputGraph {
 		List<Variable> L = []
 		List<Variable> S = allVariableFamilies.findAll { entry -> entry.value.parents.isEmpty() }.collect { entry -> entry.key  }
 		while ( !S.isEmpty() ) {
-
 			Variable n = S.pop()
 			L.add( n )
-
 			VariableFamily nFamily = allVariableFamilies.get( n )
 			for ( Variable m in nFamily.children ) {
 				VariableFamily mFamily = allVariableFamilies.get( m )
@@ -54,7 +54,6 @@ class NeticaOutputGraph extends OutputGraph {
 					S.add( m )
 				}
 			}
-
 		}
 
 		return L
@@ -66,7 +65,7 @@ class NeticaOutputGraph extends OutputGraph {
 		List<Variable> variableOrder = calcVariableOrder()
 
 		List<NeticaNode> nodes = variableOrder.collect { variable ->
-			VariableFamily family = variablesWithParents.get( variable )
+			VariableFamily family = variableFamilies.get( variable )
 			new NeticaNode( family : family )
 		}
 
