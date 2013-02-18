@@ -41,6 +41,11 @@
 			var reviewYes = $( '.review-yes' );
 			var reviewNo  = $( '.review-no'  );
 
+			// TODO: Prompt them to comment if they changed their mind.
+			var hasChangedMind = function() {
+				return inputDoesExist() != currentVar.exists;
+			};
+
 			var inputDoesExist = function( doesExistValue ) {
 				if ( typeof doesExistValue === 'boolean' ) {
 					var value = doesExistValue ? 'yes' : 'no';
@@ -149,8 +154,18 @@
 			form.find( 'button.close' ).click( function() {
 				if ( !hasChangedWithAlert() ) {
 					form.hide();
+					deselect();
+					currentVar = null;
 				}
 			});
+
+			var deselect = function() {
+				inputDoesExist( false );
+				textarea.val( "" );
+				if ( currentVar != null ) {
+					$( '#' + currentVar.label + "-variable-item" ).removeClass( 'highlighted' );
+				}
+			};
 
 			$( 'button.review' ).click( function() {
 				var btnReview = this;
@@ -159,12 +174,7 @@
 					return;
 				}
 
-				inputDoesExist( false );
-				textarea.val( "" );
-
-				if ( currentVar != null ) {
-					$( '#' + currentVar.label + "-variable-item" ).removeClass( 'highlighted' );
-				}
+				deselect();
 
 				$.ajax({
 					type: 'post',

@@ -53,3 +53,16 @@ It is optional, so perhaps I should emphasise that.
 > Require a comment if the user changes their mind in a later round
 
 I saw that only one person had a relationship, but they explained it well. I changed my mind, left a comment explaining that I agreed. By the time the next round came about, they had dropped their support without declaring why, which would probably mean that they just did it because everybody else did it.
+
+# Logging
+
+I want to make sure that after the survey is complete, I can inspect certain phenomenon in order to make comment about the appropriateness of the system.
+
+The following is a list of info I need to log:
+
+ * When they change their mind (as well as if they commented, how many other people commented too, essentially what info was available to them when they changed their mind)
+ * Removing of cycles
+ * Retaining potentially redundant relationships
+ * Delete potentially redundant relationships
+ * Delete other relationships after being prompted about potential redundant relationships
+ * Proportion of relationships which they comment about
