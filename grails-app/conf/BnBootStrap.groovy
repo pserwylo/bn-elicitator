@@ -53,7 +53,7 @@ class BnBootStrap {
 				}
 				else if ( doTestData == TestData.INSURANCE )
 				{
-					initTestUsers( 2, false );
+					initTestUsers( 5, false );
 					initInsuranceVariables()
 					initInsuranceAppInfo()
 				}
