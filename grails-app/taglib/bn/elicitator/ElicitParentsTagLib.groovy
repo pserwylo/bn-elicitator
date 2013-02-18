@@ -97,7 +97,7 @@ class ElicitParentsTagLib {
 					out << """
 						<li class='${className}'>
 							"${comment.comment}"
-							<div class='author'> - ${author}</div>
+							<div class='author'> - ${author}${message( code: 'elicit.parents.comment-phase', args: [ it.delphiPhase ])}</div>
 						</li>
 						"""
 				}

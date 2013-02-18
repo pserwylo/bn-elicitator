@@ -79,6 +79,7 @@
 				var classes     = [ 'phase-' + delphiPhase ];
 				classes.push( comment.byMe   ? 'me' : 'other' );
 				classes.push( comment.exists ? 'exists' : 'doesnt-exist' );
+				author += '${message( code: 'elicit.parents.comment-phase', args: [ '[phase]' ])}'.replace( '[phase]', delphiPhase );
 				return '<li class="' + classes.join( ' ' ) + '">' + comment.comment + '<div class="author">- ' + author + '</div></li>';
 			};
 
