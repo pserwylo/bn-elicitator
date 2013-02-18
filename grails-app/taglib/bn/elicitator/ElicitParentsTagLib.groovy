@@ -165,12 +165,14 @@ class ElicitParentsTagLib {
 
 			List<String> countClasses = [ "low", "medium", "high" ]
 			float   countPercent    = count / totalUsers
-			int     countClassIndex = countClasses.size() - 1 - ( countPercent * countClasses.size() )
+			int     countClassIndex = ( countClasses.size() - 1 ) - (int)( countPercent * countClasses.size() )
 
 			out << """
 			<li id='${parent.label}-variable-item' class='variable-item'>
 				<span class='var-summary'>
-					<span class='count ${countClasses[ countClassIndex ]}'>$count of $totalUsers</span>
+					<span class='count ${countClasses[ countClassIndex ]}'>
+						${message( code: 'elicit.parents.agreement-count', args : [ count, totalUsers, (int)( countPercent * 100 ) ] )}
+					</span>
 					<button class='review' value='${parent.label}'>Review</button>
 				</span>
 				${bn.variable( [ var: parent ] )}
@@ -305,15 +307,11 @@ class ElicitParentsTagLib {
 		String dialogId     = parent ? parent.label + "-details"    : "details-form"
 		String inputIdAttr  = parent ? "id='input-${parent.label}-form'" : ""
 		String inputName    = parent ? "parents" : "exists"
-		String inputValue   = parent ? parent.label : "1"
 		String comment      = relationship?.delphiPhase == delphiService.phase && relationship?.comment?.comment?.length() > 0 ? relationship.comment.comment : ''
 		String commentLabel = parent ? "Why do you think this?" : "Do you have any further comments?"
 
 		out << """
 			<div id='$dialogId' class='var-details floating-dialog'>
-				<div class='header-wrapper'>
-					${bn.saveButtons( [ atTop: true ] )}
-				</div>
 				<table width="100%" class="form">
 					<tr>
 						<th></th>
@@ -321,13 +319,23 @@ class ElicitParentsTagLib {
 							<label>
 								<input
 									$inputIdAttr
-									type='checkbox'
+									type='radio'
 									${isSelected ? "checked='checked'" : ''}
 									name='$inputName'
-									value='$inputValue'
+									value='yes'
 									/>
-
-								I think it does
+								Yes it does
+							</label>
+							<br />
+							<label>
+								<input
+									$inputIdAttr
+									type='radio'
+									${isSelected ? "checked='checked'" : ''}
+									name='$inputName'
+									value='no'
+									/>
+								No it doesn't
 							</label>
 						</td>
 					</tr>
@@ -342,17 +350,19 @@ class ElicitParentsTagLib {
 						</td>
 					</tr>
 				</table>
+				<div class='header-wrapper'>
+					${bn.saveButtons( [ atTop: true ] )}
+				</div>
 				"""
 
 		List<Relationship> relationshipsToShowCommentsFor = parent ?
 			( this.delphiService.hasPreviousPhase ?
-				this.delphiService.getAllPreviousRelationshipsAndMyCurrent( parent, child ) :
+				this.delphiService.getAllPreviousRelationshipsAndMyCurrent( parent, child, false ) :
 				[ relationship ] ) :
 			[]
 
 		out << """
 			${bnElicit.reasonsList( [ relationships: relationshipsToShowCommentsFor ] )}
-			${bn.saveButtons( [ atTop: false ] )}
 		</div>
 		"""
 	}

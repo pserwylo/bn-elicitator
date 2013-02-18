@@ -14,8 +14,6 @@ Write about Self selection of participants, and how they are netizens
 
 # ROUND TWO TESTING
 
-## Comments from various people
-
 > Mandatory comments for relationships 
 
 Two people asked for this - but it may require too much extra time. Perhaps just for the ones where there are not any comments arguing whatever your position is (i.e. yes or no).
@@ -24,16 +22,6 @@ Two people asked for this - but it may require too much extra time. Perhaps just
 > Force people to view disagreements.
 
 This might work like the "needs review" system on the index page: You need to review each variable that is not under complete agreement.
-
-
-> Where should I go after I have fixed all the relationships?  No button to go further!
-
-Hmmm. This sounds like a bug. There will need to be a button on the page, and I should probably add a menu at the top too, though if I can get away without a menu I'd be happy.
-
-
-> Add key up to the top of the index page, so that the lightbulb means "needs review" and the tick doesn't. Then remove the "(needs review)" text (but add to alt tag of lightbupb)."
-
-Is there a key wherever the icons are present?
 
 
 > And this. I can't believe I said "No" and gave a supporting reason.  May be enable the comments only after the user tick the box "I think it does".
@@ -61,3 +49,7 @@ Good question. This will need some thought. At the least, I can add a notificati
 
 It is optional, so perhaps I should emphasise that.
 
+
+> Require a comment if the user changes their mind in a later round
+
+I saw that only one person had a relationship, but they explained it well. I changed my mind, left a comment explaining that I agreed. By the time the next round came about, they had dropped their support without declaring why, which would probably mean that they just did it because everybody else did it.

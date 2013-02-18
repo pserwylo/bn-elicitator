@@ -32,7 +32,6 @@
 		$( document ).ready( function() {
 
 			var form        = $( '#var-details-dialog' );
-			var checkbox    = form.find( 'input:checkbox' );
 			var textarea    = form.find( 'textarea' );
 			var reasons     = form.find( '.reasons' );
 			var reasonsList = reasons.find( '.reasons-list' );
@@ -41,6 +40,16 @@
 
 			var reviewYes = $( '.review-yes' );
 			var reviewNo  = $( '.review-no'  );
+
+			var inputDoesExist = function( doesExistValue ) {
+				if ( typeof doesExistValue === 'boolean' ) {
+					var value = doesExistValue ? 'yes' : 'no';
+					form.find( 'input:radio[name=exists][value=' + value + ']' ).prop( 'checked', true );
+				} else {
+					doesExistValue = form.find( 'input:radio[name=exists]:checked' ).val() == 'yes';
+				}
+				return doesExistValue;
+			};
 
 			var showHideLists = function() {
 				if ( reviewYes.find( 'li' ).length == 0 ) {
@@ -60,7 +69,7 @@
 				if ( currentVar == null ) {
 					return false;
 				}
-				var changeExists  = currentVar.exists  != checkbox.prop( 'checked' );
+				var changeExists  = currentVar.exists  != inputDoesExist();
 				var changeComment = $.trim( currentVar.comment ) != $.trim( textarea.val() );
 				return changeExists || changeComment;
 			};
@@ -101,7 +110,7 @@
 							child: '${variable.label}',
 							parent: currentVar.label,
 							comment: $.trim( textarea.val() ),
-							exists: checkbox.prop( 'checked' )
+							exists: inputDoesExist()
 						},
 						dataType: 'text json',
 						error: function( data ) {
@@ -150,7 +159,7 @@
 					return;
 				}
 
-				checkbox.prop( 'checked', false );
+				inputDoesExist( false );
 				textarea.val( "" );
 
 				if ( currentVar != null ) {
@@ -172,7 +181,7 @@
 
 						reasons.find( '.no-reasons' ).remove();
 						reasonsList.children().remove();
-						checkbox.prop( 'checked', data.exists );
+						inputDoesExist( data.exists );
 						var currentCommentText = null;
 
 						if ( data.comments.length == 0 ) {
@@ -239,7 +248,10 @@
 					</fieldset>
 
 					<input id="btnFinished"
-						   type="button" style="margin-top: 5px;" value="Finished with ${variable.readableLabel}" class="big" />
+						   type="button"
+						   style="margin-top: 5px;"
+						   value="Finished with ${variable.readableLabel}"
+						   class="big" />
 
 				</div>
 

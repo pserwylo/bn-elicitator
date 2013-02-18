@@ -310,7 +310,7 @@ class ElicitController {
 		}
 		else
 		{
-			List<Relationship> relationships = delphiService.getAllPreviousRelationshipsAndMyCurrent( parent, child )
+			List<Relationship> relationships = delphiService.getAllPreviousRelationshipsAndMyCurrent( parent, child, false )
 			def comments = relationships.findAll { it.comment?.comment?.size() > 0 }.collect { rel ->
 				[
 					comment     : rel.comment.comment,
