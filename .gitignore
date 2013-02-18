@@ -1,5 +1,5 @@
 # External config file...
-bn-elicitator.properties
+CustomConfig.groovy
 
 # I keep a db dump here for testing...
 *.sql

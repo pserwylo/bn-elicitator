@@ -1,0 +1,25 @@
+// Copy this file to bn-elicitator.config.groovy, and specify the appropriate properties for mail and database setup before compiling
+
+grails {
+	mail {
+		host     = "smtp.gmail.com"
+		port     = 465
+		username = "username"
+		password = "password"
+		props    = [
+			"mail.smtp.auth" : "true",
+			"mail.smtp.socketFactory.port" : "465",
+			"mail.smtp.socketFactory.class" : "javax.net.ssl.SSLSocketFactory",
+			"mail.smtp.socketFactory.fallback" : "false"
+		]
+	}
+}
+
+dataSource {
+	dbCreate        = "update"
+	url             = "jdbc:mysql://host/database"
+	driverClassName = "com.mysql.jdbc.Driver"
+	dialect         = "org.hibernate.dialect.MySQL5InnoDBDialect"
+	username        = "username"
+	password        = "username"
+}

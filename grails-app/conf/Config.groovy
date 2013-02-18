@@ -1,7 +1,7 @@
 // locations to search for config files that get merged into the main config
 // config files can either be Java properties files or ConfigSlurper scripts
 
-grails.config.locations = [ "classpath:bn-elicitator.properties" ]
+grails.config.locations = [ CustomConfig ]
 
 // if (System.properties["${appName}.config.location"]) {
 //    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
@@ -91,19 +91,4 @@ log4j = {
            'org.springframework',
            'org.hibernate',
            'net.sf.ehcache.hibernate'
-}
-
-grails {
-	mail {
-		host = "smtp.gmail.com"
-		port = 465
-		username = "peter.serwylo@monash.edu"
-		password = "ma5h1n1bl1k"
-		props = [
-			"mail.smtp.auth" : "true",
-			"mail.smtp.socketFactory.port" : "465",
-			"mail.smtp.socketFactory.class" : "javax.net.ssl.SSLSocketFactory",
-			"mail.smtp.socketFactory.fallback" : "false"
-		]
-	}
 }

@@ -16,16 +16,14 @@ Write about Self selection of participants, and how they are netizens
 
 ## Comments from various people
 
-> Mandatory comments for relationships (Also Frada asked for this)
+> Mandatory comments for relationships 
+
+Two people asked for this - but it may require too much extra time. Perhaps just for the ones where there are not any comments arguing whatever your position is (i.e. yes or no).
 
 
-> Force people to view disagtreements.
+> Force people to view disagreements.
 
-
-> Put less influence on agreement. 
-
-
-> Use the same "needs review" metaphore as in the main list.
+This might work like the "needs review" system on the index page: You need to review each variable that is not under complete agreement.
 
 
 > Where should I go after I have fixed all the relationships?  No button to go further!
@@ -35,13 +33,7 @@ Hmmm. This sounds like a bug. There will need to be a button on the page, and I 
 
 > Add key up to the top of the index page, so that the lightbulb means "needs review" and the tick doesn't. Then remove the "(needs review)" text (but add to alt tag of lightbupb)."
 
-
-> If the "I said Yes/No" lists are empty, don't show them. Make sure to switch them on if they get populated via JS.
-
-
-> I don't understand this.  For variable Accident below, no one says YES except me for variable Driving Skill as a cause, but the comments by others seem to indicate that they would say YES.
-
-It seems that in this case, it is because you actually said "NO" for driving skill, and they all said "YES" (i.e. 0 other people said "NO")
+Is there a key wherever the icons are present?
 
 
 > And this. I can't believe I said "No" and gave a supporting reason.  May be enable the comments only after the user tick the box "I think it does".
@@ -54,6 +46,10 @@ This has the added benefit of ensuring that all "No" options are intentional, no
 > The systems bombed out when I pressed the "keep direct relationship" button on the screen below after using the go back and go forward arrows on Firefox.
 
 I'll investigate. Looks like the redirect is not being done properly. I want it to redirect without ever showing the link to the browser, so that "Back" goes back to "/problems" rather than "/keepRedunantRelationship"
+
+NEED BETTER ERROR HANDLING:
+
+Firstly, a proper error page, secondly, email me when an error occurs with stacktrace and user info.
 
 
 > Once I remove a direct relationship, I cannot undo it.  What about if I want to change my mind or I did it by accident?

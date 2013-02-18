@@ -8,8 +8,7 @@ hibernate {
     cache.region.factory_class = 'net.sf.ehcache.hibernate.EhCacheRegionFactory'
 }
 
-// Settings are specified externally in the grails-app/conf/bn-elicitator.properties file ala:
-//   http://stackoverflow.com/questions/970133/externalizing-grails-datasource-configuration
+// Settings are specified externally in the grails-app/conf/CustomConfig.groovy file
 environments {
     development {
         dataSource {
