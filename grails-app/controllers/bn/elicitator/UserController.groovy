@@ -107,13 +107,31 @@ class UserController {
 		else if ( cmd.existingUser?.username == 'admin' )
 		{
 			render "Saving admin user<br />"
-			
-			if ( cmd.password.length() > 0 )
+
+			if ( !cmd.roles.contains( ShiroRole.admin ) )
 			{
-				render "Updating password to: '" + cmd.password + "'<br />"
-				userToSave.passwordHash = new Sha256Hash( cmd.password ).toHex()
-				requiresSave = true
+				String error = "Admin user must have admin role"
+				render "Form data has errors: " + error + "<br />"
+				flash.errors.( error )
+				retry = true
 			}
+			else
+			{
+				if ( cmd.password.length() > 0 )
+				{
+					render "Updating password to: '" + cmd.password + "'<br />"
+					userToSave.passwordHash = new Sha256Hash( cmd.password ).toHex()
+					requiresSave = true
+				}
+
+				if ( ! ( cmd.roles.containsAll( userToSave.roles ) && userToSave.roles.containsAll( cmd.roles ) ) )
+				{
+					render "Updating admin roles to: " + userToSave.roles*.name.join( ", " ) + "<br />"
+					userToSave.roles = cmd.roles
+					requiresSave = true
+				}
+			}
+
 		}
 		else
 		{

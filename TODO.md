@@ -61,7 +61,3 @@ Good question. This will need some thought. At the least, I can add a notificati
 
 It is optional, so perhaps I should emphasise that.
 
-
-> Placing the changing "Problematic relationships (which cause cycles)" at the top  is not a good idea when you have pages of relationship to go through.  You cannot expect the user to go back up to the top of the list.  Chances are they will just hit the button back to the list.
-
-Seeing as cycles tend to induce many possibly redundant relationships, perhaps we should have a screen where cycles are shown (and only cycles) and then after they are all resolved, show the potentially redundant relationships.

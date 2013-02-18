@@ -36,14 +36,12 @@ ul.potential-parents-list li.variable-item .variable:hover {
     text-decoration: underline;
 }
 
-ul.potential-parents-list li.variable-item .variable,
+ul.potential-parents-list      li.variable-item .variable,
+ul#keepers                     li.variable-item .header .variable,
 ul#redundant-relationship-list li.variable-item .header .variable {
     font-size: 13.5pt;
     font-style: normal;
     color: #48802c; /* mimic the colour of links from global.css */
-}
-
-ul#redundant-relationship-list li.variable-item .header .variable {
 }
 
 /* List items which indicate disagreement */

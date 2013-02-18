@@ -43,25 +43,39 @@ class ArrowTagLib {
 	/**
 	 * @attr comment
 	 * @attr onclick
+	 * @attr forceCommentIcon
 	 */
 	def rArrow = { attrs ->
-		String comment = attrs.containsKey( "comment" ) && attrs.comment?.trim()?.length() > 0 ? attrs.comment.trim() : null
-		String onclick = attrs.containsKey( "onclick" ) ? attrs.onclick : null
+		String comment = null
+		String onclick = null
+		Boolean forceCommentIcon = false
+
+		if ( attrs.containsKey( "onclick" ) ) {
+			onclick = attrs.remove( "onclick" )
+		}
+
+		if ( attrs.containsKey( "comment" ) && attrs.comment?.trim()?.length() > 0) {
+			comment = attrs.remove( 'comment' ).trim()
+		}
+
+		if ( attrs.containsKey( "forceCommentIcon" ) ) {
+			forceCommentIcon = attrs.remove( "forceCommentIcon" )
+		}
+
 		Boolean isDeletable = onclick != null
 
+		if ( onclick != null ) {
+			out << "<a href=\"javascript:$onclick\">"
+		}
+
 		if ( comment == null ) {
-			out << generateArrow( "right", false, isDeletable )
+			out << generateArrow( "right", forceCommentIcon, isDeletable )
 		} else {
-
-			if ( onclick != null ) {
-				out << "<a href=\"javascript:$onclick\">"
-			}
-
 			out << VariableTagLib.generateTooltip( comment, null, null, generateArrow( "right", true, isDeletable ), !isDeletable )
+		}
 
-			if ( onclick != null ) {
-				out << "</a>"
-			}
+		if ( onclick != null ) {
+			out << "</a>"
 		}
 	}
 

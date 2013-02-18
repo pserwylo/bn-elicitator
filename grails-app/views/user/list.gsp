@@ -142,7 +142,7 @@
 	<body>
 	
 		<h1>Manager users</h1>
-	
+
 		<g:if test="${flash.errors?.size() > 0}">
 			<ul class="errors">
 				<g:each var="err" in="${flash.errors}">

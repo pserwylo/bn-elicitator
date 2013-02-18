@@ -107,28 +107,12 @@
 
 			function confirmDelete( link, parentLabel, childLabel, parent, child, comment ) {
 				var message = "Are you sure you want to remove the following relationship?\n\n";
-				message    += "  " + parentLabel + " influences " + childLabel + "\n\n";
-				if ( typeof comment !== "undefined" ) {
-					message += "  Reason: " + comment;
+				message    += "  " + parentLabel + " influences " + childLabel;
+				if ( typeof comment !== "undefined" && comment != null && comment.length > 0 && comment != 'null' ) {
+					message += "\n\n  Reason: \"" + comment + '"';
 				}
 				var confirmed = confirm( message );
 				if ( confirmed ) {
-					document.location = link + "?parent=" + parent + "&child=" + child<g:if test="${displayAll}"> + '&displayAll=true'</g:if> + "&scroll=" + $( window ).scrollTop();
-				}
-			}
-
-			function confirmDeleteCycle( isRedundant, parentLabel, childLabel, parent, child, comment ) {
-
-				var message = "Are you sure you want to remove the following relationship?\n\n";
-				message    += "  " + parentLabel + " influences " + childLabel + "\n\n";
-
-				if ( typeof comment !== "undefined" && comment != null && comment.length > 0 ) {
-					message += "  Reason: " + comment;
-				}
-
-				var confirmed = confirm( message );
-				if ( confirmed ) {
-					var link = isRedundant ? '<g:createLink action="removeRedundant" />' : '<g:createLink action="removeRegular" />';
 					document.location = link + "?parent=" + parent + "&child=" + child<g:if test="${displayAll}"> + '&displayAll=true'</g:if> + "&scroll=" + $( window ).scrollTop();
 				}
 			}
@@ -139,6 +123,22 @@
 	
 	<body>
 
+		<bnIcons:key>
+
+			<bnIcons:icon
+					label="${message( code: "icon-key.relationship.label")}"
+					iconPath="${resource([ dir: "images/icons/", file: "arrow_right.png" ])}"
+					classes="icon-key-details"><g:message code="icon-key.relationship" /></bnIcons:icon>
+
+			<bnIcons:icon
+					label="${message( code: "icon-key.relationship-with-comment.label")}"
+					iconPath="${resource([ dir: "images/icons-custom/", file: "arrow_right_comment.png" ])}"
+					classes="icon-key-details"><g:message code="icon-key.relationship-with-comment" /></bnIcons:icon>
+
+		</bnIcons:key>
+
+		<a name="top"></a>
+
 		<g:form action="fixProblems">
 
 			<g:if test="${cyclicalRelationships?.size() > 0}">
@@ -148,8 +148,7 @@
 				<div class="info">
 					The following lists of variables cause cycles, which we are unfortunately unable to allow.
 					To proceed, remove one of the relationships which cause the cycle by clicking a
-					<bn:rArrow comment="Hover over these to see the comments you had about this relationship.\n\nClick them to delete the relationship." onclick="(function(){})()" />
-					image.
+					<bn:rArrow /> or <bn:rArrow forceCommentIcon="true" /> image.
 				</div>
 
 				<ul id="cyclical-relationship-list" class="variable-list">
@@ -163,7 +162,9 @@
 									<g:if test="${i == 0}">
 										<bn:variable var="${relationship.child}" />
 									</g:if>
-									<bn:rArrow comment="${relationship.mostRecentComment?.comment}" onclick="deleteCycle( '${relationship.parent.readableLabel}', '${relationship.child.readableLabel}', '${relationship.parent.label}', '${relationship.child.label}', '${relationship.mostRecentComment?.comment}' )"/>
+									<bn:rArrow
+										comment="${relationship.mostRecentComment?.comment}"
+										onclick="deleteCycle( '${relationship.parent.readableLabel.encodeAsJavaScript()}', '${relationship.child.readableLabel.encodeAsJavaScript()}', '${relationship.parent.label.encodeAsJavaScript()}', '${relationship.child.label.encodeAsJavaScript()}', '${relationship.mostRecentComment?.comment?.encodeAsJavaScript()}' )"/>
 									<bn:variable var="${relationship.parent}" />
 								</g:each>
 							</div>
@@ -184,8 +185,7 @@
 
 					<div class="overview">
 						If any of the more detailed relationships explains the same thing as the direct relationship, then remove the direct relationship by clicking on the
-						<bn:rArrow comment="Hover over these to see the comments you had about this relationship.\n\nClick them to delete the relationship." onclick="(function(){})()" />
-						image.
+						<bn:rArrow /> or <bn:rArrow forceCommentIcon="true" /> image.
 					</div>
 
 					<ul id="redundant-relationship-list" class="variable-list">
@@ -243,7 +243,10 @@
 							</g:if>
 					</g:if>
 
+
 					<ul id="keepers" class="variable-list">
+
+						%{-- Will be populated via jQuery once page is loaded. --}%
 
 					</ul>
 
@@ -253,9 +256,18 @@
 
 		</g:form>
 
-		<g:if test="${displayAll}">
-			<button id="btnBack" class="big"><g:message code="main.back-to-list" /></button>
-		</g:if>
+		<g:set var="canGoBack" value="${cyclicalRelationships.size() == 0 && numKeepers == redundantRelationships.size()}" />
+			<button id="btnBack" class="big" ${!canGoBack ? 'disabled="disabled"' : ''}><g:message code="main.back-to-list" /></button>
+			<g:if test="${!canGoBack}">
+				<div class='info' style="display: inline-block; max-width: 50%">
+					<g:if test="${cyclicalRelationships.size() > 0}">
+						<g:message code="problems.cant-return.cyclical" args="${[ cyclicalRelationships.size() ]}" />
+					</g:if>
+					<g:else>
+						<g:message code="problems.cant-return.redundant" args="${[ redundantRelationships.size() - numKeepers ]}" />
+					</g:else>
+				</div>
+			</g:if>
 
 	</body>
 	

@@ -32,6 +32,7 @@
 			<li>
 
 				<g:if test="${!isNew && user.username == 'admin'}">
+					<input type="hidden" name="username" value="${user.username}" />
 					<span class="label">Username:</span>
 					${user.username}
 				</g:if>
@@ -86,8 +87,7 @@
 								name="roles"
 								value="${role.name}"
 								id="role-${role.name}"
-								${!isNew && user.roles.contains( role ) ? 'checked="checked"' : ''}
-								${!isNew && user.username == 'admin' ? 'disabled="disabled"' : '' })/>
+								${!isNew && user.roles.contains( role ) ? 'checked="checked"' : ''}/>
 							<label for="role-${role.name}">${role.name}</label>
 
 						</li>
