@@ -43,6 +43,12 @@ class Relationship {
 	Variable child
 
 	/**
+	 * Used so that in the first round, we are able to know whether to put a relationship in the "Yes", "No" or
+	 * "Pending" list.
+	 */
+	Boolean isExistsInitialized = false
+
+	/**
 	 * If this is false, it is the same as there being no relationship object between {@link Relationship#parent} and
 	 * {@link Relationship#child}.
 	 * The value defaults to true.

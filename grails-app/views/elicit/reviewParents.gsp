@@ -253,7 +253,7 @@
 						</p>
 						<br/>
 
-						<bnElicit:potentialParentsList potentialParents="${potentialParents}" child="${variable}"/>
+						<bnElicit:potentialParentsListLaterRounds potentialParents="${potentialParents}" child="${variable}"/>
 
 					</fieldset>
 

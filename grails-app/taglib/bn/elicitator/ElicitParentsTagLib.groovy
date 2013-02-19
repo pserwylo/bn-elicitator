@@ -213,73 +213,23 @@ class ElicitParentsTagLib {
 	 */
 	def potentialParentsList = { attrs ->
 
-		List<Variable> potentialParents = attrs.potentialParents
 		Variable child = attrs.child
+		List<Variable> potentialParents = attrs.potentialParents.findAll { parent -> parent != child }
 
-		if ( delphiService.hasPreviousPhase ) {
-			out << bnElicit.potentialParentsListLaterRounds( [ potentialParents: potentialParents, child: child ] )
-			return
-		}
-
-		out << "<ul class='potential-parents-list variable-list'>"
-
-		for ( Variable parent in potentialParents )
-		{
-			if ( parent != child )
-			{
-				out << bnElicit.potentialParent( child: child, parent: parent )
-			}
-		}
-
-		if ( delphiService.phase == 1 )
-		{
-			out << """
+		out << """
+			<h2 class='review-uninitialized'></h2>
+			<ul id='list-uninitialized' class='potential-parents-list variable-list'>
+				${potentialParents.collect { potentialParent( child: child, parent: it ) }.join( "" )}
 				<li id="add-variable-item" class=" variable-item new-var">
 					${bnElicit.newVariableForm( var: child )}
 				</li>
-				"""
-		}
+			</ul>
 
-		out << "</ul>"
-	}
+			<h2 class='hide-if-yes-empty'>I said "Yes"</h2>
+			<ul id='list-yes' class='potential-parents-list variable-list hide-if-yes-empty'></ul>
 
-	private void dumpPotentialParentLabel( Variable parent, Boolean selected )
-	{
-
-		out << """
-			<label for='input-${parent.label}'>
-				<input
-					id='input-${parent.label}'
-					type='checkbox'
-					name='parents'
-					value='${parent.label}'
-					class='potential-parent'
-					${selected ? "checked='checked'" : ''} />
-
-				${bn.variable( [ var: parent, includeDescription: false ] )}
-				${bn.variableDescription( [ var: parent ] )}
-				${bnElicit.variableSynonyms( [ var: parent ] )}
-
-			</label>
-
-			<a href='javascript:void' class='unsaved-icon'>
-				<img src='${resource( dir: 'images/skin/', file: 'exclamation.png' )}' />
-			</a>
-			"""
-
-	}
-
-	private void dumpPotentialParentSummary( Variable parent )
-	{
-		String message = delphiService.hasPreviousPhase ? message( code: "elicit.parents.review" ) : message( code:  "general.show" ) + " " + message( code: "elicit.parents.info" )
-		out << """
-			<div id='${parent.label}-summary' class='var-summary'>
-				<span class="toggle-details">
-					<button type="button" class="show-var-details " onclick="showVarDetails( '${parent.label}' )">
-						$message
-					</button>
-				</span>
-			</div>
+			<h2 class='hide-if-no-empty'>I said "No"</h2>
+			<ul id='list-no' class='potential-parents-list variable-list hide-if-no-empty'></ul>
 			"""
 	}
 
@@ -379,22 +329,26 @@ class ElicitParentsTagLib {
 		Variable parent  = attrs.parent
 
 		Relationship relationship = this.delphiService.getMyCurrentRelationship( parent, child )
-		Boolean isSelected = relationship?.exists
 
-		out << "<li id='${parent.label}-variable-item' class='variable-item'>"
+		String classes = relationship?.isExistsInitialized ?
+			( relationship.exists ?
+				"exists" :
+				"doesnt-exist" ) :
+			"uninitialized"
 
-			dumpPotentialParentSummary( parent )
-			dumpPotentialParentLabel( parent, isSelected )
-
-		out << "</li>"
-
-		out << bnElicit.potentialParentDialog([
-			child: child,
-			parent: parent,
-			relationship: relationship,
-			isSelected: isSelected
-		])
-		
+		out << """
+			<li id='var-${parent.label}' class='variable-item $classes'>
+				<input type="hidden" name="parent" value="${parent.label}" />
+				<div class='var-summary'>
+					<button type="button" class="comment">Comment</button>
+					<button type="button" class="yes">Yes</button>
+					<button type="button" class="no">No</button>
+				</div>
+				${bn.variable( [ var: parent, includeDescription: false ] )}
+				${bn.variableDescription( [ var: parent ] )}
+				${bnElicit.variableSynonyms( [ var: parent ] )}
+			</li>
+			"""
 	}
 
 	/**

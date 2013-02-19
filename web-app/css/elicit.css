@@ -262,6 +262,7 @@ ul#redundant-relationship-list .indent li {
 }
 
 /* ELICITING PARENTS STYLES */
+
 ul.potential-parents-list li.variable-item.highlighted + li {
 	border-top: none;
 }

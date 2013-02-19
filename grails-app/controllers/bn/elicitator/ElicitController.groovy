@@ -289,6 +289,41 @@ class ElicitController {
 		}
 	}
 
+	def ajaxSaveDetails = {
+
+	}
+
+	def ajaxGetDetails = {
+		if ( delphiService.hasPreviousPhase ) {
+			return
+		}
+
+		Variable parent = null
+		Variable child  = null
+
+		if ( params.containsKey( "parent" ) && params.containsKey( "child" ) ) {
+			parent = Variable.findByLabel( (String)params['parent'] )
+			child  = Variable.findByLabel( (String)params['child'] )
+		}
+
+		if ( parent == null || child == null )
+		{
+			String label = parent == null ? params['parent'] : params['child']
+			response.sendError( 404, "Variable '$label' not found" )
+		}
+		else
+		{
+			Relationship relationship = delphiService.getMyCurrentRelationship( parent, child )
+			def result = [
+				comment       : relationship?.comment?.comment ?: "",
+				label         : parent.label,
+				readableLabel : parent.readableLabel,
+			]
+
+			render result as JSON
+		}
+	}
+
 	def ajaxGetReviewDetails = {
 
 		if ( !delphiService.hasPreviousPhase ) {
@@ -401,6 +436,7 @@ class ElicitController {
 			}
 
 			relationship.exists = cmd.exists
+			relationship.isExistsInitialized = true
 
 			String commentText = cmd.comment?.trim()
 			if ( commentText )
