@@ -65,7 +65,8 @@ class ShiroUser {
 
 	static ShiroUser getCurrent()
 	{
-		return ShiroUser.findByUsername( (String)SecurityUtils.subject?.principal )
+		String principal = (String)SecurityUtils.subject?.principal
+		return principal ? ShiroUser.findByUsername( principal ) : null
 	}
 	
 }

@@ -1,5 +1,3 @@
-package bn.elicitator
-
 import org.apache.shiro.SecurityUtils
 
 /**
@@ -14,8 +12,8 @@ class ShiroSecurityFilters {
                 if (!controllerName || controllerName == "helpRead") return true
 
                 // Access control by convention.
-                accessControl()
-            }
+                accessControl(auth: false)
+			}
         }
     }
 }

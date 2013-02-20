@@ -27,8 +27,12 @@ modules = {
 		resource url: 'css/global.css'
 	}
 
+	"jquery.popover" {
+		resource url: 'lib/jquery.popover/'
+	}
+
 	help {
-		dependsOn( [ 'jquery', 'jquery-ui', 'klass' ] )
+		dependsOn( [ 'jquery', 'jquery-ui', 'klass', 'jquery.popover' ] )
 		resource url: "css/help.css"
 		resource url: "js/help.js"
 	}

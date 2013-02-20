@@ -29,17 +29,19 @@ class AuthController {
     def index = { redirect(action: "login", params: params) }
 
     def login = {
+
+		// Was having some trouble with rediercting to the login screen after successfull logins for some reason...
+		if ( ShiroUser.current != null ) {
+			String path = params.targetUri ?: "/"
+			redirect( uri: path )
+		}
+
         return [ username: params.username, rememberMe: (params.rememberMe != null), targetUri: params.targetUri ]
     }
 
     def signIn = {
-        def authToken = new UsernamePasswordToken(params.username, params.password as String)
+        def authToken = new UsernamePasswordToken( params.username as String, params.password as String, true )
 
-        // Support for "remember me"
-        if (params.rememberMe) {
-            authToken.rememberMe = true
-        }
-        
         // If a controller redirected to this page, redirect back
         // to it. Otherwise redirect to the root URI.
         def targetUri = params.targetUri ?: "/"
@@ -70,9 +72,6 @@ class AuthController {
             // Keep the username and "remember me" setting so that the
             // user doesn't have to enter them again.
             def m = [ username: params.username ]
-            if (params.rememberMe) {
-                m["rememberMe"] = true
-            }
 
             // Remember the target URI too.
             if (params.targetUri) {

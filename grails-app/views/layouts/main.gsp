@@ -61,9 +61,9 @@
 		</g:if>--}%
 
 		<div id="headingWrapper">
-			<shiro:authenticated>
+			<shiro:user>
 				<div id="user-info"><g:message code="main.welcome" args="${[ shiro.principal() ]}" /> (<g:link controller="auth" action="logout">logout</g:link>)</div>
-			</shiro:authenticated>
+			</shiro:user>
 			<div id="heading">${AppProperties.properties.title}</div>
 		</div>
 
