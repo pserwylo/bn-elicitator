@@ -48,7 +48,8 @@
 				var currentVar    = null;
 
 				/**
-				 * Move a list item from one of our three lists to another.
+				 * Move a list item from one of our three lists (yes, no, uninitialized) to another.
+				 * It does this asynchronisly, so that it can animate the removal and addition.
 				 */
 				var moveToList = function( li, listDest, callback ) {
 					li.hide( 'fast', function() {
@@ -58,7 +59,6 @@
 						li.show( 'fast', callback );
 					});
 				};
-
 
 				var saveVarDetails = function( parentLabel, exists, comment, callback ) {
 					$.ajax({
@@ -76,13 +76,14 @@
 						},
 						success : function( data ) {
 							var cachedData = getDetailsFromCache( parentLabel );
-							cachedData.comment = comment;
-							updateCache( cachedData );
+							if ( cachedData != null ) {
+								cachedData.comment = comment;
+								updateCache( cachedData );
+							}
 							callback();
 						}
 					});
 				};
-
 
 				var updateCache = function( varDetails ) {
 					cachedDetails[ varDetails.label ] = varDetails;
@@ -114,7 +115,7 @@
 							},
 							dataType : 'text json',
 							error    : function( data ) {
-								alert( "Error while saving. The administrator has been notified." );
+								alert( "An error occurred. The administrator has been notified." );
 							},
 							success  : function( data ) {
 								currentVar = {
@@ -192,9 +193,9 @@
 
 
 				var unhighlight = function() {
-					// $( 'li.highlighted' ).removeClass( 'highlighted' );
 					$( listYes ).add( listNo ).add( listUninitialized ).find( 'li.highlighted' ).removeClass( 'highlighted' );
 				};
+
 
 				var closeCommentDialog = function() {
 					commentDialog.hide( 'fade', 100 );
