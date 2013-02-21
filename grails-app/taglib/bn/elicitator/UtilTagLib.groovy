@@ -66,7 +66,7 @@ class UtilTagLib {
 		}
 
 		out << """
-				<button class='save' type='submit'>Save</button>
+				<button class='save' type='button'>Save</button>
 			</span>
 			"""
 	}

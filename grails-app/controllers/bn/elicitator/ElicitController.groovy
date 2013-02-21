@@ -529,7 +529,7 @@ class AddVariableCommand {
 
 	public VariableClass getVariableClass()
 	{
-		return VariableClass.findByName( params[ 'variableClassName' ] )
+		return VariableClass.findByName( params[ 'variableClassName' ] as String )
 	}
 
 }

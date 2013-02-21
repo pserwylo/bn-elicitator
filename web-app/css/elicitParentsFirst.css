@@ -25,7 +25,9 @@ button.yes, button.no {
 	min-width: 50px;
 }
 
-textarea {
+.floating-dialog textarea {
 	min-height: 150px;
-	width: 100%;
+	width: 90%;
+	margin-top: 0.3em;
+	margin-bottom: 0.5em;
 }

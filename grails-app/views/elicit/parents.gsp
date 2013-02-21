@@ -35,8 +35,12 @@
 				var listNo            = $( '#list-no'            );
 				var listUninitialized = $( '#list-uninitialized' );
 				var commentDialog     = $( '#comment-dialog'     );
+				var newVarDialog      = $( '#new-var-dialog'     );
 				var textAreaLabel     = $( '#textAreaLabel'      );
 				var commentInput      = commentDialog.find( 'textarea' );
+				var newVarNameInput   =  newVarDialog.find( 'input:text' );
+				var newVarDescInput   =  newVarDialog.find( 'textarea' );
+				var newVarClassInput  =  newVarDialog.find( 'input[name=variableClassName], select[name=variableClassName]' );
 
 				var parentLi      = function( child ) { return $( child ).closest( 'li' ); };
 				var parentUl      = function( child ) { return $( child ).closest( 'ul' ); };
@@ -72,7 +76,7 @@
 							comment : comment
 						},
 						error : function( data ) {
-							alert( "Error while saving. The administrator has been notified." );
+							alert( "<g:message code="general.ajax-server-error" />" );
 						},
 						success : function( data ) {
 							var cachedData = getDetailsFromCache( parentLabel );
@@ -115,7 +119,7 @@
 							},
 							dataType : 'text json',
 							error    : function( data ) {
-								alert( "An error occurred. The administrator has been notified." );
+								alert( "<g:message code="general.ajax-server-error" />" );
 							},
 							success  : function( data ) {
 								currentVar = {
@@ -132,19 +136,43 @@
 				};
 
 
-				var hasChanged = function() {
+				var hasChangedComment = function() {
 					if ( currentVar == null ) {
 						return false;
 					}
 					return $.trim( currentVar.comment ) != $.trim( commentInput.val() );
 				};
 
-				var hasChangedWithAlert = function() {
-					var changed = hasChanged();
+				var hasChangedCommentWithAlert = function() {
+					var changed = hasChangedComment();
 					if ( changed ) {
 						alert( "You have an unsaved comment. Please save it before continuing (click the save button on the right)." );
 					}
 					return changed;
+				};
+
+				var isNewVarEmpty = function( notifyErrors ) {
+
+					notifyErrors = ( typeof notifyErrors === "undefined" ) ? false : notifyErrors;
+
+					var isEmpty = false;
+					var emptyFields = [];
+
+					if ( $.trim( newVarNameInput.val() ) == "" ) {
+						isEmpty = true;
+						emptyFields.push( "name" );
+					}
+
+					if ( $.trim( newVarDescInput.val() ) == "" ) {
+						isEmpty = true;
+						emptyFields.push( "description" );
+					}
+
+					if ( isEmpty && notifyErrors ) {
+						alert( "You must enter a " + emptyFields.join( " and " ) + " for the variable before saving." );
+					}
+
+					return isEmpty;
 				};
 
 				var isCommentEmpty = function() {
@@ -171,21 +199,47 @@
 				};
 
 
-				var showCommentDialog = function( alignWithLi, comment, callback ) {
+				var showDialog = function( dialog, alignWithLi ) {
+
+					unhighlight();
+					$( alignWithLi ).addClass( 'highlighted' );
+					var offset = $( alignWithLi ).offset().top - dialog.parent().offset().top - 150;
+					offset = Math.max( 0, offset );
+					dialog.css( 'padding-top', offset + 'px' );
+					dialog.show( 'fade' );
+
+				};
+
+
+				var hideDialog = function( dialog, callback ) {
+					callback = typeof callback === "undefined" ? $.noop : callback;
+					if ( dialog.is( ":visible" ) ) {
+						dialog.fadeOut( 100, callback );
+					} else {
+						callback();
+					}
+				};
+
+
+				var showNewVarDialog = function() {
+					hideDialog( commentDialog, function() {
+						showDialog( newVarDialog, $( '#add-variable-item') );
+					});
+				};
+
+
+				var showCommentDialog = function( alignWithLi, comment ) {
 
 					var moveAndShowDialog = function() {
-						$( alignWithLi ).addClass( 'highlighted' );
-						var offset = $( alignWithLi ).offset().top - commentDialog.parent().offset().top - 30;
-						commentDialog.css( 'padding-top', offset + 'px' );
 						commentInput.val( comment );
 						textAreaLabel.html( "Why do you think '" + currentVar.readableLabel + "' influences '${variable.readableLabel}'?" ); // TODO: encode readableLabel as javascript...
-						commentDialog.show( 'fade' );
-						callback();
+						showDialog( commentDialog, alignWithLi );
 					};
 
 					if ( commentDialog.is( ":visible" ) ) {
-						unhighlight();
-						commentDialog.fadeOut( 100, moveAndShowDialog );
+						hideDialog( commentDialog, moveAndShowDialog );
+					} else if ( newVarDialog.is( ":visible" ) ) {
+						hideDialog( newVarDialog, moveAndShowDialog );
 					} else {
 						moveAndShowDialog();
 					}
@@ -222,26 +276,34 @@
 				};
 
 
-				var buttonsComment = $( 'button.comment' );
-				var buttonsYes     = $( 'button.yes'     );
-				var buttonsNo      = $( 'button.no'      );
-				var buttonFinished = $( '#btnFinished'   );
-				var buttonSave     = commentDialog.find( 'button.save' );
-				var buttonCancel   = commentDialog.find( 'button.close' );
+				var buttonsComment      = $( 'button.comment'     );
+				var buttonsYes          = $( 'button.yes'         );
+				var buttonsNo           = $( 'button.no'          );
+				var buttonFinished      = $( '#btnFinished'       );
+				var addVariableItem     = $( '#add-variable-item' ).find( 'a' );
+				var buttonSaveComment   = commentDialog.find( 'button.save'  );
+				var buttonCancelComment = commentDialog.find( 'button.close' );
+				var buttonSaveVar       =  newVarDialog.find( 'button.save'  );
+				var buttonCancelVar     =  newVarDialog.find( 'button.close' );
+
+
+				addVariableItem.click( function() {
+					showNewVarDialog();
+				});
 
 
 				buttonsYes.click( function() {
 					var li = parentLi( this );
-					if ( !isCurrentLi( li ) && !hasChangedWithAlert() ) {
+					if ( !isCurrentLi( li ) && !hasChangedCommentWithAlert() ) {
 						var varLabel = getVarLabelFromLi( li );
 						loadVarDetails( varLabel, function() {
-							showCommentDialog( li, currentVar.comment, $.noop );
+							showCommentDialog( li, currentVar.comment );
 						});
 					}
 				});
 
 
-				buttonSave.click( function() {
+				buttonSaveComment.click( function() {
 					if ( currentVar != null ) {
 						if ( isCommentEmpty() ) {
 							alert( "You must provide a comment before saving." );
@@ -258,6 +320,18 @@
 				});
 
 
+				buttonSaveVar.click( function() {
+					if ( !isNewVarEmpty( true ) ) {
+						$( '#newVarForm' ).submit();
+					}
+				});
+
+
+				buttonCancelVar.click( function() {
+					hideDialog( newVarDialog );
+				});
+
+
 				buttonsNo.click( function() {
 					if ( belongsToList( this, listNo ) ) {
 						return;
@@ -271,7 +345,7 @@
 
 				buttonsComment.click( function() {
 					var li = parentLi( this );
-					if ( belongsToList( this, listYes ) && !isCurrentLi( li ) && !hasChangedWithAlert() ) {
+					if ( belongsToList( this, listYes ) && !isCurrentLi( li ) && !hasChangedCommentWithAlert() ) {
 						loadVarDetails( getVarLabelFromLi( li ), function() {
 							showCommentDialog( li, currentVar.comment, $.noop );
 						})
@@ -279,10 +353,10 @@
 				});
 
 
-				buttonCancel.click( function() {
+				buttonCancelComment.click( function() {
 					var allowClose = true;
 
-					if ( hasChanged() ) {
+					if ( hasChangedComment() ) {
 						allowClose = confirm( "You have an unsaved comment.\nIf you press 'OK', you will discard any changes you made." );
 					}
 
@@ -350,7 +424,7 @@
 
 				<div class="column-right">
 
-					<div id="comment-dialog" class="" style="display: none;">
+					<div id="comment-dialog" class="floating-dialog" style="display: none;">
 
 						<fieldset class="default ">
 
@@ -363,6 +437,70 @@
 							</label>
 
 							<bn:saveButtons atTop="false" closeLabel="Cancel" />
+
+						</fieldset>
+
+					</div>
+
+					<div id="new-var-dialog" class="floating-dialog" style="display: none;">
+
+						<fieldset class="default">
+
+							<legend>Add new variable</legend>
+								%{--I guess if we're getting picky, we really shouldn't be here (because we
+								can't elicit parents for variables with no potential parents--}%
+								<g:if test="${variable.variableClass.potentialParents.size() == 0}">
+									<p>
+										Sorry, but because ${variable.readableLabel} is a ${variable.variableClass.name}
+										variable, we wont be modelling any other variables which influence it.
+									</p>
+									<button type="button" class="close">Okay</button>
+								</g:if>
+								<g:else>
+									<form id="newVarForm" action="${createLink( [ action: "addVariable" ] )}">
+										<input type="hidden" name="returnToVar" value="${variable.label}" />
+										%{--We don't need to ask if there is only one possibility --}%
+										<g:if test="${variable.variableClass.potentialParents.size() == 1}">
+											<label>
+												Name:
+												<br />
+												<input type="text" id="inputNewVariableLabel" name="label" />
+											</label>
+											<input type='hidden' name='variableClassName' value='${variable.variableClass.potentialParents[ 0 ].name}' />
+										</g:if>
+										<g:else>
+											<label for="newVarClass">Type</label>
+											<br />
+											<select id="newVarClass" name="variableClassName">
+												<g:each var="varClass" in="${variable.variableClass.potentialParents}">
+													<option value='${varClass.name}'>${varClass.niceName} variable</option>
+												</g:each>
+											</select>
+
+											<bn:tooltip>This helps us decide which other variables your new one will be allowed to influence. We will describe them using examples from a model of diagnosing lung cancer:
+
+											- Problem Variables: The variables of interest (e.g. does the patient have cancer?).
+
+											- Background variables: Information available before the problem variables occur (e.g. does the patient smoke?).
+
+											- Symptom variables: Observable consequences of problem variables (e.g. shortness of breath).
+
+											- Mediating variables: unobservable variables which may also cause the same symptoms as the problem variables (e.g. are they asthmatic?). This helps to correctly model the relationship between problem and symptom variables</bn:tooltip>
+										</g:else>
+
+										<br />
+										<br />
+										<label>
+											Description:
+											<br />
+											<textarea id="newVarDescription" name="description"></textarea>
+										</label>
+
+										<bn:saveButtons atTop="${false}" closeLabel="Cancel" />
+									</form>
+								</g:else>
+
+							</div>
 
 						</fieldset>
 

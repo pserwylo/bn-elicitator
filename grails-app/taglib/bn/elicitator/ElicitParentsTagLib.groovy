@@ -221,7 +221,10 @@ class ElicitParentsTagLib {
 			<ul id='list-uninitialized' class='potential-parents-list variable-list'>
 				${potentialParents.collect { potentialParent( child: child, parent: it ) }.join( "" )}
 				<li id="add-variable-item" class=" variable-item new-var">
-					${bnElicit.newVariableForm( var: child )}
+					<a href="javascript:\$.noop">
+						<img src='${resource(dir: 'images/icons', file: 'pencil.png')}' />
+						Add another variable which is not listed
+					</a>
 				</li>
 			</ul>
 
@@ -350,94 +353,4 @@ class ElicitParentsTagLib {
 			</li>
 			"""
 	}
-
-	/**
-	 * @attr var REQUIRED
-	 */
-	def newVariableForm = { attrs ->
-
-		Variable variable = attrs.var
-
-		out << """
-			<a href="javascript:toggleAddVariable( true )">
-				<img src='${resource(dir: 'images/icons', file: 'pencil.png')}' />
-				Add another variable which is not listed
-			</a>
-			<div id="new-var-form" class="dialog" style="display: none;">
-			"""
-
-
-		// I guess if we're getting picky, we really shouldn't be here (because we
-		// can't elicit parents for variables with no potential parents
-		if ( variable.variableClass.potentialParents.size() == 0 )
-		{
-			out << """
-				<p>
-					Sorry, but because ${variable.readableLabel} is a ${variable.variableClass.name}
-					variable, we wont be modelling any other variables which influence it.
-				</p>
-				<input type="button" value="Okay" onclick="toggleAddVariable( false )" class="" />
-				"""
-		}
-		else
-		{
-			out << """
-				<form action="${createLink( [ action: "addVariable" ] )}">
-					<intput type="hidden" name="returnToVar" value="${variable.label}" />
-					<label>
-						Name:
-						<input type="text" id="inputNewVariableLabel" name="label"></input>
-					</label>
-					"""
-
-
-			// We don't need to ask if there is only one possibility --}%
-			if ( variable.variableClass.potentialParents.size() == 1 )
-			{
-				out << "<input type='hidden' name='variableClassName' value='${variable.variableClass.potentialParents[ 0 ].name}' />\n"
-			}
-			else
-			{
-				out << """
-					<label for="newVarClass">Type</label>
-					<select id="newVarClass" name="variableClassName">
-					"""
-
-				variable.variableClass.potentialParents.each {
-					out << "<option value='${it.name}'>${it.niceName} variable</option>"
-				}
-
-				out << "</select>"
-
-				out << bn.tooltip( [] ) {
-"""This helps us decide which other variables your new one will be allowed to influence. We will describe them using examples from a model of diagnosing lung cancer:
-
- - Problem Variables: The variables of interest (e.g. does the patient have cancer?).
-
- - Background variables: Information available before the problem variables occur (e.g. does the patient smoke?).
-
- - Symptom variables: Observable consequences of problem variables (e.g. shortness of breath).
-
- - Mediating variables: unobservable variables which may also cause the same symptoms as the problem variables (e.g. are they asthmatic?). This helps to correctly model the relationship between problem and symptom variables</bn:tooltip>
-"""
-					}
-			}
-
-			out << """
-				<label>
-					Description:
-					<textarea id="newVarDescription" name="description"></textarea>
-				</label>
-
-				<input type="button" value="Cancel" onclick="toggleAddVariable( false )" class="" />
-				<input type="submit" value="Save" class="" />
-			</form>
-			"""
-
-		}
-
-		out << "</div>"
-
-	}
-
 }
