@@ -496,6 +496,11 @@ class ElicitController {
 	 */
 	def addVariable = { AddVariableCommand cmd ->
 
+		if ( !cmd.label.trim() || !cmd.description.trim() ) {
+			response.sendError( 400, "No label or description received." )
+			return
+		}
+
 		Variable var = new Variable(
 			createdBy        : ShiroUser.current,
 			createdDate      : new Date(),
@@ -507,10 +512,14 @@ class ElicitController {
 			variableClass    : cmd.variableClass
 		)
 
+		Variable duplicate = Variable.findByLabelOrReadableLabel( var.label, var.readableLabel )
+		if ( duplicate ) {
+			response.sendError( 400, "Variable '$duplicate.label' ($duplicate.readableLabel) already exists." );
+			return
+		}
+
 		var.save( failOnError: true )
-
 		LoggedEvent.logCreatedVar( var )
-
 		redirect( action: parents, params: [ for: params['returnToVar'] ] )
 	}
 
