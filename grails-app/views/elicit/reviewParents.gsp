@@ -41,7 +41,6 @@
 			var reviewYes = $( '.review-yes' );
 			var reviewNo  = $( '.review-no'  );
 
-			// TODO: Prompt them to comment if they changed their mind.
 			var hasChangedMind = function() {
 				return inputDoesExist() != currentVar.exists;
 			};
@@ -74,9 +73,8 @@
 				if ( currentVar == null ) {
 					return false;
 				}
-				var changeExists  = currentVar.exists  != inputDoesExist();
 				var changeComment = $.trim( currentVar.comment ) != $.trim( textarea.val() );
-				return changeExists || changeComment;
+				return hasChangedMind() || changeComment;
 			};
 
 			var hasChangedWithAlert = function() {
@@ -97,6 +95,12 @@
 				return '<li class="' + classes.join( ' ' ) + '">' + comment.comment + '<div class="author">- ' + author + '</div></li>';
 			};
 
+			var closeDialog = function() {
+				form.hide();
+				deselect();
+				currentVar = null;
+			};
+
 			$( '#btnFinished' ).click( function() {
 				if ( !hasChangedWithAlert() ) {
 					document.location = '${createLink( action: 'completedVariable', params: [ variable : variable.label ])}';
@@ -107,55 +111,61 @@
 
 			form.find( 'button.save' ).click( function() {
 				var btnSave = this;
-				if ( hasChanged() ) {
-					$.ajax({
-						type: 'post',
-						url: '${createLink(action: 'save')}',
-						data: {
-							child: '${variable.label}',
-							parent: currentVar.label,
-							comment: $.trim( textarea.val() ),
-							exists: inputDoesExist()
-						},
-						dataType: 'text json',
-						error: function( data ) {
-							alert( "Error while saving. The administrator has been notified." );
-						},
-						success: function( data ) {
-
-							if ( data.exists != currentVar.exists ) {
-								// TODO: Update the other user count and style.
-								var li = $( '#' + currentVar.label + "-variable-item" );
-								li.detach();
-
-								var ul = $( '#list-' + ( data.exists ? 'yes' : 'no' ) );
-								ul.append( li );
-
-								showHideLists();
-							}
-
-							reasonsList.find( 'li.me.phase-${delphiPhase}' ).remove();
-							currentVar.exists  = data.exists;
-							currentVar.comment = data.comment;
-							if ( data.comment.length > 0 ) {
-								var comment = {
-									byMe        : true,
-									comment     : data.comment,
-									exists      : data.exists,
-									delphiPhase : ${delphiPhase}
-								};
-								reasonsList.prepend( generateComment( comment ) );
-							}
-						}
-					});
+				if ( !hasChanged() ) {
+					return;
 				}
+
+				var comment = $.trim( textarea.val() );
+				if ( hasChangedMind() && comment.length == 0 ) {
+					alert( "You must write a comment about why you changed your mind." );
+					return;
+				}
+
+				$.ajax({
+					type: 'post',
+					url: '${createLink(action: 'save')}',
+					data: {
+						child: '${variable.label}',
+						parent: currentVar.label,
+						comment: comment,
+						exists: inputDoesExist()
+					},
+					dataType: 'text json',
+					error: function( data ) {
+						alert( "Error while saving. The administrator has been notified." );
+					},
+					success: function( data ) {
+
+						if ( data.exists != currentVar.exists ) {
+							// TODO: Update the other user count and style.
+							var li = $( '#' + currentVar.label + "-variable-item" );
+							li.detach();
+
+							var ul = $( '#list-' + ( data.exists ? 'yes' : 'no' ) );
+							ul.append( li );
+
+							showHideLists();
+						}
+
+						reasonsList.find( 'li.me.phase-${delphiPhase}' ).remove();
+						currentVar.exists  = data.exists;
+						currentVar.comment = data.comment;
+						if ( data.comment.length > 0 ) {
+							var comment = {
+								byMe        : true,
+								comment     : data.comment,
+								exists      : data.exists,
+								delphiPhase : ${delphiPhase}
+							};
+							reasonsList.prepend( generateComment( comment ) );
+						}
+					}
+				});
 			});
 
 			form.find( 'button.close' ).click( function() {
 				if ( !hasChangedWithAlert() ) {
-					form.hide();
-					deselect();
-					currentVar = null;
+					closeDialog();
 				}
 			});
 
