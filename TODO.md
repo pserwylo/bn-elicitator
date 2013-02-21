@@ -54,6 +54,8 @@ It is optional, so perhaps I should emphasise that.
 
 I saw that only one person had a relationship, but they explained it well. I changed my mind, left a comment explaining that I agreed. By the time the next round came about, they had dropped their support without declaring why, which would probably mean that they just did it because everybody else did it.
 
+> Add a "Not finished with variable yet, but return to main menu anyway."
+
 # Logging
 
 I want to make sure that after the survey is complete, I can inspect certain phenomenon in order to make comment about the appropriateness of the system.
@@ -66,3 +68,4 @@ The following is a list of info I need to log:
  * Delete potentially redundant relationships
  * Delete other relationships after being prompted about potential redundant relationships
  * Proportion of relationships which they comment about
+
