@@ -50,6 +50,7 @@
 
 			var mainContainer  = $( '.column-footer' );
 			var imageContainer = mainContainer.find( '.image' );
+			var htmlMatrix     = mainContainer.find( '#htmlMatrix' );
 
 			var scaleSvg = function() {
 				var svg          = imageContainer.find( 'svg' );
@@ -65,10 +66,12 @@
 				graphStats.html( "Loading statistics..." );
 				imageContainer.html( "Loading image..." );
 
-				var svgLink    = "${createLink( controller: 'output', action: 'graph' )}";
-				var statsLink  = "${createLink( controller: 'output', action: 'graphStats' )}";
+				var svgLink    = "${createLink( controller: 'output', action: 'svgDiagram' )}";
+				var statsLink  = "${createLink( controller: 'output', action: 'jsonStats' )}";
+				var matrixLink = "${createLink( controller: 'output', action: 'htmlMatrix' )}";
 				var params     = { phase : delphiPhase, minUsers : minUsers };
 				imageContainer.load( svgLink, params, scaleSvg );
+				htmlMatrix.load( matrixLink, params );
 				$.get( statsLink, params, function( data ) { graphStats.html( "Variables: " + data.totalNodes + ", relationships: " + data.totalEdges) } );
 			};
 
@@ -179,12 +182,12 @@
 									<option value="${count}">Min ${count} experts</option>
 								</g:each>
 							</select>
-							<span id="graphStats" class="info"></span>
 						</form>
 					</div>
-					
-					<div class="image stats">
-					</div>
+
+					<span id="graphStats" class="info"></span>
+					<div id="htmlMatrix"></div>
+					<div class="image stats"></div>
 					
 				</fieldset>
 

@@ -1,5 +1,3 @@
-import grails.util.Environment
-
 /*
  * Bayesian Network (BN) Elicitator
  * Copyright (C) 2012 Peter Serwylo (peter.serwylo@monash.edu)
@@ -23,18 +21,8 @@ modules = {
 	/* Global and utility styles */
 
     global {
-		dependsOn( [ 'jquery', 'jquery-ui', 'help' ] )
+		dependsOn( [ 'jquery', 'jquery-ui' ] )
 		resource url: 'css/global.css'
-	}
-
-	"jquery.popover" {
-		resource url: 'lib/jquery.popover/'
-	}
-
-	help {
-		dependsOn( [ 'jquery', 'jquery-ui', 'klass', 'jquery.popover' ] )
-		resource url: "css/help.css"
-		resource url: "js/help.js"
 	}
 
 	variableList {
@@ -43,14 +31,6 @@ modules = {
 
 	floatingDialog {
 		resource url: 'css/floatingDialog.css'
-	}
-
-	klass {
-		if ( Environment.current == Environment.DEVELOPMENT ) {
-			resource url: "js/lib/klass/klass.js"
-		} else {
-			resource url: "js/lib/klass/klass.min.js"
-		}
 	}
 
 	/* Controller- and View-specific modules. */

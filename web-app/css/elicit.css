@@ -294,9 +294,9 @@ ul.potential-parents-list .variable-item.highlighted button.review {
 	font-weight: bold;
 }
 
-.var-summary .count.high   { color: #D7191C; }
-.var-summary .count.medium { color: #FDAE61;}
-.var-summary .count.low    { color: #1A9641;}
+.var-summary .count.high   { color: #aaa; }
+.var-summary .count.medium { color: #888;}
+.var-summary .count.low    { color: #555;}
 
 .var-summary .agreement {
     display: block;

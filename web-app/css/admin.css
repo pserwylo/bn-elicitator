@@ -24,3 +24,9 @@ input[type=button].confirm-advance {
     margin-top: 0.5em;
     width: 100%;
 }
+
+#htmlMatrix table.matrix td {
+	width: 4px;
+	height: 3px;
+}
+

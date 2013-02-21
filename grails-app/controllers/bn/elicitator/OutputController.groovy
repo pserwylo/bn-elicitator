@@ -1,6 +1,8 @@
 package bn.elicitator
 
 import bn.elicitator.output.GraphvizOutputGraph
+import bn.elicitator.output.HtmlMatrixOutputGraph
+import bn.elicitator.output.JsonMatrixOutputGraph
 import bn.elicitator.output.JsonOutputGraph
 import bn.elicitator.output.NeticaOutputGraph
 import bn.elicitator.output.OutputGraph
@@ -10,11 +12,19 @@ class OutputController {
 	def variableService
 	def delphiService
 
-	def graphStats = { OutputCommand cmd ->
+	def jsonStats = { OutputCommand cmd ->
 		outputGraph( new JsonOutputGraph(), cmd )
 	}
 
-	def graph = { OutputCommand cmd ->
+	def jsonMatrix = { OutputCommand cmd ->
+		outputGraph( new JsonMatrixOutputGraph(), cmd )
+	}
+
+	def htmlMatrix = { HtmlMatrixOutputCommand cmd ->
+		outputGraph( new HtmlMatrixOutputGraph( cellSize: cmd.cellSize ), cmd )
+	}
+
+	def svgDiagram = { OutputCommand cmd ->
 		outputGraph( new GraphvizOutputGraph(), cmd )
 	}
 
@@ -26,11 +36,13 @@ class OutputController {
 		outputGraph( new NeticaOutputGraph(), cmd )
 	}
 
-	private outputGraph( output, OutputCommand cmd ) {
+	private outputGraph( OutputGraph output, OutputCommand cmd ) {
 
 		List<Variable> variables         = Variable.list().sort()
 		List<Relationship> relationships = Relationship.findAllByExistsAndDelphiPhase( true, cmd.phase ).sort()
 		Integer totalUsers               = ShiroUser.list().findAll { it.roles.contains( ShiroRole.expert ) }.size()
+
+		output.allVariables = variables
 
 		if ( cmd.minUsers > 0 && cmd.phase > 0 && cmd.phase <= delphiService.phase ) {
 			variables.each { parent ->
@@ -60,5 +72,11 @@ class OutputCommand {
 	Integer minUsers = 1
 
 	String username = null
+
+}
+
+class HtmlMatrixOutputCommand extends OutputCommand{
+
+	Integer cellSize = 5
 
 }

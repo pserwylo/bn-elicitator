@@ -220,7 +220,8 @@
 
 						form.find( 'legend' ).html( "Does " + data.parentLabelReadable + "<br />directly influence<br />${variable.readableLabel}?" );
 
-						var offset = $( btnReview ).closest( 'li' ).offset().top - form.parent().offset().top - 50;
+						var offset = $( btnReview ).closest( 'li' ).offset().top - form.parent().offset().top - 250;
+						offset = Math.max( 0, offset );
 						form.show();
 						form.css( 'padding-top', offset + 'px' );
 					}
