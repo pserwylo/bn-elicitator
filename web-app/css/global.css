@@ -16,6 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* SAVE BUTTONS TAGLIB */
+.save-wrapper .save {
+	margin-left: 1em;
+}
+
+.save-wrapper .save, .save-wrapper.close, .save-wrapper.delete {
+	min-width: 50px;
+}
+
 /* ICON KEY stuff - to the top right of screen */
 .icon-keys {
 	float: right;

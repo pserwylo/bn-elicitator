@@ -16,37 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package bn.elicitator
+#list-uninitialized .comment,
+#list-no            .comment {
+	display: none;
+}
 
-class ParentClassTagLib {
+button.yes, button.no {
+	min-width: 50px;
+}
 
-	static namespace = "bn"
-
-	/**
-	 * @attr variables REQUIRED
-	 * @attr matrix REQUIRED
-	 * @attr x REQUIRED
-	 * @attr y REQUIRED
-	 */
-	def hasParentClass = { attrs, body ->
-
-		def variables = attrs.variables
-		def matrix = attrs.matrix
-		Integer x = attrs.x
-		Integer y = attrs.y
-
-		String parent = "";
-		if ( x > 0 )
-		{
-			parent = "has-parent";
-			for ( int i = 0; i < x; i ++ )
-			{
-				parent += "-" + variables[ i ].label + "-" + matrix[ y ][ i ]
-			}
-		}
-
-		out << parent
-
-	}
-
+textarea {
+	min-height: 150px;
+	width: 100%;
 }
