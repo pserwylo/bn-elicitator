@@ -459,7 +459,7 @@ class ElicitController {
 
 	def index = {
 
-		this.variableService.initRelationships()
+		this.variableService.initRelationships( null, null, null )
 
 		List<Variable> varList = this.variableService.getAllChildVars()
 
