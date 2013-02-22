@@ -193,17 +193,6 @@ class BnService {
 		}
 	}
 
-	/**
-	 * Returns the number of relationships which were marked as (potentially) redunant by the system, but which were
-	 * corrected by the user who decided to keep the relationships anyway.
-	 * @return
-	 */
-	public Integer countKeptRedundantRelationships() {
-
-		return Relationship.countByIsRedundantAndCreatedByAndExistsAndDelphiPhase( Relationship.IS_REDUNDANT_NO, ShiroUser.current, true, delphiService.phase )
-
-	}
-
 	public void keepRedundantRelationship( RedundantRelationship redundantRelationship ) {
 
 		redundantRelationship.relationship.isRedundant = Relationship.IS_REDUNDANT_NO

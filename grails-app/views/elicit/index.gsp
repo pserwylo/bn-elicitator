@@ -80,13 +80,6 @@
 			<div class="message"><g:message code="elicit.list.info.round-complete" /></div>
 		</g:if>
 
-		<g:if test="${hasDetails}">
-			<button type="button" style="margin-top: 0.3em;" id="btnToggleDetails">
-			 	<g:message code="general.show" />
-				<g:message code="elicit.list.details" />
-			</button>
-		</g:if>
-
 		<bnIcons:key>
 
 			<bnIcons:icon
@@ -123,6 +116,13 @@
 
 		</g:else>
 
+		<g:if test="${hasDetails}">
+			<button type="button" style="margin-top: 0.3em;" id="btnToggleDetails">
+				<g:message code="general.show" />
+				<g:message code="elicit.list.details" />
+			</button>
+		</g:if>
+
 		<g:if test="${completed}">
 			<div class="message">
 				<ul>
@@ -151,20 +151,5 @@
 				<g:message code="elicit.list.finish-round" />
 			</button>
 		</g:else>
-
-		<g:if test="${keptRedunantRelationships > 0}">
-			<button
-				type="button"
-				style="margin-top: 0.3em;"
-				id="btnShowProblems"
-				onclick="document.location = '${createLink( action: 'problems', params: [ displayAll: true ] )}'">
-
-				<g:message code="general.show" />
-				<g:message code="elicit.list.potential-problems" args="${[ keptRedunantRelationships ]}" />
-
-			</button>
-		</g:if>
-
 	</body>
-	
 </html>

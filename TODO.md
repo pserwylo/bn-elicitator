@@ -30,7 +30,6 @@ I need to fix the first round, because I think people accidentally unchecked the
 Perhaps a quick "click yes or no" for each variable, which classifies it into two lists below, which they can then review.
 This has the added benefit of ensuring that all "No" options are intentional, not by default.
 
-
 > The systems bombed out when I pressed the "keep direct relationship" button on the screen below after using the go back and go forward arrows on Firefox.
 
 I'll investigate. Looks like the redirect is not being done properly. I want it to redirect without ever showing the link to the browser, so that "Back" goes back to "/problems" rather than "/keepRedunantRelationship"
@@ -38,21 +37,6 @@ I'll investigate. Looks like the redirect is not being done properly. I want it 
 NEED BETTER ERROR HANDLING:
 
 Firstly, a proper error page, secondly, email me when an error occurs with stacktrace and user info.
-
-
-> Once I remove a direct relationship, I cannot undo it.  What about if I want to change my mind or I did it by accident?
-
-Good question. This will need some thought. At the least, I can add a notification at the top which says "Undo" and stores the relationship which was deleted in the session.
-
-
-> Once all of the variables haven been reviewed.  Do you want people to review the "x potential problems"?  Or it is optional?
-
-It is optional, so perhaps I should emphasise that.
-
-
-> Require a comment if the user changes their mind in a later round
-
-I saw that only one person had a relationship, but they explained it well. I changed my mind, left a comment explaining that I agreed. By the time the next round came about, they had dropped their support without declaring why, which would probably mean that they just did it because everybody else did it.
 
 > Add a "Not finished with variable yet, but return to main menu anyway."
 

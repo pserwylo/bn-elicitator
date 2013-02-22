@@ -42,6 +42,16 @@ class OutputController {
 		List<Relationship> relationships = Relationship.findAllByExistsAndDelphiPhase( true, cmd.phase ).sort()
 		Integer totalUsers               = ShiroUser.list().findAll { it.roles.contains( ShiroRole.expert ) }.size()
 
+		if ( cmd.username ) {
+			ShiroUser user = ShiroUser.findByUsername( cmd.username )
+			if ( !user ) {
+				render "Could not find user $cmd.username."
+				return
+			}
+			relationships.findAll { it.createdBy = user }
+			totalUsers = 1
+		}
+
 		output.allVariables = variables
 
 		if ( cmd.minUsers > 0 && cmd.phase > 0 && cmd.phase <= delphiService.phase ) {

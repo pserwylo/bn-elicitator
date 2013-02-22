@@ -16,12 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Slightly adjusted version from http://colorbrewer2.org/ */
-.disagree-by-0 { color: #1A9641; }
-.disagree-by-1 { color: #8db95b; }
-.disagree-by-2 { color: #d08f50; }
-.disagree-by-3, disagree-by-4 { color: #D7191C; }
-
 table {
 	border-spacing:0;
 	border-collapse:collapse;
@@ -35,11 +29,6 @@ table {
 .list-of-children, .list-of-parents {
 	display: inline-block;
 	width: 180px;
-}
-
-.variable-cell.restricted-width {
-	width: 140px;
-	text-align: center;
 }
 
 .list-of-parents {

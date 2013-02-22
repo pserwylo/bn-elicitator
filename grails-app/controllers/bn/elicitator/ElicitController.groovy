@@ -242,14 +242,8 @@ class ElicitController {
 
 		List<BnService.CyclicalRelationship> cyclicalRelationships = bnService.getCyclicalRelationships()
 		List<BnService.RedundantRelationship> redundantRelationships = []
-		Integer numKeepers = 0
 
 		def showProblems = false
-		def displayAll = false
-		if ( params.containsKey( "displayAll" ) )
-		{
-			displayAll = params.remove( "displayAll" )
-		}
 
 		if ( cyclicalRelationships.size() > 0 )
 		{
@@ -257,19 +251,12 @@ class ElicitController {
 		}
 		else
 		{
-			redundantRelationships = bnService.getRedundantRelationships()
-
-			numKeepers = redundantRelationships.count {
-				it.relationship.isRedundant == Relationship.IS_REDUNDANT_NO
+			redundantRelationships = bnService.getRedundantRelationships().findAll {
+				it.relationship.isRedundant == Relationship.IS_REDUNDANT_UNSPECIFIED
 			}
 
 			if ( redundantRelationships.size() > 0 ) {
-				// If all of the relationships have been explicitly marked as okay by the user, don't bother them each time
-				// by reshowing them to the users...
-				if ( numKeepers < redundantRelationships.size() || displayAll )
-				{
-					showProblems = true
-				}
+				showProblems = true
 			}
 		}
 
@@ -278,8 +265,6 @@ class ElicitController {
 			[
 				redundantRelationships: redundantRelationships,
 				cyclicalRelationships: cyclicalRelationships,
-				displayAll: displayAll,
-				numKeepers: numKeepers,
 				scroll: flash.containsKey( "scroll" ) ? flash["scroll"] : 0
 			]
 		}
@@ -482,7 +467,6 @@ class ElicitController {
 			user                      : ShiroUser.current,
 			delphiPhase               : delphiService.phase,
 			variables                 : varList,
-			keptRedunantRelationships : bnService.countKeptRedundantRelationships(),
 			hasPreviousPhase          : delphiService.hasPreviousPhase,
 			stillToVisit              : delphiService.getStillToVisit( varList ),
 			completed                 : delphiService.completed,
