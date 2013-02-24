@@ -40,6 +40,18 @@ Firstly, a proper error page, secondly, email me when an error occurs with stack
 
 > Add a "Not finished with variable yet, but return to main menu anyway."
 
+> Don't allow deleting of excessive relationships on the problems page. Only allow direct relationships.
+
+Change the wording of "Which of the following..." to match with subsequent rounds, and it needs to be a question which is answered with "Yes" or "No"
+
+After clicking finish and being denied because of uninitialized variables, scroll to the top of page.
+
+Remove anchor tag from variable name in the elicit parents list (for the first - and probably subsequent rounds).
+
+Flip the colour gradient for "x of y" around.
+
+Change "I said ..." to "You said..."
+
 # Logging
 
 I want to make sure that after the survey is complete, I can inspect certain phenomenon in order to make comment about the appropriateness of the system.
