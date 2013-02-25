@@ -370,6 +370,7 @@
 					var uninitializedCount = listUninitialized.children().length;
 					if ( uninitializedCount > 1 ) { // There will always be at least one: the "add a new variable" one.
 						alert( 'You still need to decide whether ' + uninitializedCount + ' variables influence ${variable.readableLabel}.' );
+						$( 'body' ).animate( { scrollTop: 0 } );
 					} else {
 						document.location = '${createLink( action : 'completedVariable', params : [ variable : variable.label ] )}';
 					}
