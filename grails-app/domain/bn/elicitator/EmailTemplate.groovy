@@ -60,12 +60,14 @@ class EmailTemplate {
 	List<String> placeholderNames = []
 
 	static final FIRST_PHASE_STARTING = "firstPhaseStarting";
-	static final PHASE_COMPLETE = "phaseComplete";
-	static final STUDY_COMPLETE = "studyComplete";
+	static final PHASE_COMPLETE       = "phaseComplete";
+	static final STUDY_COMPLETE       = "studyComplete";
+	static final ERROR                = "error";
 
 	static EmailTemplate getFirstPhaseStarting() { return EmailTemplate.findByName( FIRST_PHASE_STARTING ) }
 	static EmailTemplate getPhaseComplete()      { return EmailTemplate.findByName( PHASE_COMPLETE       ) }
 	static EmailTemplate getStudyComplete()      { return EmailTemplate.findByName( STUDY_COMPLETE       ) }
+	static EmailTemplate getError()              { return EmailTemplate.findByName( ERROR                ) }
 
 	/**
 	 * @see EmailTemplate#GLOBAL_PLACEHOLDER_NAMES
@@ -101,6 +103,31 @@ class EmailTemplate {
 	 * @see EmailTemplate#getPhaseComplete()
 	 */
 	static final PH_EXPECTED_PHASE_DURATION = "[ExpectedPhaseDuration]"
+
+	/**
+	 * @see EmailTemplate#getError()
+	 */
+	static final PH_EXCEPTION_STACK_TRACE = "[ExceptionStackTrace]"
+
+	/**
+	 * @see EmailTemplate#getError()
+	 */
+	static final PH_EXCEPTION_TYPE = "[ExceptionType]"
+
+	/**
+	 * @see EmailTemplate#getError()
+	 */
+	static final PH_EXCEPTION_MESSAGE = "[ExceptionMessage]"
+
+	/**
+	 * @see EmailTemplate#getError()
+	 */
+	static final PH_ERROR_MESSAGE = "[ErrorMessage]"
+
+	/**
+	 * @see EmailTemplate#getError()
+	 */
+	static final PH_ERROR_USER = "[ErrorUser]"
 
 	static final List<String> GLOBAL_PLACEHOLDER_NAMES = [ PH_USER, PH_LINK, PH_UNSUBSCRIBE_LINK ]
 

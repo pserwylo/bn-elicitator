@@ -2,24 +2,26 @@ package bn.elicitator
 
 class ErrorController {
 
-	def index() {}
+	EmailService emailService
 
-	def notFound() {
-
-		def title = "Not Found"
-		def message = params?.toString()
-		def error = new ErrorDetails( title: title, message: message )
-		renderError( error )
-
+	def index() {
+		handleError( 500, request.exception )
 	}
 
-	def serverError( attr ) {
+	def notFound() {
+		handleError( 404 )
+	}
 
-		def title = "System error"
-		def message = params?.toString() + "\n\n" + attr?.toString()
-		def error = new ErrorDetails( title: title, message: message )
+	def invalidInput() {
+		handleError( 400 )
+	}
+
+	private void handleError( Integer errorCode, exception = null ) {
+		String       title   = message( code: "general.error-title", args: [ errorCode.toString() ] )
+		String       message = message( code: "general.error-message" )
+		ErrorDetails error   = new ErrorDetails( title: title, message: message, exception: exception )
+		emailService.sendError( error )
 		renderError( error )
-
 	}
 
 	private void renderError( ErrorDetails error ) {
@@ -32,6 +34,7 @@ class ErrorController {
 }
 
 class ErrorDetails {
-	String title
-	String message
+	String    title
+	String    message
+	Exception exception
 }

@@ -6,8 +6,9 @@ class UrlMappings {
 		}
 
 		"/"   ( controller:'explain' )
-		"400" ( controller:'error', action: 'invalidInput' )
-		"404" ( controller:'error', action: 'notFound'     )
-		"500" ( controller:'error', action: 'serverError'  )
+		"500" ( controller:'error', exception: Exception )
+		"500" ( controller:'error' )
+		"400" ( controller:'error', action: "invalidInput" )
+		"404" ( controller:'error', action: "notFound" )
 	}
 }
