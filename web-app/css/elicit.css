@@ -32,10 +32,6 @@ ul.potential-parents-list li.variable-item {
     height: 30px;
 }
 
-ul.potential-parents-list li.variable-item .variable:hover {
-    text-decoration: underline;
-}
-
 ul.potential-parents-list      li.variable-item .variable,
 ul#keepers                     li.variable-item .header .variable,
 ul#redundant-relationship-list li.variable-item .header .variable {
@@ -295,9 +291,9 @@ ul.potential-parents-list .variable-item.highlighted button.review {
 	font-weight: bold;
 }
 
-.var-summary .count.high   { color: #aaa; }
+.var-summary .count.high   { color: #555; }
 .var-summary .count.medium { color: #888;}
-.var-summary .count.low    { color: #555;}
+.var-summary .count.low    { color: #aaa;}
 
 .var-summary .agreement {
     display: block;

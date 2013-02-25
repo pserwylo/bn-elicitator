@@ -42,10 +42,6 @@ Firstly, a proper error page, secondly, email me when an error occurs with stack
 
 Change the wording of "Which of the following..." to match with subsequent rounds, and it needs to be a question which is answered with "Yes" or "No"
 
-Remove anchor tag from variable name in the elicit parents list (for the first - and probably subsequent rounds).
-
-Flip the colour gradient for "x of y" around.
-
 Change "I said ..." to "You said..."
 
 # Logging
