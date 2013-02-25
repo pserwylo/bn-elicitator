@@ -42,16 +42,6 @@ class UserService {
 	}
 
 	/**
-	 * Search for an event which says that the user has completed the appropriate round.
-	 * @param user
-	 * @param delphiPhase
-	 * @return
-	 */
-	boolean isUserFinished( ShiroUser user = ShiroUser.current, Integer delphiPhase = AppProperties.properties.delphiPhase ) {
-		return LoggedEvent.findByTypeAndUserAndDelphiPhase( LoggedEvent.Type.COMPLETE_FORM, user, delphiPhase ) != null
-	}
-
-	/**
 	 * Get a list of all users who do *not* yet have a 'COMPLETE_FORM' event.
 	 * @param delphiPhase
 	 * @return

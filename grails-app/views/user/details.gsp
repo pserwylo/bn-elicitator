@@ -1,3 +1,4 @@
+<%@ page import="grails.converters.JSON" %>
 %{--
   - Bayesian Network (BN) Elicitator
   - Copyright (C) 2012 Peter Serwylo (peter.serwylo@monash.edu)
@@ -16,6 +17,23 @@
   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --}%
 <!doctype html>
+
+<g:javascript>
+
+$(document).ready(function() {
+
+
+	var histCreatedVariable         = $( '#histCreatedVariable'         );
+	var histFinishedVariableOrRound = $( '#histFinishedVariableOrRound' );
+	var histLoginOrLogout           = $( '#histLoginOrLogout'           );
+	var histSaveRelationship        = $( '#histSaveRelationship'        );
+	var histViewRelationship        = $( '#histViewRelationship'        );
+
+	var
+
+});
+
+</g:javascript>
 
 <div class="user-details">
 	<g:form name="user-details" action="save">
@@ -103,6 +121,13 @@
 		<g:if test="${!isNew}">
 
 			<div class="header">History</div>
+			<ul>
+				<li><label><input id="histCreatedVariable" checked="checked" /> Created Variable</label></li>
+				<li><label><input id="histFinishedVariableOrRound" checked="checked" /> Finished Variable/Round</label></li>
+				<li><label><input id="histLoginOrLogout" checked="checked" /> Logged in/out</label></li>
+				<li><label><input id="histSaveRelationship" checked="checked" /> Saved relationship</label></li>
+				<li><label><input id="histViewRelationship" checked="checked" /> Viewed relationship</label></li>
+			</ul>
 			<bnAdmin:eventList eventList="${history}" />
 
 

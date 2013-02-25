@@ -31,7 +31,7 @@ class Relationship {
     }
 
 	static mapping = {
-		exists column: 'doesRelationshipExist' // Exists is a reserved word in many database systems.
+		exists column: 'doesRelationshipExist' // Exists is a reserved word in MySQL.
 	}
 
 	public static final int IS_REDUNDANT_UNSPECIFIED = 0;

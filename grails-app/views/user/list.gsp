@@ -15,12 +15,8 @@
   - You should have received a copy of the GNU General Public License
   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --}%
-<%@ page import="bn.elicitator.LoggedEvent; bn.elicitator.ShiroUser" %>
-<%@ page import="bn.elicitator.LoggedEvent" %>
 <%@ page import="bn.elicitator.VariableService" %>
-<%
-	VariableService variableService = grailsApplication.classLoader.loadClass( 'bn.elicitator.VariableService' ).newInstance()
- %>
+<g:set var="variableService" value="${grailsApplication.classLoader.loadClass( 'bn.elicitator.VariableService' ).newInstance()}" />
 
 <!doctype html>
 <html>

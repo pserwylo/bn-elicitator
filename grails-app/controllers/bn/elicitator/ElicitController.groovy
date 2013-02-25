@@ -36,6 +36,12 @@
 
 package bn.elicitator
 
+import bn.elicitator.events.CreatedVariableEvent
+import bn.elicitator.events.FinishedRoundEvent
+import bn.elicitator.events.KeptRedundantEvent
+import bn.elicitator.events.RemovedCycleEvent
+import bn.elicitator.events.RemovedRedundantEvent
+import bn.elicitator.events.SaveRelationshipEvent
 import grails.converters.JSON
 
 class ElicitController {
@@ -63,6 +69,7 @@ class ElicitController {
 		{
 			phase = new CompletedPhase( completedBy: ShiroUser.current, completedDate: new Date(), delphiPhase: delphiService.phase )
 			phase.save( failOnError: true )
+			FinishedRoundEvent.logEvent()
 		}
 
 		redirect( action: 'problems' )
@@ -71,16 +78,12 @@ class ElicitController {
 	def completedVariable = {
 
 		Variable var = Variable.findByLabel( (String)params[ 'variable' ] )
-		if ( var == null )
-		{
+		if ( var == null ) {
 			throw new Exception( "Not found: " + params['variable'] )
-		}
-		else
-		{
-			this.variableService.visitVariable( var )
+		} else {
+			this.variableService.finishVariable( var )
 			redirect( action: 'problems' )
 		}
-
 	}
 
 	def fixProblems =
@@ -171,8 +174,10 @@ class ElicitController {
 			if ( rel ) {
 				if ( keep ) {
 					bnService.keepRedundantRelationship( rel )
+					KeptRedundantEvent.logEvent( rel.relationship )
 				} else {
 					bnService.removeRedundantRelationship( rel )
+					RemovedRedundantEvent.logEvent( rel.relationship )
 				}
 			}
 		}
@@ -214,24 +219,19 @@ class ElicitController {
 			throw new Exception( "Not found: $label" )
 		} else {
 			bnService.removeCycle( parent, child )
+			RemovedCycleEvent.logEvent( parent, child )
 			redirectToProblems()
 		}
 	}
 
 	def redirectToProblems = {
-
 		def newParams = [:]
-
-		if ( params.containsKey( "scroll" ) )
-		{
+		if ( params.containsKey( "scroll" ) ) {
 			flash.scroll = params.remove( "scroll" )
 		}
-
-		if ( params.containsKey( "displayAll" ) )
-		{
+		if ( params.containsKey( "displayAll" ) ) {
 			newParams.put( "displayAll", params.remove( "displayAll" ) )
 		}
-
 		redirect( action: "problems", params: newParams )
 	}
 
@@ -246,12 +246,9 @@ class ElicitController {
 
 		def showProblems = false
 
-		if ( cyclicalRelationships.size() > 0 )
-		{
+		if ( cyclicalRelationships.size() > 0 ) {
 			showProblems = true
-		}
-		else
-		{
+		} else {
 			redundantRelationships = bnService.getRedundantRelationships().findAll {
 				it.relationship.isRedundant == Relationship.IS_REDUNDANT_UNSPECIFIED
 			}
@@ -261,16 +258,13 @@ class ElicitController {
 			}
 		}
 
-		if ( showProblems )
-		{
+		if ( showProblems ) {
 			[
 				redundantRelationships: redundantRelationships,
 				cyclicalRelationships: cyclicalRelationships,
 				scroll: flash.containsKey( "scroll" ) ? flash["scroll"] : 0
 			]
-		}
-		else
-		{
+		} else {
 			redirect( action: 'index' );
 		}
 	}
@@ -401,18 +395,14 @@ class ElicitController {
 
 		Variable child = Variable.findByLabel( cmd.child );
 		Variable parent = Variable.findByLabel( cmd.parent );
-		if ( child == null || parent == null )
-		{
+		if ( child == null || parent == null ) {
 			String label = child ? cmd.parent : cmd.child
 			throw new Exception( "Not found: $label" )
-		}
-		else
-		{
+		} else {
 			// Try to use the existing relationship (from this round) if we have one, to prevent doubling up. Then we
 			// can presume that there will only be one relationship per set of variables per phase per participant.
  			Relationship relationship = this.delphiService.getMyCurrentRelationship( parent, child );
-			if ( !relationship )
-			{
+			if ( !relationship ) {
 				relationship = new Relationship(
 					parent: parent,
 					child: child,
@@ -425,30 +415,24 @@ class ElicitController {
 			relationship.isExistsInitialized = true
 
 			String commentText = cmd.comment?.trim()
-			if ( commentText )
-			{
-				Comment comment = relationship.comment ? relationship.comment : new Comment()
+			if ( commentText ) {
+				Comment comment = relationship.comment ?: new Comment()
 				comment.comment = commentText
 				comment.createdBy = ShiroUser.current
 				comment.createdDate = new Date()
 				comment.lastModifiedBy = ShiroUser.current
 				comment.lastModifiedDate = new Date()
 				comment.save( flush: true )
-
 				relationship.comment = comment
-			}
-			else
-			{
-				if ( relationship.comment )
-				{
+			} else {
+				if ( relationship.comment ) {
 					relationship.comment.delete()
 				}
-
 				relationship.comment = null;
 			}
 
 			relationship.save( flush: true )
-			LoggedEvent.logSaveRelationship( relationship )
+			SaveRelationshipEvent.log( relationship )
 
 			def data = [
 				exists  : relationship.exists,
@@ -504,7 +488,7 @@ class ElicitController {
 		}
 
 		var.save( failOnError: true )
-		LoggedEvent.logCreatedVar( var )
+		CreatedVariableEvent.logEvent( var )
 		redirect( action: parents, params: [ for: params['returnToVar'] ] )
 	}
 

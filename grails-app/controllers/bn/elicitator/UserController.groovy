@@ -18,6 +18,7 @@
 
 package bn.elicitator
 
+import bn.elicitator.events.LoggedEvent
 import org.apache.shiro.crypto.hash.*;
 
 class UserController {
@@ -69,7 +70,12 @@ class UserController {
 			}
 			else
 			{
-				[ user: user, roles: ShiroRole.list(), history: LoggedEvent.findAllByUser( user ), emailLog: EmailLog.findAllByRecipient( user ) ]
+				[
+					user: user,
+					roles: ShiroRole.list(),
+					history: LoggedEvent.findAllByUser( user ),
+					emailLog: EmailLog.findAllByRecipient( user )
+				]
 			}
 		}
 	}

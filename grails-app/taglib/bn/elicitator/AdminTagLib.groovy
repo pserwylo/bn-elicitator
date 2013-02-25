@@ -18,6 +18,8 @@
 
 package bn.elicitator
 
+import bn.elicitator.events.LoggedEvent
+
 class AdminTagLib {
 
 	static namespace = "bnAdmin"

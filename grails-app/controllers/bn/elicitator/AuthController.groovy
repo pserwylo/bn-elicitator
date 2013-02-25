@@ -18,6 +18,8 @@
 
 package bn.elicitator
 
+import bn.elicitator.events.LoginEvent
+import bn.elicitator.events.LogoutEvent
 import org.apache.shiro.SecurityUtils
 import org.apache.shiro.authc.AuthenticationException
 import org.apache.shiro.authc.UsernamePasswordToken
@@ -60,7 +62,7 @@ class AuthController {
             SecurityUtils.subject.login(authToken)
 
             log.info "Redirecting to '${targetUri}'."
-			LoggedEvent.logLogin()
+			LoginEvent.logEvent()
             redirect(uri: targetUri)
         }
         catch (AuthenticationException ex){
@@ -86,6 +88,9 @@ class AuthController {
 	def logout = { signOut() }
 	
     def signOut = {
+
+		LogoutEvent.logEvent()
+
         // Log the user out of the application.
         SecurityUtils.subject?.logout()
 

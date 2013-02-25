@@ -18,7 +18,7 @@
 
 package bn.elicitator
 
-import org.apache.log4j.spi.LoggingEvent
+import bn.elicitator.events.LoginEvent
 import org.apache.shiro.*
 
 /**
@@ -59,7 +59,7 @@ class ShiroUser {
 
 	Date getLastLoginDate()
 	{
-		LoggedEvent lastLoginEvent = LoggedEvent.findByTypeAndUser( LoggedEventType.LOGIN, this )
+		LoginEvent lastLoginEvent = LoginEvent.findByUser( this )
 		return lastLoginEvent?.date
 	}
 
