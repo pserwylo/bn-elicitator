@@ -73,8 +73,7 @@ class ElicitController {
 		Variable var = Variable.findByLabel( (String)params[ 'variable' ] )
 		if ( var == null )
 		{
-			response.status = 404
-			render "Not Found"
+			throw new Exception( "Not found: " + params['variable'] )
 		}
 		else
 		{
@@ -160,7 +159,7 @@ class ElicitController {
 		if ( parent == null || child == null )
 		{
 			String label = parent == null ? parentLabel : childLabel
-			response.sendError( 404 )
+			throw new Exception( "Not found: $label" )
 		}
 		else
 		{
@@ -193,7 +192,7 @@ class ElicitController {
 		if ( parent == null || child == null )
 		{
 			String label = parent == null ? parentLabel : childLabel
-			response.sendError( 404, "Variable '$label' not found" )
+			throw new Exception( "Not found: $label" )
 		}
 		else
 		{
@@ -212,7 +211,7 @@ class ElicitController {
 
 		if ( parent == null || child == null ) {
 			String label = parent == null ? (String)params["parent"] : (String)params["child"]
-			response.sendError( 404, "Variable '$label' not found" )
+			throw new Exception( "Not found: $label" )
 		} else {
 			bnService.removeCycle( parent, child )
 			redirectToProblems()
@@ -296,7 +295,7 @@ class ElicitController {
 		if ( parent == null || child == null )
 		{
 			String label = parent == null ? params['parent'] : params['child']
-			response.sendError( 404, "Variable '$label' not found" )
+			throw new Exception( "Not found: $label" )
 		}
 		else
 		{
@@ -328,7 +327,7 @@ class ElicitController {
 		if ( parent == null || child == null )
 		{
 			String label = parent == null ? params['parent'] : params['child']
-			response.sendError( 404, "Variable '$label' not found" )
+			throw new Exception( "Not found: $label" )
 		}
 		else
 		{
@@ -374,7 +373,7 @@ class ElicitController {
 
 		if ( var == null )
 		{
-			response.sendError( 404, "Could not find variable '${params["for"]}" )
+			throw new Exception( "Not found: ${params['for']}" )
 			return null
 		}
 		else
@@ -404,8 +403,8 @@ class ElicitController {
 		Variable parent = Variable.findByLabel( cmd.parent );
 		if ( child == null || parent == null )
 		{
-			response.status = 404
-			render child ? cmd.parent : cmd.child + " Not Found"
+			String label = child ? cmd.parent : cmd.child
+			throw new Exception( "Not found: $label" )
 		}
 		else
 		{
@@ -461,9 +460,6 @@ class ElicitController {
 
 	def index = {
 
-		throw new Exception("Test");
-		return
-
 		this.variableService.initRelationships()
 
 		List<Variable> varList = this.variableService.getAllChildVars()
@@ -486,7 +482,7 @@ class ElicitController {
 	def addVariable = { AddVariableCommand cmd ->
 
 		if ( !cmd.label.trim() || !cmd.description.trim() ) {
-			response.sendError( 400, "No label or description received." )
+			throw new Exception( "Invalid input: No label or description received." )
 			return
 		}
 
@@ -503,7 +499,7 @@ class ElicitController {
 
 		Variable duplicate = Variable.findByLabelOrReadableLabel( var.label, var.readableLabel )
 		if ( duplicate ) {
-			response.sendError( 400, "Variable '$duplicate.label' ($duplicate.readableLabel) already exists." );
+			throw new Exception( "Invalid input: Variable '$duplicate.label' ($duplicate.readableLabel) already exists." );
 			return
 		}
 

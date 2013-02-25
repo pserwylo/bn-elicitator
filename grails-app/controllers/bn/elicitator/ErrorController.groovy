@@ -8,14 +8,6 @@ class ErrorController {
 		handleError( 500, request.exception )
 	}
 
-	def notFound() {
-		handleError( 404 )
-	}
-
-	def invalidInput() {
-		handleError( 400 )
-	}
-
 	private void handleError( Integer errorCode, exception = null ) {
 		try {
 			String       title   = message( code: "general.error-title", args: [ errorCode.toString() ] )

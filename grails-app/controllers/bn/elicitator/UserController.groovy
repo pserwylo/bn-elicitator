@@ -65,8 +65,7 @@ class UserController {
 			ShiroUser user = ShiroUser.findByUsername( (String)params['username'] )
 			if ( user == null )
 			{
-				response.status = 404
-				render "Not Found"
+				throw new Exception( "Not found: " + params['username'] )
 			}
 			else
 			{

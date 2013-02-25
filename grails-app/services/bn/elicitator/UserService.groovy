@@ -20,8 +20,6 @@ package bn.elicitator
 
 class UserService {
 
-	private List<ShiroUser> cachedExpertList = null;
-
 	List<ShiroUser> getExpertList() {
 		getList( ShiroRole.expert )
 	}

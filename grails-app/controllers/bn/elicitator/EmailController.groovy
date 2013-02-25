@@ -68,8 +68,7 @@ class EmailController {
 
 	private void notFound( EmailTemplateCommand cmd )
 	{
-		response.status = 404
-		render cmd.emailName + " Not Found"
+		throw new Exception( "Not found: $cmd.emailName" )
 	}
 
 }
