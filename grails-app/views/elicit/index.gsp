@@ -19,58 +19,13 @@
 <!doctype html>
 
 <g:set var="hasReviewedSome" value="${variables.size() > stillToVisit?.size()}" />
-<g:set var="hasDetails" value="${delphiPhase > 1 || variables.size() > stillToVisit?.size()}" />
 
 <html>
 
 	<head>
 		<meta name="layout" content="main">
 		<title>Identify relationships between variables</title>
-
-		<g:javascript>
-
-			$( document).ready( function() {
-
-				var itemsToToggle = $( '.list-of-parents, .list-of-children, .icon-key-details' );
-				var variableCells = $( '.variable-cell' );
-				var showToggleDetails = itemsToToggle.length > 0;
-				var btn = $( '#btnToggleDetails');
-				if ( !showToggleDetails )
-				{
-					btn.hide();
-				}
-				else
-				{
-					var msgShow = '<g:message code="general.show" />';
-					var msgHide = '<g:message code="general.hide" />';
-
-					btn.click( function() {
-
-						var label = $.trim( this.innerHTML );
-						if ( label.substring( 0, 4 ) == msgHide )
-						{
-							label = label.replace( msgHide, msgShow );
-							itemsToToggle.hide( 'fast' );
-							variableCells.removeClass( 'restricted-width' );
-						}
-						else
-						{
-							label = label.replace( msgShow, msgHide );
-							itemsToToggle.show( 'fast' );
-							variableCells.addClass( 'restricted-width' );
-						}
-						this.innerHTML = label;
-					});
-
-					itemsToToggle.hide();
-				}
-
-			});
-
-		</g:javascript>
-
 		<r:require module="elicitList" />
-
 	</head>
 	
 	<body>
@@ -91,18 +46,6 @@
 				iconPath="${resource([ dir: "images/icons/", file: "accept.png" ])}"
 				display="${hasReviewedSome}"><g:message code="icon-key.doesnt-need-review" /></bnIcons:icon>
 
-			<bnIcons:icon
-				label="${message( code: "icon-key.relationship.label")}"
-				iconPath="${resource([ dir: "images/icons/", file: "arrow_right.png" ])}"
-				classes="icon-key-details"
-				display="hasDetails"><g:message code="icon-key.relationship" /></bnIcons:icon>
-
-			<bnIcons:icon
-				label="${message( code: "icon-key.relationship-with-comment.label")}"
-				iconPath="${resource([ dir: "images/icons-custom/", file: "arrow_right_comment.png" ])}"
-				classes="icon-key-details"
-				display="hasDetails"><g:message code="icon-key.relationship-with-comment" /></bnIcons:icon>
-
 		</bnIcons:key>
 
 		<g:if test="${!hasPreviousPhase}">
@@ -115,13 +58,6 @@
 			<bn:listSummary variables="${variables}" stillToVisit="${stillToVisit}"/>
 
 		</g:else>
-
-		<g:if test="${hasDetails}">
-			<button type="button" style="margin-top: 0.3em;" id="btnToggleDetails">
-				<g:message code="general.show" />
-				<g:message code="elicit.list.details" />
-			</button>
-		</g:if>
 
 		<g:if test="${completed}">
 			<div class="message">

@@ -154,34 +154,12 @@ class VariableTagLib {
 			String classNeedsReview = hasVisited ? 'doesnt-need-review' : 'needs-review'
 			out << """
 				<li class='variable-item  ${classNeedsReview}'>
-					${bn.variableInListWithRelationships( [ variable: child ] )}
+					<a href='${createLink( controller: 'elicit', action: 'parents', params: [ for: child.label ] )}'>${bn.variable( [ var: child, includeDescription: false ] )}</a>
 				</li>
 				"""
 		}
 		out << "</ul>"
 
-	}
-
-	/**
-	 * @attr variable REQUIRED
-	 */
-	def variableInListWithRelationships = { attrs ->
-		Variable variable = attrs.variable
-		out << """
-			<table>
-				<tr>
-					<td>
-						${this.generateListOfParents( variable )}
-					</td>
-					<td class='variable-cell'>
-						<a href='${createLink( controller: 'elicit', action: 'parents', params: [ for: variable.label ] )}'>${bn.variable( [ var: variable, includeDescription: false ] )}</a>
-					</td>
-					<td>
-						${this.generateListOfChildren( variable )}
-					</td>
-				</tr>
-			</table>
-		"""
 	}
 
 	/**
@@ -202,60 +180,12 @@ class VariableTagLib {
 
 			out << """
 				<li class='variable-item  ${classes}'>
-					${bn.variableInListWithRelationships( [ variable: child ] )}
+					<a href='${createLink( controller: 'elicit', action: 'parents', params: [ for: child.label ] )}'>${bn.variable( [ var: child, includeDescription: false ] )}</a>
 				</li>
 				"""
 		}
 
 		out << "</ul>\n"
-	}
-
-	private String generateListOfChildren( Variable var )
-	{
-		List<Relationship> childRelationships  = this.variableService.getSpecifiedRelationshipsByParent( var )
-
-		String output = "<div class='list-of-children item-description'>"
-
-		if ( childRelationships.size() > 0 )
-		{
-			output += "<ul>"
-			childRelationships.each {
-				output += "<li>" + bn.rArrow( [ comment: it.mostRecentComment?.comment ] ) + " " + it.child + "</li>\n"
-			}
-			output += "</ul>"
-		}
-		else
-		{
-			output += bn.rArrow() + " " + g.message( [ code: "elicit.list.no-variables" ] )
-		}
-
-		output += "</div>"
-
-		return output
-	}
-
-	private String generateListOfParents( Variable var )
-	{
-		List<Relationship> parentRelationships = this.variableService.getSpecifiedRelationshipsByChild( var )
-
-		String output = "<div class='list-of-parents item-description'>"
-
-		if ( parentRelationships.size() > 0 )
-		{
-			output += "<ul>"
-			parentRelationships.each {
-				output += "<li>$it.parent.readableLabel ${bn.rArrow( [ comment: it.mostRecentComment?.comment ] )}</li>\n"
-			}
-			output += "</ul>"
-		}
-		else
-		{
-			output += g.message( [ code: "elicit.list.no-variables" ] ) + " " + bn.rArrow()
-		}
-
-		output += "</div>"
-
-		return output
 	}
 
 }
