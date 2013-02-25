@@ -5,13 +5,7 @@ They could be weighted according to how much you want the network to be modified
 
 Identify kernel theory for research
 
-Prompt if they click next without finding any variables which are useful.
-
 Write about Self selection of participants, and how they are netizens
-
-> The systems bombed out when I pressed the "keep direct relationship" button on the screen below after using the go back and go forward arrows on Firefox.
-
-I'll investigate. Looks like the redirect is not being done properly. I want it to redirect without ever showing the link to the browser, so that "Back" goes back to "/problems" rather than "/keepRedunantRelationship"
 
 Change the wording of "Which of the following..." to match with subsequent rounds, and it needs to be a question which is answered with "Yes" or "No"
 
