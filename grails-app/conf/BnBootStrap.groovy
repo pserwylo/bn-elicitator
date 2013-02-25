@@ -35,12 +35,14 @@ class BnBootStrap {
 	
 	def init = { ServletContext servletContext ->
 
+		// Performs its own initialization check for each email, so we can add new emails as required...
+		initEmailTemplates();
+
 		if ( !isInitialized() )
 		{
 			initProperties( servletContext );
 			initRolesAndAdminUser();
 			initVariableClasses();
-			initEmailTemplates();
 
 			// Just for demoing, we will put in some expert users by default too...
 			if ( doInitTestData || Environment.current == Environment.DEVELOPMENT )
@@ -94,7 +96,16 @@ class BnBootStrap {
 				"I will keep in touch to and let you know as soon as the results are in, as well as if there are any publications which arise from this."
 		)
 
-		List<EmailTemplate> templates = [ firstPhaseStarting, phaseComplete, studyComplete ]
+		EmailTemplate error = new EmailTemplate(
+			name: EmailTemplate.ERROR,
+			description: "An internal error occurred. This message will be sent to all admin users.",
+			placeholderNames: [ EmailTemplate.PH_ERROR_MESSAGE, EmailTemplate.PH_EXCEPTION_MESSAGE, EmailTemplate.PH_EXCEPTION_STACK_TRACE, EmailTemplate.PH_EXCEPTION_TYPE, EmailTemplate.PH_ERROR_USER ],
+			subject: "Error",
+			body:
+				"[ErrorMessage]\n\n[ExceptionType]: [ExceptionMessage]\n\n[ExceptionStackTrace]"
+		)
+
+		List<EmailTemplate> templates = [ firstPhaseStarting, phaseComplete, studyComplete, error ]
 
 		String subjectPrefix = AppProperties.properties.title + ": "
 		String header = "Hi [User],\n\n"
@@ -106,9 +117,11 @@ class BnBootStrap {
 			"If you no longer wish to take part in this survey, please visit [UnsubscribeLink]."
 
 		templates.each {
-			it.subject = subjectPrefix + it.subject
-			it.body = header + it.body + footer
-			it.save()
+			if ( EmailTemplate.countByName( it.name ) == 0 ) {
+				it.subject = subjectPrefix + it.subject
+				it.body = header + it.body + footer
+				it.save()
+			}
 		}
 	}
 

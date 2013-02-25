@@ -1,15 +1,14 @@
-import org.apache.shiro.*
-
 class UrlMappings {
 
 	static mappings = {
-		"/$controller/$action?/$id?"{
-			constraints {
-				// apply constraints here
-			}
+		"/$controller/$action?/$id?" {
+			constraints { }
 		}
 
-		"/"(controller:'explain' )
-		"500"(view:'/error')
+		"/"   ( controller:'explain' )
+		"500" ( controller:'error', exception: Exception )
+		"500" ( controller:'error' )
+		"400" ( controller:'error', action: "invalidInput" )
+		"404" ( controller:'error', action: "notFound" )
 	}
 }

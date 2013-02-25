@@ -23,7 +23,15 @@ class UserService {
 	private List<ShiroUser> cachedExpertList = null;
 
 	List<ShiroUser> getExpertList() {
-		ShiroUser.findAll().findAll { it -> it.roles.contains( ShiroRole.expert ) }
+		getList( ShiroRole.expert )
+	}
+
+	List<ShiroUser> getAdminList() {
+		getList( ShiroRole.admin )
+	}
+
+	List<ShiroUser> getList( ShiroRole hasRole ) {
+		ShiroUser.findAll().findAll { it -> it.roles.contains( hasRole ) }
 	}
 
 	/**
