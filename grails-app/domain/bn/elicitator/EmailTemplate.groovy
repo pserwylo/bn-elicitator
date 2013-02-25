@@ -67,7 +67,7 @@ class EmailTemplate {
 	static EmailTemplate getFirstPhaseStarting() { return EmailTemplate.findByName( FIRST_PHASE_STARTING ) }
 	static EmailTemplate getPhaseComplete()      { return EmailTemplate.findByName( PHASE_COMPLETE       ) }
 	static EmailTemplate getStudyComplete()      { return EmailTemplate.findByName( STUDY_COMPLETE       ) }
-	static EmailTemplate getError()              { return EmailTemplate.findByName( ERROR                ) }
+	static EmailTemplate getErrorEmail()         { return EmailTemplate.findByName( ERROR                ) }
 
 	/**
 	 * @see EmailTemplate#GLOBAL_PLACEHOLDER_NAMES
@@ -105,27 +105,27 @@ class EmailTemplate {
 	static final PH_EXPECTED_PHASE_DURATION = "[ExpectedPhaseDuration]"
 
 	/**
-	 * @see EmailTemplate#getError()
+	 * @see EmailTemplate#getErrorEmail()
 	 */
 	static final PH_EXCEPTION_STACK_TRACE = "[ExceptionStackTrace]"
 
 	/**
-	 * @see EmailTemplate#getError()
+	 * @see EmailTemplate#getErrorEmail()
 	 */
 	static final PH_EXCEPTION_TYPE = "[ExceptionType]"
 
 	/**
-	 * @see EmailTemplate#getError()
+	 * @see EmailTemplate#getErrorEmail()
 	 */
 	static final PH_EXCEPTION_MESSAGE = "[ExceptionMessage]"
 
 	/**
-	 * @see EmailTemplate#getError()
+	 * @see EmailTemplate#getErrorEmail()
 	 */
 	static final PH_ERROR_MESSAGE = "[ErrorMessage]"
 
 	/**
-	 * @see EmailTemplate#getError()
+	 * @see EmailTemplate#getErrorEmail()
 	 */
 	static final PH_ERROR_USER = "[ErrorUser]"
 

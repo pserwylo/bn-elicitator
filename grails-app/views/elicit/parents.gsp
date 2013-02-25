@@ -37,6 +37,7 @@
 				var commentDialog     = $( '#comment-dialog'     );
 				var newVarDialog      = $( '#new-var-dialog'     );
 				var textAreaLabel     = $( '#textAreaLabel'      );
+				var buttonBack        = $( '#btnBack'            );
 				var commentInput      = commentDialog.find( 'textarea' );
 				var newVarNameInput   =  newVarDialog.find( 'input:text' );
 				var newVarDescInput   =  newVarDialog.find( 'textarea' );
@@ -51,6 +52,15 @@
 				 */
 				var currentVar    = null;
 
+				var getUninitializedCount = function() {
+				 	// There will always be at least one: the "add a new variable" one.
+					return listUninitialized.children().length - 1;
+				};
+
+				var canFinish = function() {
+					return getUninitializedCount() == 0;
+				};
+
 				/**
 				 * Move a list item from one of our three lists (yes, no, uninitialized) to another.
 				 * It does this asynchronisly, so that it can animate the removal and addition.
@@ -62,6 +72,10 @@
 						showHideLists();
 						li.show( 'fast', callback );
 					});
+
+					if ( canFinish() ) {
+						buttonBack.hide();
+					}
 				};
 
 				var saveVarDetails = function( parentLabel, exists, comment, callback ) {
@@ -273,6 +287,10 @@
 					} else {
 						hideIfNoEmpty.show();
 					}
+
+					if ( canFinish() ) {
+						buttonBack.hide();
+					}
 				};
 
 
@@ -367,13 +385,18 @@
 
 
 				buttonFinished.click( function() {
-					var uninitializedCount = listUninitialized.children().length;
-					if ( uninitializedCount > 1 ) { // There will always be at least one: the "add a new variable" one.
-						alert( 'You still need to decide whether ' + uninitializedCount + ' variables influence ${variable.readableLabel}.' );
+					if ( !canFinish() ) {
+						var count = getUninitializedCount();
+						alert( 'You still need to decide whether ' + count + ' variables influence ${variable.readableLabel}.' );
 						$( 'body' ).animate( { scrollTop: 0 } );
 					} else {
 						document.location = '${createLink( action : 'completedVariable', params : [ variable : variable.label ] )}';
 					}
+				});
+
+
+				buttonBack.click( function() {
+					document.location = '${createLink( action : 'index' )}';
 				});
 
 
@@ -417,9 +440,15 @@
 
 					</fieldset>
 
-					<button id="btnFinished" type="button" style="margin-top: 5px;" class="big">
-						Finished with ${variable.readableLabel}
-					</button>
+					<div class="button-wrapper">
+						<button id="btnFinished" type="button" class="big">
+							Finished with ${variable.readableLabel}
+						</button>
+
+						<button id="btnBack" type="button">
+							Back
+						</button>
+					</div>
 
 				</div>
 

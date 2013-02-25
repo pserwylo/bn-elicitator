@@ -49,8 +49,8 @@ class EmailService {
 	/**
 	 * Ping each user and tell them that the first round is about to begin.
 	 */
-	void sendError( ErrorDetails errorDetails ) {
-		EmailTemplate template = EmailTemplate.error
+	void sendErrorEmail( ErrorDetails errorDetails ) {
+		EmailTemplate template = EmailTemplate.getErrorEmail()
 		ShiroUser user = ShiroUser.current
 		Map<String,String> values = createDefaultValues()
 
@@ -63,7 +63,7 @@ class EmailService {
 			values.put( EmailTemplate.PH_EXCEPTION_STACK_TRACE, ExceptionUtils.getRootCauseStackTrace( errorDetails.exception ).join( "\n\n" ) )
 		}
 
-		userService.adminList.each { send( it, template, values ) }
+		userService.getAdminList().each { send( it, template, values ) }
 	}
 
 	/**

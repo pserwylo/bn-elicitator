@@ -113,7 +113,7 @@
 									</g:if>
 									<bn:rArrow
 										comment="${relationship.mostRecentComment?.comment}"
-										onclick="deleteCycle( '${relationship.parent.readableLabel.encodeAsJavaScript()}', '${relationship.child.readableLabel.encodeAsJavaScript()}', '${relationship.parent.label.encodeAsJavaScript()}', '${relationship.child.label.encodeAsJavaScript()}', '${relationship.mostRecentComment?.comment?.encodeAsJavaScript()}' )"/>
+										onclick="deleteCycle( '${relationship.parent.readableLabel.encodeAsJavaScript()}', '${relationship.child.readableLabel.encodeAsJavaScript()}', '${relationship.parent.label.encodeAsJavaScript()}', '${relationship.child.label.encodeAsJavaScript()}', '${relationship.mostRecentComment?.comment?.encodeAsJavaScript() ?: ''}' )"/>
 									<bn:variable var="${relationship.child}" />
 								</g:each>
 							</div>
@@ -185,7 +185,7 @@
 										<button
 											class="remove"
 											type="button"
-											onclick="deleteRedundant( '${rel.redundantParent.readableLabel}', '${rel.child.readableLabel}', '${rel.redundantParent.label}', '${rel.child.label}', '${rel.relationship?.mostRecentComment?.encodeAsJavaScript()}' )">
+											onclick="deleteRedundant( '${rel.redundantParent.readableLabel}', '${rel.child.readableLabel}', '${rel.redundantParent.label}', '${rel.child.label}', '${rel.relationship?.mostRecentComment?.comment?.encodeAsJavaScript() ?: ''}' )">
 											<g:message code="problems.redundant.remove" />
 										</button>
 									</div>

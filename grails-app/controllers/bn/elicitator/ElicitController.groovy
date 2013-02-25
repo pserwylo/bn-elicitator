@@ -160,7 +160,7 @@ class ElicitController {
 		if ( parent == null || child == null )
 		{
 			String label = parent == null ? parentLabel : childLabel
-			response.sendError( 404, "Variable '$label' not found" )
+			response.sendError( 404 )
 		}
 		else
 		{
@@ -169,10 +169,12 @@ class ElicitController {
 				it.relationship.child == child && it.relationship.parent == parent
 			}
 
-			if ( keep ) {
-				bnService.keepRedundantRelationship( rel )
-			} else {
-				bnService.removeRedundantRelationship( rel )
+			if ( rel ) {
+				if ( keep ) {
+					bnService.keepRedundantRelationship( rel )
+				} else {
+					bnService.removeRedundantRelationship( rel )
+				}
 			}
 		}
 
@@ -458,6 +460,9 @@ class ElicitController {
 	}
 
 	def index = {
+
+		throw new Exception("Test");
+		return
 
 		this.variableService.initRelationships()
 

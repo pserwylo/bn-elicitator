@@ -1,7 +1,5 @@
 http://en.wikipedia.org/wiki/Repertory_grid
 
-Apply heuristics to order the list of cycles to remove (e.g. the most recent)
-
 Consider feeding the existing BN into the system as a user who proposes relationships.
 They could be weighted according to how much you want the network to be modified.
 
@@ -14,8 +12,6 @@ Write about Self selection of participants, and how they are netizens
 > The systems bombed out when I pressed the "keep direct relationship" button on the screen below after using the go back and go forward arrows on Firefox.
 
 I'll investigate. Looks like the redirect is not being done properly. I want it to redirect without ever showing the link to the browser, so that "Back" goes back to "/problems" rather than "/keepRedunantRelationship"
-
-> Add a "Not finished with variable yet, but return to main menu anyway."
 
 Change the wording of "Which of the following..." to match with subsequent rounds, and it needs to be a question which is answered with "Yes" or "No"
 
