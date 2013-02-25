@@ -118,8 +118,8 @@ class ElicitParentsTagLib {
 
 	/**
 	 * Produces three lists:
-	 *  - I said yes
-	 *  - I said no
+	 *  - You said yes
+	 *  - You said no
 	 *  - We *all* said no (which is hidden)
 	 * @attr child REQUIRED
 	 * @attr potentialParents REQUIRED
@@ -182,7 +182,7 @@ class ElicitParentsTagLib {
 
 		out << """
 				<h2 class='review-yes' style='font-size: 1.0em; float: right;'>Others who also said "<strong>Yes</strong>"</h2>
-				<h2 class='review-yes'>I said "Yes"</h2>
+				<h2 class='review-yes'>${message( code: 'elicit.parents.you-said-yes' )}</h2>
 				<ul id='list-yes' class='review-yes potential-parents-list variable-list'>
 				"""
 			listYes.sort( sortYes ).each { parent ->
@@ -194,7 +194,7 @@ class ElicitParentsTagLib {
 
 		out << """
 				<h2 class='review-no' style='font-size: 1.0em; float: right;'>Others who also said "<strong>No</strong>"</h2>
-				<h2 class='review-no'>I said "No"</h2>
+				<h2 class='review-no'>${message( code: 'elicit.parents.you-said-no' )}</h2>
 				<ul id='list-no' class='review-no potential-parents-list variable-list'>
 				"""
 		listNo.sort( sortNo ).each { parent ->
@@ -228,10 +228,10 @@ class ElicitParentsTagLib {
 				</li>
 			</ul>
 
-			<h2 class='hide-if-yes-empty'>I said "Yes"</h2>
+			<h2 class='hide-if-yes-empty'>${message( code: 'elicit.parents.you-said-yes' )}</h2>
 			<ul id='list-yes' class='potential-parents-list variable-list hide-if-yes-empty'></ul>
 
-			<h2 class='hide-if-no-empty'>I said "No"</h2>
+			<h2 class='hide-if-no-empty'>${message( code: 'elicit.parents.you-said-no' )}</h2>
 			<ul id='list-no' class='potential-parents-list variable-list hide-if-no-empty'></ul>
 			"""
 	}
