@@ -60,7 +60,7 @@
 			}
 
 			function generateParams( parent, child ) {
-				return "parent=" + parent + "&child=" + child + "&scroll=" + $( window ).scrollTop()
+				return "parent=" + parent + "&child=" + child + "&scroll=" + $( window ).scrollTop() + "&redirectTo=${redirectTo.encodeAsURL()}";
 			}
 
 		</g:javascript>
@@ -113,7 +113,7 @@
 									</g:if>
 									<bn:rArrow
 										comment="${relationship.mostRecentComment?.comment}"
-										onclick="deleteCycle( '${relationship.parent.readableLabel.encodeAsJavaScript()}', '${relationship.child.readableLabel.encodeAsJavaScript()}', '${relationship.parent.label.encodeAsJavaScript()}', '${relationship.child.label.encodeAsJavaScript()}', '${relationship.mostRecentComment?.comment?.encodeAsJavaScript() ?: ''}' )"/>
+										onclick="deleteCycle( '${relationship.parent.readableLabel.encodeAsJavaScript().encodeAsHTML()}', '${relationship.child.readableLabel.encodeAsJavaScript().encodeAsHTML()}', '${relationship.parent.label}', '${relationship.child.label}', '${relationship.mostRecentComment?.comment?.encodeAsJavaScript()?.encodeAsHTML() ?: ''}' )"/>
 									<bn:variable var="${relationship.child}" />
 								</g:each>
 							</div>
@@ -185,7 +185,7 @@
 										<button
 											class="remove"
 											type="button"
-											onclick="deleteRedundant( '${rel.redundantParent.readableLabel}', '${rel.child.readableLabel}', '${rel.redundantParent.label}', '${rel.child.label}', '${rel.relationship?.mostRecentComment?.comment?.encodeAsJavaScript() ?: ''}' )">
+											onclick="deleteRedundant( '${rel.redundantParent.readableLabel.encodeAsJavaScript().encodeAsHTML()}', '${rel.child.readableLabel.encodeAsJavaScript().encodeAsHTML()}', '${rel.redundantParent.label}', '${rel.child.label}', '${rel.relationship?.mostRecentComment?.comment?.encodeAsJavaScript()?.encodeAsHTML() ?: ''}' )">
 											<g:message code="problems.redundant.remove" />
 										</button>
 									</div>

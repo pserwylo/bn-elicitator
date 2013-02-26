@@ -42,6 +42,8 @@ import bn.elicitator.events.KeptRedundantEvent
 import bn.elicitator.events.RemovedCycleEvent
 import bn.elicitator.events.RemovedRedundantEvent
 import bn.elicitator.events.SaveRelationshipEvent
+import bn.elicitator.events.SaveRelationshipLaterRoundEvent
+import bn.elicitator.events.ViewRelationshipsEvent
 import grails.converters.JSON
 
 class ElicitController {
@@ -49,30 +51,28 @@ class ElicitController {
 	VariableService     variableService
 	DelphiService       delphiService
 	BnService           bnService
+	UserService         userService
 
 	/**
 	 * Mark this user as completed (for this round), then redirect to the main list so that they can still play around
 	 * until next round.
 	 */
 	def completed = {
-
 		List<Variable> stillToComplete = delphiService.getStillToVisit( variableService.allChildVars )
-
-		if ( stillToComplete.size() > 0 )
-		{
+		if ( stillToComplete.size() > 0 ) {
 			render "Still need to review: " + stillToComplete.toString()
 			return;
 		}
 
-		CompletedPhase phase = delphiService.completed
-		if ( !phase )
-		{
-			phase = new CompletedPhase( completedBy: ShiroUser.current, completedDate: new Date(), delphiPhase: delphiService.phase )
-			phase.save( failOnError: true )
-			FinishedRoundEvent.logEvent()
+		if ( checkProblems( createLink( action: 'completed' ) ) ) {
+			CompletedPhase phase = delphiService.completed
+			if ( !phase ) {
+				phase = new CompletedPhase( completedBy: ShiroUser.current, completedDate: new Date(), delphiPhase: delphiService.phase )
+				phase.save( failOnError: true )
+				FinishedRoundEvent.logEvent()
+			}
+			redirect( action: 'index' )
 		}
-
-		redirect( action: 'problems' )
 	}
 
 	def completedVariable = {
@@ -96,63 +96,50 @@ class ElicitController {
 		List<BnService.RedundantRelationship> redundantLosers  = []
 		List<List<Variable>>                  cyclicalLosers   = []
 
-		for ( BnService.RedundantRelationship redundantRelationship in redundantRelationships )
-		{
+		for ( BnService.RedundantRelationship redundantRelationship in redundantRelationships ) {
 			String key = redundantRelationship.redundantParent.label + "-" + redundantRelationship.child.label + "-keep";
 			String keep = params[ key ];
-			if ( keep == null )
-			{
+			if ( keep == null ) {
 				errors.add( "Error: Should have specified a relationship for '" + redundantRelationship.relationship + "'" );
-			}
-			else
-			{
-				if ( keep == "keep" )
-				{
+			} else {
+				if ( keep == "keep" ) {
 					redundantKeepers.add( redundantRelationship )
-				}
-				else
-				{
+				} else {
 					redundantLosers.add( redundantRelationship )
 				}
 			}
 		}
 
-		for ( BnService.CyclicalRelationship cyclicalRelationship in cyclicalRelationships )
-		{
+		for ( BnService.CyclicalRelationship cyclicalRelationship in cyclicalRelationships ) {
 			Boolean removeAny = false
 
-			for ( Integer i = 0; i <  cyclicalRelationship.chain.size()-1; i ++ )
-			{
+			for ( Integer i = 0; i <  cyclicalRelationship.chain.size()-1; i ++ ) {
 				Variable parent = cyclicalRelationship.chain.get( i )
 				Variable child = cyclicalRelationship.chain.get( i + 1 )
 
 				String key = "remove-" + parent.label + "-" + child.label
 
-				if ( params[ key ] == "1" )
-				{
+				if ( params[ key ] == "1" ) {
 					removeAny = true
 					// TODO: THIS IS BACKWARDS FOR SOME REASON...
 					cyclicalLosers.add( [ parent, child ] )
 				}
 			}
 
-			if ( !removeAny )
-			{
+			if ( !removeAny ) {
 				errors.add( "Must specify a relationship to remove from: " + bn.variableChain( chain: cyclicalRelationship.chain, includeTooltip: false ) )
 			}
 		}
 
-		if ( errors.size() > 0 )
-		{
+		if ( errors.size() > 0 ) {
 			render errors.join( "<br />" )
 			return
-		}
-		else
-		{
+		} else {
 			bnService.fixProblems( redundantKeepers, redundantLosers, cyclicalLosers )
 		}
 
-		redirect( action: 'index' )
+		def targetUri = params['redirectTo'] ?: createLink( action: 'index' )
+		redirect( targetUri: targetUri )
 	}
 
 	private void fixRedundant( Boolean keep, String parentLabel, String childLabel, Boolean displayAll ) {
@@ -240,7 +227,12 @@ class ElicitController {
 	 * @return
 	 */
 	def problems = {
+		if ( checkProblems( createLink( action: 'problems' ) ) ) {
+			redirect( action: 'index' );
+		}
+	}
 
+	private Boolean checkProblems( redirectTo ) {
 		List<BnService.CyclicalRelationship> cyclicalRelationships = bnService.getCyclicalRelationships()
 		List<BnService.RedundantRelationship> redundantRelationships = []
 
@@ -259,14 +251,16 @@ class ElicitController {
 		}
 
 		if ( showProblems ) {
-			[
-				redundantRelationships: redundantRelationships,
-				cyclicalRelationships: cyclicalRelationships,
-				scroll: flash.containsKey( "scroll" ) ? flash["scroll"] : 0
-			]
-		} else {
-			redirect( action: 'index' );
+			render (
+				view: 'problems',
+				model: [
+					redirectTo             : redirectTo,
+					redundantRelationships : redundantRelationships,
+					cyclicalRelationships  : cyclicalRelationships,
+					scroll                 : flash.containsKey( "scroll" ) ? flash["scroll"] : 0
+				])
 		}
+		return !showProblems
 	}
 
 	def ajaxSaveDetails = {
@@ -374,6 +368,7 @@ class ElicitController {
 		{
 			List<Variable> potentialParents = this.variableService.getPotentialParents( var )
 			String view = delphiService.hasPreviousPhase ? "reviewParents" : "parents"
+			ViewRelationshipsEvent.logEvent( var )
 			render(
 				view: view,
 				model: [
@@ -411,6 +406,8 @@ class ElicitController {
 				)
 			}
 
+			Boolean hasChangedMind = relationship.exists != cmd.exists
+
 			relationship.exists = cmd.exists
 			relationship.isExistsInitialized = true
 
@@ -432,7 +429,29 @@ class ElicitController {
 			}
 
 			relationship.save( flush: true )
-			SaveRelationshipEvent.log( relationship )
+
+			if ( delphiService.hasPreviousPhase ) {
+				def allRelationships                        = delphiService.getAllPreviousRelationshipsAndMyCurrent( relationship.parent, relationship.child, false )
+				def othersRelationships                     = allRelationships.findAll { it.createdBy != ShiroUser.current }
+				def othersPreviousRelationships             = othersRelationships.findAll { it.delphiPhase == delphiService.previousPhase }
+				def othersPreviousRelationshipsWithComments = othersPreviousRelationships.findAll { it.comment?.comment != null }
+
+				def numOthersWhoAgreedPreviously = othersPreviousRelationships.countBy { it.exists != relationship.exists }
+				def numExistsComments            = othersPreviousRelationshipsWithComments.countBy { it.exists }
+				def numDoesntExistComments       = othersPreviousRelationshipsWithComments.size() - numExistsComments
+				def totalOthers                  = userService.expertCount
+
+				SaveRelationshipLaterRoundEvent.logEvent(
+					relationship,
+					hasChangedMind,
+					numOthersWhoAgreedPreviously,
+					totalOthers,
+					numExistsComments,
+					numDoesntExistComments,
+				)
+			} else {
+				SaveRelationshipEvent.logEvent( relationship )
+			}
 
 			def data = [
 				exists  : relationship.exists,
@@ -487,8 +506,18 @@ class ElicitController {
 			return
 		}
 
-		var.save( failOnError: true )
-		CreatedVariableEvent.logEvent( var )
+		var.save( failOnError: true, flush: true )
+
+		Variable returnTo = null;
+		if ( params['returnToVar'] ) {
+			returnTo = Variable.findByLabel( params['returnToVar'] )
+		}
+
+		if ( !returnTo ) {
+			returnTo = var
+		}
+
+		CreatedVariableEvent.logEvent( var, returnTo )
 		redirect( action: parents, params: [ for: params['returnToVar'] ] )
 	}
 

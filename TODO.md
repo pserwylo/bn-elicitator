@@ -16,9 +16,3 @@ I want to make sure that after the survey is complete, I can inspect certain phe
 The following is a list of info I need to log:
 
  * When they change their mind (as well as if they commented, how many other people commented too, essentially what info was available to them when they changed their mind)
- * Removing of cycles
- * Retaining potentially redundant relationships
- * Delete potentially redundant relationships
- * Delete other relationships after being prompted about potential redundant relationships
- * Proportion of relationships which they comment about
-

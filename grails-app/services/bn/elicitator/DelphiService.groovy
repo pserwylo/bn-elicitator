@@ -97,16 +97,14 @@ class DelphiService {
 	 */
 	def getAllPreviousRelationshipsAndMyCurrent( Variable parent, Variable child, Boolean justLastRound = true ) {
 		List<Relationship> relationships = []
-		if ( hasPreviousPhase )
-		{
+		if ( hasPreviousPhase ) {
 			if ( justLastRound ) {
 				relationships = Relationship.findAllByDelphiPhaseAndParentAndChild( previousPhase, parent, child )
 			} else {
 				relationships = Relationship.findAllByDelphiPhaseLessThanEqualsAndParentAndChild( previousPhase, parent, child ).sort { early, late -> late.delphiPhase <=> early.delphiPhase }
 			}
 			Relationship current = this.getMyCurrentRelationship( parent, child )
-			if ( current )
-			{
+			if ( current ) {
 				relationships.add( 0, current )
 			}
 		}

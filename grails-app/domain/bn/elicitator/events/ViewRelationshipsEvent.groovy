@@ -7,8 +7,11 @@ class ViewRelationshipsEvent extends LoggedEvent {
 	Variable parent
 
 	static void logEvent( Variable parent ) {
-		String description = "Viewed potential parents of '$parent.readableLabel'"
-		saveEvent( new ViewRelationshipsEvent( parent: parent, description: description ) )
+		saveEvent( new ViewRelationshipsEvent( parent: parent ) )
 	}
 
+	@Override
+	String getDescription() {
+		"Viewed potential parents of '$parent.readableLabel'"
+	}
 }

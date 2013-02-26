@@ -51,15 +51,13 @@ class VariableTagLib {
 
 	public static String generateTooltip( String tooltip, String id = null, String classes = null, String content = null, Boolean includeAlert = true )
 	{
-		String jsTooltip = tooltip.replaceAll( "'", "\\\\'" ).replaceAll( "\n", "\\\\n" )
-
 		id = id ? "id='${id}'" : ""
 
 		if ( content == null ) {
 			content = "(?)"
 		}
 
-		String a    = includeAlert ? "<a href='javascript:alert( \"${jsTooltip}\" );'>" : ""
+		String a    = includeAlert ? "<a href='javascript:alert( \"${tooltip.encodeAsHTML()}\" );'>" : ""
 		String aEnd = includeAlert ? "</a>" : ""
 
 		// Had to fudge the formatting of the HTML so that there was not a space after the tooltip.

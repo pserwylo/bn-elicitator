@@ -228,7 +228,7 @@
 							$( '#' + currentVar.label + "-variable-item" ).addClass( 'highlighted' );
 						}
 
-						form.find( 'legend' ).html( "Does " + data.parentLabelReadable + "<br />directly influence<br />${variable.readableLabel}?" );
+						form.find( 'legend' ).html( 'Does ' + data.parentLabelReadable + '<br />directly influence<br />${variable.readableLabel.encodeAsJavaScript()}?' );
 
 						var offset = $( btnReview ).closest( 'li' ).offset().top - form.parent().offset().top - 250;
 						offset = Math.max( 0, offset );
@@ -268,11 +268,15 @@
 
 					</fieldset>
 
-					<input id="btnFinished"
-						   type="button"
-						   style="margin-top: 5px;"
-						   value="Finished with ${variable.readableLabel}"
-						   class="big" />
+					<button
+						id="btnFinished"
+						type="button"
+						style="margin-top: 5px;"
+						class="big">
+
+						Finished with ${variable.readableLabel}
+
+					</button>
 
 				</div>
 

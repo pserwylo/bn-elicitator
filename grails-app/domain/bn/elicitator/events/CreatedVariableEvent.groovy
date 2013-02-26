@@ -5,10 +5,14 @@ import bn.elicitator.Variable
 class CreatedVariableEvent extends LoggedEvent {
 
 	Variable variable
+	Variable whileViewingVariable
 
-	static logEvent( Variable var ) {
-		String description = "Created: '$var.readableLabel'"
-		saveEvent( new CreatedVariableEvent( variable : var, description: description ) )
+	static logEvent( Variable var, Variable whileViewingVariable ) {
+		saveEvent( new CreatedVariableEvent( variable : var, whileViewingVariable: whileViewingVariable ) )
+	}
+
+	String getDescription() {
+		"Created '$variable.readableLabel' (while pondering '${whileViewingVariable?.readableLabel}')"
 	}
 
 }

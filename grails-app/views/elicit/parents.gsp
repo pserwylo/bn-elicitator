@@ -246,7 +246,7 @@
 
 					var moveAndShowDialog = function() {
 						commentInput.val( comment );
-						textAreaLabel.html( "Why do you think '" + currentVar.readableLabel + "' influences '${variable.readableLabel}'?" ); // TODO: encode readableLabel as javascript...
+						textAreaLabel.html( "Why do you think '" + currentVar.readableLabel + "' influences '${variable.readableLabel.encodeAsJavaScript()}'?" );
 						showDialog( commentDialog, alignWithLi );
 					};
 
@@ -387,7 +387,7 @@
 				buttonFinished.click( function() {
 					if ( !canFinish() ) {
 						var count = getUninitializedCount();
-						alert( 'You still need to decide whether ' + count + ' variables influence ${variable.readableLabel}.' );
+						alert( 'You still need to decide whether ' + count + ' variables influence ${variable.readableLabel.encodeAsJavaScript()}.' );
 						$( 'body' ).animate( { scrollTop: 0 } );
 					} else {
 						document.location = '${createLink( action : 'completedVariable', params : [ variable : variable.label ] )}';

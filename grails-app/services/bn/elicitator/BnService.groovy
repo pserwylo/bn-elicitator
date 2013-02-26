@@ -285,7 +285,7 @@ class BnService {
 	 */
 	public List<RedundantRelationship> getRedundantRelationships() {
 
-		List<Variable> allVars = Variable.list()
+		List<Variable> allVars = Variable.list( sort: "id" )
 		List<RedundantRelationship> redundantRelationships = []
 
 		for ( Variable child in allVars )

@@ -30,9 +30,11 @@ class AdminTagLib {
 
 	/**
 	 * @attr list REQUIRED
+	 * @attr id REQUIRED
 	 */
 	def logItemList = { attrs->
 		List<String> list = attrs.list
+		String id         = attrs.id
 		if ( list.size() == 0 )
 		{
 			out << bnAdmin.noneFound()
@@ -40,10 +42,8 @@ class AdminTagLib {
 		else
 		{
 			out << """
-				<ul class='log-item-list'>
-					<li class='variable-item'>
-						${list.join( "</li><li class='variable-item'>" )}
-					</li>
+				<ul id='$id' class='log-item-list'>
+					${list.join( '' )}
 				</ul>
 			"""
 		}
@@ -55,11 +55,14 @@ class AdminTagLib {
 	 */
 	def emailLogList = { attrs ->
 		List<EmailLog> emailLogList = attrs.emailLogList
-		List<String> list = []
-		emailLogList.each {
-			list.add( bn.date( [ date: it.date ] ) + "<span class='log'>$it.subject</span>" )
+		List<String> list = emailLogList.collect {
+			"""
+			<li class='email-log-item'>
+				${bn.date( [ date: it.date ] )} <span class='log'>$it.subject</span>
+			</li>
+			"""
 		}
-		out << bnAdmin.logItemList( [ list: list ] )
+		out << bnAdmin.logItemList( [ list: list, id: "emailLog" ] )
 	}
 
 	/**
@@ -67,11 +70,14 @@ class AdminTagLib {
 	 */
 	def eventList = { attrs ->
 		List<LoggedEvent> eventList = attrs.eventList
-		List<String> list = []
-		eventList.each {
-			list.add( bn.date( [ date: it.date ] ) + "<span class='log'>$it.description</span>" )
+		List<String> list = eventList.collect {
+			"""
+			<li class='event-log-item ${it.class.name}'>
+				${bn.date( [ date: it.date ] )} <span class='log'>$it.description</span>
+			</li>
+			"""
 		}
-		out << bnAdmin.logItemList( [ list: list ] )
+		out << bnAdmin.logItemList( [ list: list, id: "eventLog" ] )
 	}
 
 }

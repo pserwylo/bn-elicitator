@@ -10,4 +10,8 @@ class FinishedVariableEvent extends LoggedEvent {
 		saveEvent( new FinishedVariableEvent( variable: var ) )
 	}
 
+	@Override
+	String getDescription() {
+		"Finished variable '$variable.readableLabel' (round $delphiPhase)"
+	}
 }

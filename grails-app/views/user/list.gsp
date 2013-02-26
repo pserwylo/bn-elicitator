@@ -30,6 +30,8 @@
 		
 			var selectedLi = null;
 
+			var eventFilter = null;
+
 			function confirmDeleteUser( username ) {
 
 				if ( username == 'admin' ) {
@@ -98,7 +100,8 @@
 					function( response ) {
 						// Need to move the dialog before showing, or it doesn't work...
 						editDialog.css( 'padding-top', offset + 'px' );
-						editDialog.show( 'fast' )
+						editDialog.show( 'fast' );
+						eventFilter = new EventFilter();
 					}
 				);
 				
@@ -130,9 +133,71 @@
 					editUser( '${showUser.username}' );
 				})();
 			</g:if>
-			
+
 		</g:javascript>
-		
+
+		<g:javascript>
+
+			var EventFilter = function() {
+
+				var filterCheckboxes = $( 'input:checkbox[name=filter]' );
+				var historyItems     = $( 'ul#eventLog li' );
+
+				var getEventsToShow = function( checkbox ) {
+					var classNames = [];
+					var names = $( checkbox ).val().split( "-" );
+					for ( var i = 0; i < names.length; i ++ ) {
+						classNames.push( "bn.elicitator.events." + names[ i ] + "Event" );
+					}
+					return classNames;
+				};
+
+				var shouldShow = function( item, eventsToShow ) {
+					var show = false;
+					for ( var i = 0; i < eventsToShow.length; i ++ ) {
+						if ( $( item ).hasClass( eventsToShow[ i ] ) ) {
+							show = true;
+							break;
+						}
+					}
+					return show;
+				};
+
+				var toggleItem = function( historyItem, eventsToShow ) {
+					var item = $( historyItem );
+					var show = shouldShow( historyItem, eventsToShow );
+					var isVisible = item.is( ":visible" );
+					if ( isVisible && !show ) {
+						item.hide( 'fast' );
+					} else if ( !isVisible && show ) {
+						item.show( 'fast' );
+					}
+				};
+
+				var performFilter = function() {
+					console.log( "Filtering" );
+					var allEventsToShow = [];
+					for ( var i = 0; i < filterCheckboxes.length; i ++ ) {
+						var checkbox = $( filterCheckboxes[ i ] );
+						if ( checkbox.prop( 'checked' ) ) {
+							allEventsToShow = allEventsToShow.concat( getEventsToShow( checkbox ) );
+						}
+					}
+
+					console.log( allEventsToShow );
+
+					for ( var j = 0; j < historyItems.length; j ++ ) {
+						var item = $( historyItems[ j ] );
+						toggleItem( item, allEventsToShow );
+					}
+				};
+
+				filterCheckboxes.click( performFilter );
+
+			};
+
+		</g:javascript>
+
 	</head>
 	
 	<body>

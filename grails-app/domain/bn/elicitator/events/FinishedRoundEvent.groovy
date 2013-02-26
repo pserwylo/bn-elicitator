@@ -6,4 +6,8 @@ class FinishedRoundEvent extends LoggedEvent {
 		saveEvent( new FinishedRoundEvent() )
 	}
 
+	@Override
+	String getDescription() {
+		"Finished round $delphiPhase"
+	}
 }

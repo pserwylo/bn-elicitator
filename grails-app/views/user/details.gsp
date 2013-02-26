@@ -16,25 +16,6 @@
   - You should have received a copy of the GNU General Public License
   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --}%
-<!doctype html>
-
-<g:javascript>
-
-$(document).ready(function() {
-
-
-	var histCreatedVariable         = $( '#histCreatedVariable'         );
-	var histFinishedVariableOrRound = $( '#histFinishedVariableOrRound' );
-	var histLoginOrLogout           = $( '#histLoginOrLogout'           );
-	var histSaveRelationship        = $( '#histSaveRelationship'        );
-	var histViewRelationship        = $( '#histViewRelationship'        );
-
-	var
-
-});
-
-</g:javascript>
-
 <div class="user-details">
 	<g:form name="user-details" action="save">
 	
@@ -120,13 +101,25 @@ $(document).ready(function() {
 
 		<g:if test="${!isNew}">
 
+			<g:set var="filterTypes" value="${[
+					[ label: 'Created Variable', fields: [ 'CreatedVariable' ] ],
+					[ label: 'Finished Variable/Round', fields: [ 'FinishedVariable', 'FinishedRound' ] ],
+					[ label: 'Logged in/out', fields: [ 'Login', 'Logout' ] ],
+					[ label: 'Saved relationship', fields: [ 'SaveRelationship' ] ],
+					[ label: 'Viewed relationship', fields: [ 'ViewRelationship' ] ],
+					[ label: 'Fixed problems', fields: [ 'KeptRedundant', 'RemovedRedundant', 'RemovedCycle' ] ],
+			]}" />
+
 			<div class="header">History</div>
-			<ul>
-				<li><label><input id="histCreatedVariable" checked="checked" /> Created Variable</label></li>
-				<li><label><input id="histFinishedVariableOrRound" checked="checked" /> Finished Variable/Round</label></li>
-				<li><label><input id="histLoginOrLogout" checked="checked" /> Logged in/out</label></li>
-				<li><label><input id="histSaveRelationship" checked="checked" /> Saved relationship</label></li>
-				<li><label><input id="histViewRelationship" checked="checked" /> Viewed relationship</label></li>
+			<ul class="filters">
+				<g:each var="filter" in="${filterTypes}">
+					<li>
+						<label>
+							<input type="checkbox" name="filter" value="${filter.fields.join('-')}" checked="checked" />
+							${filter.label}
+						</label>
+					</li>
+				</g:each>
 			</ul>
 			<bnAdmin:eventList eventList="${history}" />
 

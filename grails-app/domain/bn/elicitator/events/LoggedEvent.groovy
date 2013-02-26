@@ -42,4 +42,6 @@ abstract class LoggedEvent {
 		event.delphiPhase = AppProperties.properties.delphiPhase
 		event.save()
 	}
+
+	abstract String getDescription();
 }

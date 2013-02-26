@@ -16,6 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+ul.filters li {
+	display: inline;
+	padding-right: 1em;
+}
+
 button.show-details {
 	float: right;
 }
@@ -37,16 +42,13 @@ ul.roles {
 	margin-left: 1em;
 }
 
-ul.log-item-list li {
+ul.log-item-list {
+	font-size: 0.8em;
+	margin-top: 0.5em;
+}
+
+.date {
 	font-family: monospace;
-	font-size: 0.9em;
-}
-
-ul.log-item-list .date {
-	display: block;
-}
-
-ul.log-item-list .log {
-	display: block;
-	margin: 0.5em 0.5em 1em 0.5em;
+	font-size: 0.8em;
+	color: #666;
 }

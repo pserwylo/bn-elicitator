@@ -12,9 +12,13 @@ class SaveRelationshipEvent extends RelationshipEvent {
 	String comment
 	Boolean doesRelationshipExist
 
-	static log( Relationship relationship ) {
-		String description = "Saved relationship from '$relationship.parent.readableLabel' to '$relationship.child.readableLabel'"
-		saveEvent( new SaveRelationshipEvent( parent: relationship.parent, child : relationship.child, comment: relationship.comment?.comment, doesRelationshipExist: relationship.exists, description: description ) )
+	static logEvent( Relationship relationship ) {
+		saveEvent( new SaveRelationshipEvent( parent: relationship.parent, child : relationship.child, comment: relationship.comment?.comment, doesRelationshipExist: relationship.exists ) )
 	}
 
+	@Override
+	String getDescription() {
+		String exists = doesRelationshipExist ? "exists" : "doesn't exist"
+		"Relationship '$parent.readableLabel' -> '$child.readableLabel' $exists"
+	}
 }
