@@ -68,6 +68,10 @@ class VariableService
 		return Variable.findAllByVariableClass( VariableClass.problem )
 	}
 
+	public List<Variable> getAllChildVarsLaterRound() {
+		return Relationship.findAllByDelphiPhaseAndExists( delphiService.previousPhase, true )*.child.toSet().toList().sort( new VariableSorter() )
+	}
+
 	/**
 	 * Get all variables for which we want to elicit parents for.
 	 * @return
@@ -88,22 +92,22 @@ class VariableService
 		}
 
 
-		return initialChildren.sort( new Comparator<Variable>() {
+		return initialChildren.sort( new VariableSorter() )
+	}
 
-			@Override
-			int compare( Variable first, Variable second ) {
-				Boolean firstIsProblem = ( first.variableClass == VariableClass.problem )
-				Boolean secondIsProblem = ( second.variableClass == VariableClass.problem )
-				if ( firstIsProblem && !secondIsProblem ) {
-					return -1;
-				} else if ( !firstIsProblem && secondIsProblem ) {
-					return 1;
-				} else {
-					return first.readableLabel.compareTo( second.readableLabel )
-				}
+	class VariableSorter implements Comparator<Variable> {
+		@Override
+		int compare( Variable first, Variable second ) {
+			Boolean firstIsProblem = ( first.variableClass == VariableClass.problem )
+			Boolean secondIsProblem = ( second.variableClass == VariableClass.problem )
+			if ( firstIsProblem && !secondIsProblem ) {
+				return -1;
+			} else if ( !firstIsProblem && secondIsProblem ) {
+				return 1;
+			} else {
+				return first.readableLabel.compareTo( second.readableLabel )
 			}
-
-		})
+		}
 	}
 
 	/**

@@ -73,7 +73,7 @@ class UserController {
 				[
 					user: user,
 					roles: ShiroRole.list(),
-					history: LoggedEvent.findAllByUser( user ),
+					history: LoggedEvent.findAllByUser( user, [ sort: "date", order: "desc" ] ),
 					emailLog: EmailLog.findAllByRecipient( user )
 				]
 			}

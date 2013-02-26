@@ -8,7 +8,7 @@ import bn.elicitator.Relationship
 class SaveRelationshipLaterRoundEvent extends SaveRelationshipEvent {
 
 	Boolean hasChangedMind
-	Integer numOthersWhoAgreedPreviously
+	Integer numOthersWhoAgreeNow
 	Integer totalOthers
 	Integer numExistsComments
 	Integer numDoesntExistComments
@@ -16,7 +16,7 @@ class SaveRelationshipLaterRoundEvent extends SaveRelationshipEvent {
 	static logEvent(
 		Relationship relationship,
 		Boolean hasChangedMind,
-		Integer numOthersWhoAgreedPreviously,
+		Integer numOthersWhoAgreeNow,
 		Integer totalOthers,
 		Integer numExistsComments,
 		Integer numDoesntExistComments ) {
@@ -27,20 +27,12 @@ class SaveRelationshipLaterRoundEvent extends SaveRelationshipEvent {
 			comment                      : relationship.comment?.comment,
 			doesRelationshipExist        : relationship.exists,
 			hasChangedMind               : hasChangedMind,
-			numOthersWhoAgreedPreviously : numOthersWhoAgreedPreviously,
+			numOthersWhoAgreeNow         : numOthersWhoAgreeNow,
 			totalOthers                  : totalOthers,
 			numExistsComments            : numExistsComments,
 			numDoesntExistComments       : numDoesntExistComments,
 		)
 		saveEvent( event )
-	}
-
-	Integer getNumOthersWhoAgreeNow() {
-		totalOthers - numOthersWhoAgreedPreviously
-	}
-
-	Integer totalComments() {
-		numExistsComments + numDoesntExistComments
 	}
 
 	@Override
@@ -49,8 +41,7 @@ class SaveRelationshipLaterRoundEvent extends SaveRelationshipEvent {
 		String changedMind = hasChangedMind ? "changed mind" : "updated comment"
 		String now         = hasChangedMind ? "now" : ""
 		String others      = "$numOthersWhoAgreeNow of $totalOthers $now agree"
-		String comments    = "had $numExistsComments exists and $numDoesntExistComments comments to view"
 
-		return "$desc, $changedMind when $comments ($others)"
+		return "$desc ($others), $changedMind when pondering $numExistsComments+ve/$numDoesntExistComments-ve comments"
 	}
 }

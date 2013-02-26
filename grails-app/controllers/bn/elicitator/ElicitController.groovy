@@ -58,13 +58,13 @@ class ElicitController {
 	 * until next round.
 	 */
 	def completed = {
-		List<Variable> stillToComplete = delphiService.getStillToVisit( variableService.allChildVars )
-		if ( stillToComplete.size() > 0 ) {
-			render "Still need to review: " + stillToComplete.toString()
-			return;
-		}
-
 		if ( checkProblems( createLink( action: 'completed' ) ) ) {
+			List<Variable> stillToComplete = delphiService.getStillToVisit( variableService.allChildVars )
+			if ( stillToComplete.size() > 0 ) {
+				render "Still need to review: " + stillToComplete.toString()
+				return;
+			}
+
 			CompletedPhase phase = delphiService.completed
 			if ( !phase ) {
 				phase = new CompletedPhase( completedBy: ShiroUser.current, completedDate: new Date(), delphiPhase: delphiService.phase )
@@ -436,15 +436,17 @@ class ElicitController {
 				def othersPreviousRelationships             = othersRelationships.findAll { it.delphiPhase == delphiService.previousPhase }
 				def othersPreviousRelationshipsWithComments = othersPreviousRelationships.findAll { it.comment?.comment != null }
 
-				def numOthersWhoAgreedPreviously = othersPreviousRelationships.countBy { it.exists != relationship.exists }
-				def numExistsComments            = othersPreviousRelationshipsWithComments.countBy { it.exists }
+				def totalOthers                  = userService.expertCount - 1
+				def numOthersWhoSaidYes          = othersPreviousRelationships.count { it.exists }
+				def numOthersWhoSaidNo           = totalOthers - numOthersWhoSaidYes
+				def numOthersWhoAgreeNow         = relationship.exists ? numOthersWhoSaidYes : numOthersWhoSaidNo
+				def numExistsComments            = othersPreviousRelationshipsWithComments.count { it.exists }
 				def numDoesntExistComments       = othersPreviousRelationshipsWithComments.size() - numExistsComments
-				def totalOthers                  = userService.expertCount
 
 				SaveRelationshipLaterRoundEvent.logEvent(
 					relationship,
 					hasChangedMind,
-					numOthersWhoAgreedPreviously,
+					numOthersWhoAgreeNow,
 					totalOthers,
 					numExistsComments,
 					numDoesntExistComments,
@@ -465,7 +467,13 @@ class ElicitController {
 
 		this.variableService.initRelationships()
 
-		List<Variable> varList = this.variableService.getAllChildVars()
+		List<Variable> varList = []
+
+		if ( delphiService.hasPreviousPhase ) {
+			varList = this.variableService.getAllChildVarsLaterRound()
+		} else {
+			varList = this.variableService.getAllChildVars()
+		}
 
 		[
 			user                      : ShiroUser.current,
