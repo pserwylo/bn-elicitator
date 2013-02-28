@@ -208,8 +208,8 @@ class BnBootStrap {
 	private void initMgmcVariables()
 	{
 
-		usageBackground = "Which of the following influences the [This] at an event?";
-		usageProblem    = "Which of the following influences the chance of patients suffering from [This] at an event?";
+		def usageBackground = "Which of the following influences the [This] at an event?";
+		def usageProblem    = "Which of the following influences the chance of patients suffering from [This] at an event?";
 
 		List<Variable> backgroundVars = []
 
@@ -231,26 +231,31 @@ class BnBootStrap {
 
 		backgroundVars.push( new Variable(
 			label: "AlcoholUse",
-			readableLabel: "Alcohol consumption" ))
+			description: "The alcohol consumption may be through legitimate means (i.e. sold at the event), or smuggled into the event. Either way, people may be intoxicated.",
+			readableLabel: "Consumption of alcohol" ))
 
 		backgroundVars.push( new Variable(
 			label: "DrugUse",
-			readableLabel: "Illicit drug use" ))
+			readableLabel: "Use of illicit drugs" ))
 
 		backgroundVars.push( new Variable(
 			label: "Attendance",
-			readableLabel: "Attendance" ))
+			description: "The number of people who attend the event.",
+			readableLabel: "Crowd attendance" ))
 
 		backgroundVars.push( new Variable(
 			label: "CrowdCapacity",
+			description: "The number of people the venue can cater for.",
 			readableLabel: "Crowd capacity" ))
 
 		backgroundVars.push( new Variable(
 			label: "CrowdMood",
+			description: "The crowd mood describes the general feeling amongst the crowd. For example, it could be energetic, quiet, aggressive, etc.",
 			readableLabel: "Crowd mood" ))
 
 		backgroundVars.push( new Variable(
 			label: "CrowdAge",
+			description: "The average age of attendees at the event.",
 			readableLabel: "Crowd age" ))
 
 		backgroundVars.push( new Variable(
@@ -259,11 +264,12 @@ class BnBootStrap {
 
 		backgroundVars.push( new Variable(
 			label: "OutdoorIndoor",
-			readableLabel: "Outdoors/Indoors" ))
+			readableLabel: "Setting (outdoors/indoors)" ))
 
 		backgroundVars.push( new Variable(
 			label: "SeatedMobile",
-			readableLabel: "Seated/Mobile" ))
+			description: "Seated events have dedicated",
+			readableLabel: "Seated" ))
 
 		backgroundVars.push( new Variable(
 			label: "Venue",
@@ -275,11 +281,14 @@ class BnBootStrap {
 
 		backgroundVars.push( new Variable(
 			label: "Bounded",
-			readableLabel: "Bounded/Unbounded" ))
+			description: "A fenced event has some sort of wall or structure that constrains where people can move, such as a building. An open event is one where attendees can roam around, such as a music festival.",
+			usageDescription: "Which of the following influences whether an event is [This]?",
+			readableLabel: "Fenced or open" ))
 
 		backgroundVars.push( new Variable(
 			label: "Focused",
-			readableLabel: "Focused/Extended" ))
+			description: "Some events have multiple points of interest, such as a music festival with multiple stages. Others have only one focal point, such as musical theater.",
+			readableLabel: "Multiple points of interest" ))
 
 		backgroundVars*.usageDescription = usageBackground
 		backgroundVars*.variableClass    = VariableClass.background
