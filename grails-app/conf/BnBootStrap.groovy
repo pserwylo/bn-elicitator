@@ -31,7 +31,7 @@ class BnBootStrap {
 	}
 
 	private Boolean doInitTestData = true
-	private TestData doTestData = TestData.INSURANCE
+	private TestData doTestData = TestData.MGMC
 	
 	def init = { ServletContext servletContext ->
 
@@ -49,9 +49,8 @@ class BnBootStrap {
 			{
 				if ( doTestData == TestData.MGMC )
 				{
-					initTestUsers( 10 );
+					initTestUsers( 5, false );
 					initMgmcVariables()
-					initTestMgmcRelationships()
 				}
 				else if ( doTestData == TestData.INSURANCE )
 				{
@@ -151,38 +150,6 @@ class BnBootStrap {
 
 	}
 
-	private void initMgmcVariables()
-	{
-		// TODO: This is really just specific to the MGMC case, it should be removed if generalising the
-		// system for other people to use...
-		Variable.list()*.delete()
-
-		def possibleVars = owlService.getAllVariables()
-
-		ShiroUser admin = ShiroUser.findByUsername( 'admin' )
-		possibleVars*.createdBy = admin
-		possibleVars*.createdDate = new Date()
-		possibleVars*.lastModifiedBy = admin
-		possibleVars*.lastModifiedDate = new Date()
-
-		initialVariables.each() { key, value ->
-
-			boolean isInjuryType = ( key == "Injury Variables" );
-			value.each() { varLabel ->
-
-				Variable var = possibleVars.find { v -> v.label == varLabel }
-				if ( var != null )
-				{
-					var.variableClass = isInjuryType ? VariableClass.problem : VariableClass.background
-					var.save()
-				}
-
-			}
-
-			group.save()
-		}
-	}
-
 	private void initInsuranceAppInfo()
 	{
 
@@ -238,17 +205,204 @@ class BnBootStrap {
 
 	}
 
-	private void initInsuranceVariables()
+	private void initMgmcVariables()
 	{
+
+		usageBackground = "Which of the following influences the [This] at an event?";
+		usageProblem    = "Which of the following influences the chance of patients suffering from [This] at an event?";
+
+		List<Variable> backgroundVars = []
+
+		backgroundVars.push( new Variable(
+			label: "Temperature",
+			readableLabel: "Temperature" ))
+
+		backgroundVars.push( new Variable(
+			label: "Humidity",
+			readableLabel: "Humidity" ))
+
+		backgroundVars.push( new Variable(
+			label: "WindChill",
+			readableLabel: "Wind chill" ))
+
+		backgroundVars.push( new Variable(
+			label: "Precipitation",
+			readableLabel: "Rainfall" ))
+
+		backgroundVars.push( new Variable(
+			label: "AlcoholUse",
+			readableLabel: "Alcohol consumption" ))
+
+		backgroundVars.push( new Variable(
+			label: "DrugUse",
+			readableLabel: "Illicit drug use" ))
+
+		backgroundVars.push( new Variable(
+			label: "Attendance",
+			readableLabel: "Attendance" ))
+
+		backgroundVars.push( new Variable(
+			label: "CrowdCapacity",
+			readableLabel: "Crowd capacity" ))
+
+		backgroundVars.push( new Variable(
+			label: "CrowdMood",
+			readableLabel: "Crowd mood" ))
+
+		backgroundVars.push( new Variable(
+			label: "CrowdAge",
+			readableLabel: "Crowd age" ))
+
+		backgroundVars.push( new Variable(
+			label: "EventDuration",
+			readableLabel: "Event duration" ))
+
+		backgroundVars.push( new Variable(
+			label: "OutdoorIndoor",
+			readableLabel: "Outdoors/Indoors" ))
+
+		backgroundVars.push( new Variable(
+			label: "SeatedMobile",
+			readableLabel: "Seated/Mobile" ))
+
+		backgroundVars.push( new Variable(
+			label: "Venue",
+			readableLabel: "Venue" ))
+
+		backgroundVars.push( new Variable(
+			label: "EventType",
+			readableLabel: "Event Type" ))
+
+		backgroundVars.push( new Variable(
+			label: "Bounded",
+			readableLabel: "Bounded/Unbounded" ))
+
+		backgroundVars.push( new Variable(
+			label: "Focused",
+			readableLabel: "Focused/Extended" ))
+
+		backgroundVars*.usageDescription = usageBackground
+		backgroundVars*.variableClass    = VariableClass.background
+
+		List<Variable> problemVars = []
+
+		problemVars.push( new Variable(
+			label: "Fainting",
+			readableLabel: "Fainting",
+			synonyms: [ "Syncope" ] ))
+
+		problemVars.push( new Variable(
+			label: "Wounds",
+			readableLabel: "Wounds",
+			synonyms: [ "Laceration", "Abrasion", "Foreign body" ] ))
+
+		problemVars.push( new Variable(
+			label: "EyeInjury",
+			readableLabel: "Eye injuries",
+			synonyms: [ "Periocular injury" ] ))
+
+		problemVars.push( new Variable(
+			label: "HeatRelatedProblems",
+			readableLabel: "Heat related problems",
+			synonyms: [ "Effects of heat" ] ))
+
+		problemVars.push( new Variable(
+			label: "Headaches",
+			readableLabel: "Headaches",
+			synonyms: [ "Head pain", "Pain in head", "Cephalalgia" ] ))
+
+		problemVars.push( new Variable(
+			label: "DifficultyBreathing",
+			readableLabel: "Difficulty breathing",
+			synonyms: [ "Respiratory distress", "Shortness of breath", "Dyspnoea", "Asthma" ] ))
+
+		problemVars.push( new Variable(
+				label: "Musculoskeletal",
+				readableLabel: "Musculoskeletal injuries",
+				synonyms: [ "Sprain of ligament", "Soft tissue injuries" ] ))
+
+		problemVars.push( new Variable(
+				label: "ChestPains",
+				readableLabel: "Chest pains" ))
+
+		problemVars.push( new Variable(
+				label: "AbdominalPains",
+				readableLabel: "Abdominal pains" ))
+
+		problemVars.push( new Variable(
+				label: "InsectBites",
+				readableLabel: "Insect bites" ))
+
+		problemVars.push( new Variable(
+				label: "HeadOrNeckInjuries",
+				readableLabel: "Head or neck injuries",
+				synonyms: [ "Closed head injury", "Concussion" ] ))
+
+		problemVars.push( new Variable(
+				label: "SubstanceAbuse",
+				readableLabel: "Substance abuse",
+				synonyms: [ "Alcohol abuse", "Drug abuse" ] ))
+
+		problemVars.push( new Variable(
+				label: "Diabetes",
+				readableLabel: "Diabetes",
+				synonyms: [ "Hyperglycemia", "Hypoglycemia" ] ))
+
+		problemVars.push( new Variable(
+				label: "CardiacArrest",
+				readableLabel: "Cardiac arrest" ))
+
+		problemVars.push( new Variable(
+				label: "MedicationRequest",
+				readableLabel: "Medication request",
+				synonyms: [ "Request for supplies" ] ))
+
+		problemVars.push( new Variable(
+				label: "Seizures",
+				readableLabel: "Seizures",
+				synonyms: [ "Fit", "Convulsion" ] ))
+
+		problemVars.push( new Variable(
+				label: "FracturesDislocations",
+				readableLabel: "Fractures/Dislocations" ))
+
+		problemVars.push( new Variable(
+				label: "NauseaVomiting",
+				readableLabel: "Nausea and Vomiting",
+				synonyms: [ "Emesis" ] ))
+
+		problemVars*.usageDescription = usageProblem
+		problemVars*.variableClass    = VariableClass.problem
+
+		List<Variable> vars = []
+		vars.addAll( backgroundVars )
+		vars.addAll( problemVars )
+
+		initVariables( vars )
+
+	}
+
+	private void initVariables( def vars )
+	{
+
+		ShiroUser admin = ShiroUser.findByUsername( 'admin' )
 
 		Variable.list()*.delete()
 
 		VariableClass.background.potentialParents.push( VariableClass.background )
 		VariableClass.background.save()
 
-		List<Variable> vars = []
+		vars*.createdBy = admin
+		vars*.createdDate = new Date()
+		vars*.lastModifiedBy = admin
+		vars*.lastModifiedDate = new Date()
 
-		ShiroUser admin = ShiroUser.findByUsername( 'admin' )
+		vars*.save()
+
+	}
+
+	private void initInsuranceVariables()
+	{
 
 		/*vars.push(
 			new Variable(
@@ -259,7 +413,9 @@ class BnBootStrap {
 			)
 		)*/
 
-		vars.push( 
+		List<Variable> vars = []
+
+		vars.push(
 			new Variable(
 				label: "Age",
 				readableLabel: "Age of client",
@@ -474,12 +630,7 @@ class BnBootStrap {
 			)
 		)
 
-		vars*.createdBy = admin
-		vars*.createdDate = new Date()
-		vars*.lastModifiedBy = admin
-		vars*.lastModifiedDate = new Date()
-
-		vars*.save()
+		initVariables( vars )
 
 	}
 
