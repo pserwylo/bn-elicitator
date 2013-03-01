@@ -16,6 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+.variable.strong {
+	font-size: 1.15em;
+}
+
 .answers .relationship-to-remove {
 	padding-left: 0.5em;
 }

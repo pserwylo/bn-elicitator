@@ -158,7 +158,7 @@
 
 								<div class='mediating-chain'>
 									<g:message code="problems.redundant.better-explained-by" />
-									<ul class="indent item-count-${rel.chains.size()}">
+									<ul class="item-count-${rel.chains.size()}">
 										<g:each in="${rel.chains}" var="chain">
 											<li>
 												<g:each in="${chain}" var="child" status="i">
@@ -167,7 +167,8 @@
 														<g:set var="comment" value="${bn.mostRecentComment( parent: parent, child: child )}" />
 														<bn:rArrow comment="${comment}" />
 													</g:if>
-													<bn:variable var="${child}" />
+													<g:set var="strong" value="${( i == 0 || i == chain.size() - 1 ) ? 'strong' : ''}" />
+													<bn:variable var="${child}" classes="${strong}"/>
 												</g:each>
 											</li>
 										</g:each>

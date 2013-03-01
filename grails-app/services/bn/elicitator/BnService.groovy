@@ -121,7 +121,7 @@ class BnService {
 
 	/**
 	 * This tree is a tree of all parent-child relationships between variables.
-	 * @see BnService#populateAllParents(bn.elicitator.BnService.TreeNode)
+	 * @see BnService#populateAllParents(bn.elicitator.BnService.TreeNode, java.lang.Boolean)
 	 */
 	public class TreeNode {
 
@@ -129,75 +129,61 @@ class BnService {
 		TreeNode child = null
 		List<TreeNode> parents = []
 
-		List<Variable> getPathTo( Variable parent )
-		{
+		List<Variable> getPathTo( Variable parent ) {
 			List<Variable> path = null
 
-			for ( TreeNode parentNode in parents )
-			{
+			for ( TreeNode parentNode in parents ) {
 				path = parentNode.getPathTo( parent )
-				if ( path != null )
-				{
+				if ( path != null ) {
 					path.add( var )
 					return path
 				}
 			}
 
 			// If we didn't return, none of our children contain 'parent'. Perhaps we do?
-			if ( parent == var )
-			{
+			if ( parent == var ) {
 				path = [ var ]
 			}
 
 			return path
 		}
 
-		List<Variable> getDescendantsIncludingSelf()
-		{
+		List<Variable> getDescendantsIncludingSelf() {
 			List<Variable> descendants
-			if ( child == null )
-			{
+			if ( child == null ) {
 				descendants = []
-			}
-			else
-			{
+			} else {
 				descendants = child.getDescendantsIncludingSelf()
 			}
 			descendants.add( var )
 			return descendants
 		}
 
-		List<Variable> getDescendants()
-		{
+		List<Variable> getDescendants() {
 			List<Variable> descendants = getDescendantsIncludingSelf()
 			descendants.pop()
 			return descendants
 		}
 
-		List<TreeNode> getLeaves()
-		{
+		List<TreeNode> getLeaves() {
 			List<TreeNode> leaves = []
 
-			if ( parents.size() == 0 )
-			{
+			if ( parents.size() == 0 ) {
 				leaves.add( this )
-			}
-			else
-			{
-				for ( TreeNode parent in parents )
-				{
+			} else {
+				for ( TreeNode parent in parents ) {
 					leaves.addAll( parent.getLeaves() )
 				}
 			}
 			return leaves
 		}
+
+		String toString() { var.readableLabel }
 	}
 
 	public void keepRedundantRelationship( RedundantRelationship redundantRelationship ) {
-
 		redundantRelationship.relationship.isRedundant = Relationship.IS_REDUNDANT_NO
 		redundantRelationship.relationship.save( flush: true )
-
 	}
 
 	public void removeCycle( Variable parent, Variable child ) {
@@ -245,7 +231,7 @@ class BnService {
 		for ( Variable child in allVars )
 		{
 			TreeNode treeOfParents = new TreeNode( var: child )
-			populateAllParents( treeOfParents )
+			populateAllParents( treeOfParents, true )
 
 			List<TreeNode> leafNodes = treeOfParents.leaves
 			for ( TreeNode leaf in leafNodes )
@@ -291,7 +277,7 @@ class BnService {
 		for ( Variable child in allVars )
 		{
 			TreeNode treeOfParents = new TreeNode( var: child )
-			populateAllParents( treeOfParents )
+			populateAllParents( treeOfParents, false )
 			for ( TreeNode directParent in treeOfParents.parents )
 			{
 				for ( TreeNode otherDirectParent in treeOfParents.parents )
@@ -337,18 +323,15 @@ class BnService {
 	 *
 	 * @param child
 	 */
-	private void populateAllParents( TreeNode child )
+	private void populateAllParents( TreeNode child, Boolean forCycles )
 	{
 		List<Variable> parents = variableService.getSpecifiedParents( child.var )
-		for ( Variable parent in parents )
-		{
-			if ( !child.getDescendants().contains( parent ) )
-			{
-				TreeNode parentNode = new TreeNode( var: parent, child: child )
-				populateAllParents( parentNode )
-
-				child.parents.add( parentNode )
+		for ( Variable parent in parents ) {
+			TreeNode parentNode = new TreeNode( var: parent, child: child )
+			if ( !child.getDescendants().contains( parent ) ) {
+				populateAllParents( parentNode, forCycles )
 			}
+			child.parents.add( parentNode )
 		}
 	}
 

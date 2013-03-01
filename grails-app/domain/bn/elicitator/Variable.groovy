@@ -76,28 +76,28 @@ class Variable implements Comparable<Variable> {
 	 */
 	String usageDescription = ""
 
-	String toString()
+	String getDescriptionWithSynonyms()
 	{
-		return readableLabel
-	}
-
-	String getUsageDescription()
-	{
-		return usageDescription.replace( "[This]", "<span class='variable'>${readableLabel}</span>" )
+		String desc = this.description
+		if ( synonyms?.size() > 0 ) {
+			if ( this.description ) {
+				desc += "\n\n"
+			}
+			desc += "Synonyms: " + synonyms.join( ", " );
+		}
+		return desc
 	}
 
 	/**
 	 * Removes multiple spaces, then replaces spaces with underscores, then removes all non-alphanumeric characters.
 	 * @param value
 	 */
-	void setLabel( String value )
-	{
-		this.label = value.trim().replace( '  ', ' ' ).replace( ' ', '_' ).replaceAll( '[^A-Za-z0-9]', '' );
-	}
-	
-	int compareTo( Variable value )
-	{
-		return label.compareTo( value.label )
-	}
-	
+	void setLabel( String value   ) { this.label = value.trim().replace( '  ', ' ' ).replace( ' ', '_' ).replaceAll( '[^A-Za-z0-9]', '' ); }
+
+	int compareTo( Variable value ) { label.compareTo( value.label ) }
+
+	String getUsageDescription()    { usageDescription.replace( "[This]", "<span class='variable'>${readableLabel}</span>" ) }
+
+	String toString()               { readableLabel }
+
 }

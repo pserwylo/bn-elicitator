@@ -27,15 +27,19 @@ class VariableClass {
 		potentialParents: VariableClass
 	]
 
+	static constraints = {
+		readableLabel( nullable: true )
+	}
 
 	String name;
 
+	String readableLabel;
+
+	Integer priority = 1;
+
 	List<VariableClass> potentialParents = []
 
-	String toString()
-	{
-		return name
-	}
+	String toString() { return readableLabel ?: name }
 
 	/**
 	 * Nicely capitalized version of the name.
