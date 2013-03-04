@@ -47,10 +47,11 @@ modules = {
 
 	elicitParents {
 		dependsOn( [ 'elicit', 'floatingDialog' ] )
+		resource url: 'css/elicitParents.css'
 	}
 
 	elicitParentsFirst {
-		dependsOn( [ 'elicit', 'floatingDialog' ] )
+		dependsOn( [ 'elicitParents' ] )
 		resource url: 'css/elicitParentsFirst.css'
 	}
 

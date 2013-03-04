@@ -214,16 +214,33 @@
 
 
 				var showDialog = function( dialog, alignWithLi ) {
-
 					unhighlight();
 					$( alignWithLi ).addClass( 'highlighted' );
 					var offset = $( alignWithLi ).offset().top - dialog.parent().offset().top - 150;
 					offset = Math.max( 0, offset );
 					dialog.css( 'padding-top', offset + 'px' );
 					dialog.show( 'fade' );
-
 				};
 
+				var selectEndOfTextArea = function( textarea ) {
+					var $textarea = $( textarea );
+					if ( $textarea.length > 0 ) {
+
+						textarea = $textarea[ 0 ];
+						var length = $textarea.val().length;
+						if ( textarea.setSelectionRange ) {
+							textarea.focus();
+							textarea.setSelectionRange( length, length + 1 );
+						}
+						else if ( textarea.createTextRange ) {
+							var range = textarea.createTextRange();
+							range.collapse( true );
+							range.moveEnd( 'character', length );
+							range.moveStart( 'character', length );
+							range.select();
+						}
+					}
+				};
 
 				var hideDialog = function( dialog, callback ) {
 					callback = typeof callback === "undefined" ? $.noop : callback;
@@ -238,6 +255,10 @@
 				var showNewVarDialog = function() {
 					hideDialog( commentDialog, function() {
 						showDialog( newVarDialog, $( '#add-variable-item') );
+						var textInput = newVarDialog.find( 'input:text' );
+						if ( textInput.length > 0 ) {
+							textInput[ 0 ].focus();
+						}
 					});
 				};
 
@@ -248,6 +269,7 @@
 						commentInput.val( comment );
 						textAreaLabel.html( "Why do you think '" + currentVar.readableLabel + "' influences '${variable.readableLabel.encodeAsJavaScript()}'?" );
 						showDialog( commentDialog, alignWithLi );
+						selectEndOfTextArea( commentDialog.find( 'textarea' ) )
 					};
 
 					if ( commentDialog.is( ":visible" ) ) {
