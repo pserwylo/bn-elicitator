@@ -423,15 +423,31 @@ ul.bullet {
 	padding: 0;
 }
 
-.errors li {
+ul.errors li,
+li.errors,
+div.errors
+p.errors {
 	list-style: none;
-	background: transparent url(../images/skin/exclamation.png) 0 50% no-repeat;
-	text-indent: 22px;
+	background: transparent url(../images/skin/exclamation.png) 5px 50% no-repeat;
+	padding-left: 25px;
 }
 
-.message li {
-	background: transparent url(../images/skin/information.png) 0 50% no-repeat;
-	text-indent: 22px;
+ul.message li,
+li.message,
+div.message,
+p.message {
+	background: transparent url(../images/skin/information.png) 5px 50% no-repeat;
+	padding-left: 25px;
+}
+
+a.help {
+	background: transparent url(../images/icons/help.png) 5px 50% no-repeat;
+	padding-left: 22px;
+}
+
+a.logout {
+	background: transparent url(../images/icons/door_out.png) 5px 50% no-repeat;
+	padding-left: 22px;
 }
 
 /* form fields with errors */

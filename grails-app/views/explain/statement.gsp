@@ -20,6 +20,7 @@
 	<head>
 		<meta name="layout" content="main">
 		<title>Explanatory Statement</title>
+		<r:require module="explain" />
 	</head>
 
 	<body>
@@ -35,16 +36,11 @@
 				</div>
 			</g:if>
 
-			<g:form action="consent">
-				<label>
-					<input type="checkbox" name="readStatement" value="1"/>
-					I have read and understood this explanatory statement.
-				</label>
-
-				<br /><br />
-
-				<input id="continue" disabled="disabled" type="submit" class="" value="Continue" onclick="document.location = '${createLink( controller: 'explain', action: 'consent' )}'" />
-			</g:form>
+			<p class="message">
+				Please read this Explanatory Statement in full before making a decision about participating.
+				<br />
+				Once read, click the "Continue" button at the bottom of the page.
+			</p>
 
 			<g:javascript>
 				(function() {
@@ -53,9 +49,6 @@
 					});
 				})();
 			</g:javascript>
-
-			<br />
-			<br />
 
 			<ul id="toc" class="">
 				<g:javascript>
@@ -71,6 +64,14 @@
 			</ul>
 
 			${explanatoryStatement}
+
+			<g:form action="consent">
+				<input id="continue" disabled="disabled" type="submit" class="big" value="Continue" onclick="document.location = '${createLink( controller: 'explain', action: 'consent' )}'" />
+				<label>
+					<input type="checkbox" name="readStatement" value="1"/>
+					I have read and understood this explanatory statement.
+				</label>
+			</g:form>
 
 		</div>
 

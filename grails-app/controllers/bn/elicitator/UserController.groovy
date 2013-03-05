@@ -140,9 +140,9 @@ class UserController {
 		}
 		else
 		{
-			if ( cmd.username.length() < 5 )
+			if ( !cmd.username?.length() )
 			{
-				String error = "Username too short. Must be at least 5 characters long."
+				String error = "Please specify a username."
 				render "Form has errors: " + error + "<br />"
 				flash.errors.add( error )
 				retry = true

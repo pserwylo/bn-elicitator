@@ -35,6 +35,10 @@ modules = {
 
 	/* Controller- and View-specific modules. */
 
+	explain {
+		resource url: 'css/explanatoryStatement.css'
+	}
+
 	elicit {
 		dependsOn( [ 'variableList' ] )
 		resource url: 'css/elicit.css'
