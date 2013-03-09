@@ -9,7 +9,7 @@
 
 			var countdown = $( '#countdown' );
 
-			var count = 6;
+			var count = 21;
 
 			var updateCountdown = function() {
 				count --;
@@ -53,7 +53,7 @@
 
 	<ul>
 		<li class="errors">${error.message}</li>
-		<li class="errors">You will be sent back to the main page in <span id="countdown">5</span> seconds.
+		<li class="errors">You will be sent back to the main page in <span id="countdown">20</span> seconds.
 	</ul>
 
 	<g:if test="${error.exception}">

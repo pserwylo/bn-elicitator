@@ -9,7 +9,7 @@ class ShiroSecurityFilters {
         all( uri: "/**" ) {
             before = {
                 // Ignore direct views (e.g. the default main index page).
-                if (!controllerName || controllerName == "helpRead") return true
+                if ( !controllerName || controllerName == "helpRead" || controllerName == "error" ) return true
 
                 // Access control by convention.
                 accessControl(auth: false)
