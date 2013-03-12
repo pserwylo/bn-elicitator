@@ -18,20 +18,21 @@
 
 package bn.elicitator
 
+import bn.elicitator.auth.User
 import bn.elicitator.events.FinishedVariableEvent
-import bn.elicitator.events.ViewRelationshipsEvent
 
 class VariableService 
 {
 
 	DelphiService delphiService
+	UserService   userService
 
 	/**
 	 * Calculates how many variable the user has visited (seen in the browser).
 	 */
-	public int getVisitedCount( ShiroUser user = ShiroUser.current, Integer delphiPhase = AppProperties.properties.delphiPhase )
+	int getVisitedCount( User user )
 	{
-		VisitedVariable.findAllByVisitedByAndDelphiPhase( user, delphiPhase ).size()
+		VisitedVariable.countByVisitedByAndDelphiPhase( user, AppProperties.properties.delphiPhase )
 	} 
 
 	/**
@@ -52,7 +53,7 @@ class VariableService
 		{
 			phasesToSearch.add( delphiService.phase - 1 );
 		}
-		List<Relationship> problemRelationships = Relationship.findAllByChildAndCreatedByAndDelphiPhaseInListAndParentIsNotNull( toSearch, ShiroUser.current, phasesToSearch )
+		List<Relationship> problemRelationships = Relationship.findAllByChildAndCreatedByAndDelphiPhaseInListAndParentIsNotNull( toSearch, userService.current, phasesToSearch )
 		List<Variable> parents = problemRelationships*.parent
 		parents.each
 		{
@@ -117,7 +118,7 @@ class VariableService
 	 * @return
 	 */
 	private List<Variable> findAllRelatedVars( List<Variable> children, List<Variable> toExclude ) {
-		List<Relationship> relationships = Relationship.findAllByDelphiPhaseAndCreatedByAndChildInListAndExists( delphiService.phase, ShiroUser.current, children, true )
+		List<Relationship> relationships = Relationship.findAllByDelphiPhaseAndCreatedByAndChildInListAndExists( delphiService.phase, userService.current, children, true )
 		relationships = relationships.findAll { !toExclude.contains( it ) }
 
 		// Hacky way to filter out non-unique items...
@@ -152,15 +153,15 @@ class VariableService
 	 * @param variable
 	 * @return
 	 */
-	VisitedVariable getVisitedVariable( Variable variable, Integer delphiPhase = AppProperties.properties.delphiPhase, ShiroUser user = ShiroUser.current ) {
-		VisitedVariable.findByVariableAndVisitedByAndDelphiPhase( variable, user, delphiPhase )
+	VisitedVariable getVisitedVariable( Variable variable ) {
+		VisitedVariable.findByVariableAndVisitedByAndDelphiPhase( variable, userService.current, AppProperties.properties.delphiPhase )
 	}
 
 	/**
 	 * @see VariableService#createRelationships(bn.elicitator.Variable, java.util.List)
 	 */
 	void initRelationships() {
-		Integer count = Relationship.countByCreatedByAndDelphiPhase( ShiroUser.current, this.delphiService.phase )
+		Integer count = Relationship.countByCreatedByAndDelphiPhase( userService.current, this.delphiService.phase )
 		if ( count == 0 ) {
 			List<Variable> allVariables = Variable.list()
 			Map<VariableClass, List<Variable>> potentialParentsCache = [:]
@@ -201,7 +202,7 @@ class VariableService
 				new Relationship(
 					child:       child,
 					parent:      parent,
-					createdBy:   ShiroUser.current,
+					createdBy:   userService.current,
 					delphiPhase: AppProperties.properties.delphiPhase,
 					exists:      oldRelationship?.exists,
 					isRedundant: oldRelationship?.exists ? oldRelationship?.isRedundant : Relationship.IS_REDUNDANT_UNSPECIFIED,
@@ -218,7 +219,7 @@ class VariableService
 	void finishVariable( Variable variable ) {
 		VisitedVariable visited = getVisitedVariable( variable )
 		if ( visited == null ) {
-			new VisitedVariable( variable: variable, visitedBy: ShiroUser.current, delphiPhase: delphiService.phase ).save()
+			new VisitedVariable( variable: variable, visitedBy: userService.current, delphiPhase: delphiService.phase ).save()
 		}
 		FinishedVariableEvent.logEvent( variable )
 	}
@@ -230,7 +231,7 @@ class VariableService
 	 * @see getSpecifiedParents( Variable )
 	 */
 	List<Variable> getSpecifiedParents( List<Variable> children ) {
-		return Relationship.findAllByCreatedByAndDelphiPhaseAndChildInListAndExists( ShiroUser.current, delphiService.phase, children, true )*.parent
+		return Relationship.findAllByCreatedByAndDelphiPhaseAndChildInListAndExists( userService.current, delphiService.phase, children, true )*.parent
 	}
 
 	/**
@@ -246,11 +247,11 @@ class VariableService
 	}
 
 	List<Relationship> getSpecifiedRelationshipsByParent( Variable parent ) {
-		return Relationship.findAllByCreatedByAndDelphiPhaseAndParentAndExists( ShiroUser.current, delphiService.phase, parent, true )
+		return Relationship.findAllByCreatedByAndDelphiPhaseAndParentAndExists( userService.current, delphiService.phase, parent, true )
 	}
 
 	List<Relationship> getSpecifiedRelationshipsByChild( Variable child ) {
-		return Relationship.findAllByCreatedByAndDelphiPhaseAndChildAndExists( ShiroUser.current, delphiService.phase, child, true )
+		return Relationship.findAllByCreatedByAndDelphiPhaseAndChildAndExists( userService.current, delphiService.phase, child, true )
 	}
 
 	/**
@@ -260,6 +261,6 @@ class VariableService
 	 * @see VariableService#getSpecifiedParents(bn.elicitator.Variable)
 	 */
 	List<Variable> getSpecifiedChildren( Variable child ) {
-		return Relationship.findAllByCreatedByAndDelphiPhaseAndParentAndExists( ShiroUser.current, delphiService.phase, child, true )*.child
+		return Relationship.findAllByCreatedByAndDelphiPhaseAndParentAndExists( userService.current, delphiService.phase, child, true )*.child
 	}
 }

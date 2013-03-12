@@ -18,12 +18,14 @@
 
 package bn.elicitator
 
+import bn.elicitator.auth.User
+
 class CompletedPhase {
 
 	static constraints = {
 	}
 
-	ShiroUser completedBy
+	User completedBy
 
 	Date completedDate
 

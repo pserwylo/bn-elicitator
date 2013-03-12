@@ -18,6 +18,8 @@
 
 package bn.elicitator
 
+import bn.elicitator.auth.User
+
 class ElicitParentsTagLib {
 
 	static namespace = "bnElicit"
@@ -88,7 +90,7 @@ class ElicitParentsTagLib {
 				{
 					hasReasons = true;
 
-					boolean isMine = comment.createdBy == ShiroUser.current
+					boolean isMine = comment.createdBy == userService.current
 					String author = isMine ? "Myself" : "Other participant"
 					String className = "phase-" + it.delphiPhase
 					className += isMine ? " me" : " other"
@@ -135,13 +137,15 @@ class ElicitParentsTagLib {
 		Map<Variable, List<Relationship>> allRelationships = [:]
 		Map<Variable, Integer>            allOthersCount   = [:]
 
+		User user = userService.current
+
 		potentialParents.each { parent ->
 
 			List<Relationship> relationships = delphiService.getAllPreviousRelationshipsAndMyCurrent( parent, child )
 
-			Relationship       myCurrent      = relationships.find    { it.createdBy == ShiroUser.current && it.delphiPhase == delphiService.phase }
-			Relationship       myPrevious     = relationships.find    { it.createdBy == ShiroUser.current && it.delphiPhase == delphiService.previousPhase }
-			List<Relationship> othersPrevious = relationships.findAll { it.createdBy != ShiroUser.current }
+			Relationship       myCurrent      = relationships.find    { it.createdBy == user && it.delphiPhase == delphiService.phase }
+			Relationship       myPrevious     = relationships.find    { it.createdBy == user && it.delphiPhase == delphiService.previousPhase }
+			List<Relationship> othersPrevious = relationships.findAll { it.createdBy != user }
 			Relationship       myMostRecent   = myCurrent ?: myPrevious
 			Integer            othersCount    = othersPrevious.count { it?.exists }
 

@@ -18,6 +18,8 @@
 
 package bn.elicitator
 
+import bn.elicitator.auth.User
+
 /**
  * Specifies the nature of the causal relationship from {@link Relationship#parent} to {@link Relationship#child).
  * If the relationship {@link Relationship#exists}, then there is a causal relationship.
@@ -59,7 +61,7 @@ class Relationship {
 	 * This will always reference the person who thinks that there is/isn't a relationship.
 	 * It will not be created by, e.g. an admin user on behalf of the user.
 	 */
-	ShiroUser createdBy
+	User createdBy
 
 	/**
 	 * Allow participants the opportunity to comment on why they chose that there is/isn't a relationship.

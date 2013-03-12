@@ -18,6 +18,7 @@ package bn.elicitator.init
  */
 
 import bn.elicitator.*
+import bn.elicitator.auth.User
 import bn.elicitator.init.DataLoader;
 import javax.servlet.ServletContext;
 
@@ -247,7 +248,7 @@ class MgmcDataLoader extends DataLoader {
 	{
 		for ( i in 1..10 )
 		{
-			ShiroUser user = ShiroUser.findByUsername( 'expert' + i )
+			User user = User.findByUsername( 'expert' + i )
 
 			// This will be the odd user out...
 			if ( i == 3 )

@@ -64,7 +64,7 @@ class DelphiService {
 	 * @return
 	 */
 	def getMyPreviousRelationship( Variable parent, Variable child ) {
-		return this.hasPreviousPhase ? Relationship.findByCreatedByAndDelphiPhaseAndParentAndChild( ShiroUser.current, previousPhase, parent, child ) : null
+		return this.hasPreviousPhase ? Relationship.findByCreatedByAndDelphiPhaseAndParentAndChild( userService.current, previousPhase, parent, child ) : null
 	}
 
 	/**
@@ -75,7 +75,7 @@ class DelphiService {
 	 * @return
 	 */
 	def getMyCurrentRelationship( Variable parent, Variable child ) {
-		return Relationship.findByCreatedByAndDelphiPhaseAndParentAndChild( ShiroUser.current, phase, parent, child )
+		return Relationship.findByCreatedByAndDelphiPhaseAndParentAndChild( userService.current, phase, parent, child )
 	}
 
 	/**
@@ -86,7 +86,7 @@ class DelphiService {
 	 * @return
 	 */
 	def getOthersPreviousRelationships( Variable parent, Variable child ) {
-		return hasPreviousPhase ? Relationship.findAllByCreatedByNotEqualAndDelphiPhaseAndParentAndChild( ShiroUser.current, previousPhase, parent, child ) : []
+		return hasPreviousPhase ? Relationship.findAllByCreatedByNotEqualAndDelphiPhaseAndParentAndChild( userService.current, previousPhase, parent, child ) : []
 	}
 
 	/**
@@ -119,7 +119,7 @@ class DelphiService {
 	 */
 	List<Variable> getStillToVisit( List<Variable> varList )
 	{
-		List<Variable> visitedList = VisitedVariable.findAllByVariableInListAndVisitedByAndDelphiPhase( varList, ShiroUser.current, phase )*.variable
+		List<Variable> visitedList = VisitedVariable.findAllByVariableInListAndVisitedByAndDelphiPhase( varList, userService.current, phase )*.variable
 		List<Variable> stillToVisit = varList.findAll { !visitedList.contains( it ) }
 		return stillToVisit
 	}
@@ -131,7 +131,7 @@ class DelphiService {
 	 * @see #getOthersPreviousRelationships(bn.elicitator.Variable, bn.elicitator.Variable)
 	 */
 	def countOthersPreviousRelationships( Variable parent, Variable child ) {
-		return Relationship.countByCreatedByNotEqualAndDelphiPhaseAndParentAndChild( ShiroUser.current, previousPhase, parent, child )
+		return Relationship.countByCreatedByNotEqualAndDelphiPhaseAndParentAndChild( userService.current, previousPhase, parent, child )
 	}
 
 	/**
@@ -139,7 +139,7 @@ class DelphiService {
 	 * @return
 	 */
 	CompletedPhase getCompleted() {
-		return CompletedPhase.findByCompletedByAndDelphiPhase( ShiroUser.current, phase )
+		return CompletedPhase.findByCompletedByAndDelphiPhase( userService.current, phase )
 	}
 
 	/**

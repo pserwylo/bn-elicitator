@@ -18,6 +18,8 @@
 
 package bn.elicitator
 
+import bn.elicitator.auth.User
+
 /**
  * We need to make sure that the expert has at least looked at every variable,
  * so that we can tell at the end if there are any which were NOT visited and
@@ -27,7 +29,7 @@ package bn.elicitator
  */
 class VisitedVariable {
 
-	ShiroUser visitedBy
+	User visitedBy
 
 	Variable variable
 

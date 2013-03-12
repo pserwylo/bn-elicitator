@@ -18,6 +18,7 @@
 
 package bn.elicitator
 
+import bn.elicitator.auth.User
 import org.apache.commons.lang.exception.ExceptionUtils
 
 class EmailService {
@@ -51,7 +52,7 @@ class EmailService {
 	 */
 	void sendErrorEmail( ErrorDetails errorDetails ) {
 		EmailTemplate template = EmailTemplate.getErrorEmail()
-		ShiroUser user = ShiroUser.current
+		User user = userService.current
 		Map<String,String> values = createDefaultValues()
 
 		values.put( EmailTemplate.PH_ERROR_MESSAGE, errorDetails.title + ": " + errorDetails.message )
@@ -79,7 +80,7 @@ class EmailService {
 		userService.expertList.each { user -> send( user, template, values ) }
 	}
 
-	private void send( ShiroUser user, EmailTemplate template, Map<String,String> values ) {
+	private void send( User user, EmailTemplate template, Map<String,String> values ) {
 		Map<String,String> userValues = [:]
 		userValues.putAll( values )
 		userValues.put( EmailTemplate.PH_USER, user.realName )

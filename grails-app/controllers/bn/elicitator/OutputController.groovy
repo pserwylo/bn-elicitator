@@ -1,5 +1,7 @@
 package bn.elicitator
 
+import bn.elicitator.auth.Role
+import bn.elicitator.auth.User
 import bn.elicitator.output.GraphvizOutputGraph
 import bn.elicitator.output.HtmlMatrixOutputGraph
 import bn.elicitator.output.JsonMatrixOutputGraph
@@ -11,6 +13,7 @@ class OutputController {
 
 	def variableService
 	def delphiService
+	def userService
 
 	def jsonStats = { OutputCommand cmd ->
 		outputGraph( new JsonOutputGraph(), cmd )
@@ -40,10 +43,10 @@ class OutputController {
 
 		List<Variable> variables         = Variable.list().sort()
 		List<Relationship> relationships = Relationship.findAllByExistsAndDelphiPhase( true, cmd.phase ).sort()
-		Integer totalUsers               = ShiroUser.list().findAll { it.roles.contains( ShiroRole.expert ) }.size()
+		Integer totalUsers               = userService.expertCount
 
 		if ( cmd.username ) {
-			ShiroUser user = ShiroUser.findByUsername( cmd.username )
+			User user = User.findByUsername( cmd.username )
 			if ( !user ) {
 				render "Could not find user $cmd.username."
 				return

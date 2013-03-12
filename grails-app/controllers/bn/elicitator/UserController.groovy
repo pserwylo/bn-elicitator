@@ -18,8 +18,11 @@
 
 package bn.elicitator
 
+import bn.elicitator.auth.Role
+import bn.elicitator.auth.User
+import bn.elicitator.auth.UserRole
 import bn.elicitator.events.LoggedEvent
-import org.apache.shiro.crypto.hash.*;
+import org.apache.commons.collections.CollectionUtils
 
 class UserController {
 
@@ -30,17 +33,17 @@ class UserController {
 
 	def list = {
 
-		ShiroUser toShow = null
+		User toShow = null
 
 		if ( params.containsKey( "showUser" ) ) {
-			toShow = ShiroUser.findByUsername( params.showUser )
+			toShow = User.findByUsername( params.showUser )
 		}
 
 		int totalNumberOfVars = variableService.getAllChildVars().size() /* Used for progress counter of users. */
 
 		[
-			userList : ShiroUser.list(),
-			roleList : ShiroRole.list(),
+			userList : User.list(),
+			roleList : Role.list(),
 			showUser: toShow,
 			totalNumberOfVars: totalNumberOfVars
 		]
@@ -52,18 +55,18 @@ class UserController {
 	 */
 	def remove = {
 		String username = (String)params['username'];
-		this.userService.deleteUser( ShiroUser.findByUsername( username ) )
+		this.userService.deleteUser( User.findByUsername( username ) )
 	}
 	
 	def details = {
 		
 		if ( params['isNew'] == "true" )
 		{
-			[ user: new ShiroUser(), roles: ShiroRole.list(), history: [], isNew: true ]
+			[ user: new User(), roles: Role.list(), history: [], isNew: true ]
 		}
 		else
 		{
-			ShiroUser user = ShiroUser.findByUsername( (String)params['username'] )
+			User user = User.findByUsername( (String)params['username'] )
 			if ( user == null )
 			{
 				throw new Exception( "Not found: " + params['username'] )
@@ -72,159 +75,123 @@ class UserController {
 			{
 				[
 					user: user,
-					roles: ShiroRole.list(),
+					roles: Role.list(),
 					history: LoggedEvent.findAllByUser( user, [ sort: "date", order: "desc" ] ),
 					emailLog: EmailLog.findAllByRecipient( user )
 				]
 			}
 		}
 	}
-	
+
+	/**
+	 * TODO: Update this for new roles stuff (i.e. s/Shiro/SpringSecurity/g).
+	 */
 	def save = { SaveUserCommand cmd ->
-		
-		cmd.roles = ShiroRole.findAllByNameInList( params.list( 'roles' ) )
+
+		cmd.roles = Role.findAllByNameInList( params.list( 'roles' ) )
 		flash.errors = []
 		
 		boolean retry = false
 		boolean requiresSave = false
-		
-		ShiroUser userToSave = cmd.existingUser ?: new ShiroUser(
-			username: cmd.username,
-			passwordHash: new Sha256Hash( cmd.password ).toHex(),
-			roles: cmd.roles )
-		
-		// Again, for some reason, the command never polulates 'confirmPassword' :(
-		if ( params['password'] != params['confirmPassword'] )
-		{
+		boolean requiresChangeToRoles = false
+
+		User userToSave = cmd.existingUser ?: new User( username: cmd.username, password: cmd.password )
+
+		if ( !cmd.existingUser || !CollectionUtils.isEqualCollection( cmd.roles, userToSave.roles ) ) {
+			requiresChangeToRoles = true
+			requiresSave          = true
+		}
+
+		// Again, for some reason, the command never populates 'confirmPassword' :(
+		if ( params['password'] != params['confirmPassword'] ) {
 			String error = "Passwords do not match ('" + params['password'] + "' != '" + params['confirmPassword'] + "'"
-			render "Form data has errors: " + error + "<br />"
 			flash.errors.add( error )
 			retry = true
 		}
-		else if ( cmd.username.length() == 0 )
-		{
+		else if ( cmd.username.length() == 0 ) {
 			String error = "No username specified"
-			render "Form data has errors: " + error + "<br />"
 			flash.errors.( error )
 			retry = true
 		}
 		// If we are saving the admin user, only allow the password to be changed...
-		else if ( cmd.existingUser?.username == 'admin' )
-		{
-			render "Saving admin user<br />"
-
-			if ( !cmd.roles.contains( ShiroRole.admin ) )
-			{
+		else if ( cmd.existingUser?.username == 'admin' ) {
+			if ( !cmd.roles.contains( Role.admin ) ) {
 				String error = "Admin user must have admin role"
-				render "Form data has errors: " + error + "<br />"
 				flash.errors.( error )
 				retry = true
-			}
-			else
-			{
-				if ( cmd.password.length() > 0 )
-				{
-					render "Updating password to: '" + cmd.password + "'<br />"
-					userToSave.passwordHash = new Sha256Hash( cmd.password ).toHex()
-					requiresSave = true
-				}
-
-				if ( ! ( cmd.roles.containsAll( userToSave.roles ) && userToSave.roles.containsAll( cmd.roles ) ) )
-				{
-					render "Updating admin roles to: " + userToSave.roles*.name.join( ", " ) + "<br />"
-					userToSave.roles = cmd.roles
+			} else {
+				if ( cmd.password.length() > 0 ) {
+					userToSave.password = cmd.password
 					requiresSave = true
 				}
 			}
 
-		}
-		else
-		{
-			if ( !cmd.username?.length() )
-			{
+		} else {
+			if ( !cmd.username?.length() ) {
 				String error = "Please specify a username."
-				render "Form has errors: " + error + "<br />"
 				flash.errors.add( error )
 				retry = true
 			}
-			else if ( cmd.existingUser == null || cmd.existingUser.username != cmd.username )
-			{
+			else if ( cmd.existingUser == null || cmd.existingUser.username != cmd.username ) {
 				// New user, or username has changed... does it clash with another user?
-				render "Checking for clash of usernames: '" + cmd.username + "'<br />"
-				ShiroUser clash = ShiroUser.findByUsername( cmd.username )
-				if ( clash != null )
-				{
-					render "User already exists<br />"
+				User clash = User.findByUsername( cmd.username )
+				if ( clash != null ) {
 					flash.errors.add( "Username '${cmd.username}' already in use" )
 					retry = true
-				}
-				else
-				{
-					render "Updating username: '" + cmd.username + "'<br />"
+				} else {
 					userToSave.username = cmd.username
 					requiresSave = true
 				}
 			}
 			
-			if ( cmd.password.length() > 0 )
-			{
-				render "Updating password: '" + cmd.password + "'<br />"
-				userToSave.passwordHash = new Sha256Hash( cmd.password ).toHex()
+			if ( cmd.password.length() > 0 ) {
+				userToSave.password = cmd.password
 				requiresSave = true
 			}
-			else if ( cmd.existingUser == null )
-			{
+			else if ( cmd.existingUser == null ) {
 				String error = "New user must have password specified"
-				render "Form has errors: " + error + "<br />"
 				flash.errors.add( error )
 				retry = true
-			}
-				
-			if ( cmd.roles.size() == 0 )
-			{
-				String error = "User with no roles will not be able to do anything"
-				render "Form has errors: " + error + "<br />"
-				flash.errors.add( error )
-				retry = true
-			}
-			else
-			{
-				render "Updating roles: '" + cmd.roles + "'<br />"
-				userToSave.roles = cmd.roles
-				requiresSave = true
 			}
 
-			if ( params['realName']?.size() > 0 )
-			{
+			if ( cmd.roles.size() == 0 ) {
+				String error = "User with no roles will not be able to do anything"
+				flash.errors.add( error )
+				retry = true
+			}
+
+			if ( params['realName']?.size() > 0 ) {
 				userToSave.realName = params['realName']
 				requiresSave = true
 			}
 
-			if ( params['email']?.size() > 0 )
-			{
+			if ( params['email']?.size() > 0 ) {
 				userToSave.email = params['email']
 				requiresSave = true
 			}
 		}
 		
-		if ( requiresSave && !retry)
-		{
-			render "Saving user<br />"
-			if ( !userToSave.save() )
-			{
-				render "Error saving user<br />"
+		if ( requiresSave && !retry) {
+
+			if ( userToSave.id && requiresChangeToRoles ) {
+				List<Role> rolesToRemoveFrom = userToSave.roles.findAll { !cmd.roles.contains( it ) }.toList()
+				UserRole.findAllByUserAndRoleInList( userToSave, rolesToRemoveFrom )*.delete( flush: true, failOnError: true )
+			}
+
+			if ( !userToSave.save( flush: true ) ) {
 				userToSave.errors.allErrors.each { flash.errors.add( it.toString() ) }
 				retry = true
-			}
-			else
-			{
+			} else {
+				if ( requiresChangeToRoles ) {
+					cmd.roles.findAll { !userToSave.roles.contains( it ) }.each { role ->
+						role.addUser( userToSave )
+					}
+				}
 				redirect( action: 'list' )
 			}
 		}
 		
-		if ( retry )
-		{
-			render "Redirecting with errors: " + flash.errors + "<br />"
+		if ( retry ) {
 			redirect( action: 'list', params: [ showUser: params['existingUsername'] ] )
 		}
 		
@@ -234,7 +201,7 @@ class UserController {
 
 class SaveUserCommand {
 
-	ShiroUser existingUser = null
+	User existingUser = null
 
 	String username
 
@@ -246,22 +213,22 @@ class SaveUserCommand {
 
 	String email
 
-	List<ShiroRole> roles = null
-	
-	ShiroUser getExistingUser()
+	List<Role> roles = null
+
+	User getExistingUser()
 	{
 		if ( this.existingUser == null )
 		{
-			this.existingUser = ShiroUser.findByUsername( params['existingUsername'] )
+			this.existingUser = User.findByUsername( params['existingUsername'] )
 		}
 		return this.existingUser
 	}
-	
-	List<ShiroRole> getRoles() 
+
+	List<Role> getRoles()
 	{
 		if ( this.roles == null ) 
 		{
-			this.roles = ShiroRole.findAllByNameInList( params.list( 'roles' ) )
+			this.roles = Role.findAllByNameInList( params.list( 'roles' ) )
 		}
 		return this.roles
 	}

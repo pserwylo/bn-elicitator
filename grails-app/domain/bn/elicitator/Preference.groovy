@@ -18,6 +18,8 @@
 
 package bn.elicitator
 
+import bn.elicitator.auth.User
+
 /**
  * Simple data store for keeping user preferences across sessions.
  * @see Preference
@@ -31,7 +33,7 @@ class Preference {
 		value column: 'preferenceValue'
 	}
 
-	ShiroUser owner
+	User owner
 
 	String key
 

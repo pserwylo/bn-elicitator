@@ -18,6 +18,8 @@
 
 package bn.elicitator
 
+import bn.elicitator.auth.User
+
 class Variable implements Comparable<Variable> {
 	
 	static constraints = {
@@ -30,9 +32,9 @@ class Variable implements Comparable<Variable> {
 		description( type: "text" )
 	}
 
-	ShiroUser createdBy
+	User createdBy
 	Date createdDate
-	ShiroUser lastModifiedBy
+	User lastModifiedBy
 	Date lastModifiedDate
 
 	/**

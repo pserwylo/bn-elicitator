@@ -18,18 +18,19 @@
 
 package bn.elicitator
 
-import org.apache.shiro.crypto.hash.Sha256Hash
+import bn.elicitator.auth.Role
+import bn.elicitator.auth.User
 
 class ExplainController {
 
+	def userService
+	def springSecurityService
+
 	def index() {
 
-		if ( ShiroUser.current.hasConsented )
-		{
+		if ( userService.current.hasConsented ) {
 			redirect( controller: 'elicit' )
-		}
-		else
-		{
+		} else {
 			redirect( action: 'statement' )
 		}
 
@@ -57,10 +58,14 @@ class ExplainController {
 
 		if ( params["readStatement"] == "1" )
 		{
-			ShiroUser.current.hasConsented = true;
-			ShiroUser.current.consentedDate = new Date();
-			ShiroUser.current.addToRoles( ShiroRole.findByName( ShiroRole.CONSENTED ) )
-			ShiroUser.current.save();
+			User user          = userService.current
+			user.hasConsented  = true
+			user.consentedDate = new Date()
+			user.save( flush: true )
+
+			Role.consented.addUser( user, true )
+
+			springSecurityService.reauthenticate( user.username )
 
 			redirect( controller: "elicit" )
 		}

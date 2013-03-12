@@ -1,5 +1,6 @@
 package bn.elicitator
 
+// Anyone can see errors, so no securing required.
 class ErrorController {
 
 	EmailService emailService

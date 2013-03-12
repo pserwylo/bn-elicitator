@@ -18,18 +18,29 @@
 
 package bn.elicitator
 
+import bn.elicitator.auth.Role
+import bn.elicitator.auth.User
+import bn.elicitator.auth.UserRole
+import grails.plugins.springsecurity.SpringSecurityService
+
 class UserService {
 
-	List<ShiroUser> getExpertList() {
-		getList( ShiroRole.expert )
+	SpringSecurityService springSecurityService
+
+	User getCurrent() {
+		(User)springSecurityService.currentUser
 	}
 
-	List<ShiroUser> getAdminList() {
-		getList( ShiroRole.admin )
+	List<User> getExpertList() {
+		getList( Role.expert )
 	}
 
-	List<ShiroUser> getList( ShiroRole hasRole ) {
-		ShiroUser.findAll().findAll { it -> it.roles.contains( hasRole ) }
+	List<User> getAdminList() {
+		getList( Role.admin )
+	}
+
+	List<User> getList( Role hasRole ) {
+		UserRole.findAllByRole( hasRole )*.user
 	}
 
 	/**
@@ -38,7 +49,7 @@ class UserService {
 	 * @return
 	 */
 	Integer getExpertCount() {
-		expertList.size()
+		UserRole.countByRole( Role.expert )
 	}
 
 	/**
@@ -46,17 +57,17 @@ class UserService {
 	 * @param delphiPhase
 	 * @return
 	 */
-	List<ShiroUser> getUsersYetToComplete( Integer delphiPhase = AppProperties.properties.delphiPhase ) {
-		List<ShiroUser> completedUsers = getCompletedUsers( delphiPhase )
-		List<ShiroUser> users = getExpertList()
+	List<User> getUsersYetToComplete( Integer delphiPhase = AppProperties.properties.delphiPhase ) {
+		List<User> completedUsers = getCompletedUsers( delphiPhase )
+		List<User> users = getExpertList()
 		return users.findAll { !completedUsers.contains( it ) }
 	}
 
-	List<ShiroUser> getCompletedUsers( Integer delphiPhase = AppProperties.properties.delphiPhase ) {
+	List<User> getCompletedUsers( Integer delphiPhase = AppProperties.properties.delphiPhase ) {
 		return CompletedPhase.findAllByDelphiPhase( delphiPhase )*.completedBy
 	}
 
-	void deleteUser( ShiroUser user ) {
+	void deleteUser( User user ) {
 		if ( user && user.username != "admin" ) {
 			user.delete()
 		}

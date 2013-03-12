@@ -19,7 +19,7 @@
 package bn.elicitator.events
 
 import bn.elicitator.AppProperties
-import bn.elicitator.ShiroUser
+import bn.elicitator.auth.User
 
 /**
  * Logs events performed by users, e.g. logging in, filling in the form, etc.
@@ -27,17 +27,23 @@ import bn.elicitator.ShiroUser
  */
 abstract class LoggedEvent {
 
-	ShiroUser       user
-	Date            date
-	Integer         delphiPhase
-	String          description
+	transient userService
+
+	User    user
+	Date    date
+	Integer delphiPhase
+	String  description
 
 	String toString() {
 		date.format( 'dd/MM/yyyy hh:mm' ) + ": " + description
 	}
 
+	private User getCurrentUser() {
+		userService.current
+	}
+
 	protected static saveEvent( LoggedEvent event ) {
-		event.user        = ShiroUser.current
+		event.user        = event.currentUser
 		event.date        = new Date()
 		event.delphiPhase = AppProperties.properties.delphiPhase
 		event.save()

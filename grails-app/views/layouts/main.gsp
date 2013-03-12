@@ -61,15 +61,15 @@
 		</g:if>--}%
 
 		<div id="headingWrapper">
-			<shiro:user>
+			<sec:ifLoggedIn>
 				<div id="user-info">
-					<g:message code="main.welcome" args="${[ shiro.principal() ]}" />
+					<g:message code="main.welcome" args="${[ sec.username() ]}" />
 					<a class="help" href="http://firstaid.infotech.monash.edu.au/info/help/">Help</a>
-					<g:link controller="auth" action="logout" class="logout">
+					<g:link controller="logout" class="logout">
 						Logout
 					</g:link>
 				</div>
-			</shiro:user>
+			</sec:ifLoggedIn>
 			<div id="heading">${AppProperties.properties.title}</div>
 		</div>
 

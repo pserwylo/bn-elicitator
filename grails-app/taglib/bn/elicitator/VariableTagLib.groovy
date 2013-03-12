@@ -18,12 +18,15 @@
 
 package bn.elicitator
 
+import bn.elicitator.auth.User
+
 class VariableTagLib {
 
 	static namespace = "bn"
 	static returnObjectForTags = ['mostRecentComment']
 
 	VariableService variableService
+	UserService     userService
 
 	/**
 	 * @attr id
@@ -101,7 +104,7 @@ class VariableTagLib {
 		if ( relationship == null ) {
 			Variable child = attrs.child
 			Variable parent = attrs.parent
-			relationship = Relationship.findByCreatedByAndDelphiPhaseAndExistsAndParentAndChild( ShiroUser.current, AppProperties.properties.delphiPhase, true, parent, child )
+			relationship = Relationship.findByCreatedByAndDelphiPhaseAndExistsAndParentAndChild( userService.current, AppProperties.properties.delphiPhase, true, parent, child )
 		}
 
 		relationship?.mostRecentComment?.comment
@@ -127,7 +130,7 @@ class VariableTagLib {
 
 			if ( i < chain.size() - 1 )
 			{
-				Relationship rel = Relationship.findByCreatedByAndDelphiPhaseAndExistsAndParentAndChild( ShiroUser.current, AppProperties.properties.delphiPhase, true, chain[ i ], chain[ i + 1 ] )
+				Relationship rel = Relationship.findByCreatedByAndDelphiPhaseAndExistsAndParentAndChild( userService.current, AppProperties.properties.delphiPhase, true, chain[ i ], chain[ i + 1 ] )
 				String comment = rel?.mostRecentComment?.comment
 				if ( comment == null ) {
 					output += bn.rArrow()

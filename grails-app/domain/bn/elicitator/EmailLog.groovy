@@ -18,6 +18,8 @@
 
 package bn.elicitator
 
+import bn.elicitator.auth.User
+
 /**
  * Keeps track of each time a user is emailed.
  * We keep a reference to the template which was used so that we can filter based on this, but we also store the
@@ -35,7 +37,7 @@ class EmailLog {
 		body( type: "text" )
 	}
 
-	ShiroUser recipient
+	User recipient
 
 	String subject
 

@@ -92,3 +92,34 @@ log4j = {
            'org.hibernate',
            'net.sf.ehcache.hibernate'
 }
+
+// Added by the Spring Security Core plugin:
+grails.plugins.springsecurity.userLookup.userDomainClassName     = 'bn.elicitator.auth.User'
+grails.plugins.springsecurity.userLookup.authorityJoinClassName  = 'bn.elicitator.auth.UserRole'
+grails.plugins.springsecurity.userLookup.authoritiesPropertyName = 'roles'
+grails.plugins.springsecurity.authority.className                = 'bn.elicitator.auth.Role'
+grails.plugins.springsecurity.authority.nameField                = 'name'
+grails.plugins.springsecurity.securityConfigType                 = "InterceptUrlMap"
+
+grails.plugins.springsecurity.rememberMe.persistent = true
+grails.plugins.springsecurity.rememberMe.persistentToken.domainClassName = 'bn.elicitator.auth.PersistentLogin'
+
+grails.plugins.springsecurity.interceptUrlMap = [
+
+	'/adminDash/**'  : ['ROLE_ADMIN'],
+	'/email/**'      : ['ROLE_ADMIN'],
+	'/output/**'     : ['ROLE_ADMIN'],
+	'/user/**'       : ['ROLE_ADMIN'],
+
+	'/elicit/**'     : [ 'ROLE_ADMIN', 'ROLE_CONSENTED' ],
+
+	'/login/**'      : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/logout/**'     : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+
+
+	'/explain/**'    : ['IS_AUTHENTICATED_REMEMBERED'],
+	'/preference/**' : ['IS_AUTHENTICATED_REMEMBERED'],
+	'/**'            : ['IS_AUTHENTICATED_REMEMBERED'],
+
+]
+

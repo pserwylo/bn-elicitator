@@ -26,6 +26,7 @@ class BnService {
 
 	def delphiService
 	def variableService
+	def userService
 
 	public void fixProblems( List<RedundantRelationship> redundantsToRemove, List<RedundantRelationship> redundantsToKeep, List<List<Variable>> cyclesToRemove )
 	{
@@ -212,7 +213,7 @@ class BnService {
 	}
 
 	public void removeRegularRelationship( Variable parent, Variable child ) {
-		Relationship rel = Relationship.findByCreatedByAndDelphiPhaseAndParentAndChild( ShiroUser.current, delphiService.phase, parent, child )
+		Relationship rel = Relationship.findByCreatedByAndDelphiPhaseAndParentAndChild( userService.current, delphiService.phase, parent, child )
 		if ( rel != null ) {
 			if ( rel.comment != null ) {
 				rel.comment.comment = ""
@@ -304,7 +305,7 @@ class BnService {
 								new RedundantRelationship(
 									child: child,
 									redundantParent: directParent.var,
-									relationship: Relationship.findByChildAndParentAndDelphiPhaseAndCreatedBy( child, directParent.var, delphiService.phase, ShiroUser.current ),
+									relationship: Relationship.findByChildAndParentAndDelphiPhaseAndCreatedBy( child, directParent.var, delphiService.phase, userService.current ),
 									chains: [ path ]
 								)
 							)

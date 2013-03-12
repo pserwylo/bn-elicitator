@@ -52,10 +52,10 @@ grails.project.dependency.resolution = {
 		compile ":jquery:1.7.1"
 		compile ":jquery-ui:1.8.24"
 		compile ":resources:1.1.6"
-		compile ":shiro:1.1.3"
+		compile ":spring-security-core:1.2.7.3"
 
 
-        // Uncomment these (or add new ones) to enable additional resources capabilities
+		// Uncomment these (or add new ones) to enable additional resources capabilities
         //runtime ":zipped-resources:1.0"
         //runtime ":cached-resources:1.0"
         //runtime ":yui-minify-resources:0.1.4"

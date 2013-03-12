@@ -36,6 +36,7 @@
 
 package bn.elicitator
 
+import bn.elicitator.auth.*
 import bn.elicitator.events.CreatedVariableEvent
 import bn.elicitator.events.FinishedRoundEvent
 import bn.elicitator.events.KeptRedundantEvent
@@ -53,6 +54,12 @@ class ElicitController {
 	BnService           bnService
 	UserService         userService
 
+	def beforeInterceptor = {
+		if ( !userService.current.hasConsented ) {
+			redirect( controller: 'explain', action: 'statement' )
+		}
+	}
+
 	/**
 	 * Mark this user as completed (for this round), then redirect to the main list so that they can still play around
 	 * until next round.
@@ -67,7 +74,7 @@ class ElicitController {
 
 			CompletedPhase phase = delphiService.completed
 			if ( !phase ) {
-				phase = new CompletedPhase( completedBy: ShiroUser.current, completedDate: new Date(), delphiPhase: delphiService.phase )
+				phase = new CompletedPhase( completedBy: userService.current, completedDate: new Date(), delphiPhase: delphiService.phase )
 				phase.save( failOnError: true )
 				FinishedRoundEvent.logEvent()
 			}
@@ -142,7 +149,7 @@ class ElicitController {
 		redirect( targetUri: targetUri )
 	}
 
-	private void fixRedundant( Boolean keep, String parentLabel, String childLabel, Boolean displayAll ) {
+	private void fixRedundant( Boolean keep, String parentLabel, String childLabel ) {
 		Variable parent = Variable.findByLabel( parentLabel )
 		Variable child  = Variable.findByLabel( childLabel )
 
@@ -174,7 +181,7 @@ class ElicitController {
 	}
 
 	def keepRedundant = {
-		fixRedundant( true, (String)params["parent"], (String)params["child"], (Boolean)params["displayAll"] )
+		fixRedundant( true, params["parent"] as String, params["child"] as String )
 	}
 
 	def removeRegular = {
@@ -194,7 +201,7 @@ class ElicitController {
 	}
 
 	def removeRedundant = {
-		fixRedundant( false, (String)params["parent"], (String)params["child"], (Boolean)params["displayAll"] )
+		fixRedundant( false, params["parent"] as String, params["child"] as String )
 	}
 
 	def removeCycle = {
@@ -319,20 +326,21 @@ class ElicitController {
 		}
 		else
 		{
+			User user = userService.current
 			List<Relationship> relationships = delphiService.getAllPreviousRelationshipsAndMyCurrent( parent, child, false )
 			def comments = relationships.findAll { it.comment?.comment?.size() > 0 }.collect { rel ->
 				[
 					comment     : rel.comment.comment,
 					delphiPhase : rel.delphiPhase,
 					exists      : rel.exists,
-					byMe        : rel.createdBy == ShiroUser.current,
+					byMe        : rel.createdBy == user,
 				]
 			}
 
 			def result = [
 				parentLabel         : parent.label,
 				parentLabelReadable : parent.readableLabel,
-				exists              : relationships.find { it.createdBy == ShiroUser.current }?.exists ? true : false,
+				exists              : relationships.find { it.createdBy == user }?.exists,
 				comments            : comments
 			]
 
@@ -362,7 +370,6 @@ class ElicitController {
 		if ( var == null )
 		{
 			throw new Exception( "Not found: ${params['for']}" )
-			return null
 		}
 		else
 		{
@@ -375,7 +382,7 @@ class ElicitController {
 					variable         : var,
 					delphiPhase      : delphiService.phase,
 					potentialParents : potentialParents,
-					totalUsers       : ShiroUser.count()
+					totalUsers       : userService.expertCount,
 				]
 			)
 		}
@@ -388,6 +395,7 @@ class ElicitController {
 	 */
 	def save = { SaveRelationshipCommand cmd ->
 
+		User user = userService.current
 		Variable child = Variable.findByLabel( cmd.child );
 		Variable parent = Variable.findByLabel( cmd.parent );
 		if ( child == null || parent == null ) {
@@ -402,7 +410,7 @@ class ElicitController {
 					parent: parent,
 					child: child,
 					delphiPhase: AppProperties.properties.delphiPhase,
-					createdBy: ShiroUser.current
+					createdBy: user
 				)
 			}
 
@@ -415,9 +423,9 @@ class ElicitController {
 			if ( commentText ) {
 				Comment comment = relationship.comment ?: new Comment()
 				comment.comment = commentText
-				comment.createdBy = ShiroUser.current
+				comment.createdBy = user
 				comment.createdDate = new Date()
-				comment.lastModifiedBy = ShiroUser.current
+				comment.lastModifiedBy = user
 				comment.lastModifiedDate = new Date()
 				comment.save( flush: true )
 				relationship.comment = comment
@@ -432,16 +440,16 @@ class ElicitController {
 
 			if ( delphiService.hasPreviousPhase ) {
 				def allRelationships                        = delphiService.getAllPreviousRelationshipsAndMyCurrent( relationship.parent, relationship.child, false )
-				def othersRelationships                     = allRelationships.findAll { it.createdBy != ShiroUser.current }
+				def othersRelationships                     = allRelationships.findAll { it.createdBy != user }
 				def othersPreviousRelationships             = othersRelationships.findAll { it.delphiPhase == delphiService.previousPhase }
 				def othersPreviousRelationshipsWithComments = othersPreviousRelationships.findAll { it.comment?.comment != null }
 
-				def totalOthers                  = userService.expertCount - 1
-				def numOthersWhoSaidYes          = othersPreviousRelationships.count { it.exists }
-				def numOthersWhoSaidNo           = totalOthers - numOthersWhoSaidYes
-				def numOthersWhoAgreeNow         = relationship.exists ? numOthersWhoSaidYes : numOthersWhoSaidNo
-				def numExistsComments            = othersPreviousRelationshipsWithComments.count { it.exists }
-				def numDoesntExistComments       = othersPreviousRelationshipsWithComments.size() - numExistsComments
+				int totalOthers                  = userService.expertCount - 1
+				int numOthersWhoSaidYes          = othersPreviousRelationships.count { it.exists }
+				int numOthersWhoSaidNo           = totalOthers - numOthersWhoSaidYes
+				int numOthersWhoAgreeNow         = relationship.exists ? numOthersWhoSaidYes : numOthersWhoSaidNo
+				int numExistsComments            = othersPreviousRelationshipsWithComments.count { it.exists }
+				int numDoesntExistComments       = othersPreviousRelationshipsWithComments.size() - numExistsComments
 
 				SaveRelationshipLaterRoundEvent.logEvent(
 					relationship,
@@ -467,7 +475,7 @@ class ElicitController {
 
 		this.variableService.initRelationships()
 
-		List<Variable> varList = []
+		List<Variable> varList
 
 		if ( delphiService.hasPreviousPhase ) {
 			varList = this.variableService.getAllChildVarsLaterRound()
@@ -476,7 +484,7 @@ class ElicitController {
 		}
 
 		[
-			user                      : ShiroUser.current,
+			user                      : userService.current,
 			delphiPhase               : delphiService.phase,
 			variables                 : varList,
 			hasPreviousPhase          : delphiService.hasPreviousPhase,
@@ -494,13 +502,13 @@ class ElicitController {
 
 		if ( !cmd.label.trim() || !cmd.description.trim() ) {
 			throw new Exception( "Invalid input: No label or description received." )
-			return
 		}
 
+		User user = userService.current
 		Variable var = new Variable(
-			createdBy        : ShiroUser.current,
+			createdBy        : user,
 			createdDate      : new Date(),
-			lastModifiedBy   : ShiroUser.current,
+			lastModifiedBy   : user,
 			lastModifiedDate : new Date(),
 			readableLabel    : cmd.label,
 			label            : cmd.label,
@@ -511,14 +519,13 @@ class ElicitController {
 		Variable duplicate = Variable.findByLabelOrReadableLabel( var.label, var.readableLabel )
 		if ( duplicate ) {
 			throw new Exception( "Invalid input: Variable '$duplicate.label' ($duplicate.readableLabel) already exists." );
-			return
 		}
 
 		var.save( failOnError: true, flush: true )
 
 		Variable returnTo = null;
 		if ( params['returnToVar'] ) {
-			returnTo = Variable.findByLabel( params['returnToVar'] )
+			returnTo = Variable.findByLabel( params['returnToVar'] as String )
 		}
 
 		if ( !returnTo ) {

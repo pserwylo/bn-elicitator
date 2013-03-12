@@ -62,7 +62,7 @@
 		</div>
 	</g:if>
 
-	<button type="button" class="big">Back</button>
+	<button id="btnBack" type="button" class="big">Back</button>
 
 </body>
 </html>

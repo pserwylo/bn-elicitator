@@ -17,9 +17,9 @@ package bn.elicitator.init
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import bn.elicitator.*;
-import grails.util.*;
-import org.apache.shiro.crypto.hash.*
+import bn.elicitator.*
+import bn.elicitator.auth.Role
+import bn.elicitator.auth.User
 import javax.servlet.ServletContext;
 
 abstract class DataLoader {
@@ -41,9 +41,6 @@ abstract class DataLoader {
 
 	void init( ServletContext servletContext ) {
 
-		// Performs its own initialization check for each email, so we can add new emails as required...
-		initEmailTemplates()
-
 		if ( !isInitialized() ) {
 			initProperties( servletContext )
 			initRolesAndAdminUser()
@@ -51,6 +48,38 @@ abstract class DataLoader {
 			initVariables()
 			initOther()
 		}
+
+		// Performs its own initialization check for each email, so we can add new emails as required...
+		initEmailTemplates()
+		upgrade()
+	}
+
+	private void upgrade() {
+		upgradeRoles()
+		doUpgrade()
+	}
+
+	private void upgradeRoles() {
+		Map<String, Role> roles = [
+			(Role.ADMIN)     : Role.findByName( 'admin' ),
+			(Role.EXPERT)    : Role.findByName( 'expert' ),
+			(Role.CONSENTED) : Role.findByName( 'consented' ),
+		]
+		roles.each { entry ->
+			String name = entry.key
+			Role   role = entry.value
+			if ( role ) {
+				role.name = name
+				role.save()
+			}
+		}
+	}
+
+	/**
+	 * To be overridden by sub classes if required. For example, if they need to trigger some certain behaviour when
+	 * started up after a code change.
+	 */
+	protected void doUpgrade() {
 
 	}
 
@@ -120,25 +149,20 @@ abstract class DataLoader {
 	 */
 	private void initRolesAndAdminUser()
 	{
-		ShiroRole adminRole = new ShiroRole( name: "admin" )
-		adminRole.addToPermissions( "*:*" )
-		adminRole.save( flush: true )
+		Role adminRole = new Role( name: Role.ADMIN )
+		adminRole.save( flush: true, failOnError: true )
 
-		ShiroRole expertRole = new ShiroRole( name: "expert" )
-		expertRole.addToPermissions( "explain:*" ) // explanatory statement`
-		expertRole.addToPermissions( "preference:*" )
-		expertRole.save( flush: true )
+		Role expertRole = new Role( name: Role.EXPERT )
+		expertRole.save( flush: true, failOnError: true )
 
 		// Once a user has consented, then they are allowed to view the rest of the system...
-		ShiroRole consentedRole = new ShiroRole( name: "consented" )
-		consentedRole.addToPermissions( "elicit:*" )
-		consentedRole.addToPermissions( "data:*" ) // for ajax requests...
-		consentedRole.save( flush: true )
+		Role consentedRole = new Role( name: Role.CONSENTED )
+		consentedRole.save( flush: true, failOnError: true )
 
-		ShiroUser adminUser = new ShiroUser( realName: "Admin User", email: AppProperties.properties.adminEmail, username: "admin", passwordHash: new Sha256Hash( "I'm an admin user" ).toHex() )
-		adminUser.addToRoles( adminRole )
+		User adminUser = new User( realName: "Admin User", email: AppProperties.properties.adminEmail, username: "admin", password: "I'm an admin user" )
 		adminUser.save( flush: true, failOnError: true )
 
+		adminRole.addUser( adminUser )
 	}
 
 	private void initVariables() {
@@ -155,7 +179,7 @@ abstract class DataLoader {
 
 	private void saveVariables( List<Variable> vars, VariableClass variableClass )
 	{
-		ShiroUser admin = ShiroUser.findByUsername( 'admin' )
+		User admin = User.findByUsername( 'admin' )
 		vars*.variableClass    = variableClass
 		vars*.createdBy        = admin
 		vars*.createdDate      = new Date()
@@ -165,13 +189,8 @@ abstract class DataLoader {
 
 	}
 
-	private Boolean isInitialized()
-	{
-		// If the admin role doesn't exist, we presume this is the first time we've started the application...
-		// If that is the case, then we will populate the database with variables and constraints to make my
-		// life easier.
-		ShiroRole adminRole = ShiroRole.findByName( 'admin' )
-		return adminRole != null;
+	private Boolean isInitialized() {
+		AppProperties.count() > 0
 	}
 
 	private void initProperties( ServletContext servletContext )
@@ -192,17 +211,17 @@ abstract class DataLoader {
 	 * @param hasConsented
 	 */
 	protected void initTestUsers( int number = 10, boolean hasConsented = true ) {
-		ShiroRole consented = ShiroRole.findByName( 'consented' )
-		ShiroRole expert    = ShiroRole.findByName( 'expert'    )
+		Role consented = Role.consented
+		Role expert    = Role.expert
 
 		for ( i in 1..number ) {
 			String name = "expert" + i
-			ShiroUser user = new ShiroUser( realName: "Expert " + i, email: AppProperties.properties.adminEmail, username: name, passwordHash: new Sha256Hash( name ).toHex() )
-			user.addToRoles( expert )
+			User user = new User( realName: "Expert " + i, email: AppProperties.properties.adminEmail, username: name, password: name )
+			user.save( flush: true )
+			expert.addUser( user )
 			if ( hasConsented ) {
-				user.addToRoles( consented )
+				consented.addUser( user )
 			}
-			user.save()
 		}
 	}
 

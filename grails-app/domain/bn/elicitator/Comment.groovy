@@ -18,6 +18,8 @@
 
 package bn.elicitator
 
+import bn.elicitator.auth.User
+
 /**
  * Used to allow participants to specify why they chose what they chose.
  * Includes flags which let administrators moderate discussion.
@@ -34,11 +36,11 @@ class Comment {
 
 	String comment
 
-	ShiroUser createdBy
+	User createdBy
 
 	Date createdDate
 
-	ShiroUser lastModifiedBy
+	User lastModifiedBy
 
 	Date lastModifiedDate
 
@@ -50,7 +52,7 @@ class Comment {
 
 	String reasonForHiding = ""
 
-	ShiroUser hiddenBy = null
+	User hiddenBy = null
 
 
 }

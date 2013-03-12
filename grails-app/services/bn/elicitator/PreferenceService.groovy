@@ -18,14 +18,18 @@
 
 package bn.elicitator
 
+import bn.elicitator.auth.User
+
 /**
- * Always makes the asssumption that we are dealing with the {@link ShiroUser#getCurrent()} user.
+ * Always makes the asssumption that we are dealing with the {@link UserService#getCurrent()} user.
  */
 class PreferenceService {
 
+	UserService userService
+
 	List<Preference> getPreferences()
 	{
-		return Preference.findAllByOwner( ShiroUser.current )
+		return Preference.findAllByOwner( userService.current )
 	}
 
 	/**
@@ -38,7 +42,7 @@ class PreferenceService {
 		Preference pref = load( key )
 		if ( !pref )
 		{
-			pref = new Preference( key: key, owner: ShiroUser.current )
+			pref = new Preference( key: key, owner: userService.current )
 		}
 		pref.value = value
 		pref.save()
@@ -46,7 +50,7 @@ class PreferenceService {
 
 	Preference load( String key )
 	{
-		return Preference.findByOwnerAndKey( ShiroUser.current, key )
+		return Preference.findByOwnerAndKey( userService.current, key )
 	}
 
 }

@@ -18,6 +18,8 @@
 
 package bn.elicitator
 
+import bn.elicitator.auth.*
+
 class AdminDashController {
 
 	def emailService
@@ -33,8 +35,8 @@ class AdminDashController {
 	 */
 	def index() {
 
-		List<ShiroUser> userList = ShiroUser.list()
-		Integer totalExperts = userList.count { it.roles.contains( ShiroRole.expert ) }
+		List<User> userList = User.list()
+		Integer totalExperts = userService.expertCount
 
 		[
 			appProperties         : AppProperties.properties,
@@ -52,7 +54,7 @@ class AdminDashController {
 	 */
 	def confirmAdvanceDelphiPhase() {
 
-		List<ShiroUser> yetToComplete = userService.getUsersYetToComplete( delphiService.phase )
+		List<User> yetToComplete = userService.getUsersYetToComplete( delphiService.phase )
 
 		[ appProperties: AppProperties.properties, yetToComplete: yetToComplete ]
 
