@@ -12,6 +12,10 @@ class SaveRelationshipEvent extends RelationshipEvent {
 	String comment
 	Boolean doesRelationshipExist
 
+	static mapping = {
+		comment type: "text"
+	}
+
 	static logEvent( Relationship relationship ) {
 		saveEvent( new SaveRelationshipEvent( parent: relationship.parent, child : relationship.child, comment: relationship.comment?.comment, doesRelationshipExist: relationship.exists ) )
 	}
