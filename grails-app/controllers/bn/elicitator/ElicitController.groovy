@@ -240,6 +240,7 @@ class ElicitController {
 	}
 
 	private Boolean checkProblems( redirectTo ) {
+
 		List<BnService.CyclicalRelationship> cyclicalRelationships = bnService.getCyclicalRelationships()
 		List<BnService.RedundantRelationship> redundantRelationships = []
 
@@ -360,33 +361,24 @@ class ElicitController {
 	 */
     def parents = {
 
-		Variable var = null
-
-		if ( params["for"] != null )
-		{
-			var = Variable.findByLabel( (String)params["for"] )
-		}
-
-		if ( var == null )
-		{
+		Variable var = ( params["for"] == null ) ? null : Variable.findByLabel( (String)params["for"] )
+		if ( var == null ) {
 			throw new Exception( "Not found: ${params['for']}" )
 		}
-		else
-		{
-			List<Variable> potentialParents = this.variableService.getPotentialParents( var )
-			String view = delphiService.hasPreviousPhase ? "reviewParents" : "parents"
-			ViewRelationshipsEvent.logEvent( var )
-			render(
-				view: view,
-				model: [
-					variable         : var,
-					delphiPhase      : delphiService.phase,
-					potentialParents : potentialParents,
-					totalUsers       : userService.expertCount,
-				]
-			)
-		}
 
+		List<Variable> potentialParents = this.variableService.getPotentialParents( var )
+		String view = delphiService.hasPreviousPhase ? "reviewParents" : "parents"
+		ViewRelationshipsEvent.logEvent( var )
+
+		render(
+			view: view,
+			model: [
+				variable         : var,
+				delphiPhase      : delphiService.phase,
+				potentialParents : potentialParents,
+				totalUsers       : userService.expertCount,
+			]
+		)
 	}
 
 	/**
@@ -472,18 +464,15 @@ class ElicitController {
 	}
 
 	def index = {
-
 		this.variableService.initRelationships()
-
 		List<Variable> varList
-
 		if ( delphiService.hasPreviousPhase ) {
 			varList = this.variableService.getAllChildVarsLaterRound()
 		} else {
 			varList = this.variableService.getAllChildVars()
 		}
 
-		[
+		return [
 			user                      : userService.current,
 			delphiPhase               : delphiService.phase,
 			variables                 : varList,
@@ -491,7 +480,6 @@ class ElicitController {
 			stillToVisit              : delphiService.getStillToVisit( varList ),
 			completed                 : delphiService.completed,
 		]
-
 	}
 
 	/**

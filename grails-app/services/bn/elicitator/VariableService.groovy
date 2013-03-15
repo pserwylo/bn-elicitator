@@ -20,6 +20,7 @@ package bn.elicitator
 
 import bn.elicitator.auth.User
 import bn.elicitator.events.FinishedVariableEvent
+import bn.elicitator.init.DumbProfiler
 
 class VariableService 
 {
@@ -92,22 +93,13 @@ class VariableService
 			}
 		}
 
-
 		return initialChildren.sort( new VariableSorter() )
 	}
 
 	class VariableSorter implements Comparator<Variable> {
 		@Override
 		int compare( Variable first, Variable second ) {
-			Boolean firstIsProblem = ( first.variableClass == VariableClass.problem )
-			Boolean secondIsProblem = ( second.variableClass == VariableClass.problem )
-			if ( firstIsProblem && !secondIsProblem ) {
-				return -1;
-			} else if ( !firstIsProblem && secondIsProblem ) {
-				return 1;
-			} else {
-				return first.readableLabel.compareTo( second.readableLabel )
-			}
+			first.readableLabel.compareTo( second.readableLabel )
 		}
 	}
 
@@ -204,9 +196,9 @@ class VariableService
 					parent:      parent,
 					createdBy:   userService.current,
 					delphiPhase: AppProperties.properties.delphiPhase,
-					exists:      oldRelationship?.exists,
+					exists:      oldRelationship ? oldRelationship.exists : false,
 					isRedundant: oldRelationship?.exists ? oldRelationship?.isRedundant : Relationship.IS_REDUNDANT_UNSPECIFIED,
-				).save()
+				).save( failOnError: true )
 			}
 		}
 	}

@@ -18,6 +18,8 @@
 
 package bn.elicitator
 
+import bn.elicitator.init.DumbProfiler
+
 /**
  * All methods in this class presume that we are only operating on data for the current user, unless the method
  * signature says otherwise.
@@ -130,6 +132,28 @@ class BnService {
 		TreeNode child = null
 		List<TreeNode> parents = []
 
+		boolean equals( TreeNode compare ) {
+
+			boolean same = ( var == compare.var )
+			for ( TreeNode parent in parents ) {
+
+				boolean parentHasEqual = false
+				for ( TreeNode compareParent in compare.parents ) {
+					if ( parent.equals( compareParent ) ) {
+						parentHasEqual = true
+						break
+					}
+				}
+
+				if ( !parentHasEqual ) {
+					same = false
+					break
+				}
+			}
+
+			return same
+		}
+
 		List<Variable> getPathTo( Variable parent ) {
 			List<Variable> path = null
 
@@ -224,27 +248,27 @@ class BnService {
 		}
 	}
 
+	public List<Variable> getSpecifiedParents( Variable child, List<Relationship> allRelationshipsForUser ) {
+		allRelationshipsForUser.findAll { it.child == child }*.parent
+	}
+
 	public List<CyclicalRelationship> getCyclicalRelationships() {
 
-		List<Variable> allVars = Variable.list()
+		List<Variable> allVars                           = Variable.list()
 		List<CyclicalRelationship> cyclicalRelationships = []
+		List<Relationship> allRelationships              = Relationship.findAllByCreatedByAndDelphiPhaseAndExists( userService.current, delphiService.phase, true )
 
-		for ( Variable child in allVars )
-		{
+		for ( Variable child in allVars ) {
 			TreeNode treeOfParents = new TreeNode( var: child )
-			populateAllParents( treeOfParents, true )
+			populateAllParents( treeOfParents, allRelationships, true )
 
 			List<TreeNode> leafNodes = treeOfParents.leaves
-			for ( TreeNode leaf in leafNodes )
-			{
+			for ( TreeNode leaf in leafNodes ) {
 				List<Variable> descendants = leaf.descendantsIncludingSelf
-				List<Variable> leafParents = variableService.getSpecifiedParents( leaf.var )
-				for ( Variable leafParent in leafParents )
-				{
+				List<Variable> leafParents = getSpecifiedParents( leaf.var, allRelationships )
+				for ( Variable leafParent in leafParents ) {
 					Integer index = descendants.indexOf( leafParent )
-					if ( index >= 0 )
-					{
-
+					if ( index >= 0 ) {
 						List<Variable> chain = [ leaf.var ]
 						chain.addAll( descendants[ index..descendants.size()-1 ] );
 
@@ -274,63 +298,52 @@ class BnService {
 
 		List<Variable> allVars = Variable.list( sort: "id" )
 		List<RedundantRelationship> redundantRelationships = []
+		List<Relationship> allRelationships = Relationship.findAllByCreatedByAndDelphiPhaseAndExists( userService.current, delphiService.phase, true )
 
 		for ( Variable child in allVars )
 		{
 			TreeNode treeOfParents = new TreeNode( var: child )
-			populateAllParents( treeOfParents, false )
-			for ( TreeNode directParent in treeOfParents.parents )
-			{
-				for ( TreeNode otherDirectParent in treeOfParents.parents )
-				{
-					if ( otherDirectParent == directParent )
-					{
+			populateAllParents( treeOfParents, allRelationships, false )
+			for ( TreeNode directParent in treeOfParents.parents ) {
+				for ( TreeNode otherDirectParent in treeOfParents.parents ) {
+					if ( otherDirectParent == directParent ) {
 						continue;
 					}
 
 					List<Variable> path = otherDirectParent.getPathTo( directParent.var )
-					if ( path?.size() > 1 )
-					{
+					if ( path?.size() > 1 ) {
 						path.add( child )
-
 						RedundantRelationship rel = redundantRelationships.find { it.child == child && it.redundantParent == directParent.var }
-
-						if ( rel != null )
-						{
+						if ( rel != null ) {
 							rel.chains.add( path )
-						}
-						else
-						{
+						} else {
 							redundantRelationships.add(
 								new RedundantRelationship(
 									child: child,
 									redundantParent: directParent.var,
-									relationship: Relationship.findByChildAndParentAndDelphiPhaseAndCreatedBy( child, directParent.var, delphiService.phase, userService.current ),
+									relationship: allRelationships.find { it.child == child && it.parent == directParent.var },
 									chains: [ path ]
 								)
 							)
 						}
-
 					}
 				}
 			}
 		}
 
 		return redundantRelationships
-
 	}
 
 	/**
-	 *
 	 * @param child
 	 */
-	private void populateAllParents( TreeNode child, Boolean forCycles )
+	private void populateAllParents( TreeNode child, List<Relationship> allRelationships, Boolean forCycles )
 	{
-		List<Variable> parents = variableService.getSpecifiedParents( child.var )
+		List<Variable> parents = allRelationships.findAll { it.child == child.var }*.parent
 		for ( Variable parent in parents ) {
 			TreeNode parentNode = new TreeNode( var: parent, child: child )
 			if ( !child.getDescendants().contains( parent ) ) {
-				populateAllParents( parentNode, forCycles )
+				populateAllParents( parentNode, allRelationships, forCycles )
 			}
 			child.parents.add( parentNode )
 		}

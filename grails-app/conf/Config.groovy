@@ -80,6 +80,10 @@ log4j = {
 		rollingFile name: "stacktrace", maxFileSize: 1024, file: "/tmp/grails-stacktrace.log"
 	}
 
+	logger {
+		com.linkedin.grails = "info" // http://grails.org/plugin/profiler
+	}
+
     error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
            'org.codehaus.groovy.grails.web.pages', //  GSP
            'org.codehaus.groovy.grails.web.sitemesh', //  layouts
@@ -106,15 +110,17 @@ grails.plugins.springsecurity.rememberMe.persistentToken.domainClassName = 'bn.e
 
 grails.plugins.springsecurity.interceptUrlMap = [
 
-	'/adminDash/**'  : ['ROLE_ADMIN'],
-	'/email/**'      : ['ROLE_ADMIN'],
-	'/output/**'     : ['ROLE_ADMIN'],
-	'/user/**'       : ['ROLE_ADMIN'],
+	'/admin/**'       : ['ROLE_ADMIN'],
+	'/adminmanage/**' : ['ROLE_ADMIN'],
+	'/adminDash/**'   : ['ROLE_ADMIN'],
+	'/email/**'       : ['ROLE_ADMIN'],
+	'/output/**'      : ['ROLE_ADMIN'],
+	'/user/**'        : ['ROLE_ADMIN'],
 
-	'/elicit/**'     : [ 'ROLE_ADMIN', 'ROLE_CONSENTED' ],
+	'/elicit/**'      : [ 'ROLE_ADMIN', 'ROLE_CONSENTED' ],
 
-	'/login/**'      : ['IS_AUTHENTICATED_ANONYMOUSLY'],
-	'/logout/**'     : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/login/**'       : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/logout/**'      : ['IS_AUTHENTICATED_ANONYMOUSLY'],
 
 
 	'/explain/**'    : ['IS_AUTHENTICATED_REMEMBERED'],
@@ -123,3 +129,14 @@ grails.plugins.springsecurity.interceptUrlMap = [
 
 ]
 
+
+grails.plugins.dynamicController.mixins = [
+   'com.burtbeckwith.grails.plugins.appinfo.IndexControllerMixin'      : 'com.burtbeckwith.appinfo_test.AdminManageController',
+   'com.burtbeckwith.grails.plugins.appinfo.Log4jControllerMixin'      : 'com.burtbeckwith.appinfo_test.AdminManageController',
+   'com.burtbeckwith.grails.plugins.appinfo.SpringControllerMixin'     : 'com.burtbeckwith.appinfo_test.AdminManageController',
+   'com.burtbeckwith.grails.plugins.appinfo.MemoryControllerMixin'     : 'com.burtbeckwith.appinfo_test.AdminManageController',
+   'com.burtbeckwith.grails.plugins.appinfo.PropertiesControllerMixin' : 'com.burtbeckwith.appinfo_test.AdminManageController',
+   'com.burtbeckwith.grails.plugins.appinfo.ScopesControllerMixin'     : 'com.burtbeckwith.appinfo_test.AdminManageController',
+   'com.burtbeckwith.grails.plugins.appinfo.ThreadsControllerMixin'    : 'com.burtbeckwith.appinfo_test.AdminManageController',
+   // 'app.info.custom.example.MyConfigControllerMixin'                   : 'com.burtbeckwith.appinfo_test.AdminManageController'
+]

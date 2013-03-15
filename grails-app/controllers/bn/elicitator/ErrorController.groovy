@@ -17,7 +17,10 @@ class ErrorController {
 			renderError( error )
 			emailService.sendErrorEmail( error )
 		} catch ( Exception e ) {
-			render "Error occurred."
+			render "Error occurred"
+			render "<div style='display: none;'>"
+			g.renderException( exception: e )
+			render "</div>"
 		}
 	}
 

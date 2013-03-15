@@ -53,6 +53,7 @@ grails.project.dependency.resolution = {
 		compile ":jquery-ui:1.8.24"
 		compile ":resources:1.1.6"
 		compile ":spring-security-core:1.2.7.3"
+		compile ":app-info:1.0.2"
 
 
 		// Uncomment these (or add new ones) to enable additional resources capabilities
