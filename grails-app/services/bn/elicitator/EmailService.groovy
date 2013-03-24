@@ -86,11 +86,22 @@ class EmailService {
 		userValues.put( EmailTemplate.PH_USER, user.realName )
 		String replacedSubject = replacePlaceholders( template.subject, userValues )
 		String replacedBody = replacePlaceholders( template.body, userValues )
-		mailService.sendMail{
-			to( user.email )
-			from( AppProperties.properties.adminEmail )
-			subject( replacedSubject )
-			body( replacedBody )
+		if ( mailService.disabled ) {
+			println """
+(Pretending to send mail)
+To: $user.email
+From: $AppProperties.properties.adminEmail
+Subject: $replacedSubject
+
+$replacedBody
+"""
+		} else {
+			mailService.sendMail{
+				to( user.email )
+				from( AppProperties.properties.adminEmail )
+				subject( replacedSubject )
+				body( replacedBody )
+			}
 		}
 		new EmailLog( recipient: user, template: template, subject: replacedSubject, body: replacedBody, date: new Date() ).save()
 	}
