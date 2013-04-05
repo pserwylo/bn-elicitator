@@ -11,7 +11,6 @@ class GraphvizFormat {
 class GraphvizOutputGraph extends OutputGraph {
 
 	static final FORMAT_SVG      = new GraphvizFormat( cliSwitch : "-Tsvg", contentType : "image/svg+xml", fileExtension : ".svg" )
-	static final FORMAT_GRAPHVIZ = new GraphvizFormat( cliSwitch : "",      contentType : "text/plain",    fileExtension : ".dot" )
 
 	private TreeSet<Variable> variables = []
 	private List<GraphvizEdge> edges = []
@@ -20,7 +19,8 @@ class GraphvizOutputGraph extends OutputGraph {
 
 	@Override
 	void addEdge( Variable parent, Variable child, Float strength ) {
-		edges.add( new GraphvizEdge( parent : parent, child : child, strength : strength ) )
+		GraphvizEdge edge    = new GraphvizEdge( parent : parent, child : child, strength : strength )
+		edges.add( edge )
 		variables.add( parent )
 		variables.add( child )
 	}
@@ -55,7 +55,7 @@ class GraphvizOutputGraph extends OutputGraph {
 		return format.fileExtension
 	}
 
-	private String generateDot() {
+	protected String generateDot() {
 		String dot = "digraph BayesianNetwork {\n";
 		dot += "\n"
 		variables.each { dot += new GraphvizNode( variable: it ) }

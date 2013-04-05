@@ -2,6 +2,7 @@ package bn.elicitator
 
 import bn.elicitator.auth.Role
 import bn.elicitator.auth.User
+import bn.elicitator.output.GraphvizDotOutputGraph
 import bn.elicitator.output.GraphvizOutputGraph
 import bn.elicitator.output.HtmlMatrixOutputGraph
 import bn.elicitator.output.JsonMatrixOutputGraph
@@ -32,7 +33,7 @@ class OutputController {
 	}
 
 	def graphviz = { OutputCommand cmd ->
-		outputGraph( new GraphvizOutputGraph( format : GraphvizOutputGraph.FORMAT_GRAPHVIZ ), cmd )
+		outputGraph( new GraphvizDotOutputGraph(), cmd )
 	}
 
 	def netica = { OutputCommand cmd ->

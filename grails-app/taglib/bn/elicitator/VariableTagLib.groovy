@@ -27,6 +27,7 @@ class VariableTagLib {
 
 	VariableService variableService
 	UserService     userService
+	DelphiService   delphiService
 
 	/**
 	 * @attr id
@@ -155,19 +156,33 @@ class VariableTagLib {
 
 		List<Variable> variables = attrs.variables
 		List<Variable> stillToVisit = attrs.stillToVisit
-		out << "<ul id='all-children-list' class='variable-list '>\n"
 
-		variables.eachWithIndex { child, i ->
-			Boolean hasVisited = !stillToVisit.contains( child )
-			String classNeedsReview = hasVisited ? 'doesnt-need-review' : 'needs-review'
-			out << """
-				<li class='variable-item  ${classNeedsReview}'>
-					<a href='${createLink( controller: 'elicit', action: 'parents', params: [ for: child.label ] )}'>${bn.variable( [ var: child, includeDescription: false ] )}</a>
-				</li>
-				"""
+		Map<VariableClass, List<Variable>> classes = [:]
+		VariableClass.list().each { varClass ->
+			List<Variable> v = variables.findAll { var -> var.variableClass.id == varClass.id }
+			classes.put( varClass, v )
 		}
-		out << "</ul>"
 
+		classes.each { entry ->
+
+			VariableClass  varClass = entry.key
+			List<Variable> varList  = entry.value
+
+			if ( varList.size() > 0 ) {
+				out << "<h2>$varClass</h2>"
+				out << "<ul id='all-children-list' class='variable-list'>\n"
+				for( Variable child in varList ) {
+					Boolean hasVisited = !stillToVisit.contains( child )
+					String classNeedsReview = hasVisited ? 'doesnt-need-review' : 'needs-review'
+					out << """
+						<li class='variable-item  ${classNeedsReview}'>
+							<a href='${createLink( controller: 'elicit', action: 'parents', params: [ for: child.label ] )}'>${bn.variable( [ var: child, includeDescription: false ] )}</a>
+						</li>
+						"""
+				}
+				out << "</ul>"
+			}
+		}
 	}
 
 	/**
@@ -193,7 +208,6 @@ class VariableTagLib {
 				for( Variable child in varList ) {
 					Boolean hasVisited = !stillToVisit.contains( child )
 					String cssClasses = hasVisited ? 'doesnt-need-review' : 'needs-review'
-
 					out << """
 						<li class='variable-item  ${cssClasses }'>
 							<a href='${createLink( controller: 'elicit', action: 'parents', params: [ for: child.label ] )}'>${bn.variable( [ var: child, includeDescription: false ] )}</a>

@@ -139,6 +139,8 @@ class ElicitParentsTagLib {
 
 		User user = userService.current
 
+		out << Relationship.findAllByChildAndParentAndCreatedBy( Variable.findByLabel( 'AbdominalPains' ), Variable.findByLabel( 'AlcoholUse' ), User.findByUsername( "alan" ) )
+
 		potentialParents.each { parent ->
 
 			List<Relationship> relationships = delphiService.getAllPreviousRelationshipsAndMyCurrent( parent, child )
@@ -152,14 +154,40 @@ class ElicitParentsTagLib {
 			allRelationships.put( parent, relationships )
 			allOthersCount.put( parent, othersCount )
 
+			out << "$parent... "
+
 			if ( myMostRecent?.exists ) {
+				out << "I think yes, "
 				listYes.add( parent )
 			} else if ( othersCount == 0 ) {
+				out << "Nobody thinks so..."
 				listNoAll.add( parent )
 			} else {
+				out << "Some think so..."
 				listNo.add( parent )
 			}
+			out << "<br /><br />"
+
+			out << "<ul style='font-size: 0.8em; font-family: monospaced'>"
+			relationships.each {
+				def weight = it.createdBy == user ? "bold" : "normal"
+				def yesNo  = it.exists ? "YES" : "NO&nbsp;"
+				out << "<li style='font-weight: $weight'>"
+				out << "$it.delphiPhase - $yesNo - from $it.parent to $it.child - version $it.version - by $it.createdBy.username"
+				out << "</li>"
+			}
+			out << "</ul></br></br>"
+
 		}
+
+		out << "<h3>Yes</h3>"
+		out << listYes.join( "<br />" )
+		out << "<h3>No</h3>"
+		out << listNo.join( "<br />" )
+		out << "<h3>No all</h3>"
+		out << listNoAll.join( "<br />" )
+
+		return;
 
 		Integer totalUsers = userService.expertCount
 
