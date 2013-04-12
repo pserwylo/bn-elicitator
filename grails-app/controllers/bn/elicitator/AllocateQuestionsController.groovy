@@ -2,44 +2,35 @@ package bn.elicitator
 
 class AllocateQuestionsController {
 
-	UserService userService
-
-	private int countTotalQuestions() {
-		int count = 0;
-		Map<VariableClass,List<Variable>> categories = [:]
-
-		List<VariableClass> classes = VariableClass.list();
-		List<Variable> variables    = Variable.list();
-
-		classes.each { categories.put( it, [] ) }
-
-		variables.each { var ->
-			categories[ var.variableClass ].add( var )
-		}
-
-		classes.each { VariableClass varClass ->
-
-			List<Variable> potentialParents = []
-			varClass.potentialParents.each { VariableClass parentClass ->
-				potentialParents.addAll( categories[ parentClass ] )
-			}
-
-			int varsInClass         = categories[ varClass ].size()
-			int varsInParentClasses = potentialParents.size()
-
-			count += ( varsInClass * varsInParentClasses )
-		}
-
-		return count
-	}
+	UserService              userService
+	AllocateQuestionsService allocateQuestionsService
 
 	def index() {
 
 		[
 			expertCount : userService.expertCount,
-			totalQuestions : countTotalQuestions()
+			totalQuestions : allocateQuestionsService.countTotalQuestions()
 		]
 
 	}
 
+	def allocate( AllocateCmd cmd ) {
+
+		List<AllocateQuestionsService.Allocation> allocations = allocateQuestionsService.calcAllocations( 3 )
+		allocations.each { AllocateQuestionsService.Allocation allocation ->
+
+			render """
+				<h3>User $allocation.user.username</h3>
+				<ul>
+					<li>${allocation.questions.collect { "$it.parent -> $it.child" }.join( "</li><li>" )}</li>
+				</ul>"""
+
+		}
+
+	}
+
+}
+
+class AllocateCmd {
+	public int numParticipantsPerQuestion = -1;
 }
