@@ -1,3 +1,7 @@
+package bn.elicitator.init
+
+import bn.elicitator.*
+
 /*
  * Bayesian Network (BN) Elicitator
  * Copyright (C) 2012 Peter Serwylo (peter.serwylo@monash.edu)
@@ -16,16 +20,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import bn.elicitator.auth.User
 
-import bn.elicitator.init.DivyMgmcDataLoader
-import javax.servlet.ServletContext;
+import javax.servlet.ServletContext
 
-class BnBootStrap {
+class DivyMgmcDataLoader extends MgmcDataLoader {
 
-	def init = { ServletContext servletContext ->
-
-		new DivyMgmcDataLoader().init( servletContext )
-
+	protected void initOther() {
+		super.initOther()
+		initTestUsers(15);
 	}
 
 }
