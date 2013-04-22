@@ -35,6 +35,14 @@ modules = {
 
 	/* Controller- and View-specific modules. */
 
+	contentView {
+		resource url: 'css/contentView.css'
+	}
+
+	contentEdit {
+		resource url: 'css/contentEdit.css'
+	}
+
 	explain {
 		resource url: 'css/explanatoryStatement.css'
 	}

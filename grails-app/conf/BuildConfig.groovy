@@ -54,6 +54,7 @@ grails.project.dependency.resolution = {
 		compile ":resources:1.1.6"
 		compile ":spring-security-core:1.2.7.3"
 		compile ":app-info:1.0.2"
+        compile ":ckeditor:3.6.2.2"
 
 
 		// Uncomment these (or add new ones) to enable additional resources capabilities

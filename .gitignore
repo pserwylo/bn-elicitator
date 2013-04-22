@@ -45,3 +45,5 @@ CustomConfig.groovy
 .idea
 *.iml
 out
+
+web-app/uploads

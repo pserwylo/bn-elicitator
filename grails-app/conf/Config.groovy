@@ -58,23 +58,23 @@ grails.hibernate.cache.queries = true
 
 // set per-environment serverURL stem for creating absolute links
 environments {
-    development {
-        grails.logging.jul.usebridge = true
-    }
-    production {
-        grails.logging.jul.usebridge = false
-        // TODO: grails.serverURL = "http://www.changeme.com"
-    }
+	development {
+		grails.logging.jul.usebridge = true
+	}
+	production {
+		grails.logging.jul.usebridge = false
+		// TODO: grails.serverURL = "http://www.changeme.com"
+	}
 }
 
 // log4j configuration
 log4j = {
-    // Example of changing the log pattern for the default console
-    // appender:
-    //
-    //appenders {
-    //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
-    //}
+	// Example of changing the log pattern for the default console
+	// appender:
+	//
+	//appenders {
+	//    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
+	//}
 	
 	appenders {
 		rollingFile name: "stacktrace", maxFileSize: 1024, file: "/tmp/grails-stacktrace.log"
@@ -84,17 +84,17 @@ log4j = {
 		com.linkedin.grails = "info" // http://grails.org/plugin/profiler
 	}
 
-    error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
-           'org.codehaus.groovy.grails.web.pages', //  GSP
-           'org.codehaus.groovy.grails.web.sitemesh', //  layouts
-           'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
-           'org.codehaus.groovy.grails.web.mapping', // URL mapping
-           'org.codehaus.groovy.grails.commons', // core / classloading
-           'org.codehaus.groovy.grails.plugins', // plugins
-           'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
-           'org.springframework',
-           'org.hibernate',
-           'net.sf.ehcache.hibernate'
+	error 'org.codehaus.groovy.grails.web.servlet',  //  controllers
+		'org.codehaus.groovy.grails.web.pages', //  GSP
+		'org.codehaus.groovy.grails.web.sitemesh', //  layouts
+		'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
+		'org.codehaus.groovy.grails.web.mapping', // URL mapping
+		'org.codehaus.groovy.grails.commons', // core / classloading
+		'org.codehaus.groovy.grails.plugins', // plugins
+		'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
+		'org.springframework',
+		'org.hibernate',
+		'net.sf.ehcache.hibernate'
 }
 
 // Added by the Spring Security Core plugin:
@@ -116,12 +116,14 @@ grails.plugins.springsecurity.interceptUrlMap = [
 	'/email/**'       : ['ROLE_ADMIN'],
 	'/output/**'      : ['ROLE_ADMIN'],
 	'/user/**'        : ['ROLE_ADMIN'],
+	'/content/admin/' : ['ROLE_ADMIN'],
 
 	'/elicit/**'      : [ 'ROLE_ADMIN', 'ROLE_CONSENTED' ],
 
 	'/login/**'       : ['IS_AUTHENTICATED_ANONYMOUSLY'],
 	'/logout/**'      : ['IS_AUTHENTICATED_ANONYMOUSLY'],
 	'/static/**'      : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/content/**'     : ['IS_AUTHENTICATED_ANONYMOUSLY'],
 
 
 	'/explain/**'    : ['IS_AUTHENTICATED_REMEMBERED'],
@@ -132,12 +134,43 @@ grails.plugins.springsecurity.interceptUrlMap = [
 
 
 grails.plugins.dynamicController.mixins = [
-   'com.burtbeckwith.grails.plugins.appinfo.IndexControllerMixin'      : 'com.burtbeckwith.appinfo_test.AdminManageController',
-   'com.burtbeckwith.grails.plugins.appinfo.Log4jControllerMixin'      : 'com.burtbeckwith.appinfo_test.AdminManageController',
-   'com.burtbeckwith.grails.plugins.appinfo.SpringControllerMixin'     : 'com.burtbeckwith.appinfo_test.AdminManageController',
-   'com.burtbeckwith.grails.plugins.appinfo.MemoryControllerMixin'     : 'com.burtbeckwith.appinfo_test.AdminManageController',
-   'com.burtbeckwith.grails.plugins.appinfo.PropertiesControllerMixin' : 'com.burtbeckwith.appinfo_test.AdminManageController',
-   'com.burtbeckwith.grails.plugins.appinfo.ScopesControllerMixin'     : 'com.burtbeckwith.appinfo_test.AdminManageController',
-   'com.burtbeckwith.grails.plugins.appinfo.ThreadsControllerMixin'    : 'com.burtbeckwith.appinfo_test.AdminManageController',
-   // 'app.info.custom.example.MyConfigControllerMixin'                   : 'com.burtbeckwith.appinfo_test.AdminManageController'
+	'com.burtbeckwith.grails.plugins.appinfo.IndexControllerMixin'      : 'com.burtbeckwith.appinfo_test.AdminManageController',
+	'com.burtbeckwith.grails.plugins.appinfo.Log4jControllerMixin'      : 'com.burtbeckwith.appinfo_test.AdminManageController',
+	'com.burtbeckwith.grails.plugins.appinfo.SpringControllerMixin'     : 'com.burtbeckwith.appinfo_test.AdminManageController',
+	'com.burtbeckwith.grails.plugins.appinfo.MemoryControllerMixin'     : 'com.burtbeckwith.appinfo_test.AdminManageController',
+	'com.burtbeckwith.grails.plugins.appinfo.PropertiesControllerMixin' : 'com.burtbeckwith.appinfo_test.AdminManageController',
+	'com.burtbeckwith.grails.plugins.appinfo.ScopesControllerMixin'     : 'com.burtbeckwith.appinfo_test.AdminManageController',
+	'com.burtbeckwith.grails.plugins.appinfo.ThreadsControllerMixin'    : 'com.burtbeckwith.appinfo_test.AdminManageController',
+	// 'app.info.custom.example.MyConfigControllerMixin'                   : 'com.burtbeckwith.appinfo_test.AdminManageController'
 ]
+
+ckeditor {
+	config = "/js/myckconfig.js"
+	skipAllowedItemsCheck = false
+	defaultFileBrowser = "ofm"
+	upload {
+		basedir = "/uploads/"
+		overwrite = false
+		link {
+			browser = true
+			upload = false
+			allowed = []
+			denied = ['html', 'htm', 'php', 'php2', 'php3', 'php4', 'php5',
+					'phtml', 'pwml', 'inc', 'asp', 'aspx', 'ascx', 'jsp',
+					'cfm', 'cfc', 'pl', 'bat', 'exe', 'com', 'dll', 'vbs', 'js', 'reg',
+					'cgi', 'htaccess', 'asis', 'sh', 'shtml', 'shtm', 'phtm']
+		}
+		image {
+			browser = true
+			upload = true
+			allowed = ['jpg', 'gif', 'jpeg', 'png']
+			denied = []
+		}
+		flash {
+			browser = false
+			upload = false
+			allowed = ['swf']
+			denied = []
+		}
+	}
+}
