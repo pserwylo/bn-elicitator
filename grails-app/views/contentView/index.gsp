@@ -27,7 +27,9 @@
 	
 	<body>
 
-		${page.content}
+		<div id="content">
+			${page.content}
+		</div>
 
 	</body>
 	
