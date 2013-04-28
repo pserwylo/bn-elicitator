@@ -46,16 +46,9 @@ class AllocateQuestionsService {
 		}
 	}
 
-	class Allocation {
-		User user
-		List<Relationship> questions = []
-
-		String toString() {
-			return "User $user allocated ${questions.size()} questions."
-		}
-	}
-
 	List<Allocation> calcAllocations( int participantsPerQuestion ) {
+
+		Allocation.list()*.delete();
 
 		List<User> experts = userService.expertList
 		List<Allocation> allocations = experts.collect { new Allocation( user: it ) }
@@ -64,37 +57,36 @@ class AllocateQuestionsService {
 			throw new IllegalArgumentException( "Not enough experts to allocate $participantsPerQuestion per question (only have ${experts.size()})." )
 		}
 
-		// Find the people with the least amount of questions allocated to
+		// Find the people with the least amount of variables allocated to
 		// them (at this point in time) and then pick one randomly...
 		Closure getSmallestAllocation = { List<User> excludingUsers ->
 			int min = Integer.MAX_VALUE
 
 			List<Allocation> validAllocations = allocations.findAll { !excludingUsers.contains( it.user ) }
 			validAllocations.each {
-				if ( it.questions.size() < min ) {
-					min = it.questions.size();
+				if ( it.totalQuestionCount < min ) {
+					min = it.totalQuestionCount;
 				}
 			}
-			List<Allocation> smallest = validAllocations.findAll { alloc -> alloc.questions.size() == min }
+			List<Allocation> smallest = validAllocations.findAll { alloc -> alloc.totalQuestionCount == min }
 			int index = Math.random() * ( smallest.size() - 1 )
 			return smallest[ index ]
 		}
 
 		eachVariableClass { VariableClass varClass, List<Variable> varsInClass, List<Variable> potentialParents ->
 			for ( Variable child in varsInClass ) {
-				for ( Variable parent in potentialParents ) {
-
-					// Find a bunch of users (who are at the bottom of the
-					// pecking order so far) to assign this question to...
-					List<User> beenAllocated = []
-					while ( beenAllocated.size() < participantsPerQuestion && beenAllocated.size() <= experts.size() ) {
-						Allocation smallest = getSmallestAllocation( beenAllocated )
-						smallest.questions.add( new Relationship( child : child, parent : parent ) )
-						beenAllocated.add( smallest.user )
-					}
+				// Find a bunch of users (who are at the bottom of the
+				// pecking order so far) to assign this question to...
+				List<User> beenAllocated = []
+				while ( beenAllocated.size() < participantsPerQuestion && beenAllocated.size() <= experts.size() ) {
+					Allocation smallest = getSmallestAllocation( beenAllocated )
+					smallest.addVariable( child, potentialParents )
+					beenAllocated.add( smallest.user )
 				}
 			}
 		}
+
+		allocations*.save( failOnError: true )
 
 		return allocations
 	}

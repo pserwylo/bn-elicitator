@@ -1,12 +1,19 @@
 package bn.elicitator
 
+import grails.util.Environment
+
+
 // Anyone can see errors, so no securing required.
 class ErrorController {
 
 	EmailService emailService
 
 	def index() {
-		handleError( 500, request.exception )
+		if ( Environment.current.equals( Environment.DEVELOPMENT ) ) {
+			render renderException( exception : request.exception )
+		} else {
+			handleError( 500, request.exception )
+		}
 	}
 
 	private void handleError( Integer errorCode, exception = null ) {
