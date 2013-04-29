@@ -35,6 +35,10 @@ modules = {
 
 	/* Controller- and View-specific modules. */
 
+	auth {
+		resource url: 'css/auth.css'
+	}
+
 	explain {
 		resource url: 'css/explanatoryStatement.css'
 	}

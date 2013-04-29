@@ -75,13 +75,18 @@ log4j = {
     //appenders {
     //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
     //}
-	
+
 	appenders {
-		rollingFile name: "stacktrace", maxFileSize: 1024, file: "/tmp/grails-stacktrace.log"
+		console     name: "stdout",
+		            layout: pattern(conversionPattern: "%c{2} %m%n")
+
+		rollingFile name: "bn",
+		            maxFileSize: 1024,
+		            file: "/tmp/bn-elicitator.log"
 	}
 
-	logger {
-		com.linkedin.grails = "info" // http://grails.org/plugin/profiler
+	root {
+		all 'stdout'
 	}
 
     error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
@@ -141,3 +146,6 @@ grails.plugins.dynamicController.mixins = [
    'com.burtbeckwith.grails.plugins.appinfo.ThreadsControllerMixin'    : 'com.burtbeckwith.appinfo_test.AdminManageController',
    // 'app.info.custom.example.MyConfigControllerMixin'                   : 'com.burtbeckwith.appinfo_test.AdminManageController'
 ]
+
+
+grails.plugins.springsecurity.oauth.domainClass = 'bn.elicitator.auth.OAuthID'

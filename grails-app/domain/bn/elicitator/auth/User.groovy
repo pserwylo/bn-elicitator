@@ -17,6 +17,8 @@ class User {
 		password blank: false, column: "password_hash"
 	}
 
+	static hasMany = [ oAuthIDs: OAuthID ]
+
 	String realName
 	String email
 	String username
