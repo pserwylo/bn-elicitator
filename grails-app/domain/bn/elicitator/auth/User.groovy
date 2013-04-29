@@ -9,12 +9,17 @@ class User {
 
 	static constraints = {
 		consentedDate nullable: true, blank: true
+
+		// Need to allow null so that validate() works during oauth stuff...
+		email         nullable: true, blank: true
+		realName      nullable: true, blank: true
+		password      nullable: true, blank: true
 	}
 
 	static mapping = {
 		table "shiro_user"
 		username blank: false, unique: true
-		password blank: false, column: "password_hash"
+		password column: "password_hash"
 	}
 
 	static hasMany = [ oAuthIDs: OAuthID ]

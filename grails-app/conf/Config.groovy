@@ -60,10 +60,11 @@ grails.hibernate.cache.queries = true
 environments {
     development {
         grails.logging.jul.usebridge = true
+		grails.serverURL = "http://uni.peter.serwylo.com:8080/bn-elicitator"
     }
     production {
         grails.logging.jul.usebridge = false
-        // TODO: grails.serverURL = "http://www.changeme.com"
+        grails.serverURL = "http://uni.peter.serwylo.com:8080/bn-elicitator"
     }
 }
 
@@ -83,10 +84,6 @@ log4j = {
 		rollingFile name: "bn",
 		            maxFileSize: 1024,
 		            file: "/tmp/bn-elicitator.log"
-	}
-
-	root {
-		all 'stdout'
 	}
 
     error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
@@ -124,6 +121,8 @@ grails.plugins.springsecurity.interceptUrlMap = [
 
 	'/elicit/**'      : [ 'ROLE_ADMIN', 'ROLE_CONSENTED' ],
 
+	'/auth/oauth/**'  : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/oauth/**'       : ['IS_AUTHENTICATED_ANONYMOUSLY'],
 	'/login/**'       : ['IS_AUTHENTICATED_ANONYMOUSLY'],
 	'/logout/**'      : ['IS_AUTHENTICATED_ANONYMOUSLY'],
 	'/static/**'      : ['IS_AUTHENTICATED_ANONYMOUSLY'],

@@ -63,7 +63,7 @@
 		<div id="headingWrapper">
 			<sec:ifLoggedIn>
 				<div id="user-info">
-					<g:message code="main.welcome" args="${[ sec.username() ]}" />
+					<g:message code="main.welcome" args="${[ bnUser.realName() ]}" />
 					<a class="help" href="http://firstaid.infotech.monash.edu.au/info/help/">Help</a>
 					<g:link controller="logout" class="logout">
 						Logout
