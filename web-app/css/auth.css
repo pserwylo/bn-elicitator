@@ -16,6 +16,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+.column-left {
+	width: 48% !important;
+}
+
+.column-right {
+	margin-left: 50% !important;
+	width: 48% !important;
+}
+
+.facebook-connect {
+	background-image: url("../images/icons-custom/facebook_connect.png");
+	display: block;
+	width: 250px;
+	height: 31px;
+}
+
+.description {
+	font-size: 0.9em;
+	color: #666666;
+	padding: 0.5em 0;
+}
+
 label {
 	display: inline-block;
 	width: 90px;

@@ -122,6 +122,7 @@ grails.plugins.springsecurity.interceptUrlMap = [
 	'/elicit/**'      : [ 'ROLE_ADMIN', 'ROLE_CONSENTED' ],
 
 	'/auth/oauth/**'  : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/register/**'    : ['IS_AUTHENTICATED_ANONYMOUSLY'],
 	'/oauth/**'       : ['IS_AUTHENTICATED_ANONYMOUSLY'],
 	'/login/**'       : ['IS_AUTHENTICATED_ANONYMOUSLY'],
 	'/logout/**'      : ['IS_AUTHENTICATED_ANONYMOUSLY'],
@@ -148,3 +149,8 @@ grails.plugins.dynamicController.mixins = [
 
 
 grails.plugins.springsecurity.oauth.domainClass = 'bn.elicitator.auth.OAuthID'
+
+grails.plugins.springsecurity.ui.register.defaultRoleNames = [ 'ROLE_EXPERT' ]
+grails.plugins.springsecurity.ui.register.emailBody        = ''
+grails.plugins.springsecurity.ui.register.emailFrom        = 'peter.serwylo@monash.edu'
+grails.plugins.springsecurity.ui.register.emailSubject     = 'Survey account'

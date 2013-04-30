@@ -69,6 +69,9 @@ class User {
 
 	void setUsername( String value ) {
 		this.username = value.replace( ' ', '_' )
+		if ( !this.realName ) {
+			this.realName = this.username
+		}
 	}
 
 	Date getLastLoginDate() {
