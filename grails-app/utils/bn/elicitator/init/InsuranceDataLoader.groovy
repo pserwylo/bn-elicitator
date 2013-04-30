@@ -117,12 +117,12 @@ class InsuranceDataLoader extends DataLoader {
 			new Variable(
 				label: "Other Car Cost",
 				readableLabel: "Cost to Insurer for Other Cars",
-				description: "If in an accident with other cars, this is the cost to the clients insurer must pay for the other cars." ),
+				description: "In the event of an accident involving other cars, this is the amount the client's insurer must pay for damage to them." ),
 
 			new Variable(
 				label: "OtherCar",
 				readableLabel: "Other Cars Involvement",
-				description: "Other cars are involved in an accident with the clients car." ),
+				description: "Other cars are involved in an accident with the client's car." ),
 
 			new Variable(
 				label: "Cushioning",
