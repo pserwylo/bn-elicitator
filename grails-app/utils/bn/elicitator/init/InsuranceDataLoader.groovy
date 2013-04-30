@@ -43,39 +43,37 @@ class InsuranceDataLoader extends DataLoader {
 			new Variable(
 				label: "RiskAversion",
 				readableLabel: "Risk Aversion",
-				description: "Is the client likely to take risks when driving? Or drive more carefully and conservatively?" ),
+				description: "Is the adventurous or cautious?" ),
 
 			new Variable(
 				label: "VehicleYear",
-				readableLabel: "Vehicle Year",
-				description: "When was the clients vehicle made? Recently or some time ago?" ),
+				readableLabel: "Vehicle Age",
+				description: "When was the clients vehicle made? Recently or some years in the past?" ),
 
 			new Variable(
 				label: "ThisCarDam",
 				readableLabel: "Damage to clients car",
-				description: "The damage acquired by the car owned by the client." ),
+				description: "The damage acquired by the car owned by the client. None, mild, moderate or severe." ),
 
 			new Variable(
 				label: "RuggedAuto",
 				readableLabel: "Car Strength",
-				description: "Will the clients car break like an eggshell or stay together like a tank?" ),
+				description: "Will the clients car break like an eggshell or hold together like a tank?" ),
 
 			new Variable(
 				label: "Accident",
 				readableLabel: "Accident",
-				description:  "Will the client have an accident? Will it be mild or severe?" ),
+				description:  "Will the client have an accident? And if so, will it be mild or severe?" ),
 
 			new Variable(
 				label: "MakeModel",
 				readableLabel: "Car Make and Model",
-				description:  "Is the clients car a sports Car, economy, family sedan or a luxury car?" ),
+				description:  "Is the clients car a sports car, economy car, family sedan or a luxury car?" ),
 
-			/*
 			new Variable(
 				label: "DrivQuality",
-				readableLabel: "DrivQuality",
-				description:  "Dunno... " ),
-			*/
+				readableLabel: "Quality of Clients Driving",
+				description:  "Is the client a poor, normal or excellent driver? Think of this as their driving behaviour when they are actually driving a vehicle." ),
 
 			new Variable(
 				label: "Mileage",
@@ -90,54 +88,58 @@ class InsuranceDataLoader extends DataLoader {
 			new Variable(
 				label: "DrivingSkill",
 				readableLabel: "Driving Skill",
-				description: "Is the client a good driver? Do they have the skills necessary to drive properly?" ),
+				description: "Is the client a skilled driver? Think of this as their driving behaviour in ideal circumstances, such as during a driving test." ),
 
-			/*
 			new Variable(
 				label: "SeniorTrain",
-				readableLabel: "SeniorTrain",
-				description: "Dunno..." ),
-			*/
+				readableLabel: "Advanced Driver Training",
+				description: "Has the client undergone additional training after obtaining their license? Some companies may call these \"Skilled Driving\" courses." ),
 
 			new Variable(
 				label: "ThisCarCost",
-				readableLabel: "Cost of Clients Car" ),
+				readableLabel: "Cost to insurer for Clients Car",
+				description: "What is the expected cost to the insurance company for the clients car?"),
 
 			new Variable(
 				label: "HomeBase",
-				readableLabel: "Place of Residence",
-				description: "Where does the car live, Secure parking, City, Rural, Street parking?" ),
+				readableLabel: "Primary location of car",
+				description: "The location the clients car usually lives. For example, in secure parking, or a city, suburban or rural area." ),
 
 			new Variable(
 				label: "AntiTheft",
 				readableLabel: "Anti Theft Device Installed" ),
 
 			new Variable(
+				label: "Theft",
+				readableLabel: "Car stolen",
+				description: "Whether the clients car will get stolen." ),
+
+			new Variable(
 				label: "Other Car Cost",
-				readableLabel: "Cost of the other car",
-				description: "If in an accident with another car, how much is the other car worth?" ),
+				readableLabel: "Cost to insurer for other cars",
+				description: "If in an accident with other cars, this is the cost to the clients insurer must pay for the other cars." ),
 
 			new Variable(
 				label: "OtherCar",
-				readableLabel: "Other Car Involvement",
-				description: "Was another car involved in an accident?" ),
+				readableLabel: "Other Cars Involvement",
+				description: "Other cars are involved in an accident with the clients car." ),
 
-			/*
 			new Variable(
 				label: "Cushioning",
-				readableLabel: "Cushioning"
-			*/
+				readableLabel: "Cushioning",
+				description: "The level of cushioning the clients car provides for the people inside in the event of an accident." ),
 
 			new Variable(
 				label: "Airbag",
 				readableLabel: "Airbag",
-				description: "Is there any airbags installed in the clients car?" ),
+				description: "Whether or not there are any airbags installed in the clients car." ),
 
 			/*
+			Not included for Victoria (Australia) study, because liability is dealt with by
+			the government run TAC, and not the clients insurance company.
 			new Variable(
 				label: "ILiCost",
 				readableLabel: "Liability Costs",
-				variableClass: VariableClass.problem
 			*/
 
 			new Variable(
