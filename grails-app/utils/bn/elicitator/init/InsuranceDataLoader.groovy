@@ -63,7 +63,7 @@ class InsuranceDataLoader extends DataLoader {
 			new Variable(
 				label: "Accident",
 				readableLabel: "Accident",
-				description:  "Will the client have an accident? And if so, will it be mild or severe?" ),
+				description:  "Whether or not the client will have an accident." ),
 
 			new Variable(
 				label: "MakeModel",
@@ -73,12 +73,12 @@ class InsuranceDataLoader extends DataLoader {
 			new Variable(
 				label: "DrivQuality",
 				readableLabel: "Quality of Clients Driving",
-				description:  "Is the client a poor, normal or excellent driver? Think of this as their driving behaviour when they are actually driving a vehicle." ),
+				description:  "Whether the client is a safe driver, or prone to accidents." ),
 
 			new Variable(
 				label: "Mileage",
 				readableLabel: "Mileage",
-				description: "How far has the clients car driven since the engine was built?" ),
+				description: "The distance the clients car driven since the engine was built." ),
 
 			new Variable(
 				label: "Antilock",
@@ -88,22 +88,22 @@ class InsuranceDataLoader extends DataLoader {
 			new Variable(
 				label: "DrivingSkill",
 				readableLabel: "Driving Skill",
-				description: "Is the client a skilled driver? Think of this as their driving behaviour in ideal circumstances, such as during a driving test." ),
+				description: "The clients ability to drive a vehicle in varying conditions, such as rain or traffic congestion." ),
 
 			new Variable(
 				label: "SeniorTrain",
 				readableLabel: "Advanced Driver Training",
-				description: "Has the client undergone additional training after obtaining their license? Some companies may call these \"Skilled Driving\" courses." ),
+				description: "Whether the client has undergone additional training after obtaining their license. Some companies may refer to this as \"Skilled Driving\" or \"Defensive Driving\" courses." ),
 
 			new Variable(
 				label: "ThisCarCost",
-				readableLabel: "Cost to insurer for Clients Car",
-				description: "What is the expected cost to the insurance company for the clients car?"),
+				readableLabel: "Cost to Insurer for Client's Car",
+				description: "The damage cost for the client's car, in the event of an accident."),
 
 			new Variable(
 				label: "HomeBase",
-				readableLabel: "Primary location of car",
-				description: "The location the clients car usually lives. For example, in secure parking, or a city, suburban or rural area." ),
+				readableLabel: "Primary Parking Location",
+				description: "The location the client's car is usually parked. For example, in secure parking/garage, or on a city, suburban or rural street." ),
 
 			new Variable(
 				label: "AntiTheft",
@@ -111,12 +111,12 @@ class InsuranceDataLoader extends DataLoader {
 
 			new Variable(
 				label: "Theft",
-				readableLabel: "Car stolen",
-				description: "Whether the clients car will get stolen." ),
+				readableLabel: "Car Stolen",
+				description: "Whether or not the clients car will get stolen." ),
 
 			new Variable(
 				label: "Other Car Cost",
-				readableLabel: "Cost to insurer for other cars",
+				readableLabel: "Cost to Insurer for Other Cars",
 				description: "If in an accident with other cars, this is the cost to the clients insurer must pay for the other cars." ),
 
 			new Variable(
