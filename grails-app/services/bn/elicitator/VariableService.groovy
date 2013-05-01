@@ -175,7 +175,7 @@ class VariableService
 	 * {@link Relationship#exists} to false.
 	 * @param child
 	 * @param potentialParents Just to reduce the amount of work (if we already have a reference to it, just pass it in,
-	 * otherwise we'll get it outselves here).
+	 * otherwise we'll get it ourselves here).
 	 */
 	void createRelationships( Variable child, List<Variable> potentialParents = null ) {
 
@@ -197,7 +197,6 @@ class VariableService
 					createdBy:   userService.current,
 					delphiPhase: AppProperties.properties.delphiPhase,
 					exists:      oldRelationship ? oldRelationship.exists : false,
-					isRedundant: oldRelationship?.exists ? oldRelationship?.isRedundant : Relationship.IS_REDUNDANT_UNSPECIFIED,
 				).save( failOnError: true )
 			}
 		}
