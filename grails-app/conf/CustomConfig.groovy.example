@@ -1,5 +1,15 @@
 // Copy this file to bn-elicitator.config.groovy, and specify the appropriate properties for mail and database setup before compiling
 
+// set per-environment serverURL stem for creating absolute links
+environments {
+	development {
+		grails.serverURL = "http://host.name/path/to/deployment"
+	}
+	production {
+		grails.serverURL = "http://host.name/path/to/deployment"
+	}
+}
+
 grails {
 	mail {
 		host     = "smtp.gmail.com"
@@ -22,4 +32,20 @@ dataSource {
 	dialect         = "org.hibernate.dialect.MySQL5InnoDBDialect"
 	username        = "username"
 	password        = "username"
+}
+
+oauth {
+	registration {
+		roleNames = [ 'ROLE_EXPERT' ]
+	}
+	providers {
+		facebook {
+			api        = FacebookApi
+			key        = ''
+			secret     = ''
+			successUri = '/auth/oauth/onSuccess?provider=facebook'
+			failureUri = '/auth/oauth/onFailure?provider=facebook'
+			callback   = "${grails.serverURL}/oauth/facebook/callback"
+		}
+	}
 }

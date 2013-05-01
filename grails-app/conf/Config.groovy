@@ -60,11 +60,9 @@ grails.hibernate.cache.queries = true
 environments {
     development {
         grails.logging.jul.usebridge = true
-		grails.serverURL = "http://uni.peter.serwylo.com:8080/bn-elicitator"
     }
     production {
         grails.logging.jul.usebridge = false
-        grails.serverURL = "http://uni.peter.serwylo.com:8080/bn-elicitator"
     }
 }
 
