@@ -16,14 +16,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import bn.elicitator.init.MgmcDataLoader;
+
+import bn.elicitator.init.DataLoader
+import org.springframework.beans.factory.access.BootstrapException;
+
 import javax.servlet.ServletContext;
 
 class BnBootStrap {
 
+	def grailsApplication
+
 	def init = { ServletContext servletContext ->
 
-		new MgmcDataLoader().init( servletContext )
+		Class loaderClass = grailsApplication.config.bn?.dataLoaderClass
+		if ( !loaderClass ) {
+			throw new BootstrapException(
+					"Couldn't find bn.dataLoaderClassName in config. Please specify a class that extends DataLoader." )
+		}
+
+		try {
+			DataLoader loader = loaderClass.newInstance()
+			loader.init( servletContext )
+		} catch ( Exception e ) {
+			throw new BootstrapException( "Error when loading data from ${loaderClass?.name}: $e.message.", e );
+		}
 
 	}
 

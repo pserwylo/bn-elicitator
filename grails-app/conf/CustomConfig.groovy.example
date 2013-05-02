@@ -1,5 +1,9 @@
 // Copy this file to bn-elicitator.config.groovy, and specify the appropriate properties for mail and database setup before compiling
 
+bn {
+	dataLoaderClass = bn.elicitator.init.InsuranceDataLoader
+}
+
 grails {
 	mail {
 		host     = "smtp.gmail.com"
