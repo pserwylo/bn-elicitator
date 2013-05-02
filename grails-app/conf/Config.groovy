@@ -104,9 +104,10 @@ grails.plugins.springsecurity.userLookup.authoritiesPropertyName = 'roles'
 grails.plugins.springsecurity.authority.className                = 'bn.elicitator.auth.Role'
 grails.plugins.springsecurity.authority.nameField                = 'name'
 grails.plugins.springsecurity.securityConfigType                 = "InterceptUrlMap"
-
-grails.plugins.springsecurity.rememberMe.persistent = true
+grails.plugins.springsecurity.rememberMe.persistent              = true
+grails.plugins.springsecurity.ui.encodePassword                  = false // The Domain class for users does this for us.
 grails.plugins.springsecurity.rememberMe.persistentToken.domainClassName = 'bn.elicitator.auth.PersistentLogin'
+
 
 grails.plugins.springsecurity.interceptUrlMap = [
 

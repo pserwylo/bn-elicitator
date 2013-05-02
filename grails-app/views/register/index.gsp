@@ -8,6 +8,12 @@
 
 	<body>
 
+		<g:hasErrors bean="${command}">
+			<div class="errors">
+				<g:renderErrors bean="${command}" as="list" />
+			</div>
+		</g:hasErrors>
+
 		<fieldset class="default">
 			<legend>Username/password</legend>
 			<g:form action='register' name='registerForm' method="post">

@@ -28,6 +28,7 @@ class User {
 	String email
 	String username
 	String password
+	boolean accountLocked = false
 
 	private boolean enabled = true
 	boolean getEnabled() { enabled }
@@ -36,10 +37,6 @@ class User {
 	private boolean accountExpired = false
 	boolean getAccountExpired() { accountExpired }
 	void    setAccountExpired( boolean value ) {}
-
-	private boolean accountLocked = false
-	boolean getAccountLocked() { accountLocked }
-	void    setAccountLocked( boolean value ) {}
 
 	private boolean passwordExpired = false
 	boolean getPasswordExpired() { passwordExpired }
