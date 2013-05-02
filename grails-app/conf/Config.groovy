@@ -150,6 +150,13 @@ grails.plugins.dynamicController.mixins = [
 grails.plugins.springsecurity.oauth.domainClass = 'bn.elicitator.auth.OAuthID'
 
 grails.plugins.springsecurity.ui.register.defaultRoleNames = [ 'ROLE_EXPERT' ]
-grails.plugins.springsecurity.ui.register.emailBody        = ''
-grails.plugins.springsecurity.ui.register.emailFrom        = 'peter.serwylo@monash.edu'
-grails.plugins.springsecurity.ui.register.emailSubject     = 'Survey account'
+grails.plugins.springsecurity.ui.register.emailSubject     = "Confirm survey registration"
+grails.plugins.springsecurity.ui.register.emailBody        = '''\
+Hi $user.realName,<br/>
+<br/>
+Thanks for registering to complete this survey.<br/>
+Please visit <a href="$url">$url</a> to complete the registration.<br/>
+<br/>
+Cheers,<br />
+pete.
+'''

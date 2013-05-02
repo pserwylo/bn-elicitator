@@ -228,7 +228,7 @@ class SpringSecurityOAuthController {
 				}
 			}
 
-			if (!user.realName) {
+			if (!user.realName || user.realName == user.username) {
 				user.realName = facebookOAuthToken.facebookProfile.firstName
 				if (!user.validate()) {
 					user.realName = null
