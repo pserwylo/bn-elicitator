@@ -44,7 +44,7 @@
 				};
 
 				makeSlider( input_n, ${expertCount}, 0, 100 );
-				makeSlider( input_C, 3, 1, 20 );
+				makeSlider( input_C, ${participantsPerQuestion}, 1, 20 );
 				makeSlider( input_q, 10, 1, ${totalQuestions} );
 				makeSlider( input_t, 60, 1, 300 );
 
@@ -53,7 +53,7 @@
 				var get_n = function() { return input_n.slider( "value" ); };
 				var get_q = function() { return input_q.slider( "value" ); };
 				var get_t = function() { return input_t.slider( "value" ); };
-				var get_T = function() { return get_t() * get_q(); };
+				var get_T = function() { return get_t() * get_q() / 60; };
 
 				var set_n = function( value ) {
 					value = Math.ceil( value );
@@ -100,7 +100,7 @@
 				// Q = Total questions
 				// n = Number of Participants
 				// q = Questions asked of each participant
-				// t = Estimated time per question
+				// t = Estimated time per question (in seconds)
 				// T = Estimated total time expected for each participant
 
 				var converge_q = function( factor ) {
@@ -180,6 +180,16 @@
 		.output {
 			font-weight: bold;
 		}
+
+		li {
+			margin: 0 0 1.5em 0;
+		}
+
+		li.separator {
+			margin: 2em 0;
+			height: 0;
+			border-top: solid 1px lightgray;
+		}
 		</style>
 
 		<title>Admin Dashboard</title>
@@ -199,36 +209,38 @@
 					<form>
 						<ul>
 							<li>
-								<label>Q: Total questions</label>
+								<label>Q) Total questions:</label>
 								<span class="output" id="output__Q">${totalQuestions}</span>
 							</li>
 
 							<li>
-								<label for="slider_n">n: Number of participants</label>
+								<label for="slider_n">n) Number of participants:</label>
 								<span class="output" id="output_n">${expertCount}</span> (currently ${expertCount} participants)
 								<div id="slider_n"></div>
 							</li>
 
 							<li>
-								<label for="slider_C">C: Number of participants per question</label>
-								<span class="output" id="output__C"></span> seconds
+								<label for="slider_C">C) Number of participants per question:</label>
+								<span class="output" id="output__C">${participantsPerQuestion}</span>
 								<div id="slider_C"></div>
 							</li>
 
 							<li>
-								<label for="slider_q">q: Number of questions each</label>
+								<label for="slider_q">q) Number of questions each:</label>
 								<span class="output" id="output_q"></span>
 								<div id="slider_q"></div>
 							</li>
 
+							<li class="separator"></li>
+
 							<li>
-								<label for="slider_t">t: Estimated time per question</label>
-								<span class="output" id="output_t"></span> minutes
+								<label for="slider_t">t) Estimated time per question:</label>
+								<span class="output" id="output_t"></span> seconds
 								<div id="slider_t"></div>
 							</li>
 
 							<li>
-								<label for="output__T">T: Estimated total time per participant</label>
+								<label for="output__T">T) Estimated total time per participant:</label>
 								<span class="output" id="output__T"></span> minutes
 							</li>
 						</ul>

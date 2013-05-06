@@ -19,6 +19,7 @@
 package bn.elicitator
 
 import bn.elicitator.auth.*
+import grails.converters.JSON
 
 class AdminDashController {
 
@@ -45,6 +46,27 @@ class AdminDashController {
 			completedCurrentRound : delphiService.completedCurrentRound,
 		]
 
+	}
+
+	def ajaxSaveParticipantsPerQuestion() {
+		boolean success = false
+		int value       = -1
+		if ( params.containsKey( "participantsPerQuestion" ) ) {
+			int participantsPerQuestion = params.remove( "participantsPerQuestion" ) as int
+			if ( participantsPerQuestion < 0 ) {
+				participantsPerQuestion = 0
+			}
+			AppProperties.properties.targetParticipantsPerQuestion = participantsPerQuestion
+			AppProperties.properties.save( flush: true )
+			value = participantsPerQuestion
+			success = true
+		}
+
+		def result = [ success: success ]
+		if ( success ) {
+			result.value = value
+		}
+		render result as JSON
 	}
 
 	/**

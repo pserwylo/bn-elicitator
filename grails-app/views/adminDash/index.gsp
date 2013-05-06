@@ -23,7 +23,7 @@
 		<title>Admin Dashboard</title>
 		<style type="text/css">
 			.column-left {
-				width  : 250px;
+				width  : 350px;
 			}
 
 			.variable-item {
@@ -85,6 +85,11 @@
 
 			loadImage( ${appProperties.delphiPhase}, 1 );
 
+			$( '#targetParticipantsPerQuestion' ).change( function() {
+				var params = { participantsPerQuestion: this.value };
+				$.post( '${createLink( action: "ajaxSaveParticipantsPerQuestion" )}', params );
+			});
+
 		});
 
 		</g:javascript>
@@ -107,9 +112,7 @@
 		<div class="column-wrapper">
 
 			<div class="column-header">
-
 				<fieldset class="default ">
-
 					<legend>Study overview</legend>
 
 					<input type="button" value="Advance to next delphi phase" onclick="document.location = '${createLink( action: 'confirmAdvanceDelphiPhase' )}'" />
@@ -119,30 +122,31 @@
 						<div class="info">
 							<span class="label">Name:</span> ${appProperties.title}
 						</div>
-
 						<div class="info">
 							<span class="label">Delphi Phase:</span> ${appProperties.delphiPhase}
 						</div>
 					</div>
 
 				</fieldset>
-
 			</div>
 
 
 			<div class="column-left">
-
 				<fieldset class="default ">
-
 					<legend>Participants</legend>
 
 					<input type="button" class="" value="Manage Users" onclick="document.location = '${createLink( controller: 'user', action: 'list' )}'" />
 
 					<div class="overview">
 						<div class="info">
+							<label class="label">Participants per question:
+								<input id="targetParticipantsPerQuestion" type="text" style="width: 30px;" value="${appProperties.targetParticipantsPerQuestion}"/>
+							</label>
+							${questionsPerUser} (<g:link controller="allocateQuestions">details</g:link>)
+						</div>
+						<div class="info">
 							<span class="label">Total users:</span> ${userList.size()}
 						</div>
-
 						<div class="info">
 							<span class="label">Completed this round:</span> ${completedCurrentRound.size()}
 						</div>
@@ -160,14 +164,10 @@
 					</ul>
 
 				</fieldset>
-
 			</div>
 
-
 			<div class="column-footer">
-
 				<fieldset class="default ">
-
 					<legend>Results</legend>
 
 					<div class="widgets">
@@ -190,7 +190,6 @@
 					<div class="image stats"></div>
 					
 				</fieldset>
-
 			</div>
 		</div>
 	

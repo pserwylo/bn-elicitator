@@ -8,8 +8,9 @@ class AllocateQuestionsController {
 	def index() {
 
 		[
-			expertCount : userService.expertCount,
-			totalQuestions : allocateQuestionsService.countTotalQuestions()
+			expertCount             : userService.expertCount,
+			totalQuestions          : allocateQuestionsService.countTotalQuestions(),
+			participantsPerQuestion : AppProperties.properties.targetParticipantsPerQuestion
 		]
 
 	}
