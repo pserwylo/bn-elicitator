@@ -16,13 +16,15 @@ class AllocateQuestionsController {
 
 	def allocate( AllocateCmd cmd ) {
 
-		List<AllocateQuestionsService.Allocation> allocations = allocateQuestionsService.calcAllocations( 3 )
-		allocations.each { AllocateQuestionsService.Allocation allocation ->
+		allocateQuestionsService.calcAllocations( 3 )
+
+		Allocation.list().each { Allocation allocation ->
 
 			render """
 				<h3>User $allocation.user.username</h3>
+				<p>Total questions: $allocation.totalQuestionCount</p>
 				<ul>
-					<li>${allocation.questions.collect { "$it.parent -> $it.child" }.join( "</li><li>" )}</li>
+					<li>${allocation.variables.collect { "$it" }.join( "</li><li>" )}</li>
 				</ul>"""
 
 		}
