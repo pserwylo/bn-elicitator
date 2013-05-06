@@ -29,36 +29,36 @@ class InsuranceDataLoader extends DataLoader {
 			new Variable(
 				label: "GoodStudent",
 				readableLabel: "Good Student",
-				description: "Was the student attentive during driver training? Did they barely pass or get a perfect score?" ),
+				description: "Whether the student was attentive as they learnt to drive. For example, did they ace their driving test, or just barely pass?" ),
 
 			new Variable(
 				label: "Age",
-				readableLabel: "Age of client" ),
+				readableLabel: "Age of the client" ),
 
 			new Variable(
 				label: "SocioEcon",
 				readableLabel: "Socio-economic Status",
-				description: "What sort of background does the client come from?" ),
+				description: "The background that the client comes from. Can include multiple factors, such as their occupation, income or education." ),
 
 			new Variable(
 				label: "RiskAversion",
 				readableLabel: "Risk Aversion",
-				description: "Is the adventurous or cautious?" ),
+				description: "How cautious/adventurous the client is. " ),
 
 			new Variable(
 				label: "VehicleYear",
 				readableLabel: "Vehicle Age",
-				description: "When was the clients vehicle made? Recently or some years in the past?" ),
+				description: "The age of the clients vehicle." ),
 
 			new Variable(
 				label: "ThisCarDam",
 				readableLabel: "Damage to clients car",
-				description: "The damage acquired by the car owned by the client. None, mild, moderate or severe." ),
+				description: "The damage acquired by the car owned by the client, in the event of an accident (none, mild, moderate or severe)." ),
 
 			new Variable(
 				label: "RuggedAuto",
 				readableLabel: "Car Strength",
-				description: "Will the clients car break like an eggshell or hold together like a tank?" ),
+				description: "Whether the clients car would break like an eggshell or hold together like a tank in a crash." ),
 
 			new Variable(
 				label: "Accident",
@@ -67,8 +67,8 @@ class InsuranceDataLoader extends DataLoader {
 
 			new Variable(
 				label: "MakeModel",
-				readableLabel: "Car Make and Model",
-				description:  "Is the clients car a sports car, economy car, family sedan or a luxury car?" ),
+				readableLabel: "Car type",
+				description: "General category of the car, such as sports car, economy car, family sedan or a luxury car. This is defined by the body of the car (e.g. hatchback, station wagon) and the features it has." ),
 
 			new Variable(
 				label: "DrivQuality",
@@ -83,7 +83,7 @@ class InsuranceDataLoader extends DataLoader {
 			new Variable(
 				label: "Antilock",
 				readableLabel: "Car has Antilock Brakes",
-				description: "Does the clients car have antilock breaks installed? This feature helps prevent uncontrollable skidding." ),
+				description: "Whether the clients car has antilock breaks installed or not. These help prevent uncontrollable skidding." ),
 
 			new Variable(
 				label: "DrivingSkill",
@@ -122,25 +122,22 @@ class InsuranceDataLoader extends DataLoader {
 			new Variable(
 				label: "OtherCar",
 				readableLabel: "Other Cars Involvement",
-				description: "Other cars are involved in an accident with the client's car." ),
+				description: "Whether other cars are involved in an accident with the client's car." ),
 
+			/*
+			Removed for same reason as the MedicalCost: Government deals with medical insurance in Victoria, Australia.
+			In the paper by Binder et al, this pretty much just influences medical cost, and is influenced by two other
+			latent variables. As such, I think that it wont effect the overall structure much to remove it.
 			new Variable(
 				label: "Cushioning",
 				readableLabel: "Cushioning",
 				description: "The level of cushioning the clients car provides for the people inside in the event of an accident." ),
+			*/
 
 			new Variable(
 				label: "Airbag",
 				readableLabel: "Airbag",
 				description: "Whether or not there are any airbags installed in the clients car." ),
-
-			/*
-			Not included for Victoria (Australia) study, because liability is dealt with by
-			the government run TAC, and not the clients insurance company.
-			new Variable(
-				label: "ILiCost",
-				readableLabel: "Liability Costs",
-			*/
 
 			new Variable(
 				label: "DrivHist",
@@ -154,19 +151,30 @@ class InsuranceDataLoader extends DataLoader {
 
 		[
 
-			new Variable(
-				label: "PropCost",
-				readableLabel: "Expected Property Cost",
-				description:
-					"The amount of money which you (as the insurance company) would expect to pay in response to this having an accident (e.g. crashing into a car or building).\n\n" +
-					"The more you would expect to pay, the more excess and premium you should charge them to cater for that risk." ),
+			/*
+			Not included for Victoria (Australia) study, because  medical bills are dealt with by
+			the government run TAC, and not the clients insurance company.
+
+			 new Variable(
+				 label: "MedCost",
+				 readableLabel: "Expected Medical Costs",
+				 description:
+				 	"The amount of money the insurance company would be expected to pay to this client for medical costs arising from an accident." ),
+			 */
 
 			new Variable(
-				label: "MedCost",
-				readableLabel: "Expected Medical Costs",
+					label: "ILiCost",
+					readableLabel: "Cost to Insurer for Liability/Property",
+					description:
+						"The total cost to the insurer for 3rd party property damage, due to an accident caused by the client." ),
+
+			new Variable(
+				label: "PropCost",
+				readableLabel: "Total Cost to Insurer for All Cars",
 				description:
-					"The amount of money which you (as the insurance company) would expect to pay to this client for medical costs.\n\n" +
-					"The more you would expect to pay to them in medical costs, the more excess and premium you should charge them to cater for that risk." ),
+					"The total cost to the insurer for fixing all cars involved in an accident caused by the client." ),
+
+
 
 		]
 
@@ -197,7 +205,7 @@ class InsuranceDataLoader extends DataLoader {
 					<li>They could crash their car, and it will need to be fixed</li>
 					<li>They could crash into somebody else's car and that will need to be fixed</li>
 					<li>They can crash into buildings and other things which will need to be fixed</li>
-					<li>They can injure themselves, which will cost money in medical bills</li>
+					<li>All of the above</li>
 				</ul>
 			</p>
 
@@ -210,22 +218,14 @@ class InsuranceDataLoader extends DataLoader {
 			<h2>How will you do this?</h2>
 			<p>
 				At this point, we are purely interested in how the various factors which determine risk fit together.
-				You will be presented with a list of variables (which will start off small). As you answer questions
-				about how these variables are influenced, you will be asked about more variables. This is because as
-				you provide information to the system while answering questions, the system better understands the problem
-				at hand, and will have more questions for you.
-			</p>
-
-			<h2>Should I be scared?</h2>
-			<p>
-				No. At first it may seem like the survey is never ending, but it will quickly plateau out and you will
-				in fact complete it in a reasonable time frame.
+				You will be presented with a list of variables, and each one will be potentially influenced by other
+				variables. You will be asked which variables you think influence others.
 			</p>
 		"""
 
 		new AppProperties(
-			adminEmail          : "peter@serwylo.com",
-			url                 : "http://firstaid.infotech.monash.edu/survey/run",
+			adminEmail          : "peter.serwylo@monash.edu",
+			url                 : "http://survey.infotech.monash.edu/insurance",
 			title               : "The car insurance company",
 			delphiPhase         : 1,
 			elicitationPhase    : AppProperties.ELICIT_2_RELATIONSHIPS,
