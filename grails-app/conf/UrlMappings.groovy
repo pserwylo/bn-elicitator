@@ -12,5 +12,6 @@ class UrlMappings {
 		"/"   ( controller:'explain' )
 		"500" ( controller:'error', exception: Exception )
 		"/admin/manage/$action?" ( controller: "adminManage" )
+		"/auth/oauth/$action?" ( controller: "springSecurityOAuth" )
 	}
 }

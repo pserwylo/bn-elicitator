@@ -32,9 +32,7 @@ ul.potential-parents-list li.variable-item {
     height: 30px;
 }
 
-ul.potential-parents-list      li.variable-item .variable,
-ul#keepers                     li.variable-item .header .variable,
-ul#redundant-relationship-list li.variable-item .header .variable {
+ul.potential-parents-list      li.variable-item .variable {
     font-size: 13.5pt;
     font-style: normal;
     color: #48802c; /* mimic the colour of links from global.css */
@@ -64,7 +62,7 @@ ul.potential-parents-list li.variable-item.disagree {
     color: #666;
 }
 
-.redundant .variable, .mediating-chain .variable {
+.mediating-chain .variable {
 	padding: 0 0.2em;
 	color: #48802c;
 }
@@ -78,16 +76,11 @@ ul.potential-parents-list li.variable-item.disagree {
 	padding-top: 1em;
 }
 
-.redundant.content .info {
-	max-width: 500px;
-	margin: 0.5em 0.5em;
-}
-
 .answers label {
 	display: block;
 }
 
-.redundant, .mediating-chain, .answers, .info {
+.mediating-chain, .answers, .info {
 	font-size: 11pt;
 	color: #666;
 	margin: 0.4em 0;
@@ -115,17 +108,6 @@ table.form th {
 
 .reasons-list .me.doesnt-exist, .reasons-list .other.doesnt-exist {
     color: red;
-}
-
-.reasons .redundant {
-	font-size: 0.9em;
-	font-family: monospace;
-	color: #999;
-	text-decoration: line-through;
-}
-
-.reasons .redundant:after {
-	content: "<span class='redundnat-explain'>Because!</span>";
 }
 
 .bar-chart, .slider {
@@ -251,10 +233,6 @@ ul.variable-list li, ul.selected-variable-list li {
 /* PROBLEMS STYLES */
 .btn-toggle-details {
 	margin: 0.3em 0;
-}
-
-ul#redundant-relationship-list .indent li {
-	padding: 0;
 }
 
 /* ELICITING PARENTS STYLES */

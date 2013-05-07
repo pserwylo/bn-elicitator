@@ -58,30 +58,30 @@ grails.hibernate.cache.queries = true
 
 // set per-environment serverURL stem for creating absolute links
 environments {
-	development {
-		grails.logging.jul.usebridge = true
-	}
-	production {
-		grails.logging.jul.usebridge = false
-		// TODO: grails.serverURL = "http://www.changeme.com"
-	}
+    development {
+        grails.logging.jul.usebridge = true
+    }
+    production {
+        grails.logging.jul.usebridge = false
+    }
 }
 
 // log4j configuration
 log4j = {
-	// Example of changing the log pattern for the default console
-	// appender:
-	//
-	//appenders {
-	//    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
-	//}
-	
-	appenders {
-		rollingFile name: "stacktrace", maxFileSize: 1024, file: "/tmp/grails-stacktrace.log"
-	}
+    // Example of changing the log pattern for the default console
+    // appender:
+    //
+    //appenders {
+    //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
+    //}
 
-	logger {
-		com.linkedin.grails = "info" // http://grails.org/plugin/profiler
+	appenders {
+		console     name: "stdout",
+		            layout: pattern(conversionPattern: "%c{2} %m%n")
+
+		rollingFile name: "bn",
+		            maxFileSize: 1024,
+		            file: "/tmp/bn-elicitator.log"
 	}
 
 	error 'org.codehaus.groovy.grails.web.servlet',  //  controllers
@@ -104,9 +104,10 @@ grails.plugins.springsecurity.userLookup.authoritiesPropertyName = 'roles'
 grails.plugins.springsecurity.authority.className                = 'bn.elicitator.auth.Role'
 grails.plugins.springsecurity.authority.nameField                = 'name'
 grails.plugins.springsecurity.securityConfigType                 = "InterceptUrlMap"
-
-grails.plugins.springsecurity.rememberMe.persistent = true
+grails.plugins.springsecurity.rememberMe.persistent              = true
+grails.plugins.springsecurity.ui.encodePassword                  = false // The Domain class for users does this for us.
 grails.plugins.springsecurity.rememberMe.persistentToken.domainClassName = 'bn.elicitator.auth.PersistentLogin'
+grails.plugins.springsecurity.oauth.registration.roleNames       = [ 'ROLE_EXPERT' ]
 
 grails.plugins.springsecurity.interceptUrlMap = [
 
@@ -120,6 +121,9 @@ grails.plugins.springsecurity.interceptUrlMap = [
 
 	'/elicit/**'      : [ 'ROLE_ADMIN', 'ROLE_CONSENTED' ],
 
+	'/auth/oauth/**'  : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/register/**'    : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/oauth/**'       : ['IS_AUTHENTICATED_ANONYMOUSLY'],
 	'/login/**'       : ['IS_AUTHENTICATED_ANONYMOUSLY'],
 	'/logout/**'      : ['IS_AUTHENTICATED_ANONYMOUSLY'],
 	'/static/**'      : ['IS_AUTHENTICATED_ANONYMOUSLY'],
@@ -174,3 +178,17 @@ ckeditor {
 		}
 	}
 }
+
+grails.plugins.springsecurity.oauth.domainClass = 'bn.elicitator.auth.OAuthID'
+
+grails.plugins.springsecurity.ui.register.defaultRoleNames = [ 'ROLE_EXPERT' ]
+grails.plugins.springsecurity.ui.register.emailSubject     = "Confirm survey registration"
+grails.plugins.springsecurity.ui.register.emailBody        = '''\
+Hi $user.realName,<br/>
+<br/>
+Thanks for registering to complete this survey.<br/>
+Please visit <a href="$url">$url</a> to complete the registration.<br/>
+<br/>
+Cheers,<br />
+pete.
+'''

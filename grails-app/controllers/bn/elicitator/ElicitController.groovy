@@ -39,9 +39,9 @@ package bn.elicitator
 import bn.elicitator.auth.*
 import bn.elicitator.events.CreatedVariableEvent
 import bn.elicitator.events.FinishedRoundEvent
-import bn.elicitator.events.KeptRedundantEvent
+
 import bn.elicitator.events.RemovedCycleEvent
-import bn.elicitator.events.RemovedRedundantEvent
+
 import bn.elicitator.events.SaveRelationshipEvent
 import bn.elicitator.events.SaveRelationshipLaterRoundEvent
 import bn.elicitator.events.ViewRelationshipsEvent
@@ -95,27 +95,9 @@ class ElicitController {
 
 	def fixProblems =
 	{
-		List<BnService.RedundantRelationship> redundantRelationships = bnService.getRedundantRelationships()
 		List<BnService.CyclicalRelationship> cyclicalRelationships = bnService.getCyclicalRelationships()
-
-		List<String>                          errors           = []
-		List<BnService.RedundantRelationship> redundantKeepers = []
-		List<BnService.RedundantRelationship> redundantLosers  = []
-		List<List<Variable>>                  cyclicalLosers   = []
-
-		for ( BnService.RedundantRelationship redundantRelationship in redundantRelationships ) {
-			String key = redundantRelationship.redundantParent.label + "-" + redundantRelationship.child.label + "-keep";
-			String keep = params[ key ];
-			if ( keep == null ) {
-				errors.add( "Error: Should have specified a relationship for '" + redundantRelationship.relationship + "'" );
-			} else {
-				if ( keep == "keep" ) {
-					redundantKeepers.add( redundantRelationship )
-				} else {
-					redundantLosers.add( redundantRelationship )
-				}
-			}
-		}
+		List<String>                         errors                = []
+		List<List<Variable>>                 cyclicalLosers        = []
 
 		for ( BnService.CyclicalRelationship cyclicalRelationship in cyclicalRelationships ) {
 			Boolean removeAny = false
@@ -142,66 +124,11 @@ class ElicitController {
 			render errors.join( "<br />" )
 			return
 		} else {
-			bnService.fixProblems( redundantKeepers, redundantLosers, cyclicalLosers )
+			bnService.fixProblems( cyclicalLosers )
 		}
 
 		def targetUri = params['redirectTo'] ?: createLink( action: 'index' )
 		redirect( targetUri: targetUri )
-	}
-
-	private void fixRedundant( Boolean keep, String parentLabel, String childLabel ) {
-		Variable parent = Variable.findByLabel( parentLabel )
-		Variable child  = Variable.findByLabel( childLabel )
-
-		if ( parent == null || child == null )
-		{
-			String label = parent == null ? parentLabel : childLabel
-			throw new Exception( "Not found: $label" )
-		}
-		else
-		{
-			List<BnService.RedundantRelationship> redundantRelationships = bnService.getRedundantRelationships()
-			BnService.RedundantRelationship rel = redundantRelationships.find {
-				it.relationship.child == child && it.relationship.parent == parent
-			}
-
-			if ( rel ) {
-				if ( keep ) {
-					bnService.keepRedundantRelationship( rel )
-					KeptRedundantEvent.logEvent( rel.relationship )
-				} else {
-					bnService.removeRedundantRelationship( rel )
-					RemovedRedundantEvent.logEvent( rel.relationship )
-				}
-			}
-		}
-
-		redirectToProblems()
-
-	}
-
-	def keepRedundant = {
-		fixRedundant( true, params["parent"] as String, params["child"] as String )
-	}
-
-	def removeRegular = {
-		Variable parent = Variable.findByLabel( (String)params["parent"] )
-		Variable child = Variable.findByLabel( (String)params["child"] )
-
-		if ( parent == null || child == null )
-		{
-			String label = parent == null ? parentLabel : childLabel
-			throw new Exception( "Not found: $label" )
-		}
-		else
-		{
-			bnService.removeRegularRelationship( parent, child )
-			redirectToProblems()
-		}
-	}
-
-	def removeRedundant = {
-		fixRedundant( false, params["parent"] as String, params["child"] as String )
 	}
 
 	def removeCycle = {
@@ -230,7 +157,7 @@ class ElicitController {
 	}
 
 	/**
-	 * Check if there are any (potentially) redundant relationships and present them to the user for confirmation.
+	 * Check if there are any cyclical relationships and present them to the user to resolve.
 	 * @return
 	 */
 	def problems = {
@@ -242,37 +169,19 @@ class ElicitController {
 	private Boolean checkProblems( redirectTo ) {
 
 		List<BnService.CyclicalRelationship> cyclicalRelationships = bnService.getCyclicalRelationships()
-		List<BnService.RedundantRelationship> redundantRelationships = []
 
-		def showProblems = false
-
-		if ( cyclicalRelationships.size() > 0 ) {
-			showProblems = true
-		} else {
-			redundantRelationships = bnService.getRedundantRelationships().findAll {
-				it.relationship.isRedundant == Relationship.IS_REDUNDANT_UNSPECIFIED
-			}
-
-			if ( redundantRelationships.size() > 0 ) {
-				showProblems = true
-			}
-		}
-
-		if ( showProblems ) {
+		boolean show = cyclicalRelationships.size() > 0
+		if ( show ) {
+			show = true
 			render (
 				view: 'problems',
 				model: [
-					redirectTo             : redirectTo,
-					redundantRelationships : redundantRelationships,
-					cyclicalRelationships  : cyclicalRelationships,
-					scroll                 : flash.containsKey( "scroll" ) ? flash["scroll"] : 0
+					redirectTo            : redirectTo,
+					cyclicalRelationships : cyclicalRelationships,
+					scroll                : flash.containsKey( "scroll" ) ? flash["scroll"] : 0
 				])
 		}
-		return !showProblems
-	}
-
-	def ajaxSaveDetails = {
-
+		return !show
 	}
 
 	def ajaxGetDetails = {
@@ -465,12 +374,7 @@ class ElicitController {
 
 	def index = {
 		this.variableService.initRelationships()
-		List<Variable> varList
-		if ( delphiService.hasPreviousPhase ) {
-			varList = this.variableService.getAllChildVarsLaterRound()
-		} else {
-			varList = this.variableService.getAllChildVars()
-		}
+		List<Variable> varList = this.variableService.getAllChildVars()
 
 		return [
 			user                      : userService.current,

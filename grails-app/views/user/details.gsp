@@ -107,7 +107,7 @@
 					[ label: 'Logged in/out', fields: [ 'Login', 'Logout' ] ],
 					[ label: 'Saved relationship', fields: [ 'SaveRelationship' ] ],
 					[ label: 'Viewed relationship', fields: [ 'ViewRelationship' ] ],
-					[ label: 'Fixed problems', fields: [ 'KeptRedundant', 'RemovedRedundant', 'RemovedCycle' ] ],
+					[ label: 'Fixed problems', fields: [ 'RemovedCycle' ] ],
 			]}" />
 
 			<div class="header">History</div>

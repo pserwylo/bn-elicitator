@@ -43,16 +43,20 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        runtime ":hibernate:$grailsVersion"
-        runtime ":jquery:1.7.1"
-        runtime ":resources:1.1.6"
+		runtime ":hibernate:$grailsVersion"
+		runtime ":jquery:1.7.1"
+		runtime ":resources:1.1.6"
 		runtime ":database-migration:1.3.2"
+		runtime ':oauth:2.0.1'
 
 		compile ":mail:1.0.1"
 		compile ":jquery:1.7.1"
 		compile ":jquery-ui:1.8.24"
 		compile ":resources:1.1.6"
+		compile ":famfamfam:1.0.1"
 		compile ":spring-security-core:1.2.7.3"
+		compile ":spring-security-ui:0.2"
+		compile ":spring-security-oauth:2.0.1.1"
 		compile ":app-info:1.0.2"
         compile ":ckeditor:3.6.2.2"
 

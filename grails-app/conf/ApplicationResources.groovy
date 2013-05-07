@@ -41,6 +41,11 @@ modules = {
 
 	contentEdit {
 		resource url: 'css/contentEdit.css'
+
+	}
+
+	auth {
+		resource url: 'css/auth.css'
 	}
 
 	explain {

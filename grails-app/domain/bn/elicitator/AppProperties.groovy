@@ -47,6 +47,8 @@ class AppProperties {
 
 	String url = ""
 
+	Integer targetParticipantsPerQuestion = 4
+
 	/**
 	 * Lazily load, and keep a reference to the {@link AppProperties} for this web app.
 	 * @return

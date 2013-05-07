@@ -18,13 +18,14 @@
 
 package bn.elicitator
 
-import bn.elicitator.auth.Role
-import bn.elicitator.auth.User
+import bn.elicitator.auth.*
+import grails.plugins.springsecurity.SpringSecurityService
 
 class ExplainController {
 
-	def userService
-	def springSecurityService
+	UserService              userService
+	SpringSecurityService    springSecurityService
+	AllocateQuestionsService allocateQuestionsService
 
 	def index() {
 
@@ -58,16 +59,26 @@ class ExplainController {
 
 		if ( params["readStatement"] == "1" )
 		{
-			User user          = userService.current
-			user.hasConsented  = true
-			user.consentedDate = new Date()
-			user.save( flush: true )
+			User user = userService.current
+			if ( user.hasConsented ) {
+				redirect( controller: 'elicit' )
+			} else {
+				user.hasConsented  = true
+				user.consentedDate = new Date()
+				user.save( flush: true )
 
-			Role.consented.addUser( user, true )
+				Role.consented.addUser( user, true )
 
-			springSecurityService.reauthenticate( user.username )
+				if ( user.roles.contains( Role.expert ) ) {
+					allocateQuestionsService.allocateToUser( user )
+				} else {
+					new Allocation( user: user, variables: [], totalQuestionCount: 0 ).save()
+				}
 
-			redirect( controller: "elicit" )
+				springSecurityService.reauthenticate( user.username )
+
+				redirect( controller: "elicit" )
+			}
 		}
 		else
 		{

@@ -1,6 +1,20 @@
 // Copy this file to bn-elicitator.config.groovy, and specify the appropriate properties for mail and database setup before compiling
 
+environments {
+	development {
+		grails.serverURL = "http://host.name/path/to/deployment"
+	}
+	production {
+		grails.serverURL = "http://host.name/path/to/deployment"
+	}
+}
+
+bn {
+	dataLoaderClass = bn.elicitator.init.InsuranceDataLoader
+}
+
 grails {
+	plugins.springsecurity.ui.register.emailFrom    = "peter.serwylo@monash.edu"
 	mail {
 		host     = "smtp.gmail.com"
 		port     = 465
@@ -22,4 +36,21 @@ dataSource {
 	dialect         = "org.hibernate.dialect.MySQL5InnoDBDialect"
 	username        = "username"
 	password        = "username"
+}
+
+// I wanted to move most of this to the regular config, but I need access to the
+// serverURL variable which is defined above, so I just put the entire configuration
+// here. Long story short, only add your key and your secret to the CustomConfig.groovy,
+// don't modify the other options
+oauth {
+	providers {
+		facebook {
+			api        = FacebookApi
+			key        = ''
+			secret     = ''
+			successUri = '/auth/oauth/onSuccess?provider=facebook'
+			failureUri = '/auth/oauth/onFailure?provider=facebook'
+			callback   = "${grails.serverURL}/oauth/facebook/callback"
+		}
+	}
 }

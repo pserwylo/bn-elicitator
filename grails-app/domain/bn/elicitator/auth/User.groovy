@@ -9,18 +9,26 @@ class User {
 
 	static constraints = {
 		consentedDate nullable: true, blank: true
+
+		// Need to allow null so that validate() works during oauth stuff...
+		email         nullable: true, blank: true
+		realName      nullable: true, blank: true
+		password      nullable: true, blank: true
 	}
 
 	static mapping = {
 		table "shiro_user"
 		username blank: false, unique: true
-		password blank: false, column: "password_hash"
+		password column: "password_hash"
 	}
+
+	static hasMany = [ oAuthIDs: OAuthID ]
 
 	String realName
 	String email
 	String username
 	String password
+	boolean accountLocked = false
 
 	private boolean enabled = true
 	boolean getEnabled() { enabled }
@@ -29,10 +37,6 @@ class User {
 	private boolean accountExpired = false
 	boolean getAccountExpired() { accountExpired }
 	void    setAccountExpired( boolean value ) {}
-
-	private boolean accountLocked = false
-	boolean getAccountLocked() { accountLocked }
-	void    setAccountLocked( boolean value ) {}
 
 	private boolean passwordExpired = false
 	boolean getPasswordExpired() { passwordExpired }
@@ -62,6 +66,9 @@ class User {
 
 	void setUsername( String value ) {
 		this.username = value.replace( ' ', '_' )
+		if ( !this.realName ) {
+			this.realName = this.username
+		}
 	}
 
 	Date getLastLoginDate() {

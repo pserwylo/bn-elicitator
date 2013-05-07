@@ -28,13 +28,29 @@ class VariableService
 	DelphiService delphiService
 	UserService   userService
 
-	/**
-	 * Calculates how many variable the user has visited (seen in the browser).
-	 */
-	int getVisitedCount( User user )
-	{
-		VisitedVariable.countByVisitedByAndDelphiPhase( user, AppProperties.properties.delphiPhase )
-	} 
+	public void eachVariableClass( Closure closure ) {
+
+		Map<Long,List<Variable>> categories = [:]
+
+		List<VariableClass> classes = VariableClass.list();
+		List<Variable> variables    = Variable.list();
+
+		classes.each { categories.put( it.id, [] ) }
+
+		variables.each { var ->
+			categories[ var.variableClass.id ].add( var )
+		}
+
+		classes.each { VariableClass varClass ->
+
+			List<Variable> potentialParents = []
+			varClass.potentialParents.each { VariableClass parentClass ->
+				potentialParents.addAll( categories[ parentClass.id ] )
+			}
+
+			closure( varClass, categories[ varClass.id ], potentialParents )
+		}
+	}
 
 	/**
 	 * Recursively searches backwards from the 'toSearch' variable, and stops when all of its parents have already been
@@ -65,35 +81,12 @@ class VariableService
 		}
 	}
 
-	public List<Variable> getInitialChildVars()
-	{
-		return Variable.findAllByVariableClass( VariableClass.problem )
-	}
-
-	public List<Variable> getAllChildVarsLaterRound() {
-		return Relationship.findAllByDelphiPhaseAndExists( delphiService.previousPhase, true )*.child.toSet().toList().sort( new VariableSorter() )
-	}
-
 	/**
 	 * Get all variables for which we want to elicit parents for.
 	 * @return
 	 */
-	public List<Variable> getAllChildVars() 
-	{
-		List<Variable> initialChildren = getInitialChildVars()
-
-		List<Variable> toExclude = []
-		List<Variable> parents = findAllRelatedVars( initialChildren, toExclude )
-		initialChildren.addAll( parents )
-		initialChildren = initialChildren.toSet().toList() // Hacky way to filter non-unique members out...
-
-		if ( delphiService.hasPreviousPhase ) {
-			initialChildren = initialChildren.findAll { child ->
-				Relationship.countByDelphiPhaseAndChildAndExists( delphiService.previousPhase, child, true ) > 0
-			}
-		}
-
-		return initialChildren.sort( new VariableSorter() )
+	public List<Variable> getAllChildVars() {
+		Allocation.findByUser( userService.current ).variables.sort( new VariableSorter() )
 	}
 
 	class VariableSorter implements Comparator<Variable> {
@@ -155,16 +148,13 @@ class VariableService
 	void initRelationships() {
 		Integer count = Relationship.countByCreatedByAndDelphiPhase( userService.current, this.delphiService.phase )
 		if ( count == 0 ) {
-			List<Variable> allVariables = Variable.list()
-			Map<VariableClass, List<Variable>> potentialParentsCache = [:]
-			for ( Variable child in allVariables ) {
-				// We don't want to call this so many times when we really only need to do it a couple of times...
-				if ( !potentialParentsCache.containsKey( child.variableClass ) ) {
-					potentialParentsCache[ child.variableClass ] = this.getPotentialParents( child )
+			Allocation allocation = Allocation.findByUser( userService.current )
+			eachVariableClass { VariableClass varClass, List<Variable> varsInClass, List<Variable> potentialParents ->
+				allocation.variables.each { child ->
+					if ( varsInClass.contains( child ) ) {
+						this.createRelationships( child, potentialParents )
+					}
 				}
-				List<Variable> potentialParents = potentialParentsCache[ child.variableClass ];
-
-				this.createRelationships( child, potentialParents )
 			}
 		}
 	}
@@ -175,7 +165,7 @@ class VariableService
 	 * {@link Relationship#exists} to false.
 	 * @param child
 	 * @param potentialParents Just to reduce the amount of work (if we already have a reference to it, just pass it in,
-	 * otherwise we'll get it outselves here).
+	 * otherwise we'll get it ourselves here).
 	 */
 	void createRelationships( Variable child, List<Variable> potentialParents = null ) {
 
@@ -197,7 +187,6 @@ class VariableService
 					createdBy:   userService.current,
 					delphiPhase: AppProperties.properties.delphiPhase,
 					exists:      oldRelationship ? oldRelationship.exists : false,
-					isRedundant: oldRelationship?.exists ? oldRelationship?.isRedundant : Relationship.IS_REDUNDANT_UNSPECIFIED,
 				).save( failOnError: true )
 			}
 		}
@@ -220,7 +209,6 @@ class VariableService
 	 * Finds all parents for each of 'children'.
 	 * @param children
 	 * @return
-	 * @see getSpecifiedParents( Variable )
 	 */
 	List<Variable> getSpecifiedParents( List<Variable> children ) {
 		return Relationship.findAllByCreatedByAndDelphiPhaseAndChildInListAndExists( userService.current, delphiService.phase, children, true )*.parent

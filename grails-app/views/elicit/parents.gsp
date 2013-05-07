@@ -418,7 +418,7 @@
 
 
 				buttonBack.click( function() {
-					document.location = '${createLink( action : 'index' )}';
+					document.location = '${createLink( action : 'redirectToProblems' )}';
 				});
 
 
