@@ -16,7 +16,7 @@ package bn.elicitator.init
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-class DivyInsuranceDataLoader extends MgmcDataLoader {
+class DivyInsuranceDataLoader extends InsuranceDataLoader {
 
 	protected void initOther() {
 		super.initOther()

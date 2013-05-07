@@ -68,7 +68,13 @@ class ExplainController {
 				user.save( flush: true )
 
 				Role.consented.addUser( user, true )
-				allocateQuestionsService.allocateToUser( user )
+
+				if ( user.roles.contains( Role.expert ) ) {
+					allocateQuestionsService.allocateToUser( user )
+				} else {
+					new Allocation( user: user, variables: [], totalQuestionCount: 0 ).save()
+				}
+
 				springSecurityService.reauthenticate( user.username )
 
 				redirect( controller: "elicit" )

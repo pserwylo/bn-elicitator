@@ -107,7 +107,7 @@ grails.plugins.springsecurity.securityConfigType                 = "InterceptUrl
 grails.plugins.springsecurity.rememberMe.persistent              = true
 grails.plugins.springsecurity.ui.encodePassword                  = false // The Domain class for users does this for us.
 grails.plugins.springsecurity.rememberMe.persistentToken.domainClassName = 'bn.elicitator.auth.PersistentLogin'
-
+grails.plugins.springsecurity.oauth.registration.roleNames       = [ 'ROLE_EXPERT' ]
 
 grails.plugins.springsecurity.interceptUrlMap = [
 

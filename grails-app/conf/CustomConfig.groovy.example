@@ -43,9 +43,6 @@ dataSource {
 // here. Long story short, only add your key and your secret to the CustomConfig.groovy,
 // don't modify the other options
 oauth {
-	registration {
-		roleNames = [ 'ROLE_EXPERT' ]
-	}
 	providers {
 		facebook {
 			api        = FacebookApi
