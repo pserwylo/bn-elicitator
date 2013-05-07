@@ -374,12 +374,7 @@ class ElicitController {
 
 	def index = {
 		this.variableService.initRelationships()
-		List<Variable> varList
-		if ( delphiService.hasPreviousPhase ) {
-			varList = this.variableService.getAllChildVarsLaterRound()
-		} else {
-			varList = this.variableService.getAllChildVars()
-		}
+		List<Variable> varList = this.variableService.getAllChildVars()
 
 		return [
 			user                      : userService.current,

@@ -4,7 +4,8 @@ import bn.elicitator.auth.User
 
 class AllocateQuestionsService {
 
-	UserService userService
+	UserService     userService
+	VariableService variableService
 
 	/**
 	 * For each variable class, figure out how many variables there are in it,
@@ -14,7 +15,7 @@ class AllocateQuestionsService {
 	 */
 	int countTotalQuestions() {
 		int count = 0;
-		eachVariableClass { VariableClass varClass, List<Variable> varsInClass, List<Variable> potentialParents ->
+		variableService.eachVariableClass { VariableClass varClass, List<Variable> varsInClass, List<Variable> potentialParents ->
 			int countVarsInClass         = varsInClass.size()
 			int countVarsInParentClasses = potentialParents.size()
 			count += ( countVarsInClass * countVarsInParentClasses )
@@ -22,33 +23,7 @@ class AllocateQuestionsService {
 		return count
 	}
 
-	private void eachVariableClass( Closure closure ) {
-
-		Map<VariableClass,List<Variable>> categories = [:]
-
-		List<VariableClass> classes = VariableClass.list();
-		List<Variable> variables    = Variable.list();
-
-		classes.each { categories.put( it, [] ) }
-
-		variables.each { var ->
-			categories[ var.variableClass ].add( var )
-		}
-
-		classes.each { VariableClass varClass ->
-
-			List<Variable> potentialParents = []
-			varClass.potentialParents.each { VariableClass parentClass ->
-				potentialParents.addAll( categories[ parentClass ] )
-			}
-
-			closure( varClass, categories[ varClass ], potentialParents )
-		}
-	}
-
-	List<Allocation> calcAllocations( int participantsPerQuestion ) {
-
-		Allocation.list()*.delete();
+	List<Allocation> calcAllocationsForAllUsers( int participantsPerQuestion ) {
 
 		List<User> experts = userService.expertList
 		List<Allocation> allocations = experts.collect { new Allocation( user: it ) }
@@ -73,7 +48,7 @@ class AllocateQuestionsService {
 			return smallest[ index ]
 		}
 
-		eachVariableClass { VariableClass varClass, List<Variable> varsInClass, List<Variable> potentialParents ->
+		variableService.eachVariableClass { VariableClass varClass, List<Variable> varsInClass, List<Variable> potentialParents ->
 			for ( Variable child in varsInClass ) {
 				// Find a bunch of users (who are at the bottom of the
 				// pecking order so far) to assign this question to...
@@ -86,8 +61,54 @@ class AllocateQuestionsService {
 			}
 		}
 
-		allocations*.save( failOnError: true )
-
 		return allocations
+	}
+
+	public List<Variable> getVarsWithLowestAllocation( int numVars ) {
+
+		List<Variable> allVars = Variable.list()
+		Collections.shuffle( allVars )
+
+		if ( allVars.size() < numVars ) {
+			return []
+		}
+
+		Map<Variable, Integer> allocationCount = [:]
+		allVars.each { allocationCount[ it ] = 0 }
+		List<Allocation> currentAllocations = Allocation.list()
+		currentAllocations.each { allocation ->
+			allocation.variables.each { var ->
+				allocationCount[ var ] ++
+			}
+		}
+
+		List<Variable> lowestCount = []
+		while ( lowestCount.size() < numVars ) {
+
+			Map.Entry<Variable, Integer> lowestEntry = null
+			allocationCount.each { Map.Entry<Variable, Integer> entry ->
+				boolean used = lowestCount.contains( entry.key )
+				if ( ( !lowestEntry || lowestEntry.value > entry.value ) && !used )  {
+					lowestEntry = entry
+				}
+			}
+
+			lowestCount.add( lowestEntry.key )
+		}
+
+		return lowestCount
+	}
+
+	public void allocateToUser( User user ) {
+		List<Variable> varsToAllocate = getVarsWithLowestAllocation( AppProperties.properties.targetParticipantsPerQuestion )
+		Allocation allocation = new Allocation( user: user )
+		variableService.eachVariableClass { VariableClass varClass, List<Variable> varsInClass, List<Variable> potentialParents ->
+			varsToAllocate.each { varToAllocate ->
+				if ( varsInClass.contains( varToAllocate ) ) {
+					allocation.addVariable( varToAllocate, potentialParents )
+				}
+			}
+		}
+		allocation.save( flush: true, failOnError: true )
 	}
 }

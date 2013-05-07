@@ -18,6 +18,10 @@
 
 package bn.elicitator
 
+import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang.builder.EqualsBuilder
+import org.apache.commons.lang.builder.HashCodeBuilder
+
 /**
  * Variable classes have been defined by Kjærulff, U. B. & Madsen, A. L. (Chapter 6, page 150).
  */
@@ -42,13 +46,27 @@ class VariableClass {
 	String toString() { return readableLabel ?: name }
 
 	/**
-	 * Nicely capitalized version of the name.
-	 * http://stackoverflow.com/questions/681807/groovy-gdk-equivalent-of-apache-commons-stringutils-capitalizestr-or-perls-uc
-	 * @return First character of name is upper case, rest is as is.
+	 * Capitalized version of the name.
 	 */
 	String getNiceName()
 	{
-		return name[0].toUpperCase() + name[1..-1];
+		return StringUtils.capitalize( name );
+	}
+
+	// http://stackoverflow.com/questions/27581/overriding-equals-and-hashcode-in-java/27609#27609
+	boolean equals( Object obj ) {
+		if ( obj == null ) {
+			return false
+		}
+		if ( !( obj instanceof VariableClass ) ) {
+			return false
+		}
+		VariableClass rhs = (VariableClass)obj;
+		new EqualsBuilder().append( name, rhs.name ).isEquals()
+	}
+
+	int hashCode() {
+		new HashCodeBuilder( 5, 7 ).append( name ).hashCode()
 	}
 
 	static final BACKGROUND = "background";

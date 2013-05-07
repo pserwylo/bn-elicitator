@@ -19,6 +19,8 @@
 package bn.elicitator
 
 import bn.elicitator.auth.User
+import org.apache.commons.lang.builder.EqualsBuilder
+import org.apache.commons.lang.builder.HashCodeBuilder
 
 class Variable implements Comparable<Variable> {
 	
@@ -88,6 +90,22 @@ class Variable implements Comparable<Variable> {
 			desc += "Synonyms: " + synonyms.join( ", " );
 		}
 		return desc
+	}
+
+	// http://stackoverflow.com/questions/27581/overriding-equals-and-hashcode-in-java/27609#27609
+	boolean equals( Object obj ) {
+		if ( obj == null ) {
+			return false
+		}
+		if ( !( obj instanceof Variable ) ) {
+			return false
+		}
+		Variable rhs = (Variable)obj;
+		new EqualsBuilder().append( label, rhs.label ).isEquals()
+	}
+
+	int hashCode() {
+		new HashCodeBuilder( 3, 5 ).append( label ).hashCode()
 	}
 
 	/**

@@ -17,7 +17,7 @@ class AllocateQuestionsController {
 
 	def allocate( AllocateCmd cmd ) {
 
-		allocateQuestionsService.calcAllocations( 3 )
+		allocateQuestionsService.calcAllocationsForAllUsers( 3 )
 
 		Allocation.list().each { Allocation allocation ->
 

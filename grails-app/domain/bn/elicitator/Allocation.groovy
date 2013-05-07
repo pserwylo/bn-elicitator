@@ -4,13 +4,16 @@ import bn.elicitator.auth.User
 
 class Allocation {
 
-	List<Variable> variables = []
+	static hasMany = [ variables: Variable ]
 
 	int totalQuestionCount   = 0
 
 	User user
 
 	void addVariable( Variable var, List<Variable> potentialParents ) {
+		if ( !variables ) {
+			variables = []
+		}
 		variables.add( var )
 		totalQuestionCount += potentialParents.size()
 	}
