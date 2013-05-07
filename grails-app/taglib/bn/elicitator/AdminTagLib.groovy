@@ -24,6 +24,60 @@ class AdminTagLib {
 
 	static namespace = "bnAdmin"
 
+	/**
+	 * Output a list of variables, and say how many participants they've been allocated to.
+	 * The variables are grouped based on how many participants they're allocated to, and each group
+	 * has a h2 explaining this. There will also be a tooltip which you can hover over to see who they
+	 * are allocated to.
+	 */
+	def allocationList = {
+		List<Variable> allVars          = Variable.list()
+		List<Allocation> allAllocations = Allocation.list()
+		Map<Variable, Integer> allocationCounts = [:]
+		int maxCount = Integer.MIN_VALUE
+		int minCount = Integer.MAX_VALUE
+		allVars.each { var ->
+			int count = allAllocations.count { it.variables.contains( var ) }
+			allocationCounts.put( var, count )
+			if ( count > maxCount ) {
+				maxCount = count
+			}
+			if ( count < minCount ) {
+				minCount = count
+			}
+		}
+
+		for ( int i in minCount..maxCount ) {
+
+			String header = i + " participant" + ( i == 1 ? '' : 's' )
+			out << "<h2>$header</h2>"
+
+			// All variables who are allocated to $i participants...
+			List<Variable> iVars = allocationCounts.collect { it.value == i ? it.key : null }.findAll { it != null }
+			if ( iVars.size() == 0 ) {
+
+				out << "<p>None</p>"
+
+			} else {
+
+				out << "<ul class='variable-list'>"
+
+				iVars.each { var ->
+					String usersString = allAllocations.findAll { it.variables.contains( var ) }*.user*.username.join( "\n" )
+
+					out << """
+						<li class='variable-item'>
+							$var.readableLabel
+							${bn.tooltip( [:] ) { usersString }}
+						</li>
+"""
+				}
+
+				out << "</ul>"
+			}
+		}
+	}
+
 	def noneFound = {
 		out << "None found..."
 	}

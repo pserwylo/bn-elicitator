@@ -139,12 +139,6 @@
 
 					<div class="overview">
 						<div class="info">
-							<label class="label">Participants per question:
-								<input id="targetParticipantsPerQuestion" type="text" style="width: 30px;" value="${appProperties.targetParticipantsPerQuestion}"/>
-							</label>
-							${questionsPerUser} (<g:link controller="allocateQuestions">details</g:link>)
-						</div>
-						<div class="info">
 							<span class="label">Total users:</span> ${userList.size()}
 						</div>
 						<div class="info">
@@ -162,6 +156,24 @@
 							</li>
 						</g:each>
 					</ul>
+
+				</fieldset>
+			</div>
+
+			<div class="column-right">
+				<fieldset class="default ">
+					<legend>Variable Allocations</legend>
+
+					<div class="overview">
+						<div class="info">
+							<label class="label">Participants per question:
+								<input id="targetParticipantsPerQuestion" type="text" style="width: 30px;" value="${appProperties.targetParticipantsPerQuestion}"/>
+							</label>
+							${questionsPerUser} (<g:link controller="allocateQuestions">details</g:link>)
+						</div>
+					</div>
+
+					<bnAdmin:allocationList />
 
 				</fieldset>
 			</div>
