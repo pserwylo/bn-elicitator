@@ -84,6 +84,10 @@ log4j = {
 		            file: "/tmp/bn-elicitator.log"
 	}
 
+	/*root {
+		all()
+	}*/
+
 	error 'org.codehaus.groovy.grails.web.servlet',  //  controllers
 		'org.codehaus.groovy.grails.web.pages', //  GSP
 		'org.codehaus.groovy.grails.web.sitemesh', //  layouts
@@ -111,23 +115,23 @@ grails.plugins.springsecurity.oauth.registration.roleNames       = [ 'ROLE_EXPER
 
 grails.plugins.springsecurity.interceptUrlMap = [
 
-	'/admin/**'       : ['ROLE_ADMIN'],
-	'/adminmanage/**' : ['ROLE_ADMIN'],
-	'/adminDash/**'   : ['ROLE_ADMIN'],
-	'/email/**'       : ['ROLE_ADMIN'],
-	'/output/**'      : ['ROLE_ADMIN'],
-	'/user/**'        : ['ROLE_ADMIN'],
-	'/content/admin/' : ['ROLE_ADMIN'],
+	'/admin/**'         : ['ROLE_ADMIN'],
+	'/adminmanage/**'   : ['ROLE_ADMIN'],
+	'/adminDash/**'     : ['ROLE_ADMIN'],
+	'/email/**'         : ['ROLE_ADMIN'],
+	'/output/**'        : ['ROLE_ADMIN'],
+	'/user/**'          : ['ROLE_ADMIN'],
+	'/content/admin/**' : ['ROLE_ADMIN'],
 
-	'/elicit/**'      : [ 'ROLE_ADMIN', 'ROLE_CONSENTED' ],
+	'/elicit/**' : [ 'ROLE_ADMIN', 'ROLE_CONSENTED' ],
 
-	'/auth/oauth/**'  : ['IS_AUTHENTICATED_ANONYMOUSLY'],
-	'/register/**'    : ['IS_AUTHENTICATED_ANONYMOUSLY'],
-	'/oauth/**'       : ['IS_AUTHENTICATED_ANONYMOUSLY'],
-	'/login/**'       : ['IS_AUTHENTICATED_ANONYMOUSLY'],
-	'/logout/**'      : ['IS_AUTHENTICATED_ANONYMOUSLY'],
-	'/static/**'      : ['IS_AUTHENTICATED_ANONYMOUSLY'],
-	'/content/**'     : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/auth/oauth/**' : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/register/**'   : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/oauth/**'      : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/login/**'      : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/logout/**'     : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/static/**'     : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/content/**'    : ['IS_AUTHENTICATED_ANONYMOUSLY'],
 
 
 	'/explain/**'    : ['IS_AUTHENTICATED_REMEMBERED'],

@@ -46,6 +46,7 @@ abstract class DataLoader {
 			initRolesAndAdminUser()
 			initVariableClasses()
 			initVariables()
+			initContentPages()
 			initOther()
 		}
 
@@ -83,8 +84,42 @@ abstract class DataLoader {
 
 	}
 
-	private void initEmailTemplates()
-	{
+	protected void initContentPages() {
+		ContentPage privacy = new ContentPage(
+			label   : "Privacy Policy",
+			alias   : ContentPage.PRIVACY_POLICY,
+			content : """
+<h2>Privacy Policy</h2>
+
+<h3>What data do you collect about me?</h3>
+<p>
+  The only data we collect about you is your email and your name.
+</p>
+
+<h3>What do you use this data for?</h3>
+<p>
+  These are used for the purpose of contacting you with regards to the survey.
+  Once the survey has been completed, your email and name will be retained for the purpose of contacting you to inform
+  you of the survey results.
+</p>
+
+<h3>Will you share my personal data with anybody else?</h3>
+<p>
+  Your name or email will not be transmitted to any 3rd party. It is used solely for contacting you.
+</p>
+
+<h3>How do I request you to remove this data??</h3>
+<p>
+  If you would like to be removed completely from the survey (i.e. no more emails, and we will delete your records from
+  the system), then contact Peter Serwylo at peter.serwylo@monash.edu.
+</p>
+"""
+		)
+
+		privacy.save( failOnError : true )
+	}
+
+	private void initEmailTemplates() {
 
 		EmailTemplate firstPhaseStarting = new EmailTemplate(
 			name: EmailTemplate.FIRST_PHASE_STARTING,
@@ -147,8 +182,7 @@ abstract class DataLoader {
 	/**
 	 * Creates an admin, expert and consented role, then adds an admin user with password "I'm an admin user".
 	 */
-	private void initRolesAndAdminUser()
-	{
+	private void initRolesAndAdminUser() {
 		Role adminRole = new Role( name: Role.ADMIN )
 		adminRole.save( flush: true, failOnError: true )
 
@@ -177,8 +211,7 @@ abstract class DataLoader {
 		Variable.list()*.delete()
 	}
 
-	private void saveVariables( List<Variable> vars, VariableClass variableClass )
-	{
+	private void saveVariables( List<Variable> vars, VariableClass variableClass ) {
 		User admin = User.findByUsername( 'admin' )
 		vars*.variableClass    = variableClass
 		vars*.createdBy        = admin
@@ -193,8 +226,7 @@ abstract class DataLoader {
 		AppProperties.count() > 0
 	}
 
-	private void initProperties( ServletContext servletContext )
-	{
+	private void initProperties( ServletContext servletContext ) {
 		AppProperties props = getProperties( servletContext )
 		AppProperties.properties.adminEmail           = props.adminEmail
 		AppProperties.properties.url                  = props.url
@@ -233,8 +265,7 @@ abstract class DataLoader {
 	 *  - Symptom
 	 * And their relationships among themselves.
 	 */
-	private void initVariableClasses()
-	{
+	private void initVariableClasses() {
 		VariableClass background = new VariableClass( name: VariableClass.BACKGROUND )
 		background.save( flush: true )
 

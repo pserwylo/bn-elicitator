@@ -2,9 +2,7 @@ package bn.elicitator
 
 class ContentEditController {
 
-	static defaultAction = "list"
-
-	def list() {
+	def index = {
 		if ( params.id ) {
 			edit( params.id as Integer )
 		}
@@ -41,7 +39,7 @@ class ContentEditController {
 		}
 
 		page.delete()
-		redirect( action: "list" )
+		redirect( action: "index" )
 	}
 
 	def save() {
@@ -75,7 +73,7 @@ class ContentEditController {
 			render errors
 		} else {
 			page.save( flush: true, failOnError : true )
-			redirect( action: "list" )
+			redirect( action: "index" )
 		}
 
 	}

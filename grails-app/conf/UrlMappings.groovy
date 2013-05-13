@@ -2,16 +2,16 @@ class UrlMappings {
 
 	static mappings = {
 
-		"/$controller/$action?/$id?" {
-			constraints { }
-		}
+		"/content/admin/$action?/$id?" ( controller: "contentEdit" )
+		"/content/$page?"              ( controller: "contentView")
 
-		"/content/admin/$action?/$id?"(controller: "contentEdit")
-		"/content/$page?"(controller: "contentView")
+		"500"                          ( controller:'error', exception: Exception )
+		"/admin/manage/$action?"       ( controller: "adminManage" )
+		"/auth/oauth/$action?"         ( controller: "springSecurityOAuth" )
 
-		"/"   ( controller:'explain' )
-		"500" ( controller:'error', exception: Exception )
-		"/admin/manage/$action?" ( controller: "adminManage" )
-		"/auth/oauth/$action?" ( controller: "springSecurityOAuth" )
+		"/$controller/$action?/$id?"   ( )
+		"/"                            ( controller:'explain' )
+
+
 	}
 }
