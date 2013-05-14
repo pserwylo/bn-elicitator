@@ -31,10 +31,6 @@
 	
 	<body>
 
-		<g:if test="${completed}">
-			<ul class="message"><li><g:message code="elicit.list.info.round-complete" /></li></ul>
-		</g:if>
-
 		<bnIcons:key>
 
 			<bnIcons:icon
@@ -47,16 +43,6 @@
 				display="${hasReviewedSome}"><g:message code="icon-key.doesnt-need-review" /></bnIcons:icon>
 
 		</bnIcons:key>
-
-		<g:if test="${canFinish}">
-			<button
-				type="button"
-				onclick="document.location = '${createLink( action: 'completed' )}'"
-				class='big '
-				${stillToVisit.size() > 0 ? 'disabled="disabled"' : ''}>
-				<g:message code="elicit.list.finish-round" />
-			</button>
-		</g:if>
 
 		<g:if test="${!hasPreviousPhase}">
 
@@ -73,7 +59,7 @@
 			<div class="message">
 				<ul>
 					<li>
-						<g:message code="elicit.list.info.round-complete" />
+						<g:message code="elicit.list.info.round-complete" args="${[user.email]}" />
 					</li>
 				</ul>
 			</div>

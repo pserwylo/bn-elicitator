@@ -35,13 +35,9 @@
 				var listNo            = $( '#list-no'            );
 				var listUninitialized = $( '#list-uninitialized' );
 				var commentDialog     = $( '#comment-dialog'     );
-				var newVarDialog      = $( '#new-var-dialog'     );
 				var textAreaLabel     = $( '#textAreaLabel'      );
 				var buttonBack        = $( '#btnBack'            );
 				var commentInput      = commentDialog.find( 'textarea' );
-				var newVarNameInput   =  newVarDialog.find( 'input:text' );
-				var newVarDescInput   =  newVarDialog.find( 'textarea' );
-				var newVarClassInput  =  newVarDialog.find( 'input[name=variableClassName], select[name=variableClassName]' );
 
 				var parentLi      = function( child ) { return $( child ).closest( 'li' ); };
 				var parentUl      = function( child ) { return $( child ).closest( 'ul' ); };
@@ -53,8 +49,7 @@
 				var currentVar    = null;
 
 				var getUninitializedCount = function() {
-				 	// There will always be at least one: the "add a new variable" one.
-					return listUninitialized.children().length - 1;
+					return listUninitialized.children().length;
 				};
 
 				var canFinish = function() {
@@ -165,30 +160,6 @@
 					return changed;
 				};
 
-				var isNewVarEmpty = function( notifyErrors ) {
-
-					notifyErrors = ( typeof notifyErrors === "undefined" ) ? false : notifyErrors;
-
-					var isEmpty = false;
-					var emptyFields = [];
-
-					if ( $.trim( newVarNameInput.val() ) == "" ) {
-						isEmpty = true;
-						emptyFields.push( "name" );
-					}
-
-					if ( $.trim( newVarDescInput.val() ) == "" ) {
-						isEmpty = true;
-						emptyFields.push( "description" );
-					}
-
-					if ( isEmpty && notifyErrors ) {
-						alert( "You must enter a " + emptyFields.join( " and " ) + " for the variable before saving." );
-					}
-
-					return isEmpty;
-				};
-
 				var isCommentEmpty = function() {
 					return $.trim( commentInput.val() ).length == 0;
 				};
@@ -251,18 +222,6 @@
 					}
 				};
 
-
-				var showNewVarDialog = function() {
-					hideDialog( commentDialog, function() {
-						showDialog( newVarDialog, $( '#add-variable-item') );
-						var textInput = newVarDialog.find( 'input:text' );
-						if ( textInput.length > 0 ) {
-							textInput[ 0 ].focus();
-						}
-					});
-				};
-
-
 				var showCommentDialog = function( alignWithLi, comment ) {
 
 					var moveAndShowDialog = function() {
@@ -274,8 +233,6 @@
 
 					if ( commentDialog.is( ":visible" ) ) {
 						hideDialog( commentDialog, moveAndShowDialog );
-					} else if ( newVarDialog.is( ":visible" ) ) {
-						hideDialog( newVarDialog, moveAndShowDialog );
 					} else {
 						moveAndShowDialog();
 					}
@@ -311,7 +268,9 @@
 					}
 
 					if ( canFinish() ) {
+						$( 'h2.review-uninitialized' ).hide();
 						buttonBack.hide();
+					} else {
 					}
 				};
 
@@ -320,16 +279,8 @@
 				var buttonsYes          = $( 'button.yes'         );
 				var buttonsNo           = $( 'button.no'          );
 				var buttonFinished      = $( '#btnFinished'       );
-				var addVariableItem     = $( '#add-variable-item' ).find( 'a' );
 				var buttonSaveComment   = commentDialog.find( 'button.save'  );
 				var buttonCancelComment = commentDialog.find( 'button.close' );
-				var buttonSaveVar       =  newVarDialog.find( 'button.save'  );
-				var buttonCancelVar     =  newVarDialog.find( 'button.close' );
-
-
-				addVariableItem.click( function() {
-					showNewVarDialog();
-				});
 
 
 				buttonsYes.click( function() {
@@ -357,18 +308,6 @@
 							});
 						}
 					}
-				});
-
-
-				buttonSaveVar.click( function() {
-					if ( !isNewVarEmpty( true ) ) {
-						$( '#newVarForm' ).submit();
-					}
-				});
-
-
-				buttonCancelVar.click( function() {
-					hideDialog( newVarDialog );
 				});
 
 
@@ -489,70 +428,6 @@
 							</label>
 
 							<bn:saveButtons atTop="false" closeLabel="Cancel" />
-
-						</fieldset>
-
-					</div>
-
-					<div id="new-var-dialog" class="floating-dialog" style="display: none;">
-
-						<fieldset class="default">
-
-							<legend>Add new variable</legend>
-								%{--I guess if we're getting picky, we really shouldn't be here (because we
-								can't elicit parents for variables with no potential parents--}%
-								<g:if test="${variable.variableClass.potentialParents.size() == 0}">
-									<p>
-										Sorry, but because ${variable.readableLabel} is a ${variable.variableClass.name}
-										variable, we wont be modelling any other variables which influence it.
-									</p>
-									<button type="button" class="close">Okay</button>
-								</g:if>
-								<g:else>
-									<form id="newVarForm" action="${createLink( [ action: "addVariable" ] )}">
-										<input type="hidden" name="returnToVar" value="${variable.label}" />
-										%{--We don't need to ask if there is only one possibility --}%
-										<g:if test="${variable.variableClass.potentialParents.size() == 1}">
-											<label>
-												Name:
-												<br />
-												<input type="text" id="inputNewVariableLabel" name="label" />
-											</label>
-											<input type='hidden' name='variableClassName' value='${variable.variableClass.potentialParents[ 0 ].name}' />
-										</g:if>
-										<g:else>
-											<label for="newVarClass">Type</label>
-											<br />
-											<select id="newVarClass" name="variableClassName">
-												<g:each var="varClass" in="${variable.variableClass.potentialParents}">
-													<option value='${varClass.name}'>${varClass.niceName} variable</option>
-												</g:each>
-											</select>
-
-											<bn:tooltip>This helps us decide which other variables your new one will be allowed to influence. We will describe them using examples from a model of diagnosing lung cancer:
-
-											- Problem Variables: The variables of interest (e.g. does the patient have cancer?).
-
-											- Background variables: Information available before the problem variables occur (e.g. does the patient smoke?).
-
-											- Symptom variables: Observable consequences of problem variables (e.g. shortness of breath).
-
-											- Mediating variables: unobservable variables which may also cause the same symptoms as the problem variables (e.g. are they asthmatic?). This helps to correctly model the relationship between problem and symptom variables</bn:tooltip>
-										</g:else>
-
-										<br />
-										<br />
-										<label>
-											Description:
-											<br />
-											<textarea id="newVarDescription" name="description"></textarea>
-										</label>
-
-										<bn:saveButtons atTop="${false}" closeLabel="Cancel" />
-									</form>
-								</g:else>
-
-							</div>
 
 						</fieldset>
 

@@ -179,30 +179,18 @@ class VariableTagLib {
 		List<Variable> variables = attrs.variables
 		List<Variable> stillToVisit = attrs.stillToVisit
 
-		Map<VariableClass, List<Variable>> classes = [:]
-		VariableClass.list().each { varClass -> classes.put( varClass, variables.findAll { var -> var.variableClass.id == varClass.id } ) }
+		out << "<ul id='all-children-list' class='variable-list'>\n"
+		for( Variable child in variables ) {
+			Boolean hasVisited = !stillToVisit.contains( child )
+			String cssClasses = hasVisited ? 'doesnt-need-review' : 'needs-review'
 
-		classes.each { entry ->
-
-			VariableClass  varClass = entry.key
-			List<Variable> varList  = entry.value
-
-			if ( varList.size() > 0 ) {
-				out << "<h2>$varClass</h2>"
-				out << "<ul id='all-children-list' class='variable-list'>\n"
-				for( Variable child in varList ) {
-					Boolean hasVisited = !stillToVisit.contains( child )
-					String cssClasses = hasVisited ? 'doesnt-need-review' : 'needs-review'
-
-					out << """
-						<li class='variable-item  ${cssClasses }'>
-							<a href='${createLink( controller: 'elicit', action: 'parents', params: [ for: child.label ] )}'>${bn.variable( [ var: child, includeDescription: false ] )}</a>
-						</li>
-						"""
-				}
-				out << "</ul>\n"
-			}
+			out << """
+				<li class='variable-item  ${cssClasses }'>
+					<a href='${createLink( controller: 'elicit', action: 'parents', params: [ for: child.label ] )}'>${bn.variable( [ var: child, includeDescription: false ] )}</a>
+				</li>
+				"""
 		}
+		out << "</ul>\n"
 
 	}
 

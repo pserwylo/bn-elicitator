@@ -224,12 +224,6 @@ class ElicitParentsTagLib {
 			<h2 class='review-uninitialized'></h2>
 			<ul id='list-uninitialized' class='potential-parents-list variable-list'>
 				${potentialParents.collect { potentialParent( child: child, parent: it ) }.join( "" )}
-				<li id="add-variable-item" class=" variable-item new-var">
-					<a href="javascript:\$.noop">
-						<img src='${resource(dir: 'images/icons', file: 'pencil.png')}' />
-						Add another variable which is not listed
-					</a>
-				</li>
 			</ul>
 
 			<h2 class='hide-if-yes-empty'>${message( code: 'elicit.parents.you-said-yes' )}</h2>
