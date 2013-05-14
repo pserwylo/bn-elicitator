@@ -38,7 +38,11 @@ class ContentEditController {
 			return
 		}
 
-		page.delete()
+		if ( !page.canDelete ) {
+			flash.error = "Can't delete page '$page.label'"
+		} else {
+			page.delete()
+		}
 		redirect( action: "index" )
 	}
 

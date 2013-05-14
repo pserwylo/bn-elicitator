@@ -4,13 +4,14 @@ class ContentViewController {
 
 	def index() {
 
-		String alias = params.page ?: "index"
+		String alias = params.page ?: ContentPage.HOME
 		ContentPage page = ContentPage.findByAlias( alias )
+		String error = null
 		if ( !page ) {
-			response.sendError( 404, "Could not find any content at this address" )
-			return
+			error = "Could not find the page: " + alias
+			page = ContentPage.findByAlias( ContentPage.HOME );
 		}
 
-		[ page : page ]
+		[ page : page, error : error ]
 	}
 }

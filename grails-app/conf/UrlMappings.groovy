@@ -10,7 +10,7 @@ class UrlMappings {
 		"/auth/oauth/$action?"         ( controller: "springSecurityOAuth" )
 
 		"/$controller/$action?/$id?"   ( )
-		"/"                            ( controller:'explain' )
+		"/"                            ( controller:'home' )
 
 
 	}

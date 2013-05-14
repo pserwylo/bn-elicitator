@@ -27,6 +27,12 @@
 	
 	<body>
 
+		<g:if test="${error}">
+			<div class="errors">
+				${error}
+			</div>
+		</g:if>
+
 		<div id="content">
 			${page.content}
 		</div>

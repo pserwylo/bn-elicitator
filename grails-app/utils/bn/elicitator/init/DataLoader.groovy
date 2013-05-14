@@ -102,20 +102,31 @@ abstract class DataLoader {
 
 	protected void initContentPages( ServletContext context ) {
 
-		String privacyText = context.getResourceAsStream( "/WEB-INF/resources/default-privacy-policy.tpl" )?.text;
+		String homeText    = context.getResourceAsStream( "/WEB-INF/resources/default-home.tpl" )?.text;
 		String helpText    = context.getResourceAsStream( "/WEB-INF/resources/default-help.tpl" )?.text;
+		String privacyText = context.getResourceAsStream( "/WEB-INF/resources/default-privacy-policy.tpl" )?.text;
+
+		new ContentPage(
+			label     : "Home",
+			alias     : ContentPage.HOME,
+			content   : replaceContentPlaceholders( homeText ),
+			canDelete : false,
+		).save( failOnError : true )
+
+		new ContentPage(
+			label     : "Help",
+			alias     : ContentPage.HELP,
+			content   : replaceContentPlaceholders( helpText ),
+			canDelete : false,
+		).save( failOnError : true )
 
 		new ContentPage(
 			label   : "Privacy Policy",
 			alias   : ContentPage.PRIVACY_POLICY,
-			content : replaceContentPlaceholders( privacyText )
+			content : replaceContentPlaceholders( privacyText ),
+			canDelete : false,
 		).save( failOnError : true )
 
-		new ContentPage(
-			label   : "Help",
-			alias   : ContentPage.HELP,
-			content : replaceContentPlaceholders( helpText )
-		).save( failOnError : true )
 	}
 
 	private void initEmailTemplates() {

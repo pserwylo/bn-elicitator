@@ -23,6 +23,58 @@ import javax.servlet.ServletContext;
 
 class InsuranceDataLoader extends DataLoader {
 
+	protected void initOther() {
+
+		String homeText = """
+			<h2>Who are you?</h2>
+			<p>
+				You should pretend to be running a car insurance company.
+			</p>
+
+			<h2>What does the insurance company want?</h2>
+			<p>
+				Like other insurance companies, this one is greedy, and wants to make as much money as possible. That
+				means that you need to understand the clients you will be signing up.
+			</p>
+
+			<h2>How can clients cost you money?</h2>
+			<p>
+				Clients can be expensive and cost you money in several ways, for example:
+				<ul class='bullet'>
+					<li>They could crash their car, and it will need to be fixed</li>
+					<li>They could crash into somebody else's car and that will need to be fixed</li>
+					<li>They can crash into buildings and other things which will need to be fixed</li>
+					<li>All of the above</li>
+				</ul>
+			</p>
+
+			<h2>What are you going to be doing?</h2>
+			<p>
+				We are building a model which identifies the factors involved in assessing clients. Certain clients will
+				be more risky than others, and therefore we will charge them a higher excess and premium.
+			</p>
+
+			<h2>How will you do this?</h2>
+			<p>
+				At this point, we are purely interested in how the various factors which determine risk fit together.
+				You will be presented with a list of variables, and each one will be potentially influenced by other
+				variables. You will be asked which variables you think influence others.
+			</p>
+
+			<h1>Sign me up!</h1>
+			<p style='text-align: center;'>
+				Does this soudn like something you can help with?
+				<br />
+				<button class='big'>Participate</button>
+			</p>
+		"""
+
+		ContentPage page = ContentPage.findByAlias( ContentPage.HOME )
+		page.content = homeText
+		page.save( failtOnError : true )
+
+	}
+
 	protected List<Variable> getBackgroundVariables() {
 
 		[
@@ -187,41 +239,180 @@ class InsuranceDataLoader extends DataLoader {
 	protected AppProperties getProperties( ServletContext servletContext )
 	{
 		String explanatoryStatement = """
-			<h2>Who are you?</h2>
-			<p>
-				You should pretend to be running a car insurance company.
-			</p>
+<h2>Car Insurance Risk Analysis</h2>
+<p>
+    My name is Peter Serwylo and I am conducting a research project with Dr Grace Rumantir and Professor Frada Burstein
+    from the Caulfield School of Information Technology, Monash University.
+    It is being conducted as part of my PhD research.
+    You are invited to take part in this study.
+</p>
 
-			<h2>What does the insurance company want?</h2>
-			<p>
-				Like other insurance companies, this one is greedy, and wants to make as much money as possible. That
-				means that you need to understand the clients you will be signing up.
-			</p>
+<h2><a name="aim">The aim/purpose of the research</a></h2>
+<p>
+	There are two aims for this research.
+	From the perspective of mass gathering medical care, it is to build a model of mass gatherings which can be
+	used to predict the types of injuries expected at future events.
+	It will do this by gathering knowledge from experts such as yourself about what environmental factors
+	(e.g. presence of alcohol, weather conditions, crowd size, etc) affect different injury types
+	(e.g. cardiac arrest, lacerations, etc).
+</p>
+<p>
+    The other goal is to investigate different methods for to use for building this model. Traditionally, gathering
+	knowledge for such a model would require you and I to meet for a face-to-face interview. I would then manually
+	transcribe the interview and then analyse the transcripts to build the model. This research project aims to elicit
+	the same knowledge from you, but in a way which doesn’t require individual meetings for each expert. To do this, I
+	am researching the practicality of eliciting knowledge from experts like you from an online system.
+</p>
 
-			<h2>How can clients cost you money?</h2>
-			<p>
-				Clients can be expensive and cost you money in several ways, for example:
-				<ul class='bullet'>
-					<li>They could crash their car, and it will need to be fixed</li>
-					<li>They could crash into somebody else's car and that will need to be fixed</li>
-					<li>They can crash into buildings and other things which will need to be fixed</li>
-					<li>All of the above</li>
-				</ul>
-			</p>
+<h2><a name="benefits">Possible benefits</a></h2>
+<p>
+	Building a model of mass gathering medical care and being able to better predict expected injuries at events
+	means better preparation for events. The model will be able to be used to help decide on the number and type
+	of medical resources to send to any given event, based on the expected injuries. The model may be used in
+	future research being conducted by Monash University with respect to mass gathering medical care.
+</p>
+<p>
+    Conducting the knowledge-elicitation process online rather than in a one-to-one interview means that it takes
+	less time for you to contribute to the research by imparting your knowledge. It also means less time for me to
+	analyse the knowledge you have contributed and use it to build the model for predicting injuries. It requires
+	less organisation from you and I, due to the fact that you can attend to the online system at your leisure (you
+	don’t have to complete the entire process all at once). Finally, all of these benefits culminate in allowing more
+	experts to contribute their knowledge to the project. The more experts, the better, because the model will
+	include a broader range of knowledge.
+</p>
 
-			<h2>What are you going to be doing?</h2>
-			<p>
-				We are building a model which identifies the factors involved in assessing clients. Certain clients will
-				be more risky than others, and therefore we will charge them a higher excess and premium.
-			</p>
+<h2><a name="involves">What does the research involve?</a></h2>
+<p>
+	The study involves a short series of online surveys based on the Delphi method. This is a method whereby after
+	each expert has completed the survey once, the results are summarised. These summarised results are presented to
+	you as you complete the survey a second time, giving you the option to revise your answers based on the collective
+	answers given by all the other participants.
+</p>
+<p>
+	The research will be conducted online, so that you can <a href="#time">complete it at your leisure</a>.
+</p>
+<p>
+    After you complete the primary survey (questions about medical care at mass gatherings), you will also be asked a
+	few short questions about how you felt the process went (questions about the survey process itself) so that I can
+	evaluate whether it was worthwhile eliciting knowledge from you using this online system in preference to
+	person-to-person interviews.
+</p>
 
-			<h2>How will you do this?</h2>
-			<p>
-				At this point, we are purely interested in how the various factors which determine risk fit together.
-				You will be presented with a list of variables, and each one will be potentially influenced by other
-				variables. You will be asked which variables you think influence others.
-			</p>
-		"""
+<h2><a name="time">How much time will the research take?</a></h2>
+<p>
+	You will be asked to complete the survey three or four times, and each time should take around 30-60 minutes to
+	complete.
+	This time will be spread across a period of about two months.
+	Remember that you don’t have to complete the whole survey all at once.
+	For example, you may spend 10 minutes on the survey while having a coffee one day, then come back a day later and
+	the system will have saved your results from last time and continue from where you left off.
+</p>
+
+<h2><a name="discomfort">Inconvenience/discomfort</a></h2>
+<p>
+	There is no anticipated risk of inconvenience or discomfort while completing this survey.
+</p>
+
+<h2><a name="payment">Payment</a></h2>
+<p>
+    If you continue, you will be completing this survey on a voluntary basis, with no monetary reward. I thank you for
+	contributing your time and expertise towards this study.
+</p>
+
+<h2><a name="withdraw">Withdrawing from the research</a></h2>
+<p>
+	As this study is voluntary and you are under no obligation to participate. If you wish to withdraw, please contact
+	Peter Serwylo (peter.serwylo@monash.edu.au or 03 9903 2556).
+</p>
+
+<h2><a name="confidentiality">Confidentiality</a></h2>
+<p>
+    During the online survey, you will have your own username and password to access your results. This is to prevent
+	other participants or people who stumble upon the website from looking at your results.
+</p>
+<p>
+	Once you have completed the survey, including questions at the end regarding your experience completing the survey,
+	the data will be deidentified. At no point during any publication of results will your name be linked with any data
+	you submitted. If any quotes from you are published, they will be attributed to a pseudonym of the form “Expert 1”,
+	and there will be no way to identify who this pseudonym belongs to.
+</p>
+
+<h2><a name="data-storage">Storage of data</a></h2>
+<p>
+    Data collected will be stored in accordance with Monash University regulations, on a secure computer within the
+	Monash network for a period of five years. A report of the study may be submitted for publication, but individual
+	<a href="#confidentiality">participants will not be identifiable</a> in such a report.
+</p>
+
+<h2><a name="results">Results</a></h2>
+<p>
+    If you would like to be informed of the research findings at the end of the study, they will be available
+    <a href="http://firstaid.infotech.monash.edu/survey/run/results">online here</a>.
+	The findings will be accessible for at that web address for at least six months after the completion of the study.
+</p>
+
+<p>
+	Alternatively, you can contact:
+	<div class="contact-details">
+		<div class="name">Peter Serwylo</div>
+		<div class="school">Caulfield School of IT, Monash University</div>
+		<div class="phone">0431 608 014 or 03 9903 2556</div>
+		<div class="email"><a href="mailto:peter.serwylo@monash.edu">peter.serwylo@monash.edu</a></div>
+	</div>
+</p>
+
+<h2><a name="contact">Contacting the researchers</a></h2>
+<p>
+    If you would like, you can contact any of the researchers about any aspect of the study:
+</p>
+<div class="contact-details">
+	<div class="name">Dr Grace Rumantir</div>
+	<div class="school">Caulfield School of IT, Monash University</div>
+	<div class="phone">03 9903 1965</div>
+	<a href="mailto:grace.rumantir@monash.edu">grace.rumantir@monash.edu</a>
+</div>
+
+<div class="contact-details">
+    <div class="name">Prof Frada Burstein</div>
+	<div class="school">Caulfield School of IT, Monash University</div>
+    <div class="phone">03 9903 2011</div>
+	<div class="email"><a href="mailto:frada.burstein@monash.edu">frada.burstein@monash.edu</a></div>
+</div>
+
+<div class="contact-details">
+    <div class="name">Peter Serwylo</div>
+	<div class="school">Caulfield School of IT, Monash University</div>
+    <div class="phone">0431 608 014 or 03 9903 2556</div>
+	<div class="email"><a href="mailto:peter.serwylo@monash.edu">peter.serwylo@monash.edu</a></div>
+</div>
+
+<h2><a name="complaints">Complaints</a></h2>
+<p>
+    If you have a complaint concerning the manner in which this research <em>CF12/1826 - 2012001011</em> is being
+	conducted, please contact:
+</p>
+
+<div class="contact-details">
+	<div class="name">Executive Officer</div>
+	<div class="school">Monash University Human Research Ethics Committee (MUHREC)</div>
+	<div class="address">Building 3e  Room 111</div>
+	<div class="address">Research Office</div>
+	<div class="address">Monash University VIC 3800</div>
+	<div class="phone">Ph: +61 3 9905 2052</div>
+	<div class="fax">Fax: +61 3 9905 3831</div>
+	<div class="email"><a href="mailto:muhrec@monash.edu">muhrec@monash.edu</a></div>
+</div>
+
+<br />
+<br />
+<br />
+
+<p>Thank you,</p>
+
+<p>Peter Serwylo</p>
+
+<img src="http://www.monash.edu.au/assets/images/template/monash-logo.png" alt="Monash university logo"/>
+"""
 
 		new AppProperties(
 			adminEmail          : "peter.serwylo@monash.edu",

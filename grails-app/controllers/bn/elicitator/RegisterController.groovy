@@ -31,7 +31,7 @@ class RegisterController extends grails.plugins.springsecurity.ui.RegisterContro
 		}
 
 		String salt = saltSource instanceof NullSaltSource ? null : command.username
-		def user = lookupUserClass().newInstance(email: command.email, username: command.username,
+		def user = lookupUserClass().newInstance(realName: command.username, email: command.email, username: command.username,
 				accountLocked: true, enabled: true)
 
 		RegistrationCode registrationCode = springSecurityUiService.register(user, command.password, salt)
@@ -125,12 +125,9 @@ class BnRegisterCommand {
 	String password
 	String password2
 
-	void setEmail( String value ) {
-		String[] parts = value?.split( "@" )
-		if ( parts?.length > 0 ) {
-			username = parts[ 0 ]
-		}
-		this.email = value
+	void setUsername( String value ) {
+		this.username = value
+		this.email    = value
 	}
 
 	static constraints = {

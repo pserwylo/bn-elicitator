@@ -64,11 +64,15 @@ class User {
 		password = springSecurityService.encodePassword(password)
 	}
 
+	void setEmail( String value ) {
+		this.email = value
+		if ( !this.realName && this.email ) {
+			this.realName = this.email.substring( 0, this.email.indexOf( '@' ) )
+		}
+	}
+
 	void setUsername( String value ) {
 		this.username = value.replace( ' ', '_' )
-		if ( !this.realName ) {
-			this.realName = this.username
-		}
 	}
 
 	Date getLastLoginDate() {
