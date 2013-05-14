@@ -210,12 +210,13 @@ h2 {
 	font-size: 2em;
 	width: 100%;
 	text-align: center;
-	border-bottom: 1px solid #bbb;
 	margin-bottom: 10px;
 }
 
 #headingWrapper {
 	position: relative;
+	border-bottom: 1px solid #bbb;
+	margin-bottom: 5px;
 }
 
 #user-info {

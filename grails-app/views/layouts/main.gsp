@@ -15,7 +15,7 @@
   - You should have received a copy of the GNU General Public License
   - along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --}%
-<%@ page import="bn.elicitator.AppProperties; grails.util.Environment" %>
+<%@ page import="bn.elicitator.ContentPage; bn.elicitator.AppProperties; grails.util.Environment" %>
 <!doctype html>
 <!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
 <!--[if IE 7 ]>    <html lang="en" class="no-js ie7"> <![endif]-->
@@ -64,10 +64,10 @@
 			<sec:ifLoggedIn>
 				<div id="user-info">
 					<g:message code="main.welcome" args="${[ bnUser.realName() ]}" />
-					<a class="help" href="http://firstaid.infotech.monash.edu.au/info/help/">Help</a>
-					<g:link controller="logout" class="logout">
-						Logout
-					</g:link>
+					<br />
+					<bnContent:link page="${ContentPage.HELP}">Help</bnContent:link>
+					<bnContent:link page="${ContentPage.PRIVACY_POLICY}">Privacy Policy</bnContent:link>
+					<g:link controller="logout" class="logout">Logout</g:link>
 				</div>
 			</sec:ifLoggedIn>
 			<div id="heading">${AppProperties.properties.title}</div>
@@ -75,7 +75,10 @@
 
 		<g:layoutBody/>
 
-		<div class="footer" role="contentinfo"></div>
+		<div class="footer" role="contentinfo">
+			<bnContent:link page="${ContentPage.HELP}">Help</bnContent:link>
+			<bnContent:link page="${ContentPage.PRIVACY_POLICY}">Privacy Policy</bnContent:link>
+		</div>
 
 		<r:layoutResources />
 	</body>

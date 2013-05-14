@@ -77,6 +77,7 @@
 								<li id="page-${page.id}" class="variable-item">
 									<span class="actions">
 										<button class="delete" onclick="deletePage( ${page.id}, '${page.label.encodeAsJavaScript()}' );">Delete</button>
+										<button class="view" onclick="document.location = '${createLink(controller: 'contentView', params: [ page: page.alias ] ) }'">View</button>
 										<button class="edit" onclick="editPage( ${page.id} );">Edit</button>
 									</span>
 									<div class="label">${page.label}</div>
