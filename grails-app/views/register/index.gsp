@@ -26,8 +26,8 @@
 				<g:else>
 
 					<p class="form-element">
-						<label for='email'>Email:</label>
-						<input type='email' class='text_' name='email' id='email' value="${command.email ?: ''}"/>
+						<label for='username'>Email:</label>
+						<input type='email' class='text_' name='username' id='username' value="${command.username ?: ''}"/>
 					</p>
 
 					<p class="form-element">

@@ -86,7 +86,7 @@ abstract class DataLoader {
 
 	}
 
-	private String replaceContentPlaceholders( String template ) {
+	protected String replaceContentPlaceholders( String template ) {
 		if (!template) {
 			return "";
 		} else {
@@ -111,7 +111,7 @@ abstract class DataLoader {
 			alias     : ContentPage.HOME,
 			content   : replaceContentPlaceholders( homeText ),
 			canDelete : false,
-		).save( failOnError : true )
+		).save( failOnError : true, flush : true )
 
 		new ContentPage(
 			label     : "Help",

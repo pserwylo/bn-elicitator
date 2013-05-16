@@ -19,8 +19,8 @@ package bn.elicitator.init
 class DivyInsuranceDataLoader extends InsuranceDataLoader {
 
 	protected void initOther() {
-		super.initOther()
-		initTestUsers(15);
+		updateHomePage()
+		initTestUsers( 15 )
 	}
 
 }

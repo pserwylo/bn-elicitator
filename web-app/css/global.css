@@ -213,6 +213,14 @@ h2 {
 	margin-bottom: 10px;
 }
 
+#heading a, #user-info a {
+	text-decoration: none;
+}
+
+#heading a:hover, #user-info a:hover {
+	text-decoration: underline;
+}
+
 #headingWrapper {
 	position: relative;
 	border-bottom: 1px solid #bbb;
@@ -444,6 +452,11 @@ p.message {
 
 a.help {
 	background: transparent url(../images/icons/help.png) 5px 50% no-repeat;
+	padding-left: 22px;
+}
+
+a.privacy {
+	background: transparent url(../images/icons/lock.png) 5px 50% no-repeat;
 	padding-left: 22px;
 }
 

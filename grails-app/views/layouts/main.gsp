@@ -65,19 +65,33 @@
 				<div id="user-info">
 					<g:message code="main.welcome" args="${[ bnUser.realName() ]}" />
 					<br />
-					<bnContent:link page="${ContentPage.HELP}">Help</bnContent:link>
-					<bnContent:link page="${ContentPage.PRIVACY_POLICY}">Privacy Policy</bnContent:link>
-					<g:link controller="logout" class="logout">Logout</g:link>
+					<bnContent:link
+							page="${ContentPage.HELP}"
+							class="help">
+						Help
+					</bnContent:link>
+					<bnContent:link
+							page="${ContentPage.PRIVACY_POLICY}"
+							class="privacy">
+						Privacy
+					</bnContent:link>
+					<g:link controller="logout" class="logout">
+						Logout
+					</g:link>
 				</div>
 			</sec:ifLoggedIn>
-			<div id="heading">${AppProperties.properties.title}</div>
+
+			<div id="heading">
+				<g:link controller="home">
+					${AppProperties.properties.title}
+				</g:link>
+			</div>
+
 		</div>
 
 		<g:layoutBody/>
 
 		<div class="footer" role="contentinfo">
-			<bnContent:link page="${ContentPage.HELP}">Help</bnContent:link>
-			<bnContent:link page="${ContentPage.PRIVACY_POLICY}">Privacy Policy</bnContent:link>
 		</div>
 
 		<r:layoutResources />

@@ -41,17 +41,24 @@ class ContentTagLib {
 	static namespace = "bnContent"
 
 	/**
-	 * @attr page
+	 * @attr page REQUIRED
+	 * @attr class
 	 */
 	def link = { attrs, body ->
 		String alias
+		String classNames = ""
 		Object page = attrs.page
 		if ( page instanceof ContentPage ) {
 			alias = page.alias
 		} else {
 			alias = page.toString()
 		}
-		out << g.link( [ controller : 'contentView', params : [ page : alias ] ], body )
+
+		if ( attrs.containsKey( 'class' ) ) {
+			classNames = attrs.remove( 'class' )
+		}
+
+		out << g.link( [ controller : 'contentView', params : [ page : alias ], class : classNames ], body )
 	}
 
 }

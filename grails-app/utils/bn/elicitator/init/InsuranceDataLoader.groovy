@@ -18,13 +18,15 @@ package bn.elicitator.init
  */
 
 import bn.elicitator.*
-import bn.elicitator.init.DataLoader;
-import javax.servlet.ServletContext;
+import javax.servlet.ServletContext
 
 class InsuranceDataLoader extends DataLoader {
 
 	protected void initOther() {
+		updateHomePage();
+	}
 
+	protected void updateHomePage() {
 		String homeText = """
 			<h2>Who are you?</h2>
 			<p>
@@ -61,17 +63,18 @@ class InsuranceDataLoader extends DataLoader {
 				variables. You will be asked which variables you think influence others.
 			</p>
 
-			<h1>Sign me up!</h1>
-			<p style='text-align: center;'>
-				Does this soudn like something you can help with?
-				<br />
-				<button class='big'>Participate</button>
-			</p>
+			<div style='text-align: center; margin-top: 2em;'>
+				<p>
+					Does this sound like something you can help with?
+					<br />
+					<button class='big' onclick='document.location = "[serverURL]/elicit"'>Participate</button>
+				</p>
+			</div>
 		"""
 
 		ContentPage page = ContentPage.findByAlias( ContentPage.HOME )
-		page.content = homeText
-		page.save( failtOnError : true )
+		page.content = replaceContentPlaceholders( homeText )
+		page.save( failtOnError : true, flush : true )
 
 	}
 
@@ -250,49 +253,47 @@ class InsuranceDataLoader extends DataLoader {
 <h2><a name="aim">The aim/purpose of the research</a></h2>
 <p>
 	There are two aims for this research.
-	From the perspective of mass gathering medical care, it is to build a model of mass gatherings which can be
-	used to predict the types of injuries expected at future events.
-	It will do this by gathering knowledge from experts such as yourself about what environmental factors
-	(e.g. presence of alcohol, weather conditions, crowd size, etc) affect different injury types
-	(e.g. cardiac arrest, lacerations, etc).
+	From the perspective of assessing risk when selling car insurance, it is to build a model to help
+	predict which clients are likely to cost the insurer more.
+	It will do this by gathering knowledge from people such as yourself about what factors are likely
+	to increase the chance of an accident and the total payout required for a client.
 </p>
 <p>
-    The other goal is to investigate different methods for to use for building this model. Traditionally, gathering
+	The other goal is to investigate different methods to use for building this model. Traditionally, gathering
 	knowledge for such a model would require you and I to meet for a face-to-face interview. I would then manually
 	transcribe the interview and then analyse the transcripts to build the model. This research project aims to elicit
-	the same knowledge from you, but in a way which doesn’t require individual meetings for each expert. To do this, I
-	am researching the practicality of eliciting knowledge from experts like you from an online system.
+	the same knowledge from you, but in a way which doesn’t require individual meetings for each participant. To do
+	this, I am researching the practicality of eliciting knowledge from people like you from an online system.
 </p>
 
 <h2><a name="benefits">Possible benefits</a></h2>
 <p>
-	Building a model of mass gathering medical care and being able to better predict expected injuries at events
-	means better preparation for events. The model will be able to be used to help decide on the number and type
-	of medical resources to send to any given event, based on the expected injuries. The model may be used in
-	future research being conducted by Monash University with respect to mass gathering medical care.
-</p>
-<p>
-    Conducting the knowledge-elicitation process online rather than in a one-to-one interview means that it takes
+	Conducting the knowledge-elicitation process online rather than in a one-to-one interview means that it takes
 	less time for you to contribute to the research by imparting your knowledge. It also means less time for me to
-	analyse the knowledge you have contributed and use it to build the model for predicting injuries. It requires
+	analyse the knowledge you have contributed and use it to build the model for assessing risk. It requires
 	less organisation from you and I, due to the fact that you can attend to the online system at your leisure (you
 	don’t have to complete the entire process all at once). Finally, all of these benefits culminate in allowing more
-	experts to contribute their knowledge to the project. The more experts, the better, because the model will
+	participants to contribute their knowledge to the project. The more participants, the better, because the model will
 	include a broader range of knowledge.
+</p>
+<p>
+	Although a model for assessing risk when providing insurance already exists, this survey is being conducted to
+	see if the result from the online survey will align with this pre-existing model. If so, then that will
+	provide evidence that this is a valuable technique for producing these type of models into the future.
 </p>
 
 <h2><a name="involves">What does the research involve?</a></h2>
 <p>
 	The study involves a short series of online surveys based on the Delphi method. This is a method whereby after
-	each expert has completed the survey once, the results are summarised. These summarised results are presented to
-	you as you complete the survey a second time, giving you the option to revise your answers based on the collective
-	answers given by all the other participants.
+	each participants has completed the survey once, the results are summarised. These summarised results are presented
+	to you as you complete the survey a second time, giving you the option to revise your answers based on the
+	collective answers given by all the other participants.
 </p>
 <p>
 	The research will be conducted online, so that you can <a href="#time">complete it at your leisure</a>.
 </p>
 <p>
-    After you complete the primary survey (questions about medical care at mass gatherings), you will also be asked a
+	After you complete the primary survey (questions about car insurance), you will also be asked a
 	few short questions about how you felt the process went (questions about the survey process itself) so that I can
 	evaluate whether it was worthwhile eliciting knowledge from you using this online system in preference to
 	person-to-person interviews.
@@ -300,12 +301,12 @@ class InsuranceDataLoader extends DataLoader {
 
 <h2><a name="time">How much time will the research take?</a></h2>
 <p>
-	You will be asked to complete the survey three or four times, and each time should take around 30-60 minutes to
-	complete.
-	This time will be spread across a period of about two months.
-	Remember that you don’t have to complete the whole survey all at once.
-	For example, you may spend 10 minutes on the survey while having a coffee one day, then come back a day later and
-	the system will have saved your results from last time and continue from where you left off.
+	You will be asked to complete the survey three, and each time should take around 10-15 minutes to complete.
+	Each round of the survey will last for one week. If you have not completed the survey after five days, the
+	researchers will send you an email to remind you (if you don't want to receive this email, please contact
+	peter.serwylo@monash.edu and ask to be removed from the email list).
+	Remember that you don’t have to complete the whole survey all at once, the system will save your results 
+	from last time and continue from where you left off.
 </p>
 
 <h2><a name="discomfort">Inconvenience/discomfort</a></h2>
@@ -333,8 +334,8 @@ class InsuranceDataLoader extends DataLoader {
 <p>
 	Once you have completed the survey, including questions at the end regarding your experience completing the survey,
 	the data will be deidentified. At no point during any publication of results will your name be linked with any data
-	you submitted. If any quotes from you are published, they will be attributed to a pseudonym of the form “Expert 1”,
-	and there will be no way to identify who this pseudonym belongs to.
+	you submitted. If any quotes from you are published, they will be attributed to a pseudonym of the form
+	“Participant 1”, and there will be no way to identify who this pseudonym belongs to.
 </p>
 
 <h2><a name="data-storage">Storage of data</a></h2>

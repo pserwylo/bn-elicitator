@@ -14,7 +14,7 @@ class HomeController {
 
 		User user = userService.current
 		if ( !user ) {
-			forward( controller: 'contentEdit', params : [ page : ContentPage.HOME ] )
+			forward( controller: 'contentView', params : [ page : ContentPage.HOME ] )
 		} else if ( user.hasConsented ) {
 			forward( controller: 'elicit' )
 		} else {
