@@ -83,100 +83,120 @@ class InsuranceDataLoader extends DataLoader {
 		[
 			new Variable(
 				label: "GoodStudent",
-				readableLabel: "Good Student",
+				readableLabel: "Good student",
+				usageDescription: "Do any of the following variables <em>direct</em> influence whether the client was a [This]?",
 				description: "Whether the student was attentive as they learnt to drive. For example, did they ace their driving test, or just barely pass?" ),
 
 			new Variable(
 				label: "Age",
+				usageDescription: "Do any of the following variables have a <em>direct</em> influence on the [This]?",
 				readableLabel: "Age of the client" ),
 
 			new Variable(
 				label: "SocioEcon",
-				readableLabel: "Socio-economic Status",
+				readableLabel: "Socio-economic status",
+				usageDescription: "Do any of the following variables have a <em>direct</em> influence on the [This] of the client?",
 				description: "The background that the client comes from. Can include multiple factors, such as their occupation, income or education." ),
 
 			new Variable(
 				label: "RiskAversion",
-				readableLabel: "Risk Aversion",
+				readableLabel: "Risk aversion",
+				usageDescription: "Do any of the following variables have a <em>direct</em> influence on the [This] of the client?",
 				description: "How cautious/adventurous the client is. " ),
 
 			new Variable(
 				label: "VehicleYear",
-				readableLabel: "Vehicle Age",
-				description: "The age of the clients vehicle." ),
+				readableLabel: "Vehicle age",
+				usageDescription: "Do any of the following variables have a <em>direct</em> influence on the [This] of the client?",
+				description: "The age of the client's vehicle." ),
 
 			new Variable(
 				label: "ThisCarDam",
-				readableLabel: "Damage to clients car",
+				readableLabel: "Damage to client's car",
+				usageDescription: "Do any of the following variables <em>directly</em> influence the [This]?",
 				description: "The damage acquired by the car owned by the client, in the event of an accident (none, mild, moderate or severe)." ),
 
 			new Variable(
 				label: "RuggedAuto",
-				readableLabel: "Car Strength",
-				description: "Whether the clients car would break like an eggshell or hold together like a tank in a crash." ),
+				readableLabel: "Car strength",
+				usageDescription: "Do any of the following variables have a <em>direct</em> influence on the [This]?",
+				description: "Whether the client's car would break like an eggshell or hold together like a tank in a crash." ),
 
 			new Variable(
 				label: "Accident",
 				readableLabel: "Accident",
+				usageDescription: "Do any of the following variables <em>direct</em> influence the chance of a client having an [This]?",
 				description:  "Whether or not the client will have an accident." ),
 
 			new Variable(
 				label: "MakeModel",
 				readableLabel: "Car type",
+				usageDescription: "Do any of the following variables have a <em>direct</em> influence on the [This]?",
 				description: "General category of the car, such as sports car, economy car, family sedan or a luxury car. This is defined by the body of the car (e.g. hatchback, station wagon) and the features it has." ),
 
 			new Variable(
 				label: "DrivQuality",
-				readableLabel: "Quality of Clients Driving",
+				readableLabel: "Quality of client's driving",
+				usageDescription: "Do any of the following variables have a <em>direct</em> influence on the [This]?",
 				description:  "Whether the client is a safe driver, or prone to accidents." ),
 
 			new Variable(
 				label: "Mileage",
 				readableLabel: "Mileage",
-				description: "The distance the clients car driven since the engine was built." ),
+				usageDescription: "Do any of the following variables have a <em>direct</em> influence on the [This]?",
+				description: "The distance the client's car driven since the engine was built." ),
 
 			new Variable(
 				label: "Antilock",
-				readableLabel: "Car has Antilock Brakes",
-				description: "Whether the clients car has antilock breaks installed or not. These help prevent uncontrollable skidding." ),
+				readableLabel: "Car has antilock brakes",
+				usageDescription: "Do any of the following variables <em>direct</em> influence the chance of a clients Car having antilock brakes?",
+				description: "Whether the client's car has antilock breaks installed or not. These help prevent uncontrollable skidding." ),
 
 			new Variable(
 				label: "DrivingSkill",
-				readableLabel: "Driving Skill",
-				description: "The clients ability to drive a vehicle in varying conditions, such as rain or traffic congestion." ),
+				readableLabel: "Driving skill",
+				usageDescription: "Do any of the following variables <em>direct</em> influence the [This] of the client?",
+				description: "The client's ability to drive a vehicle in varying conditions, such as rain or traffic congestion." ),
 
 			new Variable(
 				label: "SeniorTrain",
-				readableLabel: "Advanced Driver Training",
+				readableLabel: "Advanced driver training",
+				usageDescription: "Do any of the following variables <em>direct</em> influence whether the client has had [This]?",
 				description: "Whether the client has undergone additional training after obtaining their license. Some companies may refer to this as \"Skilled Driving\" or \"Defensive Driving\" courses." ),
 
 			new Variable(
 				label: "ThisCarCost",
-				readableLabel: "Cost to Insurer for Client's Car",
+				readableLabel: "Cost to insurer for client's car",
+				usageDescription: "Do any of the following variables have a <em>direct</em> influence on the [This]?",
 				description: "The damage cost for the client's car, in the event of an accident."),
 
 			new Variable(
 				label: "HomeBase",
-				readableLabel: "Primary Parking Location",
+				readableLabel: "Primary parking location",
+				usageDescription: "Do any of the following variables <em>directly</em> influence the [This]?",
 				description: "The location the client's car is usually parked. For example, in secure parking/garage, or on a city, suburban or rural street." ),
 
 			new Variable(
 				label: "AntiTheft",
-				readableLabel: "Anti Theft Device Installed" ),
+				usageDescription: "Do any of the following variables <em>directly</em> influence whether the client's car has an [This]?",
+				readableLabel: "Anti theft device installed" ),
 
 			new Variable(
 				label: "Theft",
-				readableLabel: "Car Stolen",
-				description: "Whether or not the clients car will get stolen." ),
+				readableLabel: "Car stolen",
+				usageDescription: "Do any of the following variables <em>directly</em> influence whether the client's car will be stolen?",
+				description: "Whether or not the client's car will get stolen." ),
 
 			new Variable(
 				label: "Other Car Cost",
-				readableLabel: "Cost to Insurer for Other Cars",
+				readableLabel: "Cost to insurer for other cars",
+				usageDescription: "Do any of the following variables <em>directly</em> influence the [This]?",
 				description: "In the event of an accident involving other cars, this is the amount the client's insurer must pay for damage to them." ),
 
 			new Variable(
 				label: "OtherCar",
-				readableLabel: "Other Cars Involvement",
+				readableLabel: "Other cars involvement",
+				usageDescription: "Do any of the following variables <em>directly</em> influence [This] in an accident?",
 				description: "Whether other cars are involved in an accident with the client's car." ),
 
 			/*
@@ -186,17 +206,19 @@ class InsuranceDataLoader extends DataLoader {
 			new Variable(
 				label: "Cushioning",
 				readableLabel: "Cushioning",
-				description: "The level of cushioning the clients car provides for the people inside in the event of an accident." ),
+				description: "The level of cushioning the client's car provides for the people inside in the event of an accident." ),
 			*/
 
 			new Variable(
 				label: "Airbag",
-				readableLabel: "Airbag",
-				description: "Whether or not there are any airbags installed in the clients car." ),
+				readableLabel: "Airbags",
+				usageDescription: "Do any of the following variables <em>directly</em> influence whether the client's car has [This] installed?",
+				description: "Whether or not there are any airbags installed in the client's car." ),
 
 			new Variable(
 				label: "DrivHist",
-				readableLabel: "Driver History",
+				readableLabel: "Driver history",
+				usageDescription: "Do any of the following variables <em>directly</em> influence the [This] of the client?",
 				description: "If the client has a history of insurance claims" ),
 		]
 
@@ -208,7 +230,7 @@ class InsuranceDataLoader extends DataLoader {
 
 			/*
 			Not included for Victoria (Australia) study, because  medical bills are dealt with by
-			the government run TAC, and not the clients insurance company.
+			the government run TAC, and not the client's insurance company.
 
 			 new Variable(
 				 label: "MedCost",
@@ -219,15 +241,15 @@ class InsuranceDataLoader extends DataLoader {
 
 			new Variable(
 					label: "ILiCost",
-					readableLabel: "Cost to Insurer for Liability/Property",
-					description:
-						"The total cost to the insurer for 3rd party property damage, due to an accident caused by the client." ),
+					readableLabel: "Cost to insurer for liability/property",
+					usageDescription: "Do any of the following variables <em>directly</em> influence the [This]?",
+					description: "The total cost to the insurer for 3rd party property damage, due to an accident caused by the client." ),
 
 			new Variable(
 				label: "PropCost",
-				readableLabel: "Total Cost to Insurer for All Cars",
-				description:
-					"The total cost to the insurer for fixing all cars involved in an accident caused by the client." ),
+				readableLabel: "Total cost to insurer for all cars",
+				usageDescription: "Do any of the following variables <em>directly</em> influence the [This]?",
+				description: "The total cost to the insurer for fixing all cars involved in an accident caused by the client." ),
 
 
 
