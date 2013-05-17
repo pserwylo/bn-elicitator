@@ -67,7 +67,7 @@ class InsuranceDataLoader extends DataLoader {
 				<p>
 					Does this sound like something you can help with?
 					<br />
-					<button class='big' onclick='document.location = "[serverURL]/elicit"'>Participate</button>
+					<button class='big' onclick='document.location = "[serverURL]/explain"'>Register / Log in</button>
 				</p>
 			</div>
 		"""

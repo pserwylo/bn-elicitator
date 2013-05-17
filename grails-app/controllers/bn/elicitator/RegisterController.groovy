@@ -31,7 +31,7 @@ class RegisterController extends grails.plugins.springsecurity.ui.RegisterContro
 		}
 
 		String salt = saltSource instanceof NullSaltSource ? null : command.username
-		def user = lookupUserClass().newInstance(realName: command.username, email: command.email, username: command.username,
+		def user = lookupUserClass().newInstance(email: command.email, username: command.username,
 				accountLocked: true, enabled: true)
 
 		RegistrationCode registrationCode = springSecurityUiService.register(user, command.password, salt)
@@ -57,7 +57,7 @@ class RegisterController extends grails.plugins.springsecurity.ui.RegisterContro
 			html body.toString()
 		}
 
-		render view: 'index', model: [emailSent: true]
+		render view: 'index', model: [emailSent: true, command: command]
 	}
 
 	/**

@@ -28,6 +28,10 @@ class VariableService
 	DelphiService delphiService
 	UserService   userService
 
+	public int completedCount( User user = userService.current ) {
+		return FinishedVariableEvent.countByUserAndDelphiPhase( user, delphiService.phase )
+	}
+
 	public void eachVariableClass( Closure closure ) {
 
 		Map<Long,List<Variable>> categories = [:]

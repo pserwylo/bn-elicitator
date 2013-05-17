@@ -36,14 +36,28 @@
 
 package bn.elicitator
 
+import bn.elicitator.auth.User
+
 class UserTagLib {
 
 	static namespace = "bnUser"
 
+	def variableService
 	def userService
 
 	def realName = {
 		out << userService.current.realName
+	}
+
+	/**
+	 * @attr user REQUIRED
+	 */
+	def completedInfo = { attrs ->
+		User user = attrs.user
+		int completed = variableService.completedCount( user )
+		int total = Allocation.findByUser( user ).variables.size()
+
+		out << "$completed / $total"
 	}
 
 }

@@ -241,8 +241,7 @@
 									<div class="stats">
 										Last login: ${user.lastLoginDate ? user.lastLoginDate.format( 'dd/MM/yyyy hh:mm' ) : "Never"}
 										<br />
-										<g:set var="visitedCount" value="${variableService.getVisitedCount( user )}" />
-										Completed: ${(int)( ( (double)visitedCount / totalNumberOfVars ) * 100 )}%
+										Completed: <bnUser:completedInfo user="${user}" />
 									</div>
 
 								</li>

@@ -26,8 +26,11 @@
 								</div>
 							</oauth:connect>
 							<p class="description">
-								If you have a Facebook account, then you can login to the survey
-								by clicking the above button.
+								To see why we ask Facebook for
+								"your public profile, friend list and email address", read our brief
+								<bnContent:link page="${bn.elicitator.ContentPage.PRIVACY_POLICY}">
+									privacy policy
+								</bnContent:link>.
 							</p>
 						</fieldset>
 					</div>

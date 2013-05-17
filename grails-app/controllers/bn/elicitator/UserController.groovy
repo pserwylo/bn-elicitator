@@ -39,13 +39,10 @@ class UserController {
 			toShow = User.findByUsername( params.showUser )
 		}
 
-		int totalNumberOfVars = variableService.getAllChildVars().size() /* Used for progress counter of users. */
-
 		[
 			userList : User.list(),
 			roleList : Role.list(),
-			showUser: toShow,
-			totalNumberOfVars: totalNumberOfVars
+			showUser: toShow
 		]
 	
 	}

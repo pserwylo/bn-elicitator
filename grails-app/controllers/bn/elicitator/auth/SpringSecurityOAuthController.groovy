@@ -221,6 +221,13 @@ class SpringSecurityOAuthController {
 				}
 			}
 
+			if (!user.realName || user.realName == user.username) {
+				user.realName = facebookOAuthToken.facebookProfile.firstName
+				if (!user.validate()) {
+					user.realName = null
+				}
+			}
+
 			if (!user.email) {
 				user.email = facebookOAuthToken.facebookProfile.email
 				if (!user.validate()) {
@@ -228,12 +235,6 @@ class SpringSecurityOAuthController {
 				}
 			}
 
-			if (!user.realName || user.realName == user.username) {
-				user.realName = facebookOAuthToken.facebookProfile.firstName
-				if (!user.validate()) {
-					user.realName = null
-				}
-			}
 		} else if (oAuthToken instanceof GoogleOAuthToken) {
 			GoogleOAuthToken googleOAuthToken = (GoogleOAuthToken) oAuthToken
 
