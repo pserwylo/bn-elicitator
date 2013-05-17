@@ -39,7 +39,23 @@
 		<g:javascript>
 			window.config = {
 				webroot: '<g:resource absolute="true" dir="/" />'
-			}
+			};
+
+			window.onerror = function( msg, url, line ) {
+				var description = msg + " - " + url + " @ line " + line;
+				console.log( "Uncaught exception: " + description + "\nLogging on the server, then redirecting back here." );
+				alert( "Uh oh... an unexpected error occurred.\n\nWe'll refresh this page, and if it still persists, please contact peter.serwylo@monash.edu." );
+
+				$.post(
+					"${createLink( controller: 'error', action: 'jsError' )}",
+					{
+						message : msg,
+						url     : url,
+						line    : line
+					}
+				);
+			};
+
 		</g:javascript>
 
 		<g:javascript library="global"/>

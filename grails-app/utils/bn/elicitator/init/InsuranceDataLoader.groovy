@@ -379,7 +379,7 @@ class InsuranceDataLoader extends DataLoader {
 	<div class="contact-details">
 		<div class="name">Peter Serwylo</div>
 		<div class="school">Caulfield School of IT, Monash University</div>
-		<div class="phone">0431 608 014 or 03 9903 2556</div>
+		<div class="phone">03 9903 2556</div>
 		<div class="email"><a href="mailto:peter.serwylo@monash.edu">peter.serwylo@monash.edu</a></div>
 	</div>
 </p>
@@ -405,7 +405,7 @@ class InsuranceDataLoader extends DataLoader {
 <div class="contact-details">
     <div class="name">Peter Serwylo</div>
 	<div class="school">Caulfield School of IT, Monash University</div>
-    <div class="phone">0431 608 014 or 03 9903 2556</div>
+    <div class="phone">03 9903 2556</div>
 	<div class="email"><a href="mailto:peter.serwylo@monash.edu">peter.serwylo@monash.edu</a></div>
 </div>
 
