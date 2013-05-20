@@ -28,8 +28,12 @@
 
 /* MAIN LIST STYLES */
 
-ul.potential-parents-list li.variable-item {
-    height: 30px;
+@media only screen and (min-width: 600px) {
+
+	ul.potential-parents-list li.variable-item {
+		height: 30px;
+	}
+
 }
 
 ul.potential-parents-list      li.variable-item .variable {
@@ -253,38 +257,6 @@ ul.potential-parents-list .variable-item.highlighted button.review {
 	background-color: #eee;
 }
 
-.var-summary {
-	display: inline-block;
-    width: 200px;
-    float: right;
-	text-align: right;
-    padding-right: 0.8em;
-}
-
-.var-summary .count {
-	height: 100%;
-	padding-right: 0.4em;
-	margin-right: 0.3em;
-	border-right: solid 1px #ddd;
-	font-weight: bold;
-}
-
-.var-summary .count.high   { color: #555; }
-.var-summary .count.medium { color: #888;}
-.var-summary .count.low    { color: #aaa;}
-
-.var-summary .agreement {
-    display: block;
-    width: 100%;
-    text-align: right;
-}
-
-.var-summary .toggle-details {
-    width: 100%;
-    display: block;
-    text-align: right;
-}
-
 .next-previous-button {
 	width: 125px;
 }
@@ -302,20 +274,87 @@ ul.potential-parents-list .variable-item.highlighted button.review {
 	padding: 20px 40px;
 }
 
-.elicit-parents .column-left {
-	width: 550px;
+@media only screen and (max-width: 600px) {
+
+	.variable-item .variable {
+		font-size: 0.8em;
+	}
+
+	.elicit-parents .column-left {
+		width: 300px;
+	}
+
+	.elicit-parents .column-right {
+		margin-left: 303px;
+		min-width: 200px;
+	}
+
+	.var-summary {
+		display: block;
+		text-align: left;
+		margin-bottom: 0.3em;
+	}
+
+	.var-summary button {
+		font-size: 0.8em;
+		padding: 0.5em 0.3em;
+		min-width: 35px;
+	}
+
 }
 
-.elicit-parents .column-right {
-	margin-left: 560px;
+@media only screen and (min-width: 600px) {
+
+	.elicit-parents .column-left {
+		width: 550px;
+	}
+
+	.elicit-parents .column-right {
+		margin-left: 560px;
+	}
+
+	.var-summary {
+		display: inline-block;
+		width: 200px;
+		float: right;
+		text-align: right;
+		padding-right: 0.8em;
+	}
+
+}
+
+.var-summary .count {
+	height: 100%;
+	padding-right: 0.4em;
+	margin-right: 0.3em;
+	border-right: solid 1px #ddd;
+	font-weight: bold;
+}
+
+.var-summary .count.high   { color: #555; }
+.var-summary .count.medium { color: #888;}
+.var-summary .count.low    { color: #aaa;}
+
+.var-summary .agreement {
+	display: block;
+	width: 100%;
+	text-align: right;
+}
+
+.var-summary .toggle-details {
+	width: 100%;
+	display: block;
+	text-align: right;
 }
 
 .child-variable {
 	font-size: 1.2em;
 }
 
-ul.potential-parents-list li {
-	height: 50px;
+@media only screen and (min-width: 600px) {
+	ul.potential-parents-list li {
+		height: 50px;
+	}
 }
 
 ul.potential-parents-list li.new-var {

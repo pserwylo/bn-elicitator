@@ -28,39 +28,35 @@ class InsuranceDataLoader extends DataLoader {
 
 	protected void updateHomePage() {
 		String homeText = """
+			<h2>How long should this take?</h2>
+			<p>
+				It should take approximately 20 mins to complete, and we're looking for you to complete it a total of three times over three weeks. 
+				We'll send you a reminder at the start of each week.
+			</p>
+
+
 			<h2>Who are you?</h2>
 			<p>
-				You should pretend to be running a car insurance company.
+				For the purpose of this study, you should put yourself in the shoes of somebody who runs an insurnace company. 
+				It doesn't matter if you don't have experience dealing with this, we're just after your best guess for each question.
 			</p>
 
 			<h2>What does the insurance company want?</h2>
 			<p>
-				Like other insurance companies, this one is greedy, and wants to make as much money as possible. That
-				means that you need to understand the clients you will be signing up.
+				Like most businesses, this one wants to make money. 
+				That means that you need to understand the clients you will be signing up, and how risky they are.
 			</p>
 
-			<h2>How can clients cost you money?</h2>
+			<h2>Where does this survey fit in?</h2>
 			<p>
-				Clients can be expensive and cost you money in several ways, for example:
-				<ul class='bullet'>
-					<li>They could crash their car, and it will need to be fixed</li>
-					<li>They could crash into somebody else's car and that will need to be fixed</li>
-					<li>They can crash into buildings and other things which will need to be fixed</li>
-					<li>All of the above</li>
-				</ul>
+				We are building a model which identifies the factors involved in assessing clients. 
+				Certain clients will be more risky than others, and therefore we will charge them a higher excess and premium.
 			</p>
-
-			<h2>What are you going to be doing?</h2>
+			<br />
 			<p>
-				We are building a model which identifies the factors involved in assessing clients. Certain clients will
-				be more risky than others, and therefore we will charge them a higher excess and premium.
-			</p>
-
-			<h2>How will you do this?</h2>
-			<p>
-				At this point, we are purely interested in how the various factors which determine risk fit together.
-				You will be presented with a list of variables, and each one will be potentially influenced by other
-				variables. You will be asked which variables you think influence others.
+				At this point, we are purely interested in how the various factors which determine risk fit together. 
+				You will be presented with a list of variables, and each one will be potentially influenced by other variables. 
+				You will be asked which variables you think influence others
 			</p>
 
 			<div style='text-align: center; margin-top: 2em;'>
@@ -323,7 +319,7 @@ class InsuranceDataLoader extends DataLoader {
 
 <h2><a name="time">How much time will the research take?</a></h2>
 <p>
-	You will be asked to complete the survey three, and each time should take around 10-15 minutes to complete.
+	You will be asked to complete the survey three, and each time should take around 20 minutes to complete.
 	Each round of the survey will last for one week. If you have not completed the survey after five days, the
 	researchers will send you an email to remind you (if you don't want to receive this email, please contact
 	peter.serwylo@monash.edu and ask to be removed from the email list).

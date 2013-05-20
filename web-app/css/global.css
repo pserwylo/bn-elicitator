@@ -227,11 +227,28 @@ h2 {
 	margin-bottom: 5px;
 }
 
-#user-info {
-	padding-top: 5px;
-	text-align: right;
-	position: absolute;
-	right: 10px;
+@media only screen and (max-width: 600px) {
+
+	#user-info {
+		text-align: center;
+		font-size: 1.1em;
+	}
+
+	#welcome-user {
+		font-size: 0.8em;
+	}
+
+}
+
+@media only screen and (min-width: 600px) {
+
+	#user-info {
+		padding-top: 5px;
+		text-align: right;
+		position: absolute;
+		right: 10px;
+	}
+
 }
 
 /* FONT STACK */
@@ -310,11 +327,9 @@ body {
 
 .column-left {
 	float: left;
-	width: 350px;
 }
 
 .column-right {
-	margin-left: 355px;
 }
 
 .column-footer {

@@ -46,7 +46,7 @@ class UserTagLib {
 	def userService
 
 	def realName = {
-		out << userService.current.realName
+		out << userService.current?.realName ?: ""
 	}
 
 	/**

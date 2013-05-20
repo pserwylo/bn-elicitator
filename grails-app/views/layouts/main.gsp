@@ -79,8 +79,9 @@
 		<div id="headingWrapper">
 			<sec:ifLoggedIn>
 				<div id="user-info">
+					<div id="welcome-user">
 					<g:message code="main.welcome" args="${[ bnUser.realName() ]}" />
-					<br />
+					</div>
 					<bnContent:link
 							page="${ContentPage.HELP}"
 							class="help">

@@ -16,13 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.column-left {
-	width: 48% !important;
+@media screen and (max-width: 600px) {
+	.column-left,
+	.cloumn-right {
+		margin: 0.3em;
+		float: none;
+		width: auto;
+	}
 }
 
-.column-right {
-	margin-left: 50% !important;
-	width: 48% !important;
+@media screen and (min-width: 601px) {
+	.column-left {
+		width: 48%;
+	}
+
+	.column-right {
+		margin-left: 50%;
+		width: 48%;
+	}
 }
 
 .facebook-connect {

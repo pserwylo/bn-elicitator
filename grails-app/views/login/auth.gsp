@@ -16,6 +16,9 @@
 				<div class="column-wrapper">
 					<div class="column-header">
 						<h2><g:message code="springSecurity.login.header"/></h2>
+						<div class="info">
+							If you have any problems registering for this survey, please contact <a href="mailto:peter.serwylo@monash.edu">Peter Serwylo.</a>
+						</div>
 					</div>
 					<div class="column-left">
 						<fieldset class="default">

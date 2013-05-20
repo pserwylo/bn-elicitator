@@ -112,6 +112,8 @@ grails.plugins.springsecurity.rememberMe.persistent              = true
 grails.plugins.springsecurity.ui.encodePassword                  = false // The Domain class for users does this for us.
 grails.plugins.springsecurity.rememberMe.persistentToken.domainClassName = 'bn.elicitator.auth.PersistentLogin'
 grails.plugins.springsecurity.oauth.registration.roleNames       = [ 'ROLE_EXPERT' ]
+grails.plugins.springsecurity.auth.ajaxLoginFormUrl              = "/login/auth"
+grails.plugins.springsecurity.adh.errorPage                      = "/login/denied"
 
 grails.plugins.springsecurity.interceptUrlMap = [
 
@@ -125,15 +127,16 @@ grails.plugins.springsecurity.interceptUrlMap = [
 
 	'/elicit/**' : [ 'ROLE_ADMIN', 'ROLE_CONSENTED' ],
 
-	'/auth/oauth/**' : ['IS_AUTHENTICATED_ANONYMOUSLY'],
-	'/register/**'   : ['IS_AUTHENTICATED_ANONYMOUSLY'],
-	'/oauth/**'      : ['IS_AUTHENTICATED_ANONYMOUSLY'],
-	'/login/**'      : ['IS_AUTHENTICATED_ANONYMOUSLY'],
-	'/logout/**'     : ['IS_AUTHENTICATED_ANONYMOUSLY'],
-	'/static/**'     : ['IS_AUTHENTICATED_ANONYMOUSLY'],
-	'/content/**'    : ['IS_AUTHENTICATED_ANONYMOUSLY'],
-	'/home/**'       : ['IS_AUTHENTICATED_ANONYMOUSLY'],
-	'/'              : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/auth/oauth/**'    : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/register/**'      : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/oauth/**'         : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/login/**'         : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/logout/**'        : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/static/**'        : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/content/**'       : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/home/**'          : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/uploads/Image/**' : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+	'/'                 : ['IS_AUTHENTICATED_ANONYMOUSLY'],
 
 
 	'/explain/**'    : ['IS_AUTHENTICATED_REMEMBERED'],
