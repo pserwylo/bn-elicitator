@@ -150,9 +150,9 @@
 						<g:each in="${userList}" var="${user}">
 							<li class=" variable-item">
 								${user.username}
-								<g:if test="${completedCurrentRound*.completedBy.contains( user )}">
-									<span class="stats">Completed phase ${appProperties.delphiPhase}</span>
-								</g:if>
+								<span class="stats">
+									<bnUser:completedInfo user="${user}" />
+								</span>
 							</li>
 						</g:each>
 					</ul>

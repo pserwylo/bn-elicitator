@@ -225,6 +225,22 @@ h2 {
 	position: relative;
 	border-bottom: 1px solid #bbb;
 	margin-bottom: 5px;
+	padding-bottom: 5px;
+}
+
+.ie6 #user-info,
+.ie7 #user-info,
+.ie8 #user-info {
+	text-align: center;
+	font-size: 1.1em;
+	position: static;
+}
+
+.ie6 #welcome-user,
+.ie7 #welcome-user,
+.ie8 #welcome-user
+{
+	font-size: 0.8em;
 }
 
 @media only screen and (max-width: 600px) {
@@ -232,6 +248,7 @@ h2 {
 	#user-info {
 		text-align: center;
 		font-size: 1.1em;
+		position: static;
 	}
 
 	#welcome-user {

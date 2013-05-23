@@ -18,6 +18,8 @@
 
 package bn.elicitator
 
+import bn.elicitator.auth.User
+import bn.elicitator.events.FinishedVariableEvent
 import bn.elicitator.events.LoggedEvent
 
 class AdminTagLib {
@@ -63,12 +65,14 @@ class AdminTagLib {
 				out << "<ul class='variable-list'>"
 
 				iVars.each { var ->
-					String usersString = allAllocations.findAll { it.variables.contains( var ) }*.user*.username.join( "\n" )
+					List<User> users   = allAllocations.findAll { it.variables.contains( var ) }*.user
+					String usersString = users*.username.join( "\n" )
+					int completedCount = FinishedVariableEvent.countByUserInListAndVariable( users, var )
 
 					out << """
 						<li class='variable-item'>
 							$var.readableLabel
-							${bn.tooltip( [:] ) { usersString }}
+							${bn.tooltip( [content : "$completedCount done" ] ) { usersString }}
 						</li>
 """
 				}

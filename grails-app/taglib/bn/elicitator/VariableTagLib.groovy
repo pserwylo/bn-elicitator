@@ -31,11 +31,17 @@ class VariableTagLib {
 	/**
 	 * @attr id
 	 * @attr classes
+	 * @attr content
 	 */
 	def tooltip = { attrs, body ->
 		String id = attrs.id;
 		String classes = attrs.classes;
-		out << generateTooltip( (String)(body()), id, classes )
+		String content = null
+		if ( attrs?.containsKey( "content" ) )
+		{
+			content = attrs.content
+		};
+		out << generateTooltip( (String)(body()), id, classes, content )
 	}
 
 	/**

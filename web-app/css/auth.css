@@ -36,6 +36,20 @@
 	}
 }
 
+.ie6 .column-left,
+.ie7 .column-left,
+.ie8 .column-left,
+
+.ie6 .cloumn-right,
+.ie7 .cloumn-right,
+.ie8 .cloumn-right
+{
+	margin: 0.3em;
+	float: none;
+	width: auto;
+	display: block;
+}
+
 .facebook-connect {
 	background-image: url("../images/icons-custom/facebook_connect.png");
 	display: block;

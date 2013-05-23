@@ -43,6 +43,7 @@ class UserTagLib {
 	static namespace = "bnUser"
 
 	def variableService
+	def delphiService
 	def userService
 
 	def realName = {
@@ -53,11 +54,20 @@ class UserTagLib {
 	 * @attr user REQUIRED
 	 */
 	def completedInfo = { attrs ->
-		User user = attrs.user
-		int completed = variableService.completedCount( user )
-		int total = Allocation.findByUser( user ).variables.size()
+		User user             = attrs.user
+		Allocation allocation = Allocation.findByUser( user )
+		if (!allocation) {
+			out << "None allocated"
+		} else {
+			int completed = variableService.completedCount( user )
+			int total = allocation.variables?.size()
 
-		out << "$completed / $total"
+			if ( total == completed )
+			{
+				out << "Completed phase $delphiService.phase "
+			}
+			out << "($completed / $total)"
+		}
 	}
 
 }
