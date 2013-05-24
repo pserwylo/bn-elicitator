@@ -38,8 +38,19 @@
 
 			var currentVar = null;
 
-			var reviewYes = $( '.review-yes' );
-			var reviewNo  = $( '.review-no'  );
+			var reviewYes     = $( '.review-yes' );
+			var reviewNo      = $( '.review-no'  );
+			var buttonBack    = $( '#btnBack' );
+			var reviewedVars  = ${reviewedVariables*.label as grails.converters.JSON};
+			var TOTAL_REVIEWS = $( '#list-yes' ).children().length + $( '#list-no' ).children().length;
+
+			var canFinish = function() {
+				return reviewedVars.length == TOTAL_REVIEWS;
+			};
+
+			var getReviewsLeft = function() {
+				return TOTAL_REVIEWS - reviewedVars.length;
+			};
 
 			var hasChangedMind = function() {
 				return inputDoesExist() != currentVar.exists;
@@ -80,7 +91,7 @@
 			var hasChangedWithAlert = function() {
 				var changed = hasChanged();
 				if ( changed ) {
-					alert( "You have unsaved changes. Please save these changes first (click the save button on the right)." );
+					alert( "You have unsaved changes. Please save these changes first (click the \"Save/Done\" button on the right)." );
 				}
 				return changed;
 			};
@@ -102,10 +113,24 @@
 			};
 
 			$( '#btnFinished' ).click( function() {
-				if ( !hasChangedWithAlert() ) {
+				if ( !canFinish() ) {
+					var count = getReviewsLeft();
+					alert( 'You still need to review ' + count + ' variables.' );
+					$( 'body' ).animate( { scrollTop: 0 } );
+				} else if ( !hasChangedWithAlert() ) {
 					document.location = '${createLink( action: 'completedVariable', params: [ variable : variable.label ])}';
 				}
 			});
+
+			var markAsReviewed = function( varLabel ) {
+				if ( reviewedVars.indexOf( varLabel ) == -1 ) {
+					reviewedVars.push( varLabel );
+				}
+
+				if ( canFinish() ) {
+					buttonBack.hide();
+				}
+			};
 
 			showHideLists();
 
@@ -121,6 +146,8 @@
 					return;
 				}
 
+				$( btnSave ).attr( 'disabled', true );
+
 				$.ajax({
 					type: 'post',
 					url: '${createLink(action: 'save')}',
@@ -132,10 +159,11 @@
 					},
 					dataType: 'text json',
 					error: function( data ) {
+						$( btnSave ).attr( 'disabled', false );
 						alert( "Error while saving. The administrator has been notified." );
 					},
 					success: function( data ) {
-
+						$( btnSave ).attr( 'disabled', false );
 						if ( data.exists != currentVar.exists ) {
 							// TODO: Update the other user count and style.
 							var li = $( '#' + currentVar.label + "-variable-item" );
@@ -143,9 +171,10 @@
 
 							var ul = $( '#list-' + ( data.exists ? 'yes' : 'no' ) );
 							ul.append( li );
-
 							showHideLists();
 						}
+
+						markAsReviewed( currentVar.label );
 
 						reasonsList.find( 'li.me.phase-${delphiPhase}' ).remove();
 						currentVar.exists  = data.exists;
@@ -159,6 +188,8 @@
 							};
 							reasonsList.prepend( generateComment( comment ) );
 						}
+
+						$( '#' + currentVar.label + "-variable-item" ).addClass( 'doesnt-need-review' ).removeClass( 'needs-review' );
 					}
 				});
 			});
@@ -176,6 +207,14 @@
 					$( '#' + currentVar.label + "-variable-item" ).removeClass( 'highlighted' );
 				}
 			};
+
+			buttonBack.click( function() {
+				document.location = '${createLink( action : 'redirectToProblems' )}';
+			});
+
+			if ( canFinish() ) {
+				buttonBack.hide();
+			}
 
 			$( 'button.review' ).click( function() {
 				var btnReview = this;
@@ -224,9 +263,7 @@
 							comment       : currentCommentText == null ? "" : currentCommentText
 						};
 
-						if ( currentVar != null ) {
-							$( '#' + currentVar.label + "-variable-item" ).addClass( 'highlighted' );
-						}
+						$( '#' + currentVar.label + "-variable-item" ).addClass( 'highlighted' );
 
 						form.find( 'legend' ).html( 'Does ' + data.parentLabelReadable + '<br />directly influence<br />${variable.readableLabel.encodeAsJavaScript()}?' );
 
@@ -258,7 +295,6 @@
 						<legend>
 							${variable.readableLabel} <bn:variableDescription var="${variable}"/>
 						</legend>
-
 						<p>
 							<g:message code="elicit.parents.review.desc" args="${[variable.readableLabel]}"/>
 						</p>
@@ -268,15 +304,19 @@
 
 					</fieldset>
 
-					<button
-						id="btnFinished"
-						type="button"
-						style="margin-top: 5px;"
-						class="big">
+					<div class="button-wrapper">
+						<button
+							id="btnFinished"
+							type="button"
+							style="margin-top: 5px;"
+							class="big">
+							Finished with ${variable.readableLabel}
+						</button>
 
-						Finished with ${variable.readableLabel}
-
-					</button>
+						<button id="btnBack" type="button">
+							Back
+						</button>
+					</div>
 
 				</div>
 

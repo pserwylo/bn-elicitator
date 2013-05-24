@@ -20,3 +20,14 @@ em {
 	text-decoration: underline;
 }
 
+ul.potential-parents-list li.variable-item.doesnt-need-review {
+	background: url("../images/icons/accept.png") no-repeat scroll 5px 50% transparent;
+}
+
+ul.potential-parents-list li.variable-item.needs-review {
+	background: url("../images/icons/lightbulb.png") no-repeat scroll 5px 50% transparent;
+}
+
+ul.potential-parents-list li.variable-item {
+	padding-left: 30px;
+}

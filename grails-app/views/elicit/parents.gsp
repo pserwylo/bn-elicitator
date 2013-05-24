@@ -279,7 +279,6 @@
 					if ( canFinish() ) {
 						$( 'h2.review-uninitialized' ).hide();
 						buttonBack.hide();
-					} else {
 					}
 				};
 

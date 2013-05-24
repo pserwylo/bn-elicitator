@@ -42,11 +42,13 @@ class UtilTagLib {
 	 * @attr atTop REQUIRED Specifies whether to style the buttons as if they are at the top of the form or the bottom.
 	 * @attr includeDelete
 	 * @attr closeLabel
+	 * @attr saveLabel
 	 */
 	def saveButtons = { attrs ->
 		Boolean atTop         = attrs.atTop
 		Boolean includeDelete = false
 		String  closeLabel    = "Close"
+		String  saveLabel     = "Save"
 
 		if ( attrs.containsKey( 'includeDelete' ) ) {
 			includeDelete = attrs.remove( 'includeDelete' )
@@ -54,6 +56,10 @@ class UtilTagLib {
 
 		if ( attrs.containsKey( 'closeLabel' ) ) {
 			closeLabel = attrs.remove( 'closeLabel' )
+		}
+
+		if ( attrs.containsKey( 'saveLabel' ) ) {
+			saveLabel = attrs.remove( 'saveLabel' )
 		}
 
 		out << """
@@ -66,7 +72,7 @@ class UtilTagLib {
 		}
 
 		out << """
-				<button class='save' type='button'>Save</button>
+				<button class='save' type='button'>$saveLabel</button>
 			</span>
 			"""
 	}

@@ -28,6 +28,16 @@ class VariableService
 	DelphiService delphiService
 	UserService   userService
 
+	public List<ReviewedRelationship> myReviewedRelationshipsFor( Variable child ) {
+		return ReviewedRelationship.withCriteria {
+			relationship {
+				eq( 'child', child )
+			}
+			eq( 'reviewedBy',  userService.current )
+			eq( 'delphiPhase', delphiService.phase )
+		}
+	}
+
 	/**
 	 * Number of variables completed by user *user* (defaults to current user).
 	 */

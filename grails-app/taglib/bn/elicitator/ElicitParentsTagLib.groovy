@@ -132,15 +132,15 @@ class ElicitParentsTagLib {
 		List<Variable> potentialParents = attrs.potentialParents
 		Variable child = attrs.child
 
-		List<Variable> listYes   = []
-		List<Variable> listNo    = []
-		List<Variable> listNoAll = []
+		List<Variable> listYes           = []
+		List<Variable> listNo            = []
+		List<Variable> listNoAll         = []
+		List<Variable> reviewedVars      = variableService.myReviewedRelationshipsFor( child )*.relationship*.parent
+		List<User> usersAllocatedToChild = allocateQuestionsService.getOthersAllocatedTo( child )
 		Map<Variable, List<Relationship>> allRelationships = [:]
 		Map<Variable, Integer>            allOthersCount   = [:]
 
 		User user = userService.current
-
-		List<User> usersAllocatedToChild = allocateQuestionsService.getOthersAllocatedTo( child )
 
 		potentialParents.each { parent ->
 
@@ -173,11 +173,12 @@ class ElicitParentsTagLib {
 		def listItem = { parent, count ->
 
 			List<String> countClasses = [ "low", "medium", "high" ]
-			float   countPercent    = count / totalUsers
-			int     countClassIndex = ( countClasses.size() - 1 ) - (int)( countPercent * countClasses.size() )
+			float countPercent        = count / totalUsers
+			int countClassIndex       = ( countClasses.size() - 1 ) - (int)( countPercent * countClasses.size() )
+			String reviewedClass      = reviewedVars.contains( parent ) ? "doesnt-need-review" : "needs-review"
 
 			out << """
-			<li id='${parent.label}-variable-item' class='variable-item'>
+			<li id='${parent.label}-variable-item' class='variable-item $reviewedClass'>
 				<span class='var-summary'>
 					<span class='count ${countClasses[ countClassIndex ]}'>
 						${message( code: 'elicit.parents.agreement-count', args : [ count, totalUsers, (int)( countPercent * 100 ) ] )}
@@ -307,7 +308,7 @@ class ElicitParentsTagLib {
 					</tr>
 				</table>
 				<div class='header-wrapper'>
-					${bn.saveButtons( [ atTop: true ] )}
+					${bn.saveButtons( [ atTop: true, saveLabel: "Save / Done" ] )}
 				</div>
 				"""
 
