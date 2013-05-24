@@ -212,6 +212,16 @@ class ElicitParentsTagLib {
 		out << """
 				</ul>
 			"""
+
+		if ( listNoAll.size() > 0 ) {
+			def varPlural = listNoAll.size() == 1 ? "" : "s"
+			out << """
+				<div class='info'>
+					There was an additional ${listNoAll.size()} variable$varPlural which you all agreed do not
+					influence $child, and are therefore not shown here.
+				</div>
+				"""
+		}
 	}
 
 	/**
