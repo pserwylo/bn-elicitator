@@ -91,8 +91,8 @@
 				var classes     = [ 'phase-' + delphiPhase ];
 				classes.push( comment.byMe   ? 'me' : 'other' );
 				classes.push( comment.exists ? 'exists' : 'doesnt-exist' );
-				author += '${message( code: 'elicit.parents.comment-phase', args: [ '[phase]' ])}'.replace( '[phase]', delphiPhase );
-				return '<li class="' + classes.join( ' ' ) + '">' + comment.comment + '<div class="author">- ' + author + '</div></li>';
+				var authorString = '${message( code: 'elicit.parents.comment-phase', args: [ '[me]', '[phase]' ])}'.replace( '[phase]', delphiPhase ).replace( '[me]', author );
+				return '<li class="' + classes.join( ' ' ) + '">' + comment.comment + '<div class="author">' + authorString + '</div></li>';
 			};
 
 			var closeDialog = function() {

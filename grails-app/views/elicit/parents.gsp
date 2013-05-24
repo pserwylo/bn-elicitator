@@ -194,22 +194,31 @@
 				};
 
 				var selectEndOfTextArea = function( textarea ) {
-					var $textarea = $( textarea );
-					if ( $textarea.length > 0 ) {
+					try {
+						var $textarea = $( textarea );
+						if ( $textarea.length > 0 ) {
 
-						textarea = $textarea[ 0 ];
-						var length = $textarea.val().length;
-						if ( textarea.setSelectionRange ) {
-							textarea.focus();
-							textarea.setSelectionRange( length, length + 1 );
+							textarea = $textarea[ 0 ];
+							var length = $textarea.val().length;
+							if ( textarea.setSelectionRange ) {
+								textarea.focus();
+								textarea.setSelectionRange( length, length + 1 );
+							}
+							else if ( textarea.createTextRange ) {
+								var range = textarea.createTextRange();
+								range.collapse( true );
+								range.moveEnd( 'character', length );
+								range.moveStart( 'character', length );
+								range.select();
+							}
 						}
-						else if ( textarea.createTextRange ) {
-							var range = textarea.createTextRange();
-							range.collapse( true );
-							range.moveEnd( 'character', length );
-							range.moveStart( 'character', length );
-							range.select();
-						}
+					} catch ( error ) {
+						// I'm not sure where the exception was, but I was getting:
+						// NS_ERROR_FAILURE:
+						//   Component returned failure code:
+						//     0x80004005 (NS_ERROR_FAILURE) [nsIDOMHTMLTextAreaElement.setSelectionRange]
+						// I don't even know what browser it was in,
+
 					}
 				};
 

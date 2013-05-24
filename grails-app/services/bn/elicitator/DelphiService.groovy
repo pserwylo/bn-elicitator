@@ -18,6 +18,8 @@
 
 package bn.elicitator
 
+import bn.elicitator.auth.User
+
 /**
  * This may not be the best name for the service, but I'd like to have all of the stuff to do with comparing results
  * from different rounds and giving feedback in here.

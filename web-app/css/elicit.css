@@ -126,12 +126,11 @@ table.form th {
 .reasons ul.reasons-list li {
     list-style: none;
     margin: 0.5em 0.5em 1.5em 1em;
-    font-style: italic;
 }
 
 .reasons .author {
-    font-style: normal;
-    margin: 0.5em 0 0 2em;
+	font-size: 0.8em;
+	font-style: italic;
 }
 
 .reasons .list-wrapper {

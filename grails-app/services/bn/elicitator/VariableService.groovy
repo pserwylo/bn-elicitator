@@ -28,8 +28,18 @@ class VariableService
 	DelphiService delphiService
 	UserService   userService
 
+	/**
+	 * Number of variables completed by user *user* (defaults to current user).
+	 */
 	public int completedCount( User user = userService.current ) {
-		return FinishedVariableEvent.countByUserAndDelphiPhase( user, delphiService.phase )
+		VisitedVariable.countByVisitedByAndDelphiPhase( user, delphiService.phase )
+	}
+
+	/**
+	 * Number of people who have completed variable *var*.
+	 */
+	public int completedCount( Variable var ) {
+		VisitedVariable.countByVariable( var )
 	}
 
 	public void eachVariableClass( Closure closure ) {

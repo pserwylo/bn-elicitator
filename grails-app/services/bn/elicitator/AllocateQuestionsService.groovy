@@ -7,6 +7,15 @@ class AllocateQuestionsService {
 	UserService     userService
 	VariableService variableService
 
+	List<User> getOthersAllocatedTo( Variable var ) {
+		List<Allocation> allocations = Allocation.withCriteria {
+			variables {
+				eq ( 'id', var.id )
+			}
+		}
+		allocations*.user
+	}
+
 	/**
 	 * For each variable class, figure out how many variables there are in it,
 	 * and ask how many possible parents there are for each of those. This

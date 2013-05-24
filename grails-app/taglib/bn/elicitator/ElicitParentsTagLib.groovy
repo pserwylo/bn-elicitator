@@ -27,6 +27,7 @@ class ElicitParentsTagLib {
 	VariableService variableService
 	DelphiService   delphiService
 	UserService     userService
+	AllocateQuestionsService allocateQuestionsService
 
 	/**
 	 * @attr var REQUIRED
@@ -99,7 +100,7 @@ class ElicitParentsTagLib {
 					out << """
 						<li class='${className}'>
 							"${comment.comment}"
-							<div class='author'> - ${author}${message( code: 'elicit.parents.comment-phase', args: [ it.delphiPhase ])}</div>
+							<div class='author'>${message( code: 'elicit.parents.comment-phase', args: [ author, it.delphiPhase ])}</div>
 						</li>
 						"""
 				}
@@ -139,9 +140,13 @@ class ElicitParentsTagLib {
 
 		User user = userService.current
 
+		List<User> usersAllocatedToChild = allocateQuestionsService.getOthersAllocatedTo( child )
+
 		potentialParents.each { parent ->
 
-			List<Relationship> relationships = delphiService.getAllPreviousRelationshipsAndMyCurrent( parent, child )
+			List<Relationship> relationships = delphiService.getAllPreviousRelationshipsAndMyCurrent( parent, child ).findAll {
+				usersAllocatedToChild.contains( it.createdBy )
+			}
 
 			Relationship       myCurrent      = relationships.find    { it.createdBy == user && it.delphiPhase == delphiService.phase }
 			Relationship       myPrevious     = relationships.find    { it.createdBy == user && it.delphiPhase == delphiService.previousPhase }
@@ -161,7 +166,7 @@ class ElicitParentsTagLib {
 			}
 		}
 
-		Integer totalUsers = userService.expertCount
+		Integer totalUsers = usersAllocatedToChild.size()
 
 		def sortYes  = { low, high ->              allOthersCount.get( low ) <=>              allOthersCount.get( high ) }
 		def sortNo   = { low, high -> totalUsers - allOthersCount.get( low ) <=> totalUsers - allOthersCount.get( high ) }

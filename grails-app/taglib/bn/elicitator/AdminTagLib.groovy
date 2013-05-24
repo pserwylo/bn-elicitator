@@ -26,6 +26,8 @@ class AdminTagLib {
 
 	static namespace = "bnAdmin"
 
+	VariableService variableService
+
 	/**
 	 * Output a list of variables, and say how many participants they've been allocated to.
 	 * The variables are grouped based on how many participants they're allocated to, and each group
@@ -67,7 +69,7 @@ class AdminTagLib {
 				iVars.each { var ->
 					List<User> users   = allAllocations.findAll { it.variables.contains( var ) }*.user
 					String usersString = users*.username.join( "\n" )
-					int completedCount = FinishedVariableEvent.countByUserInListAndVariable( users, var )
+					int completedCount = variableService.completedCount( var )
 
 					out << """
 						<li class='variable-item'>
