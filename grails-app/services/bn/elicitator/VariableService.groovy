@@ -116,7 +116,7 @@ class VariableService
 	 */
 	List<Variable> getStillToVisit() {
 		List<Variable> varList      = getAllChildVars()
-		List<Variable> visitedList  = VisitedVariable.findAllByVariableInListAndVisitedByAndDelphiPhase( varList, userService.current, phase )*.variable
+		List<Variable> visitedList  = VisitedVariable.findAllByVariableInListAndVisitedByAndDelphiPhase( varList, userService.current, delphiService.phase )*.variable
 		List<Variable> stillToVisit = varList.findAll { !visitedList.contains( it ) }
 		return stillToVisit
 	}

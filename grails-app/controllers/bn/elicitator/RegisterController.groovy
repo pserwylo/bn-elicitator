@@ -8,6 +8,8 @@ import org.codehaus.groovy.grails.plugins.springsecurity.ui.RegistrationCode
 
 class RegisterController extends grails.plugins.springsecurity.ui.RegisterController {
 
+	DelphiService delphiService
+
 	public RegisterController() {
 		grails.plugins.springsecurity.ui.RegisterController.metaClass.static.checkPasswordRegex = { String password, command ->
 			password
@@ -15,6 +17,12 @@ class RegisterController extends grails.plugins.springsecurity.ui.RegisterContro
 	}
 
 	def index = {
+
+		if ( delphiService.phase > 1 ) {
+			redirect( uri: "/" )
+			return
+		}
+
 		if ( params.email ) {
 			def chained = flash.chainedParams ?: [:]
 			chained.put( "email", params.email )
@@ -24,6 +32,11 @@ class RegisterController extends grails.plugins.springsecurity.ui.RegisterContro
 	}
 
 	def register = { BnRegisterCommand command ->
+
+		if ( delphiService.phase > 1 ) {
+			redirect( uri: "/" )
+			return
+		}
 
 		if (command.hasErrors()) {
 			render view: 'index', model: [command: command]

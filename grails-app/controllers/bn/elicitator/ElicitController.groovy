@@ -384,15 +384,21 @@ class ElicitController {
 	}
 
 	def index = {
+
 		this.variableService.initRelationships()
 		List<Variable> varList = this.variableService.getAllChildVars()
+
+		if ( delphiService.hasPreviousPhase && varList.size() == 0 && !userService.current.roles.contains( Role.admin ) ) {
+			redirect( controller: 'contentView', params: [ page: ContentPage.EMPTY_LAST_ROUND ] )
+			return
+		}
 
 		return [
 			user                      : userService.current,
 			delphiPhase               : delphiService.phase,
 			variables                 : varList,
 			hasPreviousPhase          : delphiService.hasPreviousPhase,
-			stillToVisit              : delphiService.getStillToVisit( varList ),
+			stillToVisit              : variableService.getStillToVisit(),
 			completed                 : delphiService.completed,
 		]
 	}
