@@ -1,4 +1,7 @@
 <html>
+
+	<g:set var="registerLoginLabel" value="${delphiPhase == 1 ? 'Register/login' : 'Login'}" />
+
 	<head>
 		<meta name='layout' content='main'/>
 		<title><g:message code="springSecurity.login.title"/></title>
@@ -16,13 +19,15 @@
 				<div class="column-wrapper">
 					<div class="column-header">
 						<h2><g:message code="springSecurity.login.header"/></h2>
-						<div class="info">
-							If you have any problems registering for this survey, please contact <a href="mailto:peter.serwylo@monash.edu">Peter Serwylo.</a>
-						</div>
+						<g:if test="${delphiPhase == 1}">
+							<div class="info">
+								If you have any problems registering for this survey, please contact <a href="mailto:peter.serwylo@monash.edu">Peter Serwylo.</a>
+							</div>
+						</g:if>
 					</div>
 					<div class="column-left">
 						<fieldset class="default">
-							<legend>Register/login via Facebook</legend>
+							<legend>${registerLoginLabel} via Facebook</legend>
 							<oauth:connect provider="facebook" id="facebook-connect-link">
 								<div class="facebook-connect">
 									<span style="display: none">Connect with facebook</span>
@@ -39,7 +44,7 @@
 					</div>
 					<div class="column-right">
 						<fieldset class="default">
-							<legend>Register/login with password</legend>
+							<legend>${registerLoginLabel} with password</legend>
 
 							<form action='${postUrl}' method='POST' id='loginForm' class='cssform'>
 								<p class="form-element">
@@ -59,7 +64,10 @@
 
 								<p id="login_button_holder" class="form-element">
 									<input type='submit' value='Login'/>
-									<input id="btnRegister" type='button' value='Register'/>
+									<g:if test="${delphiPhase == 1}">
+										<input id="btnRegister" type='button' value='Register'/>
+									</g:if>
+									<span class="info"><g:link controller="register" action="forgotPassword">Forgot password?</g:link></span>
 								</p>
 							</form>
 						</fieldset>

@@ -66,7 +66,7 @@ class ElicitController {
 	 */
 	def completed = {
 		if ( checkProblems( createLink( action: 'completed' ) ) ) {
-			List<Variable> stillToComplete = delphiService.getStillToVisit( variableService.allChildVars )
+			List<Variable> stillToComplete = variableService.getStillToVisit()
 			if ( stillToComplete.size() > 0 ) {
 				render "Still need to review: " + stillToComplete.toString()
 				return;
@@ -279,15 +279,18 @@ class ElicitController {
 		String view = delphiService.hasPreviousPhase ? "reviewParents" : "parents"
 		ViewRelationshipsEvent.logEvent( var )
 
-		render(
-			view: view,
-			model: [
-				variable         : var,
-				delphiPhase      : delphiService.phase,
-				potentialParents : potentialParents,
-				totalUsers       : userService.expertCount,
-			]
-		)
+		def model = [
+			variable         : var,
+			delphiPhase      : delphiService.phase,
+			potentialParents : potentialParents,
+			totalUsers       : userService.expertCount,
+		]
+
+		if ( delphiService.hasPreviousPhase ) {
+			model.reviewedVariables = variableService.myReviewedRelationshipsFor( var )*.relationship*.parent
+		}
+
+		render( view  : view, model : model )
 	}
 
 	/**
@@ -340,6 +343,12 @@ class ElicitController {
 			relationship.save( flush: true )
 
 			if ( delphiService.hasPreviousPhase ) {
+
+				ReviewedRelationship review = ReviewedRelationship.findByDelphiPhaseAndReviewedByAndRelationship( delphiService.phase, user, relationship )
+				if ( review == null ) {
+					new ReviewedRelationship( relationship: relationship, delphiPhase : delphiService.phase, reviewedBy : user ).save()
+				}
+
 				def allRelationships                        = delphiService.getAllPreviousRelationshipsAndMyCurrent( relationship.parent, relationship.child, false )
 				def othersRelationships                     = allRelationships.findAll { it.createdBy != user }
 				def othersPreviousRelationships             = othersRelationships.findAll { it.delphiPhase == delphiService.previousPhase }
@@ -360,6 +369,8 @@ class ElicitController {
 					numExistsComments,
 					numDoesntExistComments,
 				)
+
+
 			} else {
 				SaveRelationshipEvent.logEvent( relationship )
 			}
@@ -373,15 +384,21 @@ class ElicitController {
 	}
 
 	def index = {
+
 		this.variableService.initRelationships()
 		List<Variable> varList = this.variableService.getAllChildVars()
+
+		if ( delphiService.hasPreviousPhase && varList.size() == 0 && !userService.current.roles.contains( Role.admin ) ) {
+			redirect( controller: 'contentView', params: [ page: ContentPage.EMPTY_LAST_ROUND ] )
+			return
+		}
 
 		return [
 			user                      : userService.current,
 			delphiPhase               : delphiService.phase,
 			variables                 : varList,
 			hasPreviousPhase          : delphiService.hasPreviousPhase,
-			stillToVisit              : delphiService.getStillToVisit( varList ),
+			stillToVisit              : variableService.getStillToVisit(),
 			completed                 : delphiService.completed,
 		]
 	}

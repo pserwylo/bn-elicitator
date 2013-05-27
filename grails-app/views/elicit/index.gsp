@@ -51,6 +51,13 @@
 		</g:if>
 		<g:else>
 
+			<div class="message" style="clear: both;">
+				<strong>What's different from last time?</strong>
+				<p>
+					Although this page looks the same as last time, if you click on the variables below, you will be
+					asked to review your answers in light of comments made by other participants.
+				</p>
+			</div>
 			<bn:listSummary variables="${variables}" stillToVisit="${stillToVisit}"/>
 
 		</g:else>

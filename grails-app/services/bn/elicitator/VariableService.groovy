@@ -28,6 +28,16 @@ class VariableService
 	DelphiService delphiService
 	UserService   userService
 
+	public List<ReviewedRelationship> myReviewedRelationshipsFor( Variable child ) {
+		return ReviewedRelationship.withCriteria {
+			relationship {
+				eq( 'child', child )
+			}
+			eq( 'reviewedBy',  userService.current )
+			eq( 'delphiPhase', delphiService.phase )
+		}
+	}
+
 	/**
 	 * Number of variables completed by user *user* (defaults to current user).
 	 */
@@ -95,12 +105,35 @@ class VariableService
 		}
 	}
 
+	public boolean hasVisitedLastRound( Variable child, User user = userService.current ) {
+		VisitedVariable.countByDelphiPhaseAndVisitedByAndVariable( delphiService.previousPhase, user, child ) > 0
+	}
+
+	/**
+	 * Build a list of variables which have not yet been visited.
+	 * @param varList
+	 * @return
+	 */
+	List<Variable> getStillToVisit() {
+		List<Variable> varList      = getAllChildVars()
+		List<Variable> visitedList  = VisitedVariable.findAllByVariableInListAndVisitedByAndDelphiPhase( varList, userService.current, delphiService.phase )*.variable
+		List<Variable> stillToVisit = varList.findAll { !visitedList.contains( it ) }
+		return stillToVisit
+	}
+
 	/**
 	 * Get all variables for which we want to elicit parents for.
 	 * @return
 	 */
 	public List<Variable> getAllChildVars() {
-		Allocation.findByUser( userService.current ).variables.sort( new VariableSorter() )
+		Allocation allocation = Allocation.findByUser( userService.current )
+		List<Variable> vars;
+		if ( delphiService.hasPreviousPhase ) {
+			vars = allocation.variables.findAll { hasVisitedLastRound( it ) }.toList()
+		} else {
+			vars = allocation.variables
+		}
+		vars.sort( new VariableSorter() )
 	}
 
 	class VariableSorter implements Comparator<Variable> {

@@ -58,8 +58,30 @@ abstract class DataLoader {
 	}
 
 	private void upgrade() {
+		updateContentPages()
 		upgradeRoles()
 		doUpgrade()
+	}
+
+	protected void updateContentPages() {
+		ContentPage emptyLastRound = ContentPage.findByAlias( ContentPage.EMPTY_LAST_ROUND )
+		if ( !emptyLastRound ) {
+			new ContentPage(
+				alias     :  ContentPage.EMPTY_LAST_ROUND,
+				canDelete : false,
+				label     : "Didn't complete the previous round",
+				content   : """
+<h2>Bummer...</h2>
+<p>... our records show that you didn't get a chance to complete the previous round in time.
+Thank you for showing an interest in this research project, but unfortunately you will be unable to continue.
+</p>
+
+<p>
+If this is a mistake, please contact <a href="mailto:peter.serwylo@monash.edu.au">peter.serwylo@monash.edu.au</a>
+</p>
+"""
+			).save()
+		}
 	}
 
 	private void upgradeRoles() {

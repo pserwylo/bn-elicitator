@@ -115,18 +115,6 @@ class DelphiService {
 	}
 
 	/**
-	 * Build a list of variables which have not yet been visited.
-	 * @param varList
-	 * @return
-	 */
-	List<Variable> getStillToVisit( List<Variable> varList )
-	{
-		List<Variable> visitedList = VisitedVariable.findAllByVariableInListAndVisitedByAndDelphiPhase( varList, userService.current, phase )*.variable
-		List<Variable> stillToVisit = varList.findAll { !visitedList.contains( it ) }
-		return stillToVisit
-	}
-
-	/**
 	 * @param parent
 	 * @param child
 	 * @return

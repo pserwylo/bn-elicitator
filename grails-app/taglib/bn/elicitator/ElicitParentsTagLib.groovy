@@ -132,20 +132,22 @@ class ElicitParentsTagLib {
 		List<Variable> potentialParents = attrs.potentialParents
 		Variable child = attrs.child
 
-		List<Variable> listYes   = []
-		List<Variable> listNo    = []
-		List<Variable> listNoAll = []
+		List<Variable> listYes           = []
+		List<Variable> listNo            = []
+		List<Variable> listNoAll         = []
+		List<Variable> reviewedVars      = variableService.myReviewedRelationshipsFor( child )*.relationship*.parent
+		List<User> usersAllocatedToChild = allocateQuestionsService.getOthersAllocatedTo( child )
 		Map<Variable, List<Relationship>> allRelationships = [:]
 		Map<Variable, Integer>            allOthersCount   = [:]
 
 		User user = userService.current
 
-		List<User> usersAllocatedToChild = allocateQuestionsService.getOthersAllocatedTo( child )
-
 		potentialParents.each { parent ->
 
 			List<Relationship> relationships = delphiService.getAllPreviousRelationshipsAndMyCurrent( parent, child ).findAll {
-				usersAllocatedToChild.contains( it.createdBy )
+				usersAllocatedToChild.contains( it.createdBy ) &&
+					// Only include relationships that were from people who actually finished it...
+					variableService.hasVisitedLastRound( child, it.createdBy )
 			}
 
 			Relationship       myCurrent      = relationships.find    { it.createdBy == user && it.delphiPhase == delphiService.phase }
@@ -170,17 +172,21 @@ class ElicitParentsTagLib {
 
 		def sortYes  = { low, high ->              allOthersCount.get( low ) <=>              allOthersCount.get( high ) }
 		def sortNo   = { low, high -> totalUsers - allOthersCount.get( low ) <=> totalUsers - allOthersCount.get( high ) }
-		def listItem = { parent, count ->
+		def listItem = { parent, count, alsoSaid ->
 
 			List<String> countClasses = [ "low", "medium", "high" ]
-			float   countPercent    = count / totalUsers
-			int     countClassIndex = ( countClasses.size() - 1 ) - (int)( countPercent * countClasses.size() )
+			float countPercent        = count / totalUsers
+			int countClassIndex       = ( countClasses.size() - 1 ) - (int)( countPercent * countClasses.size() )
+			String reviewedClass      = reviewedVars.contains( parent ) ? "doesnt-need-review" : "needs-review"
 
 			out << """
-			<li id='${parent.label}-variable-item' class='variable-item'>
+			<li id='${parent.label}-variable-item' class='variable-item $reviewedClass'>
 				<span class='var-summary'>
 					<span class='count ${countClasses[ countClassIndex ]}'>
 						${message( code: 'elicit.parents.agreement-count', args : [ count, totalUsers, (int)( countPercent * 100 ) ] )}
+						<span class='also-said'>
+							also said $alsoSaid to
+						</span>
 					</span>
 					<button class='review' value='${parent.label}'>Review</button>
 				</span>
@@ -190,24 +196,24 @@ class ElicitParentsTagLib {
 		}
 
 		out << """
-				<h2 class='review-yes' style='font-size: 1.0em; float: right;'>Others who also said "<strong>Yes</strong>"</h2>
-				<h2 class='review-yes'>${message( code: 'elicit.parents.you-said-yes' )}</h2>
+				<h2 class='review-other review-yes'>Others who also said "<strong>Yes</strong>"</h2>
+				<h2 class='review-list review-yes'>${message( code: 'elicit.parents.you-said-yes' )}</h2>
 				<ul id='list-yes' class='review-yes potential-parents-list variable-list'>
 				"""
 			listYes.sort( sortYes ).each { parent ->
-				listItem( parent, allOthersCount.get( parent ) )
+				listItem( parent, allOthersCount.get( parent ), 'yes' )
 			}
 			out << """
 				</ul>
 			"""
 
 		out << """
-				<h2 class='review-no' style='font-size: 1.0em; float: right;'>Others who also said "<strong>No</strong>"</h2>
-				<h2 class='review-no'>${message( code: 'elicit.parents.you-said-no' )}</h2>
+				<h2 class='review-other review-no'>Others who also said "<strong>No</strong>"</h2>
+				<h2 class='review-list review-no'>${message( code: 'elicit.parents.you-said-no' )}</h2>
 				<ul id='list-no' class='review-no potential-parents-list variable-list'>
 				"""
 		listNo.sort( sortNo ).each { parent ->
-			listItem( parent, totalUsers - allOthersCount.get( parent ) )
+			listItem( parent, totalUsers - allOthersCount.get( parent ), 'no' )
 		}
 		out << """
 				</ul>
@@ -317,7 +323,7 @@ class ElicitParentsTagLib {
 					</tr>
 				</table>
 				<div class='header-wrapper'>
-					${bn.saveButtons( [ atTop: true ] )}
+					${bn.saveButtons( [ atTop: true, saveLabel: "Save / Done" ] )}
 				</div>
 				"""
 
