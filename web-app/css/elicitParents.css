@@ -31,3 +31,81 @@ ul.potential-parents-list li.variable-item.needs-review {
 ul.potential-parents-list li.variable-item {
 	padding-left: 30px;
 }
+
+.var-summary .count.high   { color: #555; }
+.var-summary .count.medium { color: #888;}
+.var-summary .count.low    { color: #aaa;}
+
+.var-summary .count {
+	height: 100%;
+	padding-right: 0.4em;
+	margin-right: 0.3em;
+	font-weight: bold;
+}
+
+.ie6 .var-summary .count,
+.ie7 .var-summary .count,
+.ie8 .var-summary .count
+{
+	border-right: solid 1px #ddd;
+}
+
+.ie6 .review-other,
+.ie7 .review-other,
+.ie8 .review-other
+{
+	font-size: 1.0em; float: right;
+}
+
+@media only screen and (min-width: 600px) {
+	.review-other {
+		font-size: 1.0em; float: right;
+	}
+
+	.var-summary .count
+	{
+		border-right: solid 1px #ddd;
+	}
+}
+
+@media only screen and (max-width: 600px) {
+	.review-list {
+		width: 100%;
+	}
+
+	.variable-item .variable {
+		font-size: 0.8em;
+	}
+
+	.review-other {
+		display: none !important;
+	}
+
+	.var-summary .count
+	{
+		border-right: none;
+	}
+}
+
+.ie6 .also-said,
+.ie7 .also-said,
+.ie8 .also-said
+{
+	display: none;
+}
+
+@media only screen and (min-width: 600px) {
+	.also-said {
+		display: none;
+	}
+}
+
+@media only screen and (max-width: 600px) {
+	.also-said {
+		font-weight: normal;
+	}
+
+	button.review {
+		float: right;
+	}
+}

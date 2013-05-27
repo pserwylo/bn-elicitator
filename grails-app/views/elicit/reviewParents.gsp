@@ -136,12 +136,12 @@
 
 			form.find( 'button.save' ).click( function() {
 				var btnSave = this;
-				if ( !hasChanged() ) {
-					return;
-				}
 
 				var comment = $.trim( textarea.val() );
-				if ( hasChangedMind() && comment.length == 0 ) {
+				if ( comment.length == 0 && !inputDoesExist() ) {
+					alert( "You must write a comment explaining why you think this does not influence ${variable.readableLabel.encodeAsJavaScript()}." );
+					return;
+				} else if ( comment.length == 0 && hasChangedMind() ) {
 					alert( "You must write a comment about why you changed your mind." );
 					return;
 				}
@@ -160,7 +160,8 @@
 					dataType: 'text json',
 					error: function( data ) {
 						$( btnSave ).attr( 'disabled', false );
-						alert( "Error while saving. The administrator has been notified." );
+						alert( "Error while saving your comment. We'll try refreshing the page, but if the error persists, please contact peter.serwylo@monash.edu.au" );
+						location.reload();
 					},
 					success: function( data ) {
 						$( btnSave ).attr( 'disabled', false );
@@ -234,7 +235,8 @@
 					},
 					dataType: 'text json',
 					error: function( data ) {
-						alert( "Error while loading details. The administrator has been notified." );
+						alert( "Error while saving your comment. We'll try refreshing the page, but if the error persists, please contact peter.serwylo@monash.edu.au" );
+						location.reload();
 					},
 					success: function( data ) {
 
@@ -296,10 +298,15 @@
 							${variable.readableLabel} <bn:variableDescription var="${variable}"/>
 						</legend>
 						<p>
-							<g:message code="elicit.parents.review.desc" args="${[variable.readableLabel]}"/>
-						</p>
-						<br/>
 
+						</p>
+
+						<div class="message">
+							<strong>Review your answers from previous round</strong>
+							<g:message code="elicit.parents.review.desc" args="${[variable.readableLabel]}"/>
+						</div>
+
+						<br />
 						<bnElicit:potentialParentsListLaterRounds potentialParents="${potentialParents}" child="${variable}"/>
 
 					</fieldset>
@@ -327,6 +334,14 @@
 						<fieldset class="default ">
 
 							<legend class="">Details</legend>
+
+							<div class='message'>
+
+								<strong>Review this decision</strong>
+								After reading the reasons provided by other participants (see "Reasons" below), you are free to either stand by your previous decision, or update it.
+								You can then add a comment clarifying your position, and complete the review by clicking "Save / Done".
+
+							</div>
 
 							<div class='contents'>
 

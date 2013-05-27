@@ -437,9 +437,12 @@ ul.bullet {
 .errors,
 .message {
 	font-size: 0.8em;
-	line-height: 2;
 	margin: 1em 2em;
-	padding: 0.5em;
+	line-height: 1.5;
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+	padding-left: 0.5em;
+	padding-right: 0.5em;
 }
 
 .message {
@@ -462,7 +465,6 @@ ul.bullet {
 
 .errors ul,
 .message {
-	padding: 0;
 }
 
 ul.errors li,
@@ -470,7 +472,7 @@ li.errors,
 div.errors
 p.errors {
 	list-style: none;
-	background: transparent url(../images/skin/exclamation.png) 5px 50% no-repeat;
+	background: transparent url(../images/skin/exclamation.png) 5px 8px no-repeat;
 	padding-left: 25px;
 }
 
@@ -478,7 +480,7 @@ ul.message li,
 li.message,
 div.message,
 p.message {
-	background: transparent url(../images/skin/information.png) 5px 50% no-repeat;
+	background: transparent url(../images/skin/information.png) 5px 8px no-repeat;
 	padding-left: 25px;
 }
 

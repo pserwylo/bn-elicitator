@@ -66,7 +66,7 @@ class ElicitController {
 	 */
 	def completed = {
 		if ( checkProblems( createLink( action: 'completed' ) ) ) {
-			List<Variable> stillToComplete = delphiService.getStillToVisit( variableService.allChildVars )
+			List<Variable> stillToComplete = variableService.getStillToVisit()
 			if ( stillToComplete.size() > 0 ) {
 				render "Still need to review: " + stillToComplete.toString()
 				return;

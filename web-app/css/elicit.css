@@ -28,18 +28,26 @@
 
 /* MAIN LIST STYLES */
 
+
+ul.potential-parents-list      li.variable-item .variable {
+	font-size: 13.5pt;
+	font-style: normal;
+	color: #48802c; /* mimic the colour of links from global.css */
+}
+
+@media only screen and (max-width: 600px) {
+	ul.potential-parents-list      li.variable-item .variable {
+		font-size: 12pt;
+		font-weight: bold;
+	}
+}
+
 @media only screen and (min-width: 600px) {
 
 	ul.potential-parents-list li.variable-item {
 		height: 30px;
 	}
 
-}
-
-ul.potential-parents-list      li.variable-item .variable {
-    font-size: 13.5pt;
-    font-style: normal;
-    color: #48802c; /* mimic the colour of links from global.css */
 }
 
 /* List items which indicate disagreement */
@@ -336,18 +344,6 @@ ul.potential-parents-list .variable-item.highlighted button.review {
 	}
 
 }
-
-.var-summary .count {
-	height: 100%;
-	padding-right: 0.4em;
-	margin-right: 0.3em;
-	border-right: solid 1px #ddd;
-	font-weight: bold;
-}
-
-.var-summary .count.high   { color: #555; }
-.var-summary .count.medium { color: #888;}
-.var-summary .count.low    { color: #aaa;}
 
 .var-summary .agreement {
 	display: block;
