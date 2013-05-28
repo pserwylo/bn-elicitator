@@ -16,10 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-em {
-	text-decoration: underline;
-}
-
 ul.potential-parents-list li.variable-item.doesnt-need-review {
 	background: url("../images/icons/accept.png") no-repeat scroll 5px 50% transparent;
 }
@@ -43,6 +39,10 @@ ul.potential-parents-list li.variable-item {
 	font-weight: bold;
 }
 
+#var-details-dialog .message {
+	margin: 0.1em;
+}
+
 .ie6 .var-summary .count,
 .ie7 .var-summary .count,
 .ie8 .var-summary .count
@@ -57,6 +57,20 @@ ul.potential-parents-list li.variable-item {
 	font-size: 1.0em; float: right;
 }
 
+.ie6 th .comment-label,
+.ie7 th .comment-label,
+.ie8 th .comment-label
+{
+	display: block;
+}
+
+.ie6 td .comment-label,
+.ie7 td .comment-label,
+.ie8 td .comment-label
+{
+	display: none;
+}
+
 @media only screen and (min-width: 600px) {
 	.review-other {
 		font-size: 1.0em; float: right;
@@ -65,6 +79,14 @@ ul.potential-parents-list li.variable-item {
 	.var-summary .count
 	{
 		border-right: solid 1px #ddd;
+	}
+
+	th .comment-label {
+		display: block;
+	}
+
+	td .comment-label {
+		display: none;
 	}
 }
 
@@ -84,6 +106,18 @@ ul.potential-parents-list li.variable-item {
 	.var-summary .count
 	{
 		border-right: none;
+	}
+
+	th .comment-label {
+		display: none;
+	}
+
+	td .comment-label {
+		display: block;
+	}
+
+	table.form th {
+		width: 0;
 	}
 }
 

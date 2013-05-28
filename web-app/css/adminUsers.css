@@ -21,7 +21,7 @@ ul.filters li {
 	padding-right: 1em;
 }
 
-button.show-details {
+.buttons {
 	float: right;
 }
 
@@ -51,4 +51,12 @@ ul.log-item-list {
 	font-family: monospace;
 	font-size: 0.8em;
 	color: #666;
+}
+
+.column-left {
+	width: 400px;
+}
+
+.column-left li {
+	min-height: 60px;
 }

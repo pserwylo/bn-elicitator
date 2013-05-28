@@ -149,6 +149,10 @@ fieldset.default legend {
     font-size: 1.3em;
 }
 
+fieldset.default legend .smaller {
+	font-size: 0.8em;
+}
+
 fieldset.default {
     border: 2px solid #ccc;
     background-color: #f8f8f8;
@@ -236,6 +240,13 @@ h2 {
 	position: static;
 }
 
+.ie6 .inline-on-large,
+.ie7 .inline-on-large,
+.ie8 .inline-on-large
+{
+	display: block;
+}
+
 .ie6 #welcome-user,
 .ie7 #welcome-user,
 .ie8 #welcome-user
@@ -255,6 +266,10 @@ h2 {
 		font-size: 0.8em;
 	}
 
+	.inline-on-large {
+		display: block;
+	}
+
 }
 
 @media only screen and (min-width: 600px) {
@@ -264,6 +279,10 @@ h2 {
 		text-align: right;
 		position: absolute;
 		right: 10px;
+	}
+
+	.inline-on-large {
+		display: inline;
 	}
 
 }
@@ -415,7 +434,11 @@ ul, li {
 
 /* LIST STYLES */
 ul.bullet {
-	list-style: circle;
+}
+
+ul.bullet li {
+	list-style: circle outside;
+	margin-left: 1.2em;
 }
 
 /* GENERAL */
@@ -496,6 +519,11 @@ a.privacy {
 
 a.logout {
 	background: transparent url(../images/icons/door_out.png) 5px 50% no-repeat;
+	padding-left: 22px;
+}
+
+a.switch {
+	background: transparent url(../images/icons/arrow_switch.png) 5px 50% no-repeat;
 	padding-left: 22px;
 }
 

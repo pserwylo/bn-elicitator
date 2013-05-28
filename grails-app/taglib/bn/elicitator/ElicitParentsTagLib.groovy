@@ -222,9 +222,9 @@ class ElicitParentsTagLib {
 		if ( listNoAll.size() > 0 ) {
 			def varPlural = listNoAll.size() == 1 ? "" : "s"
 			out << """
-				<div class='info'>
+				<div class='info' style='margin-top: 0.8em;'>
 					There was an additional ${listNoAll.size()} variable$varPlural which you all agreed do not
-					influence $child, and are therefore not shown here.
+					influence $child, and are therefore not shown here:<br /><br />${listNoAll*.readableLabel*.encodeAsHTML().join( ', ' )}.
 				</div>
 				"""
 		}
@@ -313,9 +313,10 @@ class ElicitParentsTagLib {
 					</tr>
 					<tr>
 						<th>
-							$commentLabel
+							<span class='comment-label'>$commentLabel</span>
 						</th>
 						<td>
+							<span class='comment-label'>$commentLabel</span>
 							<div class='my-comment'>
 								<textarea name='comment'>$comment</textarea>
 							</div>

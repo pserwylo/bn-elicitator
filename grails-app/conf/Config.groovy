@@ -115,6 +115,8 @@ grails.plugins.springsecurity.oauth.registration.roleNames       = [ 'ROLE_EXPER
 grails.plugins.springsecurity.auth.ajaxLoginFormUrl              = "/login/auth"
 grails.plugins.springsecurity.adh.errorPage                      = "/login/denied"
 
+grails.plugins.springsecurity.useSwitchUserFilter = true
+
 grails.plugins.springsecurity.interceptUrlMap = [
 
 	'/admin/**'         : ['ROLE_ADMIN'],
@@ -124,6 +126,8 @@ grails.plugins.springsecurity.interceptUrlMap = [
 	'/output/**'        : ['ROLE_ADMIN'],
 	'/user/**'          : ['ROLE_ADMIN'],
 	'/content/admin/**' : ['ROLE_ADMIN'],
+
+	'/j_spring_security_switch_user': ['ROLE_ADMIN', 'IS_AUTHENTICATED_FULLY'],
 
 	'/elicit/**' : [ 'ROLE_ADMIN', 'ROLE_CONSENTED' ],
 

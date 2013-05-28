@@ -41,7 +41,7 @@
 			var reviewYes     = $( '.review-yes' );
 			var reviewNo      = $( '.review-no'  );
 			var buttonBack    = $( '#btnBack' );
-			var reviewedVars  = ${reviewedVariables*.label as grails.converters.JSON};
+			var reviewedVars  = ${reviewedVars?.size() > 0 ? reviewedVariables*.label as grails.converters.JSON : '[]'};
 			var TOTAL_REVIEWS = $( '#list-yes' ).children().length + $( '#list-no' ).children().length;
 
 			var canFinish = function() {
@@ -295,14 +295,16 @@
 					<fieldset class="default">
 
 						<legend>
+							<div class="smaller inline-on-large">Do any of the following</div>
+							<div class="smaller inline-on-large">directly influence</div>
+							<div></div>
 							${variable.readableLabel} <bn:variableDescription var="${variable}"/>
 						</legend>
 						<p>
 
 						</p>
 
-						<div class="message">
-							<strong>Review your answers from previous round</strong>
+						<div class="message" style="margin-bottom: -1em;">
 							<g:message code="elicit.parents.review.desc" args="${[variable.readableLabel]}"/>
 						</div>
 

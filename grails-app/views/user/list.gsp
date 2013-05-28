@@ -232,16 +232,23 @@
 							<g:each var="user" in="${userList}">
 								<li id="user-${user.username}" class=" variable-item">
 
-									<button class="show-details" onclick="editUser( '${user.username}' );">Show details</button>
+									<span class='buttons'>
+										<button class="show-details" onclick="editUser( '${user.username}' );">Show details</button>
+										<sec:ifAllGranted roles='ROLE_ADMIN'>
+											<form action='${request.contextPath}/j_spring_security_switch_user' method='POST'>
+												<input type="hidden" name="j_username" value="${user.username}" />
+												<button type="submit">Switch to user</button>
+											</form>
+										</sec:ifAllGranted>
+									</span>
 
 									<span class="username">
-										${user.username}
+										${user.username} <g:if test="${user.realName != user.username}">${user.realName}</g:if>
 									</span>
 
 									<div class="stats">
-										Last login: ${user.lastLoginDate ? user.lastLoginDate.format( 'dd/MM/yyyy hh:mm' ) : "Never"}
-										<br />
-										Completed: <bnUser:completedInfo user="${user}" />
+										<g:if test="${user.email != user.username}">${user.email}<br /></g:if>
+										<bnUser:completedInfo user="${user}" />
 									</div>
 
 								</li>

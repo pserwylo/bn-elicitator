@@ -92,6 +92,11 @@
 							class="privacy">
 						Privacy
 					</bnContent:link>
+					<sec:ifSwitched>
+						<a class="switch" href='${request.contextPath}/j_spring_security_exit_user'>
+							Switch back
+						</a>
+					</sec:ifSwitched>
 					<g:link controller="logout" class="logout">
 						Logout
 					</g:link>

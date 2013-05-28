@@ -23,11 +23,10 @@ import grails.converters.JSON
 
 class AdminDashController {
 
-	def emailService
 	def adminService
 	def delphiService
 	def userService
-	def mailService
+	def springSecurityService
 
 	/**
 	 * Show some summary statistics, including the current state of the app (e.g. delphi phase), the list of users
@@ -95,13 +94,18 @@ class AdminDashController {
 		// In this case, can we just shown them what we did last time?
 		if ( flash.confirmed )
 		{
-			this.emailService.sendPhaseComplete()
 			this.adminService.advanceDelphiPhase()
 			flash.messages = [ "Delphi phase is now " + delphiService.phase + ". The participants have been notified via email." ]
 		}
 
 		redirect( action: 'index' )
 
+	}
+
+	def switchUser() {
+		int id = params.id
+		User user = User.get(id)
+		springSecurityService.currentUser
 	}
 
 }

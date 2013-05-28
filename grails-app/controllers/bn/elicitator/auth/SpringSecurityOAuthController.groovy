@@ -73,6 +73,12 @@ class SpringSecurityOAuthController {
 		if (oAuthToken.principal instanceof GrailsUser) {
 			authenticateAndRedirect(oAuthToken, defaultTargetUrl)
 		} else {
+
+			if ( delphiService.hasPreviousPhase ) {
+				redirect( action: 'laterRounds' )
+				return
+			}
+
 			// This OAuth account hasn't been registered against an internal
 			// account yet. Give the oAuthID the opportunity to create a new
 			// internal account or link to an existing one.

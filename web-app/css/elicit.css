@@ -114,6 +114,14 @@ table.form th {
 
 }
 
+table.form td .comment-label {
+
+	font-size: 0.75em;
+	color: #777;
+	font-weight: bold;
+
+}
+
 .reasons-list .me.exists, .reasons-list .other.exists {
     color: green;
 }

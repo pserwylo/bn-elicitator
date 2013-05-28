@@ -38,14 +38,13 @@
 						<li>${user.realName}</li>
 					</g:each>
 				</ul>
-				You can still continue, and they will have the opportunity to participate in the next phase.<br />
-				However, they will nto get to pass on their contributions for this phase any more.
+				You can still continue, and those who have at least answered some questions will have the opportunity to participate in the next phase.<br />
+				However, they will nto get to pass on their contributions for this phase any more, and the ones who have not done anything will not be able to continue at all.
 			</div>
 		</g:if>
 
 		<div class="message">
 			<ul>
-				<li>All participants will be emailed</li>
 				<li>The current phase will be advanced from ${appProperties.delphiPhase} to ${appProperties.delphiPhase + 1}</li>
 			</ul>
 		</div>

@@ -82,6 +82,25 @@ If this is a mistake, please contact <a href="mailto:peter.serwylo@monash.edu.au
 """
 			).save()
 		}
+
+		ContentPage cantRegisterThisRound = ContentPage.findByAlias( ContentPage.CANT_REGISTER_THIS_ROUND )
+		if ( !cantRegisterThisRound ) {
+			new ContentPage(
+				alias     :  ContentPage.CANT_REGISTER_THIS_ROUND,
+				canDelete : false,
+				label     : "Can't register this round",
+				content   : """
+<h2>Bummer...</h2>
+<p>
+... thanks for showing an interest, but our records show that you didn't participate in the first round, and we are unable to accept any more participants.
+</p>
+
+<p>
+If this is a mistake, please contact <a href="mailto:peter.serwylo@monash.edu.au">peter.serwylo@monash.edu.au</a>
+</p>
+"""
+			).save()
+		}
 	}
 
 	private void upgradeRoles() {
