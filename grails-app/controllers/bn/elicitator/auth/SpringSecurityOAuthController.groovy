@@ -75,7 +75,7 @@ class SpringSecurityOAuthController {
 		} else {
 
 			if ( delphiService.hasPreviousPhase ) {
-				redirect( action: 'laterRounds' )
+				redirect( controller: 'contentView', params: [ page: ContentPage.CANT_REGISTER_THIS_ROUND ] )
 				return
 			}
 
