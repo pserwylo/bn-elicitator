@@ -192,10 +192,10 @@ class VariableService
 	/**
 	 * @see VariableService#createRelationships(bn.elicitator.Variable, java.util.List)
 	 */
-	void initRelationships() {
-		Integer count = Relationship.countByCreatedByAndDelphiPhase( userService.current, this.delphiService.phase )
+	boolean initRelationships( User user = userService.current ) {
+		Integer count = Relationship.countByCreatedByAndDelphiPhase( user, this.delphiService.phase )
 		if ( count == 0 ) {
-			Allocation allocation = Allocation.findByUser( userService.current )
+			Allocation allocation = Allocation.findByUser( user )
 			eachVariableClass { VariableClass varClass, List<Variable> varsInClass, List<Variable> potentialParents ->
 				allocation.variables.each { child ->
 					if ( varsInClass.contains( child ) ) {
@@ -204,6 +204,7 @@ class VariableService
 				}
 			}
 		}
+		return count == 0
 	}
 
 	/**

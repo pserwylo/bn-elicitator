@@ -27,6 +27,7 @@ class AdminDashController {
 	def delphiService
 	def userService
 	def springSecurityService
+	def variableService
 
 	/**
 	 * Show some summary statistics, including the current state of the app (e.g. delphi phase), the list of users
@@ -45,6 +46,17 @@ class AdminDashController {
 			completedCurrentRound : delphiService.completedCurrentRound,
 		]
 
+	}
+
+	def initRelationships() {
+		int count = 0
+		User.list().each { user ->
+			if ( variableService.initRelationships( user ) ) {
+				count ++
+			}
+		}
+
+		[ count : count ]
 	}
 
 	def ajaxSaveParticipantsPerQuestion() {

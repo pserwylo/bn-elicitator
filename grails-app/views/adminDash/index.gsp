@@ -117,6 +117,7 @@
 
 					<input type="button" value="Advance to next delphi phase" onclick="document.location = '${createLink( action: 'confirmAdvanceDelphiPhase' )}'" />
 					<input type="button" value="Edit details" onclick="document.location = '${createLink( action: 'editStudyDetails' )}'" />
+					<input type="button" value="Init relationships" onclick="document.location = '${createLink( action: 'initRelationships' )}'" />
 
 					<div class="overview">
 						<div class="info">
