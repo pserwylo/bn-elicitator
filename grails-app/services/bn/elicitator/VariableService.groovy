@@ -194,17 +194,21 @@ class VariableService
 	 */
 	boolean initRelationships( User user = userService.current ) {
 		Integer count = Relationship.countByCreatedByAndDelphiPhase( user, this.delphiService.phase )
+		boolean updated = false;
 		if ( count == 0 ) {
 			Allocation allocation = Allocation.findByUser( user )
-			eachVariableClass { VariableClass varClass, List<Variable> varsInClass, List<Variable> potentialParents ->
-				allocation.variables.each { child ->
-					if ( varsInClass.contains( child ) ) {
-						this.createRelationships( child, potentialParents )
+			if ( allocation?.variables?.size() > 0 ) {
+				updated = true;
+				eachVariableClass { VariableClass varClass, List<Variable> varsInClass, List<Variable> potentialParents ->
+					allocation.variables.each { child ->
+						if ( varsInClass.contains( child ) ) {
+							this.createRelationships( child, potentialParents )
+						}
 					}
 				}
 			}
 		}
-		return count == 0
+		return updated
 	}
 
 	/**
