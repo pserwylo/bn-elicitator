@@ -66,7 +66,11 @@ class DelphiService {
 	 * @return
 	 */
 	def getMyPreviousRelationship( Variable parent, Variable child ) {
-		return this.hasPreviousPhase ? Relationship.findByCreatedByAndDelphiPhaseAndParentAndChild( userService.current, previousPhase, parent, child ) : null
+		getPreviousRelationshipFor( userService.current, parent, child )
+	}
+
+	def getPreviousRelationshipFor( User user, Variable parent, Variable child ) {
+		return this.hasPreviousPhase ? Relationship.findByCreatedByAndDelphiPhaseAndParentAndChild( user, previousPhase, parent, child ) : null
 	}
 
 	/**
@@ -77,7 +81,11 @@ class DelphiService {
 	 * @return
 	 */
 	def getMyCurrentRelationship( Variable parent, Variable child ) {
-		return Relationship.findByCreatedByAndDelphiPhaseAndParentAndChild( userService.current, phase, parent, child )
+		return getCurrentRelationshipFor( userService.current )
+	}
+
+	def getCurrentRelationshipFor( User user, Variable parent, Variable child ) {
+		return Relationship.findByCreatedByAndDelphiPhaseAndParentAndChild( user, phase, parent, child )
 	}
 
 	/**

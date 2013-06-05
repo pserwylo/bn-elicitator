@@ -202,7 +202,7 @@ class VariableService
 				eachVariableClass { VariableClass varClass, List<Variable> varsInClass, List<Variable> potentialParents ->
 					allocation.variables.each { child ->
 						if ( varsInClass.contains( child ) ) {
-							this.createRelationships( child, potentialParents )
+							this.createRelationships( child, potentialParents, user )
 						}
 					}
 				}
@@ -219,7 +219,7 @@ class VariableService
 	 * @param potentialParents Just to reduce the amount of work (if we already have a reference to it, just pass it in,
 	 * otherwise we'll get it ourselves here).
 	 */
-	void createRelationships( Variable child, List<Variable> potentialParents = null ) {
+	void createRelationships( Variable child, List<Variable> potentialParents = null, User user = userService.current ) {
 
 		if ( potentialParents == null )
 		{
@@ -228,7 +228,7 @@ class VariableService
 
 		for( Variable parent in potentialParents )
 		{
-			Relationship relationship = this.delphiService.getMyCurrentRelationship( parent, child )
+			Relationship relationship = this.delphiService.getCurrentRelationshipFor( user, parent, child )
 			if ( !relationship )
 			{
 				Relationship oldRelationship = this.delphiService.getMyPreviousRelationship( parent, child );
@@ -236,7 +236,7 @@ class VariableService
 				new Relationship(
 					child:       child,
 					parent:      parent,
-					createdBy:   userService.current,
+					createdBy:   user,
 					delphiPhase: AppProperties.properties.delphiPhase,
 					exists:      oldRelationship ? oldRelationship.exists : false,
 				).save( failOnError: true )
