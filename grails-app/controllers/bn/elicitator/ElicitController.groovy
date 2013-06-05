@@ -55,7 +55,7 @@ class ElicitController {
 	UserService         userService
 
 	def beforeInterceptor = {
-		if ( !userService.current.hasConsented ) {
+		if ( !delphiService.hasPreviousPhase && !userService.current.hasConsented ) {
 			redirect( controller: 'explain', action: 'statement' )
 		}
 	}

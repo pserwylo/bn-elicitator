@@ -131,7 +131,7 @@ class VariableService
 		if ( delphiService.hasPreviousPhase ) {
 			vars = allocation.variables.findAll { hasVisitedLastRound( it ) }.toList()
 		} else {
-			vars = allocation.variables
+			vars = allocation.variables?.toList()
 		}
 		vars.sort( new VariableSorter() )
 	}

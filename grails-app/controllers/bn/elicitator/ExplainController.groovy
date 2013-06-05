@@ -24,6 +24,7 @@ import grails.plugins.springsecurity.SpringSecurityService
 class ExplainController {
 
 	UserService              userService
+	DelphiService            delphiService
 	SpringSecurityService    springSecurityService
 	AllocateQuestionsService allocateQuestionsService
 
@@ -45,7 +46,12 @@ class ExplainController {
 	 */
     def statement() {
 
-		[ explanatoryStatement: AppProperties.properties.explanatoryStatement ]
+		if ( delphiService.hasPreviousPhase ) {
+			forward( controller: 'contentView', params : [ page : ContentPage.CANT_REGISTER_THIS_ROUND ] )
+			return
+		} else {
+			return [ explanatoryStatement: AppProperties.properties.explanatoryStatement ]
+		}
 
     }
 

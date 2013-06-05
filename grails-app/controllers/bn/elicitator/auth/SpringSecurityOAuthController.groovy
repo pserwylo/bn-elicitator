@@ -31,6 +31,7 @@ import bn.elicitator.auth.User
 import bn.elicitator.auth.Role
 import bn.elicitator.auth.UserRole
 import bn.elicitator.auth.OAuthID
+import bn.elicitator.ContentPage
 
 /**
  * Simple helper controller for handling OAuth authentication and integrating it
@@ -42,6 +43,7 @@ class SpringSecurityOAuthController {
 
 	def grailsApplication
 	def oauthService
+	def delphiService
 	def springSecurityService
 
 	/**
