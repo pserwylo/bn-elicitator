@@ -41,11 +41,11 @@
 			var reviewYes     = $( '.review-yes' );
 			var reviewNo      = $( '.review-no'  );
 			var buttonBack    = $( '#btnBack' );
-			var reviewedVars  = ${reviewedVars?.size() > 0 ? reviewedVariables*.label as grails.converters.JSON : '[]'};
+			var reviewedVars  = ${reviewedVariables?.size() > 0 ? reviewedVariables*.label as grails.converters.JSON : '[]'};
 			var TOTAL_REVIEWS = $( '#list-yes' ).children().length + $( '#list-no' ).children().length;
 
 			var canFinish = function() {
-				return reviewedVars.length == TOTAL_REVIEWS;
+				return reviewedVars.length >= TOTAL_REVIEWS;
 			};
 
 			var getReviewsLeft = function() {

@@ -147,7 +147,7 @@ class ElicitParentsTagLib {
 			List<Relationship> relationships = delphiService.getAllPreviousRelationshipsAndMyCurrent( parent, child ).findAll {
 				usersAllocatedToChild.contains( it.createdBy ) &&
 					// Only include relationships that were from people who actually finished it...
-					variableService.hasVisitedLastRound( child, it.createdBy )
+						variableService.hasVisitedAtSomePoint( child, it.createdBy )
 			}
 
 			Relationship       myCurrent      = relationships.find    { it.createdBy == user && it.delphiPhase == delphiService.phase }
@@ -170,63 +170,78 @@ class ElicitParentsTagLib {
 
 		Integer totalUsers = usersAllocatedToChild.size()
 
-		def sortYes  = { low, high ->              allOthersCount.get( low ) <=>              allOthersCount.get( high ) }
-		def sortNo   = { low, high -> totalUsers - allOthersCount.get( low ) <=> totalUsers - allOthersCount.get( high ) }
-		def listItem = { parent, count, alsoSaid ->
-
-			List<String> countClasses = [ "low", "medium", "high" ]
-			float countPercent        = count / totalUsers
-			int countClassIndex       = ( countClasses.size() - 1 ) - (int)( countPercent * countClasses.size() )
-			String reviewedClass      = reviewedVars.contains( parent ) ? "doesnt-need-review" : "needs-review"
+		if ( listYes.size() == 0 && listNo.size() == 0 ) {
+			String message = "It looks like you and all of the other participants all agreed that " +
+					"no variables we proposed influence ${child.readableLabel.encodeAsJavaScript()}. " +
+					"Therefore, we will not ask you to complete this variable."
 
 			out << """
-			<li id='${parent.label}-variable-item' class='variable-item $reviewedClass'>
-				<span class='var-summary'>
-					<span class='count ${countClasses[ countClassIndex ]}'>
-						${message( code: 'elicit.parents.agreement-count', args : [ count, totalUsers, (int)( countPercent * 100 ) ] )}
-						<span class='also-said'>
-							also said $alsoSaid to
-						</span>
-					</span>
-					<button class='review' value='${parent.label}'>Review</button>
-				</span>
-				${bn.variable( [ var: parent ] )}
-			</li>
+				<script type='text/javascript'>
+					\$(document).ready( function() {
+						alert( '$message' );
+						document.location = '${createLink( action: 'completedVariable', params: [ variable : child.label ])}';
+					});
+				</script>
 			"""
-		}
+		} else {
+			def sortYes  = { low, high ->              allOthersCount.get( low ) <=>              allOthersCount.get( high ) }
+			def sortNo   = { low, high -> totalUsers - allOthersCount.get( low ) <=> totalUsers - allOthersCount.get( high ) }
+			def listItem = { parent, count, alsoSaid ->
 
-		out << """
-				<h2 class='review-other review-yes'>Others who also said "<strong>Yes</strong>"</h2>
-				<h2 class='review-list review-yes'>${message( code: 'elicit.parents.you-said-yes' )}</h2>
-				<ul id='list-yes' class='review-yes potential-parents-list variable-list'>
+				List<String> countClasses = [ "low", "medium", "high" ]
+				float countPercent        = count / totalUsers
+				int countClassIndex       = ( countClasses.size() - 1 ) - (int)( countPercent * countClasses.size() )
+				String reviewedClass      = reviewedVars.contains( parent ) ? "doesnt-need-review" : "needs-review"
+
+				out << """
+					<li id='${parent.label}-variable-item' class='variable-item $reviewedClass'>
+						<span class='var-summary'>
+							<span class='count ${countClasses[ countClassIndex ]}'>
+								${message( code: 'elicit.parents.agreement-count', args : [ count, totalUsers, (int)( countPercent * 100 ) ] )}
+								<span class='also-said'>
+									also said $alsoSaid to
+								</span>
+							</span>
+							<button class='review' value='${parent.label}'>Review</button>
+						</span>
+						${bn.variable( [ var: parent ] )}
+					</li>
 				"""
-			listYes.sort( sortYes ).each { parent ->
-				listItem( parent, allOthersCount.get( parent ), 'yes' )
+			}
+
+			out << """
+					<h2 class='review-other review-yes'>Others who also said "<strong>Yes</strong>"</h2>
+					<h2 class='review-list review-yes'>${message( code: 'elicit.parents.you-said-yes' )}</h2>
+					<ul id='list-yes' class='review-yes potential-parents-list variable-list'>
+					"""
+				listYes.sort( sortYes ).each { parent ->
+					listItem( parent, allOthersCount.get( parent ), 'yes' )
+				}
+				out << """
+					</ul>
+				"""
+
+			out << """
+					<h2 class='review-other review-no'>Others who also said "<strong>No</strong>"</h2>
+					<h2 class='review-list review-no'>${message( code: 'elicit.parents.you-said-no' )}</h2>
+					<ul id='list-no' class='review-no potential-parents-list variable-list'>
+					"""
+			listNo.sort( sortNo ).each { parent ->
+				listItem( parent, totalUsers - allOthersCount.get( parent ), 'no' )
 			}
 			out << """
-				</ul>
-			"""
-
-		out << """
-				<h2 class='review-other review-no'>Others who also said "<strong>No</strong>"</h2>
-				<h2 class='review-list review-no'>${message( code: 'elicit.parents.you-said-no' )}</h2>
-				<ul id='list-no' class='review-no potential-parents-list variable-list'>
+					</ul>
 				"""
-		listNo.sort( sortNo ).each { parent ->
-			listItem( parent, totalUsers - allOthersCount.get( parent ), 'no' )
-		}
-		out << """
-				</ul>
-			"""
 
-		if ( listNoAll.size() > 0 ) {
-			def varPlural = listNoAll.size() == 1 ? "" : "s"
-			out << """
-				<div class='info' style='margin-top: 0.8em;'>
-					There was an additional ${listNoAll.size()} variable$varPlural which you all agreed do not
-					influence $child, and are therefore not shown here:<br /><br />${listNoAll*.readableLabel*.encodeAsHTML().join( ', ' )}.
-				</div>
-				"""
+			if ( listNoAll.size() > 0 ) {
+				def varPlural = listNoAll.size() == 1 ? "" : "s"
+				out << """
+					<div class='info' style='margin-top: 0.8em;'>
+						There was an additional ${listNoAll.size()} variable$varPlural which you all agreed do not
+						influence $child, and are therefore not shown here:<br /><br />${listNoAll*.readableLabel*.encodeAsHTML().join( ', ' )}.
+					</div>
+					"""
+			}
 		}
 	}
 

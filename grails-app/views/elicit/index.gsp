@@ -51,13 +51,26 @@
 		</g:if>
 		<g:else>
 
-			<div class="message" style="clear: both;">
-				<strong>What's different from last time?</strong>
-				<p>
-					Although this page looks the same as last time, if you click on the variables below, you will be
-					asked to review your answers in light of comments made by other participants.
-				</p>
-			</div>
+			<h1>Final round (round ${delphiPhase})</h1>
+
+			<g:if test="${delphiPhase == 2}">
+				<div class="message" style="clear: both;">
+					<strong>What's different from last time?</strong>
+					<p>
+						Although this page looks the same as last time, if you click on the variables below, you will be
+						asked to review your answers in light of comments made by other participants.
+					</p>
+				</div>
+			</g:if>
+			<g:else test="${delphiPhase == 3}">
+				<div class="message" style="clear: both;">
+					<strong>Why a third round?</strong>
+					<p>
+						We are asking you to perform the same task you did in round 2.
+						Only this time, there will be more comments from other participants about the decisions they made.
+					</p>
+				</div>
+			</g:else>
 			<bn:listSummary variables="${variables}" stillToVisit="${stillToVisit}"/>
 
 		</g:else>

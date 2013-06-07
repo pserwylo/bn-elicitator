@@ -81,7 +81,7 @@ class DelphiService {
 	 * @return
 	 */
 	def getMyCurrentRelationship( Variable parent, Variable child ) {
-		return getCurrentRelationshipFor( userService.current )
+		return getCurrentRelationshipFor( userService.current, parent, child )
 	}
 
 	def getCurrentRelationshipFor( User user, Variable parent, Variable child ) {

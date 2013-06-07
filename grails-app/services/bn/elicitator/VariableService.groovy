@@ -105,6 +105,10 @@ class VariableService
 		}
 	}
 
+	public boolean hasVisitedAtSomePoint( Variable child, User user = userService.current ) {
+		VisitedVariable.countByVisitedByAndVariable( user, child ) > 0
+	}
+
 	public boolean hasVisitedLastRound( Variable child, User user = userService.current ) {
 		VisitedVariable.countByDelphiPhaseAndVisitedByAndVariable( delphiService.previousPhase, user, child ) > 0
 	}
@@ -221,17 +225,14 @@ class VariableService
 	 */
 	void createRelationships( Variable child, List<Variable> potentialParents = null, User user = userService.current ) {
 
-		if ( potentialParents == null )
-		{
+		if ( potentialParents == null ) {
 			potentialParents = this.getPotentialParents( child )
 		}
 
-		for( Variable parent in potentialParents )
-		{
+		for( Variable parent in potentialParents ) {
 			Relationship relationship = this.delphiService.getCurrentRelationshipFor( user, parent, child )
-			if ( !relationship )
-			{
-				Relationship oldRelationship = this.delphiService.getMyPreviousRelationship( parent, child );
+			if ( !relationship ) {
+				Relationship oldRelationship = this.delphiService.getPreviousRelationshipFor( user, parent, child );
 
 				new Relationship(
 					child:       child,
