@@ -2,6 +2,7 @@ package bn.elicitator
 
 import bn.elicitator.auth.Role
 import bn.elicitator.auth.User
+import bn.elicitator.output.CsvOutputGraph
 import bn.elicitator.output.GraphvizOutputGraph
 import bn.elicitator.output.HtmlMatrixOutputGraph
 import bn.elicitator.output.JsonMatrixOutputGraph
@@ -23,6 +24,10 @@ class OutputController {
 		outputGraph( new JsonMatrixOutputGraph(), cmd )
 	}
 
+	def csv = { OutputCommand cmd ->
+		outputGraph( new CsvOutputGraph(), cmd )
+	}
+
 	def htmlMatrix = { HtmlMatrixOutputCommand cmd ->
 		outputGraph( new HtmlMatrixOutputGraph( cellSize: cmd.cellSize ), cmd )
 	}
@@ -39,6 +44,52 @@ class OutputController {
 		outputGraph( new NeticaOutputGraph(), cmd )
 	}
 
+	def comments = { OutputCommentsCommand cmd ->
+
+		StringBuilder output = new StringBuilder()
+		List<Relationship> relationships
+		if ( cmd.phase > 0 ) {
+			relationships = Relationship.findAllByDelphiPhase( cmd.phase )
+		} else {
+			relationships = Relationship.list()
+		}
+
+		relationships.sort { rel1, rel2 ->
+			if ( rel1.delphiPhase == rel2.delphiPhase ) {
+				rel1.createdBy.id <=> rel2.createdBy.id
+			} else {
+				rel1.delphiPhase <=> rel2.delphiPhase
+			}
+		}
+
+		List<VisitedVariable> visitedVariables = VisitedVariable.list()
+
+		relationships.each {
+			boolean hasSeen = visitedVariables.find { v ->
+				v.visitedBy   == it.createdBy   &&
+				v.delphiPhase == it.delphiPhase &&
+				v.variable    == it.child
+			}
+			if ( hasSeen ) {
+				Comment comment = it.getMostRecentComment( it.delphiPhase )
+				String commentText = ( comment?.comment?.length() > 0 ) ? ( '"""' + comment.comment + '"""' ) : ""
+
+				// If it is a later round, they should have been forced to see a comment.
+				// Therefore we assume that if there is no comment, then they weren't ever shown
+				// this relationship...
+				boolean wasShown = it.delphiPhase == 1 || commentText != ""
+
+				if ( wasShown ) {
+					output.append "$it.delphiPhase,$it.createdById,$it.exists,$it.parent.label,$it.child.label,$commentText\n"
+				}
+			}
+		}
+
+		response.contentType   = "text/csv"
+		response.contentLength = output.size()
+		render output.toString()
+	}
+
 	private outputGraph( OutputGraph output, OutputCommand cmd ) {
 
 		List<Variable> variables         = Variable.list().sort()
@@ -46,13 +97,23 @@ class OutputController {
 		Integer totalUsers               = userService.expertCount
 
 		if ( cmd.username ) {
+
 			User user = User.findByUsername( cmd.username )
 			if ( !user ) {
 				render "Could not find user $cmd.username."
 				return
 			}
-			relationships.findAll { it.createdBy = user }
+			relationships = relationships.findAll { it.createdBy = user }
 			totalUsers = 1
+
+		} else if ( cmd.onlyCompleted ) {
+
+			List<VisitedVariable> visitedVariables = VisitedVariable.findAllByDelphiPhase( cmd.phase )
+			relationships = relationships.findAll { relationship ->
+				visitedVariables.find { visited ->
+					visited.visitedBy.id == relationship.createdBy.id && visited.variable.id == relationship.child.id
+				} ? true : false
+			}
 		}
 
 		output.allVariables = variables
@@ -76,6 +137,7 @@ class OutputController {
 		response.contentLength = outputString.size()
 		render outputString
 	}
+
 }
 
 class OutputCommand {
@@ -85,6 +147,16 @@ class OutputCommand {
 	Integer minUsers = 1
 
 	String username = null
+
+	Boolean onlyCompleted = false
+
+}
+
+class OutputCommentsCommand {
+
+	Integer phase = 0
+	String username = null
+	Boolean onlyChangedMind = false
 
 }
 

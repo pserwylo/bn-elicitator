@@ -133,7 +133,7 @@ class VariableService
 		Allocation allocation = Allocation.findByUser( userService.current )
 		List<Variable> vars;
 		if ( delphiService.hasPreviousPhase ) {
-			vars = allocation.variables.findAll { hasVisitedLastRound( it ) }.toList()
+			vars = allocation.variables.findAll { hasVisitedAtSomePoint( it ) }.toList()
 		} else {
 			vars = allocation.variables?.toList()
 		}

@@ -84,10 +84,10 @@ class Relationship {
 		return delphiPhase == AppProperties.properties.delphiPhase
 	}
 
-	Comment getMostRecentComment()
+	Comment getMostRecentComment( Integer phaseToSearchFrom = AppProperties.properties.delphiPhase )
 	{
 		Comment c     = this.comment
-		Integer phase = AppProperties.properties.delphiPhase
+		Integer phase = phaseToSearchFrom
 
 		while ( !c?.comment?.length() && phase > 0 )
 		{
