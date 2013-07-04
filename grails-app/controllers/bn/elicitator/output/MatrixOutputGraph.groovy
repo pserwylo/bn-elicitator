@@ -1,7 +1,6 @@
 package bn.elicitator.output
 
 import bn.elicitator.Variable
-import grails.converters.JSON
 
 abstract class MatrixOutputGraph extends OutputGraph {
 
@@ -17,7 +16,7 @@ abstract class MatrixOutputGraph extends OutputGraph {
 	}
 
 	@Override
-	void addEdge(Variable parent, Variable child, Float strength) {
+	void addEdge(Variable parent, Variable child, Float strength, Integer numUsers, Integer totalUsers) {
 		matrix.put( generateKey( parent, child ), strength )
 	}
 

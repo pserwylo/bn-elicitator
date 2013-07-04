@@ -1,6 +1,5 @@
 package bn.elicitator
 
-import bn.elicitator.auth.Role
 import bn.elicitator.auth.User
 import bn.elicitator.output.CsvOutputGraph
 import bn.elicitator.output.GraphvizOutputGraph
@@ -92,9 +91,9 @@ class OutputController {
 
 	private outputGraph( OutputGraph output, OutputCommand cmd ) {
 
-		List<Variable> variables         = Variable.list().sort()
-		List<Relationship> relationships = Relationship.findAllByExistsAndDelphiPhase( true, cmd.phase ).sort()
-		Integer totalUsers               = userService.expertCount
+		List<Variable> variables               = Variable.list().sort()
+		List<Relationship> relationships       = Relationship.findAllByExistsAndDelphiPhase( true, cmd.phase ).sort()
+		List<VisitedVariable> visitedVariables = VisitedVariable.findAllByDelphiPhase( cmd.phase )
 
 		if ( cmd.username ) {
 
@@ -104,11 +103,8 @@ class OutputController {
 				return
 			}
 			relationships = relationships.findAll { it.createdBy = user }
-			totalUsers = 1
 
 		} else if ( cmd.onlyCompleted ) {
-
-			List<VisitedVariable> visitedVariables = VisitedVariable.findAllByDelphiPhase( cmd.phase )
 			relationships = relationships.findAll { relationship ->
 				visitedVariables.find { visited ->
 					visited.visitedBy.id == relationship.createdBy.id && visited.variable.id == relationship.child.id
@@ -118,14 +114,32 @@ class OutputController {
 
 		output.allVariables = variables
 
-		if ( cmd.minUsers > 0 && cmd.phase > 0 && cmd.phase <= delphiService.phase ) {
-			variables.each { parent ->
-				variables.each { child ->
+		List<Allocation> allocations = Allocation.list()
+
+		if ( cmd.phase > 0 && cmd.phase <= delphiService.phase ) {
+			variables.each { child ->
+				List<User> childVisitedBy = visitedVariables.findAll { it.variable == child }*.visitedBy
+				int totalUsers
+				if ( cmd.onlyCompleted ) {
+					totalUsers = allocations.count { allocation-> allocation.variables.contains( child ) }
+				} else {
+					totalUsers = visitedVariables.count { it.delphiPhase == cmd.phase && it.variable == child }
+				}
+				variables.each { parent ->
 					if ( parent != child ) {
-						Integer count = relationships.count { it.parent == parent && it.child == child }
+						Integer count = relationships.count {
+							it.parent == parent &&
+							it.child  == child  &&
+							childVisitedBy.contains( it.createdBy )
+						}
 						if ( count >= cmd.minUsers ) {
-							Float strength = Math.min( (Float)( count / totalUsers ), 1.0f )
-							output.addEdge( parent, child, strength )
+							Float strength
+							if ( totalUsers == 0 ) {
+								strength = 0
+							} else {
+								strength = Math.min( (Float)( count / totalUsers ), 1.0f )
+							}
+							output.addEdge(parent, child, strength, count, totalUsers)
 						}
 					}
 				}
@@ -156,7 +170,6 @@ class OutputCommentsCommand {
 
 	Integer phase = 0
 	String username = null
-	Boolean onlyChangedMind = false
 
 }
 

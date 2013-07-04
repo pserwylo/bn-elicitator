@@ -1,14 +1,19 @@
 package bn.elicitator.output
 
 import bn.elicitator.Variable
-import grails.converters.JSON
 
 class CsvOutputGraph extends OutputGraph {
 
 	StringBuilder rows = new StringBuilder()
 
 	@Override
-	void addEdge(Variable parent, Variable child, Float strength) {
+	void addEdge(Variable parent, Variable child, Float strength, Integer numUsers, Integer totalUsers) {
+		rows.append(numUsers)
+		rows.append(',')
+		rows.append(totalUsers)
+		rows.append(',')
+		rows.append(strength)
+		rows.append(',')
 		rows.append(parent.label)
 		rows.append(',')
 		rows.append(child.label)

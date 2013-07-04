@@ -19,7 +19,7 @@ class GraphvizOutputGraph extends OutputGraph {
 	GraphvizFormat format = FORMAT_SVG
 
 	@Override
-	void addEdge( Variable parent, Variable child, Float strength ) {
+	void addEdge(Variable parent, Variable child, Float strength, Integer numUsers, Integer totalUsers) {
 		edges.add( new GraphvizEdge( parent : parent, child : child, strength : strength ) )
 		variables.add( parent )
 		variables.add( child )

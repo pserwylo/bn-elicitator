@@ -20,12 +20,12 @@ class NeticaOutputGraph extends OutputGraph {
 	}
 
 	@Override
-	void addEdge(Variable parent, Variable child, Float strength) {
+	void addEdge(Variable parent, Variable child, Float strength, Integer numUsers, Integer totalUsers) {
 		putVar( parent )
 		putVar( child  )
 		variableFamilies.get( child  ).parents.add( parent )
 		variableFamilies.get( parent ).children.add( child )
-		graphvizOutput.addEdge( parent, child, strength )
+		graphvizOutput.addEdge(parent, child, strength, numUsers, totalUsers)
 	}
 
 	/**

@@ -9,7 +9,7 @@ class JsonOutputGraph extends OutputGraph {
 	Set<Variable> variables = []
 
 	@Override
-	void addEdge(Variable parent, Variable child, Float strength) {
+	void addEdge(Variable parent, Variable child, Float strength, Integer numUsers, Integer totalUsers) {
 		totalEdges ++
 		variables.add( parent )
 		variables.add( child )
