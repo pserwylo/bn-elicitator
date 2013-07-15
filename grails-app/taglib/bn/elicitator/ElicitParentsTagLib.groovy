@@ -295,7 +295,7 @@ class ElicitParentsTagLib {
 		String inputIdAttr  = parent ? "id='input-${parent.label}-form'" : ""
 		String inputName    = parent ? "parents" : "exists"
 		String comment      = relationship?.delphiPhase == delphiService.phase && relationship?.comment?.comment?.length() > 0 ? relationship.comment.comment : ''
-		String commentLabel = parent ? "Why do you think this?" : "Do you have any further comments?"
+		String commentLabel = parent ? message( code: 'elicit.parents.comments.label.round1' ) : message( code: 'elicit.parents.comments.label.later-rounds' )
 
 		out << """
 			<div id='$dialogId' class='var-details floating-dialog'>
