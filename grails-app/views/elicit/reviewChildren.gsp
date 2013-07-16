@@ -102,7 +102,7 @@
 				var classes     = [ 'phase-' + delphiPhase ];
 				classes.push( comment.byMe   ? 'me' : 'other' );
 				classes.push( comment.exists ? 'exists' : 'doesnt-exist' );
-				var authorString = '${message( code: 'elicit.parents.comment-phase', args: [ '[me]', '[phase]' ])}'.replace( '[phase]', delphiPhase ).replace( '[me]', author );
+				var authorString = '${message( code: 'elicit.children.comment-phase', args: [ '[me]', '[phase]' ])}'.replace( '[phase]', delphiPhase ).replace( '[me]', author );
 				return '<li class="' + classes.join( ' ' ) + '">' + comment.comment + '<div class="author">' + authorString + '</div></li>';
 			};
 
@@ -152,10 +152,10 @@
 					type: 'post',
 					url: '${createLink(action: 'save')}',
 					data: {
-						child: '${variable.label}',
-						parent: currentVar.label,
-						comment: comment,
-						exists: inputDoesExist()
+						parent  : '${variable.label}',
+						child   : currentVar.label,
+						comment : comment,
+						exists  : inputDoesExist()
 					},
 					dataType: 'text json',
 					error: function( data ) {
@@ -230,8 +230,8 @@
 					type: 'post',
 					url: '<g:createLink action='ajaxGetReviewDetails'/>',
 					data: {
-						child: '${variable.label}',
-						parent: $( btnReview ).val()
+						parent : '${variable.label}',
+						child  : $( btnReview ).val()
 					},
 					dataType: 'text json',
 					error: function( data ) {
@@ -260,14 +260,14 @@
 
 						currentVar = {
 							label         : $( btnReview ).val(),
-							readableLabel : data.parentLabelReadable,
+							readableLabel : data.childLabelReadable,
 							exists        : data.exists,
 							comment       : currentCommentText == null ? "" : currentCommentText
 						};
 
 						$( '#' + currentVar.label + "-variable-item" ).addClass( 'highlighted' );
 
-						form.find( 'legend' ).html( 'Does ' + data.parentLabelReadable + '<br />directly influence<br />${variable.readableLabel.encodeAsJavaScript()}?' );
+						form.find( 'legend' ).html( 'Does ${variable.readableLabel.encodeAsJavaScript()}<br />directly influence<br /> ' + data.childLabelReadable + '?' );
 
 						var offset = $( btnReview ).closest( 'li' ).offset().top - form.parent().offset().top - 250;
 						offset = Math.max( 0, offset );
@@ -280,13 +280,13 @@
 
 		</g:javascript>
 
-		<r:require module="elicitParents"/>
+		<r:require module="elicitChildren"/>
 
 	</head>
 
 	<body>
 
-		<div class="elicit-parents">
+		<div class="elicit-children">
 
 			<div class="column-wrapper">
 
@@ -295,21 +295,21 @@
 					<fieldset class="default">
 
 						<legend>
-							<div class="smaller inline-on-large">Do any of the following</div>
-							<div class="smaller inline-on-large">directly influence</div>
-							<div></div>
+							<div class="smaller inline-on-large">Does</div>
 							${variable.readableLabel} <bn:variableDescription var="${variable}"/>
+							<div class="smaller inline-on-large">directly influence</div>
+							<div class="smaller inline-on-large">any of these?</div>
 						</legend>
 						<p>
 
 						</p>
 
 						<div class="message" style="margin-bottom: -1em;">
-							<g:message code="elicit.parents.review.desc" args="${[variable.readableLabel]}"/>
+							<g:message code="elicit.children.review.desc" args="${[variable.readableLabel]}"/>
 						</div>
 
 						<br />
-						<bnElicit:potentialParentsListLaterRounds potentialParents="${potentialParents}" child="${variable}"/>
+						<bnElicit:potentialChildrenListLaterRounds potentialChildren="${potentialChildren}" parent="${variable}"/>
 
 					</fieldset>
 
@@ -347,7 +347,7 @@
 
 							<div class='contents'>
 
-								<bnElicit:potentialParentDialog/>
+								<bnElicit:potentialChildDialog/>
 
 							</div>
 

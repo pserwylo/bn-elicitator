@@ -317,20 +317,19 @@ If this is a mistake, please contact <a href="mailto:peter.serwylo@monash.edu.au
 	 * And their relationships among themselves.
 	 */
 	private void initVariableClasses() {
-		VariableClass background = new VariableClass( name: VariableClass.BACKGROUND )
-		background.save( flush: true )
-
-		VariableClass problem = new VariableClass( name: VariableClass.PROBLEM, potentialParents: [ background ] )
-		problem.save( flush: true )
-
-		VariableClass mediating = new VariableClass( name: VariableClass.MEDIATING, potentialParents: [ background, problem ] )
-		mediating.save( flush: true )
-
-		VariableClass symptom = new VariableClass( name: VariableClass.SYMPTOM, potentialParents: [ background, mediating, problem ] )
+		VariableClass symptom = new VariableClass( name: VariableClass.SYMPTOM )
 		symptom.save( flush: true )
 
-		background.potentialParents.push( background )
+		VariableClass mediating = new VariableClass( name: VariableClass.MEDIATING, potentialChildren: [ symptom ] )
+		mediating.save( flush: true )
+
+		VariableClass problem = new VariableClass( name: VariableClass.PROBLEM, potentialChildren: [ mediating, symptom ] )
+		problem.save( flush: true )
+
+		VariableClass background = new VariableClass( name: VariableClass.BACKGROUND, potentialChildren: [ mediating, problem ] )
 		background.save( flush: true )
 
+		background.potentialChildren.add( background )
+		background.save( flush: true )
 	}
 }

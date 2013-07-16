@@ -20,18 +20,17 @@ package bn.elicitator
 
 import bn.elicitator.auth.User
 import bn.elicitator.events.FinishedVariableEvent
-import bn.elicitator.init.DumbProfiler
 
-class VariableService 
+class VariableService
 {
 
 	DelphiService delphiService
 	UserService   userService
 
-	public List<ReviewedRelationship> myReviewedRelationshipsFor( Variable child ) {
+	public List<ReviewedRelationship> myReviewedRelationshipsForParent( Variable parent ) {
 		return ReviewedRelationship.withCriteria {
 			relationship {
-				eq( 'child', child )
+				eq( 'parent', parent )
 			}
 			eq( 'reviewedBy',  userService.current )
 			eq( 'delphiPhase', delphiService.phase )
@@ -67,12 +66,12 @@ class VariableService
 
 		classes.each { VariableClass varClass ->
 
-			List<Variable> potentialParents = []
-			varClass.potentialParents.each { VariableClass parentClass ->
-				potentialParents.addAll( categories[ parentClass.id ] )
+			List<Variable> potentialChildren = []
+			varClass.potentialChildren.each { VariableClass childClass ->
+				potentialChildren.addAll( categories[ childClass.id ] )
 			}
 
-			closure( varClass, categories[ varClass.id ], potentialParents )
+			closure( varClass, categories[ varClass.id ], potentialChildren )
 		}
 	}
 
@@ -105,12 +104,12 @@ class VariableService
 		}
 	}
 
-	public boolean hasVisitedAtSomePoint( Variable child, User user = userService.current ) {
-		VisitedVariable.countByVisitedByAndVariable( user, child ) > 0
+	public boolean hasVisitedAtSomePoint( Variable parent, User user = userService.current ) {
+		VisitedVariable.countByVisitedByAndVariable( user, parent ) > 0
 	}
 
-	public boolean hasVisitedLastRound( Variable child, User user = userService.current ) {
-		VisitedVariable.countByDelphiPhaseAndVisitedByAndVariable( delphiService.previousPhase, user, child ) > 0
+	public boolean hasVisitedLastRound( Variable parent, User user = userService.current ) {
+		VisitedVariable.countByDelphiPhaseAndVisitedByAndVariable( delphiService.previousPhase, user, parent ) > 0
 	}
 
 	/**
@@ -119,17 +118,17 @@ class VariableService
 	 * @return
 	 */
 	List<Variable> getStillToVisit() {
-		List<Variable> varList      = getAllChildVars()
+		List<Variable> varList      = getAllParentsVars()
 		List<Variable> visitedList  = VisitedVariable.findAllByVariableInListAndVisitedByAndDelphiPhase( varList, userService.current, delphiService.phase )*.variable
 		List<Variable> stillToVisit = varList.findAll { !visitedList.contains( it ) }
 		return stillToVisit
 	}
 
 	/**
-	 * Get all variables for which we want to elicit parents for.
+	 * Get all variables for which we want to elicit children for.
 	 * @return
 	 */
-	public List<Variable> getAllChildVars() {
+	public List<Variable> getAllParentsVars() {
 		Allocation allocation = Allocation.findByUser( userService.current )
 		List<Variable> vars;
 		if ( delphiService.hasPreviousPhase ) {
@@ -174,13 +173,13 @@ class VariableService
 	}
 
 	/**
-	 * Search through the variables which can potentially be parents of 'child'.
-	 * These variables are those which are in groups that are above the current group, and possible variables in the current group
-	 * if the withinGroup property is true.
+	 * Search through the variables which can potentially be children of 'parent'.
+	 * These variables are those which are in groups that are below the current group, and possibly variables in the
+	 * current group, depending on the withinGroup property of {@link VariableClass}.
 	 * @return List of variables sorted by name.
 	 */
-	public List<Variable> getPotentialParents( Variable child ) {
-		Variable.findAllByVariableClassInList( child.variableClass.potentialParents )
+	public List<Variable> getPotentialChildren( Variable parent ) {
+		Variable.findAllByVariableClassInList( parent.variableClass.potentialChildren )
 	}
 
 	/**
@@ -203,10 +202,10 @@ class VariableService
 			Allocation allocation = Allocation.findByUser( user )
 			if ( allocation?.variables?.size() > 0 ) {
 				updated = true;
-				eachVariableClass { VariableClass varClass, List<Variable> varsInClass, List<Variable> potentialParents ->
-					allocation.variables.each { child ->
-						if ( varsInClass.contains( child ) ) {
-							this.createRelationships( child, potentialParents, user )
+				eachVariableClass { VariableClass varClass, List<Variable> varsInClass, List<Variable> potentialChildren ->
+					allocation.variables.each { parent ->
+						if ( varsInClass.contains( parent ) ) {
+							this.createRelationships( parent, potentialChildren, user )
 						}
 					}
 				}
@@ -219,17 +218,17 @@ class VariableService
 	 * Ensures that 'variable' has valid relationship objects (for the current user and delphi phase). There may already
 	 * be relationships, in which case we ignore that. However, if there isn't, then we create them here, and set
 	 * {@link Relationship#exists} to false.
-	 * @param child
-	 * @param potentialParents Just to reduce the amount of work (if we already have a reference to it, just pass it in,
+	 * @param parent
+	 * @param potentialChildren Just to reduce the amount of work (if we already have a reference to it, just pass it in,
 	 * otherwise we'll get it ourselves here).
 	 */
-	void createRelationships( Variable child, List<Variable> potentialParents = null, User user = userService.current ) {
+	void createRelationships( Variable parent, List<Variable> potentialChildren = null, User user = userService.current ) {
 
-		if ( potentialParents == null ) {
-			potentialParents = this.getPotentialParents( child )
+		if ( potentialChildren == null ) {
+			potentialChildren = this.getPotentialChildren( parent )
 		}
 
-		for( Variable parent in potentialParents ) {
+		for( Variable child in potentialChildren ) {
 			Relationship relationship = this.delphiService.getCurrentRelationshipFor( user, parent, child )
 			if ( !relationship ) {
 				Relationship oldRelationship = this.delphiService.getPreviousRelationshipFor( user, parent, child );

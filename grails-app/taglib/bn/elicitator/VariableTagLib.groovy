@@ -18,8 +18,6 @@
 
 package bn.elicitator
 
-import bn.elicitator.auth.User
-
 class VariableTagLib {
 
 	static namespace = "bn"
@@ -150,10 +148,7 @@ class VariableTagLib {
 	}
 
 	/**
-	 * Produce a summary list of variables.
-	 * This will include:
-	 *  - links to elicit parents for a variable
-	 *  - if we are past the first delphi round, show variables which you agree/disagree about
+	 * Produce a summary list of variables that are to have children elicited.
 	 * @attr variables REQUIRED
 	 * @attr stillToVisit REQUIRED Variables which are yet to be seen, so we should so some sort of info telling them this...
 	 */
@@ -163,12 +158,12 @@ class VariableTagLib {
 		List<Variable> stillToVisit = attrs.stillToVisit
 		out << "<ul id='all-children-list' class='variable-list '>\n"
 
-		variables.eachWithIndex { child, i ->
-			Boolean hasVisited = !stillToVisit.contains( child )
+		variables.eachWithIndex { parent, i ->
+			Boolean hasVisited = !stillToVisit.contains( parent )
 			String classNeedsReview = hasVisited ? 'doesnt-need-review' : 'needs-review'
 			out << """
 				<li class='variable-item  ${classNeedsReview}'>
-					<a href='${createLink( controller: 'elicit', action: 'parents', params: [ for: child.label ] )}'>${bn.variable( [ var: child, includeDescription: false ] )}</a>
+					<a href='${createLink( controller: 'elicit', action: 'children', params: [ for: parent.label ] )}'>${bn.variable( [ var: parent, includeDescription: false ] )}</a>
 				</li>
 				"""
 		}
@@ -186,13 +181,13 @@ class VariableTagLib {
 		List<Variable> stillToVisit = attrs.stillToVisit
 
 		out << "<ul id='all-children-list' class='variable-list'>\n"
-		for( Variable child in variables ) {
-			Boolean hasVisited = !stillToVisit.contains( child )
+		for( Variable parent in variables ) {
+			Boolean hasVisited = !stillToVisit.contains( parent )
 			String cssClasses = hasVisited ? 'doesnt-need-review' : 'needs-review'
 
 			out << """
 				<li class='variable-item  ${cssClasses }'>
-					<a href='${createLink( controller: 'elicit', action: 'parents', params: [ for: child.label ] )}'>${bn.variable( [ var: child, includeDescription: false ] )}</a>
+					<a href='${createLink( controller: 'elicit', action: 'children', params: [ for: parent.label ] )}'>${bn.variable( [ var: parent, includeDescription: false ] )}</a>
 				</li>
 				"""
 		}

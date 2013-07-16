@@ -20,7 +20,7 @@ package bn.elicitator
 
 import bn.elicitator.auth.User
 
-class ElicitParentsTagLib {
+class ElicitChildrenTagLib {
 
 	static namespace = "bnElicit"
 
@@ -71,7 +71,7 @@ class ElicitParentsTagLib {
 		out << """
 			<div class='reasons'>
 				<span class='header'>
-					${message( code: "elicit.parents.reason.header" )} ${img( [ dir: "images/icons", file: "comments.png" ] )}
+					${message( code: "elicit.children.reason.header" )} ${img( [ dir: "images/icons", file: "comments.png" ] )}
 				</span>
 				"""
 
@@ -100,7 +100,7 @@ class ElicitParentsTagLib {
 					out << """
 						<li class='${className}'>
 							"${comment.comment}"
-							<div class='author'>${message( code: 'elicit.parents.comment-phase', args: [ author, it.delphiPhase ])}</div>
+							<div class='author'>${message( code: 'elicit.children.comment-phase', args: [ author, it.delphiPhase ])}</div>
 						</li>
 						"""
 				}
@@ -124,28 +124,28 @@ class ElicitParentsTagLib {
 	 *  - You said yes
 	 *  - You said no
 	 *  - We *all* said no (which is hidden)
-	 * @attr child REQUIRED
-	 * @attr potentialParents REQUIRED
+	 * @attr parent REQUIRED
+	 * @attr potentialChildren REQUIRED
 	 */
-	def potentialParentsListLaterRounds = { attrs ->
+	def potentialChildrenListLaterRounds = { attrs ->
 
-		List<Variable> potentialParents = attrs.potentialParents
-		Variable child = attrs.child
+		List<Variable> potentialChildren = attrs.potentialChildren
+		Variable parent = attrs.parent
 
 		List<Variable> listYes           = []
 		List<Variable> listNo            = []
 		List<Variable> listNoAll         = []
-		List<Variable> reviewedVars      = variableService.myReviewedRelationshipsFor( child )*.relationship*.parent
-		List<User> usersAllocatedToChild = allocateQuestionsService.getOthersAllocatedTo( child )
+		List<Variable> reviewedVars      = variableService.myReviewedRelationshipsForParent( parent )*.relationship*.child
+		List<User> usersAllocatedToParent = allocateQuestionsService.getOthersAllocatedTo( parent )
 		Map<Variable, List<Relationship>> allRelationships = [:]
 		Map<Variable, Integer>            allOthersCount   = [:]
 
 		User user = userService.current
 
-		potentialParents.each { parent ->
+		potentialChildren.each { child ->
 
 			List<Relationship> relationships = delphiService.getAllPreviousRelationshipsAndMyCurrent( parent, child ).findAll {
-				usersAllocatedToChild.contains( it.createdBy ) &&
+				usersAllocatedToParent.contains( it.createdBy ) &&
 					// Only include relationships that were from people who actually finished it...
 						variableService.hasVisitedAtSomePoint( child, it.createdBy )
 			}
@@ -156,24 +156,24 @@ class ElicitParentsTagLib {
 			Relationship       myMostRecent   = myCurrent ?: myPrevious
 			Integer            othersCount    = othersPrevious.count { it?.exists }
 
-			allRelationships.put( parent, relationships )
-			allOthersCount.put( parent, othersCount )
+			allRelationships.put( child, relationships )
+			allOthersCount.put( child, othersCount )
 
 			if ( myMostRecent?.exists ) {
-				listYes.add( parent )
+				listYes.add( child )
 			} else if ( othersCount == 0 ) {
-				listNoAll.add( parent )
+				listNoAll.add( child )
 			} else {
-				listNo.add( parent )
+				listNo.add( child )
 			}
 		}
 
-		Integer totalUsers = usersAllocatedToChild.size()
+		Integer totalUsers = usersAllocatedToParent.size()
 
 		if ( listYes.size() == 0 && listNo.size() == 0 ) {
 			String message = "It looks like you and all of the other participants all agreed that " +
-					"no variables we proposed influence ${child.readableLabel.encodeAsJavaScript()}. " +
-					"Therefore, we will not ask you to complete this variable."
+					"${parent.readableLabel.encodeAsJavaScript()} doesn't influence any of the proposed variables." +
+					"Therefore, we do not require you to review this part of the survey again."
 
 			out << """
 				<script type='text/javascript'>
@@ -186,36 +186,36 @@ class ElicitParentsTagLib {
 		} else {
 			def sortYes  = { low, high ->              allOthersCount.get( low ) <=>              allOthersCount.get( high ) }
 			def sortNo   = { low, high -> totalUsers - allOthersCount.get( low ) <=> totalUsers - allOthersCount.get( high ) }
-			def listItem = { parent, count, alsoSaid ->
+			def listItem = { child, count, alsoSaid ->
 
 				List<String> countClasses = [ "low", "medium", "high" ]
 				float countPercent        = count / totalUsers
 				int countClassIndex       = ( countClasses.size() - 1 ) - (int)( countPercent * countClasses.size() )
-				String reviewedClass      = reviewedVars.contains( parent ) ? "doesnt-need-review" : "needs-review"
+				String reviewedClass      = reviewedVars.contains( child ) ? "doesnt-need-review" : "needs-review"
 
 				out << """
-					<li id='${parent.label}-variable-item' class='variable-item $reviewedClass'>
+					<li id='${child.label}-variable-item' class='variable-item $reviewedClass'>
 						<span class='var-summary'>
 							<span class='count ${countClasses[ countClassIndex ]}'>
-								${message( code: 'elicit.parents.agreement-count', args : [ count, totalUsers, (int)( countPercent * 100 ) ] )}
+								${message( code: 'elicit.children.agreement-count', args : [ count, totalUsers, (int)( countPercent * 100 ) ] )}
 								<span class='also-said'>
 									also said $alsoSaid to
 								</span>
 							</span>
-							<button class='review' value='${parent.label}'>Review</button>
+							<button class='review' value='${child.label}'>Review</button>
 						</span>
-						${bn.variable( [ var: parent ] )}
+						${bn.variable( [ var: child ] )}
 					</li>
 				"""
 			}
 
 			out << """
 					<h2 class='review-other review-yes'>Others who also said "<strong>Yes</strong>"</h2>
-					<h2 class='review-list review-yes'>${message( code: 'elicit.parents.you-said-yes' )}</h2>
-					<ul id='list-yes' class='review-yes potential-parents-list variable-list'>
+					<h2 class='review-list review-yes'>${message( code: 'elicit.children.you-said-yes' )}</h2>
+					<ul id='list-yes' class='review-yes potential-children-list variable-list'>
 					"""
-				listYes.sort( sortYes ).each { parent ->
-					listItem( parent, allOthersCount.get( parent ), 'yes' )
+				listYes.sort( sortYes ).each { child ->
+					listItem( child, allOthersCount.get( child ), 'yes' )
 				}
 				out << """
 					</ul>
@@ -223,22 +223,22 @@ class ElicitParentsTagLib {
 
 			out << """
 					<h2 class='review-other review-no'>Others who also said "<strong>No</strong>"</h2>
-					<h2 class='review-list review-no'>${message( code: 'elicit.parents.you-said-no' )}</h2>
-					<ul id='list-no' class='review-no potential-parents-list variable-list'>
+					<h2 class='review-list review-no'>${message( code: 'elicit.children.you-said-no' )}</h2>
+					<ul id='list-no' class='review-no potential-children-list variable-list'>
 					"""
-			listNo.sort( sortNo ).each { parent ->
-				listItem( parent, totalUsers - allOthersCount.get( parent ), 'no' )
+			listNo.sort( sortNo ).each { child ->
+				listItem( child, totalUsers - allOthersCount.get( child ), 'no' )
 			}
 			out << """
 					</ul>
 				"""
 
 			if ( listNoAll.size() > 0 ) {
-				def varPlural = listNoAll.size() == 1 ? "" : "s"
+				def s = listNoAll.size() == 1 ? "" : "s"
 				out << """
 					<div class='info' style='margin-top: 0.8em;'>
-						There was an additional ${listNoAll.size()} variable$varPlural which you all agreed do not
-						influence $child, and are therefore not shown here:<br /><br />${listNoAll*.readableLabel*.encodeAsHTML().join( ', ' )}.
+						There was an additional ${listNoAll.size()} variable$s which you all agreed are not
+						influenced by $parent, and are therefore not shown here:<br /><br />${listNoAll*.readableLabel*.encodeAsHTML().join( ', ' )}.
 					</div>
 					"""
 			}
@@ -248,25 +248,25 @@ class ElicitParentsTagLib {
 	/**
 	 * Iterates over each potentialParents and invokes the potentialParent taglib.
 	 * If we are in subsequent phases, we don't show variables which received no love from anybody in the previous phase.
-	 * @attr child REQUIRED
-	 * @attr potentialParents REQUIRED
+	 * @attr parent REQUIRED
+	 * @attr potentialChildren REQUIRED
 	 */
-	def potentialParentsList = { attrs ->
+	def potentialChildrenList = { attrs ->
 
-		Variable child = attrs.child
-		List<Variable> potentialParents = attrs.potentialParents.findAll { parent -> parent != child }
+		Variable parent = attrs.parent
+		List<Variable> potentialChildren = attrs.potentialChildren.findAll { child -> parent.id != child.id }
 
 		out << """
 			<h2 class='review-uninitialized'></h2>
-			<ul id='list-uninitialized' class='potential-parents-list variable-list'>
-				${potentialParents.collect { potentialParent( child: child, parent: it ) }.join( "" )}
+			<ul id='list-uninitialized' class='potential-children-list variable-list'>
+				${potentialChildren.collect { child -> potentialChild( child: child, parent: parent ) }.join( "" )}
 			</ul>
 
-			<h2 class='hide-if-yes-empty'>${message( code: 'elicit.parents.you-said-yes' )}</h2>
-			<ul id='list-yes' class='potential-parents-list variable-list hide-if-yes-empty'></ul>
+			<h2 class='hide-if-yes-empty'>${message( code: 'elicit.children.you-said-yes' )}</h2>
+			<ul id='list-yes' class='potential-children-list variable-list hide-if-yes-empty'></ul>
 
-			<h2 class='hide-if-no-empty'>${message( code: 'elicit.parents.you-said-no' )}</h2>
-			<ul id='list-no' class='potential-parents-list variable-list hide-if-no-empty'></ul>
+			<h2 class='hide-if-no-empty'>${message( code: 'elicit.children.you-said-no' )}</h2>
+			<ul id='list-no' class='potential-children-list variable-list hide-if-no-empty'></ul>
 			"""
 	}
 
@@ -277,7 +277,7 @@ class ElicitParentsTagLib {
 	 * @attr relationship
 	 * @attr isSelected
 	 */
-	def potentialParentDialog = { attrs ->
+	def potentialChildDialog = { attrs ->
 
 		Variable child            = null
 		Variable parent           = null
@@ -291,11 +291,11 @@ class ElicitParentsTagLib {
 			isSelected   = attrs.remove( 'isSelected' )
 		}
 
-		String dialogId     = parent ? parent.label + "-details"    : "details-form"
-		String inputIdAttr  = parent ? "id='input-${parent.label}-form'" : ""
-		String inputName    = parent ? "parents" : "exists"
+		String dialogId     = child ? child.label + "-details"    : "details-form"
+		String inputIdAttr  = child ? "id='input-${child.label}-form'" : ""
+		String inputName    = child ? "parents" : "exists"
 		String comment      = relationship?.delphiPhase == delphiService.phase && relationship?.comment?.comment?.length() > 0 ? relationship.comment.comment : ''
-		String commentLabel = parent ? message( code: 'elicit.parents.comments.label.round1' ) : message( code: 'elicit.parents.comments.label.later-rounds' )
+		String commentLabel = child ? message( code: 'elicit.children.comments.label.round1' ) : message( code: 'elicit.children.comments.label.later-rounds' )
 
 		out << """
 			<div id='$dialogId' class='var-details floating-dialog'>
@@ -343,7 +343,7 @@ class ElicitParentsTagLib {
 				</div>
 				"""
 
-		List<Relationship> relationshipsToShowCommentsFor = parent ?
+		List<Relationship> relationshipsToShowCommentsFor = child ?
 			( this.delphiService.hasPreviousPhase ?
 				this.delphiService.getAllPreviousRelationshipsAndMyCurrent( parent, child, false ) :
 				[ relationship ] ) :
@@ -356,12 +356,12 @@ class ElicitParentsTagLib {
 	}
 
 	/**
-	 * Displays a list element which portrays a variable which is primed to be selected as a parent of child.
-	 * If the user has already viewed and saved a relationship for this pair of variables, we will retrieve that.
+	 * Displays a list element which portrays a variable which is primed to be selected as a child.
+	 * If the user has already viewed and saved a relationship for this pair of variables, we will display that.
 	 * @attrs child REQUIRED
 	 * @attrs parent REQUIRED
 	 */
-	def potentialParent = { attrs ->
+	def potentialChild = { attrs ->
 
 		Variable child   = attrs.child
 		Variable parent  = attrs.parent
@@ -375,16 +375,16 @@ class ElicitParentsTagLib {
 			"uninitialized"
 
 		out << """
-			<li id='var-${parent.label}' class='variable-item $classes'>
-				<input type="hidden" name="parent" value="${parent.label}" />
+			<li id='var-${child.label}' class='variable-item $classes'>
+				<input type="hidden" name="child" value="${child.label}" />
 				<div class='var-summary'>
 					<button type="button" class="comment">Comment</button>
 					<button type="button" class="yes">Yes</button>
 					<button type="button" class="no">No</button>
 				</div>
-				${bn.variable( [ var: parent, includeDescription: false ] )}
-				${bn.variableDescription( [ var: parent ] )}
-				${bnElicit.variableSynonyms( [ var: parent ] )}
+				${bn.variable( [ var: child, includeDescription: false ] )}
+				${bn.variableDescription( [ var: child ] )}
+				${bnElicit.variableSynonyms( [ var: child ] )}
 			</li>
 			"""
 	}

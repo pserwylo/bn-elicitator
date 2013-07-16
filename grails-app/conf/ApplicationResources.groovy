@@ -62,13 +62,13 @@ modules = {
 		resource url: 'css/elicitProblems.css'
 	}
 
-	elicitParents {
+	elicitChildren {
 		dependsOn( [ 'elicit', 'floatingDialog' ] )
 		resource url: 'css/elicitParents.css'
 	}
 
-	elicitParentsFirst {
-		dependsOn( [ 'elicitParents' ] )
+	elicitChildrenFirst {
+		dependsOn( [ 'elicitChildren' ] )
 		resource url: 'css/elicitParentsFirst.css'
 	}
 

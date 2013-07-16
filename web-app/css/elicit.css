@@ -29,14 +29,14 @@
 /* MAIN LIST STYLES */
 
 
-ul.potential-parents-list      li.variable-item .variable {
+ul.potential-children-list      li.variable-item .variable {
 	font-size: 13.5pt;
 	font-style: normal;
 	color: #48802c; /* mimic the colour of links from global.css */
 }
 
 @media only screen and (max-width: 600px) {
-	ul.potential-parents-list      li.variable-item .variable {
+	ul.potential-children-list      li.variable-item .variable {
 		font-size: 12pt;
 		font-weight: bold;
 	}
@@ -44,7 +44,7 @@ ul.potential-parents-list      li.variable-item .variable {
 
 @media only screen and (min-width: 600px) {
 
-	ul.potential-parents-list li.variable-item {
+	ul.potential-children-list li.variable-item {
 		height: 30px;
 	}
 
@@ -52,15 +52,15 @@ ul.potential-parents-list      li.variable-item .variable {
 
 /* List items which indicate disagreement */
 
-ul.potential-parents-list li.variable-item.disagree .variable {
+ul.potential-children-list li.variable-item.disagree .variable {
     color: #793838;
 }
 
-ul.potential-parents-list li.variable-item.disagree input[type=button] {
+ul.potential-children-list li.variable-item.disagree input[type=button] {
     border: solid 1px #da8f8f;
 }
 
-ul.potential-parents-list li.variable-item.disagree {
+ul.potential-children-list li.variable-item.disagree {
     background-color: #eecbcb;
     border: solid 1px #da8f8f;
     color: #da8f8f;
@@ -256,18 +256,18 @@ ul.variable-list li, ul.selected-variable-list li {
 
 /* ELICITING PARENTS STYLES */
 
-ul.potential-parents-list li.variable-item.highlighted + li {
+ul.potential-children-list li.variable-item.highlighted + li {
 	border-top: none;
 }
 
-ul.potential-parents-list .variable-item.highlighted {
+ul.potential-children-list .variable-item.highlighted {
 	background-color: #fff;
 	border: solid #85cc43 1px;
 	z-index: -100;
 	margin-bottom: 1px;
 }
 
-ul.potential-parents-list .variable-item.highlighted button.review {
+ul.potential-children-list .variable-item.highlighted button.review {
 	color: #888;
 	background-color: #eee;
 }
@@ -290,16 +290,16 @@ ul.potential-parents-list .variable-item.highlighted button.review {
 }
 
 
-.ie6 .elicit-parents .column-left,
-.ie7 .elicit-parents .column-left,
-.ie8 .elicit-parents .column-left
+.ie6 .elicit-children .column-left,
+.ie7 .elicit-children .column-left,
+.ie8 .elicit-children .column-left
 {
 	width: 550px;
 }
 
-.ie6 .elicit-parents .column-right,
-.ie7 .elicit-parents .column-right,
-.ie8 .elicit-parents .column-right,
+.ie6 .elicit-children .column-right,
+.ie7 .elicit-children .column-right,
+.ie8 .elicit-children .column-right,
 {
 	margin-left: 560px;
 }
@@ -310,11 +310,11 @@ ul.potential-parents-list .variable-item.highlighted button.review {
 		font-size: 0.8em;
 	}
 
-	.elicit-parents .column-left {
+	.elicit-children .column-left {
 		width: 300px;
 	}
 
-	.elicit-parents .column-right {
+	.elicit-children .column-right {
 		margin-left: 303px;
 		min-width: 200px;
 	}
@@ -335,11 +335,11 @@ ul.potential-parents-list .variable-item.highlighted button.review {
 
 @media only screen and (min-width: 600px) {
 
-	.elicit-parents .column-left {
+	.elicit-children .column-left {
 		width: 550px;
 	}
 
-	.elicit-parents .column-right {
+	.elicit-children .column-right {
 		margin-left: 560px;
 	}
 
@@ -370,12 +370,12 @@ ul.potential-parents-list .variable-item.highlighted button.review {
 }
 
 @media only screen and (min-width: 600px) {
-	ul.potential-parents-list li {
+	ul.potential-children-list li {
 		height: 50px;
 	}
 }
 
-ul.potential-parents-list li.new-var {
+ul.potential-children-list li.new-var {
 	height: auto;
 }
 
@@ -408,21 +408,21 @@ ul.potential-parents-list li.new-var {
     background: url( ../images/icons/cross.png ) no-repeat;
 }
 
-ul.potential-parents-list .details {
+ul.potential-children-list .details {
 	width: 300px;
 	float: right;
 }
 
-ul.potential-parents-list .agreement {
+ul.potential-children-list .agreement {
     margin-right: 0.5em;
     font-weight: normal;
     font-size: 0.8em;
     text-align: right;
 }
 
-ul.potential-parents-list li.hide,
-ul.potential-parents-list li.hide .variable,
-ul.potential-parents-list li.hide button {
+ul.potential-children-list li.hide,
+ul.potential-children-list li.hide .variable,
+ul.potential-children-list li.hide button {
 	color: #999;
 }
 
@@ -467,12 +467,12 @@ ul.potential-parents-list li.hide button {
     border: none;
 }
 
-ul.potential-parents-list .agreement .disagree {
+ul.potential-children-list .agreement .disagree {
     color: red;
     font-weight: bold;
 }
 
-ul.potential-parents-list .agreement .agree {
+ul.potential-children-list .agreement .agree {
     color: green;
 }
 
@@ -485,6 +485,6 @@ ul.potential-parents-list .agreement .agree {
     background: #58d148;
 }
 
-ul.potential-parents-list li {
+ul.potential-children-list li {
 	padding-left: 5px;
 }

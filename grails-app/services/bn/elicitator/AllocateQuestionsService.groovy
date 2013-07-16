@@ -18,16 +18,16 @@ class AllocateQuestionsService {
 
 	/**
 	 * For each variable class, figure out how many variables there are in it,
-	 * and ask how many possible parents there are for each of those. This
+	 * and ask how many possible children there are for each of those. This
 	 * tally is the total number of questions to be asked.
 	 * @return
 	 */
 	int countTotalQuestions() {
 		int count = 0;
-		variableService.eachVariableClass { VariableClass varClass, List<Variable> varsInClass, List<Variable> potentialParents ->
+		variableService.eachVariableClass { VariableClass varClass, List<Variable> varsInClass, List<Variable> potentialChildren ->
 			int countVarsInClass         = varsInClass.size()
-			int countVarsInParentClasses = potentialParents.size()
-			count += ( countVarsInClass * countVarsInParentClasses )
+			int countVarsInChildrenClasses = potentialChildren.size()
+			count += ( countVarsInClass * countVarsInChildrenClasses )
 		}
 		return count
 	}
@@ -57,14 +57,14 @@ class AllocateQuestionsService {
 			return smallest[ index ]
 		}
 
-		variableService.eachVariableClass { VariableClass varClass, List<Variable> varsInClass, List<Variable> potentialParents ->
-			for ( Variable child in varsInClass ) {
+		variableService.eachVariableClass { VariableClass varClass, List<Variable> varsInClass, List<Variable> potentialChildren ->
+			for ( Variable parent in varsInClass ) {
 				// Find a bunch of users (who are at the bottom of the
 				// pecking order so far) to assign this question to...
 				List<User> beenAllocated = []
 				while ( beenAllocated.size() < participantsPerQuestion && beenAllocated.size() <= experts.size() ) {
 					Allocation smallest = getSmallestAllocation( beenAllocated )
-					smallest.addVariable( child, potentialParents )
+					smallest.addVariable( parent, potentialChildren )
 					beenAllocated.add( smallest.user )
 				}
 			}
@@ -111,10 +111,10 @@ class AllocateQuestionsService {
 	public void allocateToUser( User user ) {
 		List<Variable> varsToAllocate = getVarsWithLowestAllocation( AppProperties.properties.targetParticipantsPerQuestion )
 		Allocation allocation = new Allocation( user: user )
-		variableService.eachVariableClass { VariableClass varClass, List<Variable> varsInClass, List<Variable> potentialParents ->
+		variableService.eachVariableClass { VariableClass varClass, List<Variable> varsInClass, List<Variable> potentialChildren ->
 			varsToAllocate.each { varToAllocate ->
 				if ( varsInClass.contains( varToAllocate ) ) {
-					allocation.addVariable( varToAllocate, potentialParents )
+					allocation.addVariable( varToAllocate, potentialChildren )
 				}
 			}
 		}

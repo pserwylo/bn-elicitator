@@ -20,7 +20,7 @@ class DivyInsuranceDataLoader extends InsuranceDataLoader {
 
 	protected void initOther() {
 		updateHomePage()
-		initTestUsers( 15 )
+		initTestUsers( 15, false )
 	}
 
 }

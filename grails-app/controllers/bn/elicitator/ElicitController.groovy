@@ -162,20 +162,18 @@ class ElicitController {
 	 */
 	def problems = {
 		if ( checkProblems( createLink( action: 'problems' ) ) ) {
-			redirect( action: 'index' );
+			redirect( action: 'index' )
 		}
 	}
 
 	private Boolean checkProblems( redirectTo ) {
-
 		List<BnService.CyclicalRelationship> cyclicalRelationships = bnService.getCyclicalRelationships()
-
 		boolean show = cyclicalRelationships.size() > 0
 		if ( show ) {
 			show = true
 			render (
-				view: 'problems',
-				model: [
+				view  : 'problems',
+				model : [
 					redirectTo            : redirectTo,
 					cyclicalRelationships : cyclicalRelationships,
 					scroll                : flash.containsKey( "scroll" ) ? flash["scroll"] : 0
@@ -197,26 +195,21 @@ class ElicitController {
 			child  = Variable.findByLabel( (String)params['child'] )
 		}
 
-		if ( parent == null || child == null )
-		{
+		if ( parent == null || child == null ) {
 			String label = parent == null ? params['parent'] : params['child']
 			throw new Exception( "Not found: $label" )
-		}
-		else
-		{
+		} else {
 			Relationship relationship = delphiService.getMyCurrentRelationship( parent, child )
 			def result = [
 				comment       : relationship?.comment?.comment ?: "",
-				label         : parent.label,
-				readableLabel : parent.readableLabel,
+				label         : child.label,
+				readableLabel : child.readableLabel,
 			]
-
 			render result as JSON
 		}
 	}
 
 	def ajaxGetReviewDetails = {
-
 		if ( !delphiService.hasPreviousPhase ) {
 			return
 		}
@@ -229,13 +222,10 @@ class ElicitController {
 			child  = Variable.findByLabel( (String)params['child'] )
 		}
 
-		if ( parent == null || child == null )
-		{
+		if ( parent == null || child == null ) {
 			String label = parent == null ? params['parent'] : params['child']
 			throw new Exception( "Not found: $label" )
-		}
-		else
-		{
+		} else {
 			User user = userService.current
 			List<Relationship> relationships = delphiService.getAllPreviousRelationshipsAndMyCurrent( parent, child, false )
 			def comments = relationships.findAll { it.comment?.comment?.size() > 0 }.collect { rel ->
@@ -248,49 +238,45 @@ class ElicitController {
 			}
 
 			def result = [
-				parentLabel         : parent.label,
-				parentLabelReadable : parent.readableLabel,
-				exists              : relationships.find { it.createdBy == user }?.exists,
-				comments            : comments
+				childLabel         : child.label,
+				childLabelReadable : child.readableLabel,
+				exists             : relationships.find { it.createdBy == user }?.exists,
+				comments           : comments
 			]
 
 			render result as JSON
 		}
-
 	}
 
 	/**
-	 * Shows a form where one variable is displayed, and a list of all potential parents.
+	 * Shows a form where one variable is displayed, and a list of all potential children.
 	 * This does not mean all other variables, as we are trying very hard to reduce this
 	 * workload on the expert. Instead, we use the configuration of constraints to restrict
-	 * the variables which are shown as potential parents.
-	 *
-	 * The variable we show is deduced from the 'for' query param. However if none is specified,
-	 * we will try to pull the first variable off the rank and then redirect to a screen which uses that.
+	 * the variables which are shown as potential children.
 	 */
-    def parents = {
+    def children = {
 
-		Variable var = ( params["for"] == null ) ? null : Variable.findByLabel( (String)params["for"] )
-		if ( var == null ) {
+		Variable parentVar = ( params["for"] == null ) ? null : Variable.findByLabel( (String)params["for"] )
+		if ( parentVar == null ) {
 			throw new Exception( "Not found: ${params['for']}" )
 		}
 
-		List<Variable> potentialParents = this.variableService.getPotentialParents( var )
-		String view = delphiService.hasPreviousPhase ? "reviewParents" : "parents"
-		ViewRelationshipsEvent.logEvent( var )
+		List<Variable> potentialChildren = this.variableService.getPotentialChildren( parentVar )
+		String view = delphiService.hasPreviousPhase ? "reviewChildren" : "children"
+		ViewRelationshipsEvent.logEvent( parentVar )
 
 		def model = [
-			variable         : var,
-			delphiPhase      : delphiService.phase,
-			potentialParents : potentialParents,
-			totalUsers       : userService.expertCount,
+			variable          : parentVar,
+			delphiPhase       : delphiService.phase,
+			potentialChildren : potentialChildren,
+			totalUsers        : userService.expertCount,
 		]
 
 		if ( delphiService.hasPreviousPhase ) {
-			model.reviewedVariables = variableService.myReviewedRelationshipsFor( var )*.relationship*.parent
+			model.reviewedVariables = variableService.myReviewedRelationshipsForParent( parentVar )*.relationship*.child
 		}
 
-		render( view  : view, model : model )
+		render( view : view, model : model )
 	}
 
 	/**
@@ -386,9 +372,9 @@ class ElicitController {
 	def index = {
 
 		this.variableService.initRelationships()
-		List<Variable> varList = this.variableService.getAllChildVars()
+		List<Variable> variablesToElicit = this.variableService.getAllParentsVars()
 
-		if ( delphiService.hasPreviousPhase && varList.size() == 0 && !userService.current.roles.contains( Role.admin ) ) {
+		if ( delphiService.hasPreviousPhase && variablesToElicit.size() == 0 && !userService.current.roles.contains( Role.admin ) ) {
 			redirect( controller: 'contentView', params: [ page: ContentPage.EMPTY_LAST_ROUND ] )
 			return
 		}
@@ -396,15 +382,15 @@ class ElicitController {
 		return [
 			user                      : userService.current,
 			delphiPhase               : delphiService.phase,
-			variables                 : varList,
+			variables                 : variablesToElicit,
 			hasPreviousPhase          : delphiService.hasPreviousPhase,
-			stillToVisit              : variableService.getStillToVisit(),
+			stillToVisit              : variableService.stillToVisit,
 			completed                 : delphiService.completed,
 		]
 	}
 
 	/**
-	 * Creates the new variable, saves it, then redirects to {@link ElicitController#parents} for the variable we
+	 * Creates the new variable, saves it, then redirects to {@link ElicitController#children} for the variable we
 	 * were viewing when we added this new variable.
 	 */
 	def addVariable = { AddVariableCommand cmd ->

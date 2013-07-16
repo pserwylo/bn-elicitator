@@ -16,15 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-ul.potential-parents-list li.variable-item.doesnt-need-review {
+ul.potential-children-list li.variable-item.doesnt-need-review {
 	background: url("../images/icons/accept.png") no-repeat scroll 5px 50% transparent;
 }
 
-ul.potential-parents-list li.variable-item.needs-review {
+ul.potential-children-list li.variable-item.needs-review {
 	background: url("../images/icons/lightbulb.png") no-repeat scroll 5px 50% transparent;
 }
 
-ul.potential-parents-list li.variable-item {
+ul.potential-children-list li.variable-item {
 	padding-left: 30px;
 }
 

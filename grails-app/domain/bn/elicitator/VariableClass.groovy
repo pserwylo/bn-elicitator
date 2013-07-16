@@ -28,7 +28,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder
 class VariableClass {
 
 	static hasMany = [
-		potentialParents: VariableClass
+		potentialChildren: VariableClass
 	]
 
 	static constraints = {
@@ -41,7 +41,7 @@ class VariableClass {
 
 	Integer priority = 1;
 
-	List<VariableClass> potentialParents = []
+	List<VariableClass> potentialChildren = []
 
 	String toString() { return readableLabel ?: name }
 

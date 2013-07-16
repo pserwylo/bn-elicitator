@@ -21,7 +21,7 @@
 
 	<head>
 		<meta name="layout" content="main">
-		<title>Elicit Parents of Variable</title>
+		<title>What does ${variable} influence?</title>
 
 		<g:javascript>
 
@@ -39,9 +39,9 @@
 				var buttonBack        = $( '#btnBack'            );
 				var commentInput      = commentDialog.find( 'textarea' );
 
-				var parentLi      = function( child ) { return $( child ).closest( 'li' ); };
-				var parentUl      = function( child ) { return $( child ).closest( 'ul' ); };
-				var belongsToList = function( item, list ) { return parentUl( $( item ) ).attr( 'id' ) == $( list ).attr( 'id' ); };
+				var childLi       = function( child ) { return $( child ).closest( 'li' ); };
+				var childUl       = function( child ) { return $( child ).closest( 'ul' ); };
+				var belongsToList = function( item, list ) { return childUl( $( item ) ).attr( 'id' ) == $( list ).attr( 'id' ); };
 
 				/**
 				 * The currently-being-viewed variable, including its label, readableLabel and comment.
@@ -73,14 +73,14 @@
 					}
 				};
 
-				var saveVarDetails = function( parentLabel, exists, comment, callback ) {
+				var saveVarDetails = function( childLabel, exists, comment, callback ) {
 					$.ajax({
 						type     : 'post',
 						url      : '${createLink( action: 'save' )}',
 						dataType : 'text json',
 						data     : {
-							child   : '${variable.label}',
-							parent  : parentLabel,
+							child   : childLabel,
+							parent  : '${variable.label}',
 							exists  : exists,
 							comment : comment
 						},
@@ -88,7 +88,7 @@
 							alert( "<g:message code="general.ajax-server-error" />" );
 						},
 						success : function( data ) {
-							var cachedData = getDetailsFromCache( parentLabel );
+							var cachedData = getDetailsFromCache( childLabel );
 							if ( cachedData != null ) {
 								cachedData.comment = comment;
 								updateCache( cachedData );
@@ -112,8 +112,8 @@
 				};
 
 
-				var loadVarDetails = function( parentLabel, callback ) {
-					var cached = getDetailsFromCache( parentLabel );
+				var loadVarDetails = function( childLabel, callback ) {
+					var cached = getDetailsFromCache( childLabel );
 					if ( cached ) {
 						currentVar = cached;
 						callback();
@@ -123,8 +123,8 @@
 							type : 'get',
 							url  : '${createLink(action: 'ajaxGetDetails')}',
 							data : {
-								child  : '${variable.label}',
-								parent : parentLabel
+								child  : childLabel,
+								parent : '${variable.label}'
 							},
 							dataType : 'text json',
 							error    : function( data ) {
@@ -165,7 +165,7 @@
 				};
 
 				var getVarLabelFromLi = function( li ) {
-					return $( li ).find( 'input:hidden[name=parent]' ).val();
+					return $( li ).find( 'input:hidden[name=child]' ).val();
 				};
 
 
@@ -235,7 +235,7 @@
 
 					var moveAndShowDialog = function() {
 						commentInput.val( comment );
-						textAreaLabel.html( "Why do you think '" + currentVar.readableLabel + "' influences '${variable.readableLabel.encodeAsJavaScript()}'?" );
+						textAreaLabel.html( "Why do you think '${variable.readableLabel.encodeAsJavaScript()}' influences '" + currentVar.readableLabel + "'?" );
 						showDialog( commentDialog, alignWithLi );
 						selectEndOfTextArea( commentDialog.find( 'textarea' ) )
 					};
@@ -292,7 +292,7 @@
 
 
 				buttonsYes.click( function() {
-					var li = parentLi( this );
+					var li = childLi( this );
 					if ( !isCurrentLi( li ) && !hasChangedCommentWithAlert() ) {
 						var varLabel = getVarLabelFromLi( li );
 						loadVarDetails( varLabel, function() {
@@ -324,17 +324,17 @@
 						return;
 					}
 
-					var li = parentLi( this );
+					var li = childLi( this );
 					moveToList( li, listNo, $.noop );
 					saveVarDetails( getVarLabelFromLi( li ), false, "", $.noop );
 				});
 
 
 				buttonsComment.click( function() {
-					var li = parentLi( this );
+					var li = childLi( this );
 					if ( belongsToList( this, listYes ) && !isCurrentLi( li ) && !hasChangedCommentWithAlert() ) {
 						loadVarDetails( getVarLabelFromLi( li ), function() {
-							showCommentDialog( li, currentVar.comment, $.noop );
+							showCommentDialog( li, currentVar.comment );
 						})
 					}
 				});
@@ -356,7 +356,7 @@
 				buttonFinished.click( function() {
 					if ( !canFinish() ) {
 						var count = getUninitializedCount();
-						alert( 'You still need to decide whether ' + count + ' variables influence ${variable.readableLabel.encodeAsJavaScript()}.' );
+						alert( 'You still need to decide whether ' + count + ' variables are influenced by ${variable.readableLabel.encodeAsJavaScript()}.' );
 						$( 'body' ).animate( { scrollTop: 0 } );
 					} else {
 						document.location = '${createLink( action : 'completedVariable', params : [ variable : variable.label ] )}';
@@ -377,13 +377,13 @@
 
 		</g:javascript>
 
-		<r:require module="elicitParentsFirst" />
+		<r:require module="elicitChildrenFirst" />
 
 	</head>
 	
 	<body>
 
-		<div class="elicit-parents">
+		<div class="elicit-children">
 
 			<div class="column-wrapper">
 
@@ -400,12 +400,12 @@
 								${variable.usageDescription.replace( '\n', '<br />' )}
 							</g:if>
 							<g:else>
-								<g:message code="elicit.parents.desc" args="${[variable.readableLabel]}" />
+								<g:message code="elicit.children.desc" args="${[variable.readableLabel]}" />
 							</g:else>
 						</p>
 						<br />
 
-						<bnElicit:potentialParentsList potentialParents="${potentialParents}" child="${variable}" />
+						<bnElicit:potentialChildrenList potentialChildren="${potentialChildren}" parent="${variable}" />
 
 					</fieldset>
 
