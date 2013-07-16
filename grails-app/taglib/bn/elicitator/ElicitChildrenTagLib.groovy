@@ -129,25 +129,27 @@ class ElicitChildrenTagLib {
 	 */
 	def potentialChildrenListLaterRounds = { attrs ->
 
-		List<Variable> potentialChildren = attrs.potentialChildren
-		Variable parent = attrs.parent
+		List<Variable> potentialChildren  = attrs.potentialChildren
+		Variable parent                   = attrs.parent
 
-		List<Variable> listYes           = []
-		List<Variable> listNo            = []
-		List<Variable> listNoAll         = []
-		List<Variable> reviewedVars      = variableService.myReviewedRelationshipsForParent( parent )*.relationship*.child
+		User user                         = userService.current
+		List<Variable> listYes            = []
+		List<Variable> listYesAll         = []
+		List<Variable> listNo             = []
+		List<Variable> listNoAll          = []
+		List<Variable> reviewedVars       = variableService.myReviewedRelationshipsForParent( parent )*.relationship*.child
 		List<User> usersAllocatedToParent = allocateQuestionsService.getOthersAllocatedTo( parent )
+		Integer totalOtherUsers           = usersAllocatedToParent.size() - 1
 		Map<Variable, List<Relationship>> allRelationships = [:]
 		Map<Variable, Integer>            allOthersCount   = [:]
 
-		User user = userService.current
 
 		potentialChildren.each { child ->
 
 			List<Relationship> relationships = delphiService.getAllPreviousRelationshipsAndMyCurrent( parent, child ).findAll {
 				usersAllocatedToParent.contains( it.createdBy ) &&
 					// Only include relationships that were from people who actually finished it...
-						variableService.hasVisitedAtSomePoint( child, it.createdBy )
+						variableService.hasVisitedAtSomePoint( parent, it.createdBy )
 			}
 
 			Relationship       myCurrent      = relationships.find    { it.createdBy == user && it.delphiPhase == delphiService.phase }
@@ -160,15 +162,17 @@ class ElicitChildrenTagLib {
 			allOthersCount.put( child, othersCount )
 
 			if ( myMostRecent?.exists ) {
-				listYes.add( child )
+				if ( othersCount == totalOtherUsers ) {
+					listYesAll.add( child )
+				} else {
+					listYes.add( child )
+				}
 			} else if ( othersCount == 0 ) {
 				listNoAll.add( child )
 			} else {
 				listNo.add( child )
 			}
 		}
-
-		Integer totalUsers = usersAllocatedToParent.size()
 
 		if ( listYes.size() == 0 && listNo.size() == 0 ) {
 			String message = "It looks like you and all of the other participants all agreed that " +
@@ -179,17 +183,17 @@ class ElicitChildrenTagLib {
 				<script type='text/javascript'>
 					\$(document).ready( function() {
 						alert( '$message' );
-						document.location = '${createLink( action: 'completedVariable', params: [ variable : child.label ])}';
+						document.location = '${createLink( action: 'completedVariable', params: [ variable : parent.label ])}';
 					});
 				</script>
 			"""
 		} else {
 			def sortYes  = { low, high ->              allOthersCount.get( low ) <=>              allOthersCount.get( high ) }
-			def sortNo   = { low, high -> totalUsers - allOthersCount.get( low ) <=> totalUsers - allOthersCount.get( high ) }
+			def sortNo   = { low, high -> totalOtherUsers - allOthersCount.get( low ) <=> totalOtherUsers - allOthersCount.get( high ) }
 			def listItem = { child, count, alsoSaid ->
 
 				List<String> countClasses = [ "low", "medium", "high" ]
-				float countPercent        = count / totalUsers
+				float countPercent        = count / totalOtherUsers
 				int countClassIndex       = ( countClasses.size() - 1 ) - (int)( countPercent * countClasses.size() )
 				String reviewedClass      = reviewedVars.contains( child ) ? "doesnt-need-review" : "needs-review"
 
@@ -197,7 +201,7 @@ class ElicitChildrenTagLib {
 					<li id='${child.label}-variable-item' class='variable-item $reviewedClass'>
 						<span class='var-summary'>
 							<span class='count ${countClasses[ countClassIndex ]}'>
-								${message( code: 'elicit.children.agreement-count', args : [ count, totalUsers, (int)( countPercent * 100 ) ] )}
+								${message( code: 'elicit.children.agreement-count', args : [ count, totalOtherUsers, (int)( countPercent * 100 ) ] )}
 								<span class='also-said'>
 									also said $alsoSaid to
 								</span>
@@ -227,18 +231,38 @@ class ElicitChildrenTagLib {
 					<ul id='list-no' class='review-no potential-children-list variable-list'>
 					"""
 			listNo.sort( sortNo ).each { child ->
-				listItem( child, totalUsers - allOthersCount.get( child ), 'no' )
+				listItem( child, totalOtherUsers - allOthersCount.get( child ), 'no' )
 			}
 			out << """
 					</ul>
 				"""
 
-			if ( listNoAll.size() > 0 ) {
-				def s = listNoAll.size() == 1 ? "" : "s"
+			if ( listYesAll.size() > 0 || listNoAll.size() > 0 ) {
+				out << """
+					<h2 class='review-all-agree'>
+						Everybody agreed
+					</h2>
+					"""
+			}
+
+			if ( listYesAll.size() > 0 ) {
 				out << """
 					<div class='info' style='margin-top: 0.8em;'>
-						There was an additional ${listNoAll.size()} variable$s which you all agreed are not
-						influenced by $parent, and are therefore not shown here:<br /><br />${listNoAll*.readableLabel*.encodeAsHTML().join( ', ' )}.
+						These <strong>are</strong> influenced by $parent:
+						<ul class='hidden-variables'>
+							<li>${listYesAll*.readableLabel*.encodeAsHTML().join( '</li><li>' )}</li>
+						</ul>
+					</div>
+					"""
+			}
+
+			if ( listNoAll.size() > 0 ) {
+				out << """
+					<div class='info' style='margin-top: 0.8em;'>
+						These are <strong>not</strong> influenced by $parent:
+						<ul class='hidden-variables'>
+							<li>${listNoAll*.readableLabel*.encodeAsHTML().join( '</li><li>' )}</li>
+						</ul>
 					</div>
 					"""
 			}
