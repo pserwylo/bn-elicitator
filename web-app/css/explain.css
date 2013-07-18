@@ -10,6 +10,18 @@ em {
 	font-weight: bold;
 }
 
+.explain-content {
+	padding: 0.5em 3em;
+}
+
+.consent-checkbox {
+	padding-left: 3em;
+}
+
+h3 {
+	padding-bottom: 1em;
+}
+
 p {
 	margin: 0 0 0.6em 0 !important;
 }

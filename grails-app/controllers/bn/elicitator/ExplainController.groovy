@@ -31,10 +31,30 @@ class ExplainController {
 
 	def index() {
 
-		if ( userService.current.hasConsented ) {
+		route()
+
+	}
+
+	private void route() {
+		User user = userService.current
+		if ( user.knowIfCanWinPrize() && user.hasConsented ) {
 			redirect( controller: 'elicit' )
+		} else if ( user.hasConsented ) {
+			redirect( action: 'prize' )
 		} else {
 			redirect( action: 'statement' )
+		}
+	}
+
+	def prize() {
+
+		if ( delphiService.hasPreviousPhase ) {
+			forward( controller: 'contentView', params : [ page : ContentPage.CANT_REGISTER_THIS_ROUND ] )
+		} else {
+			[
+				adminEmail : AppProperties.properties.adminEmail,
+				user       : userService.current
+			]
 		}
 
 	}
@@ -68,7 +88,7 @@ class ExplainController {
 		{
 			User user = userService.current
 			if ( user.hasConsented ) {
-				redirect( controller: 'elicit' )
+				route()
 			} else {
 				user.hasConsented  = true
 				user.consentedDate = new Date()
@@ -89,7 +109,7 @@ class ExplainController {
 
 				springSecurityService.reauthenticate( user.username )
 
-				redirect( controller: "elicit" )
+				route()
 			}
 		}
 		else
@@ -98,6 +118,27 @@ class ExplainController {
 			redirect( controller: "explain" )
 		}
 
+	}
+
+	/**
+	 * Save the fact that the user has consented, but if for some reason they didn't (e.g. JavaScript was stuffed) then
+	 * we will redirect them back to the explanatory statement with an error in the flash scope
+	 * (flash.mustCheckRead = true).
+	 * @return
+	 */
+	def consentPrizes() {
+
+		if ( params && params.containsKey( "consent" ) ) {
+			User user = userService.current
+			if ( params["consent"] == "1" ) {
+				user.isEligibleForPrize()
+			} else {
+				user.isNotEligibleForPrize()
+			}
+			user.save( flush: true )
+		}
+
+		route()
 	}
 
 }

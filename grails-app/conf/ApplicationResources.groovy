@@ -60,7 +60,8 @@ modules = {
 	}
 
 	explain {
-		resource url: 'css/explanatoryStatement.css'
+		dependsOn( [ 'global' ] )
+		resource url: 'css/explain.css'
 	}
 
 	elicit {

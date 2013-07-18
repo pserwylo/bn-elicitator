@@ -7,6 +7,10 @@ class User {
 
 	transient springSecurityService
 
+	private static int PRIZE_UNKNOWN = 0;
+	private static int PRIZE_YES     = 1;
+	private static int PRIZE_NO      = 2;
+
 	static constraints = {
 		consentedDate nullable: true, blank: true
 
@@ -28,6 +32,7 @@ class User {
 	String email
 	String username
 	String password
+	Integer eligibleForPrize = PRIZE_UNKNOWN;
 	boolean accountLocked = false
 
 	private boolean enabled = true
@@ -44,6 +49,11 @@ class User {
 
 	boolean hasConsented = false
 	Date consentedDate = null
+
+	boolean knowIfCanWinPrize()  { eligibleForPrize != PRIZE_UNKNOWN }
+	boolean canWinPrize()        { eligibleForPrize == PRIZE_YES     }
+	void isEligibleForPrize()    { eligibleForPrize =  PRIZE_YES     }
+	void isNotEligibleForPrize() { eligibleForPrize =  PRIZE_NO      }
 
 
 	Set<Role> getRoles() {

@@ -149,7 +149,7 @@ fieldset.default legend {
     font-size: 1.3em;
 }
 
-fieldset.default legend .smaller {
+.smaller {
 	font-size: 0.8em;
 }
 
