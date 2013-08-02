@@ -195,4 +195,29 @@ class VariableTagLib {
 
 	}
 
+	/**
+	 * @attr childVariables REQUIRED
+	 * @attr orphanVariables REQUIRED
+	 */
+	def listSummaryProbabilities = { attrs ->
+
+		List<Variable> childVariables = attrs.childVariables
+		List<Variable> orphanVariables = attrs.orphanVariables
+
+		List<Variable> all = []
+		all.addAll( childVariables )
+		all.addAll( orphanVariables )
+
+		out << "<ul id='all-variables-list' class='variable-list'>\n"
+		for( Variable var in all ) {
+			out << """
+				<li class='variable-item'>
+					<a href='${createLink( controller: 'elicit', action: 'probabilities', params: [ for: var.id ] )}'>${bn.variable( [ var: var, includeDescription: false ] )}</a>
+				</li>
+				"""
+		}
+		out << "</ul>\n"
+
+	}
+
 }

@@ -370,6 +370,26 @@ class ElicitController {
 	}
 
 	def index = {
+		if ( AppProperties.properties.elicitationPhase == AppProperties.ELICIT_3_PROBABILITIES ) {
+			forward( action : 'indexProbabilities' )
+		} else {
+			forward( action : 'indexStructure' )
+		}
+	}
+
+	def indexProbabilities = {
+
+		List<Relationship> relationships = Relationship.findAllByExistsAndIsExistsInitializedAndDelphiPhase( true, true, delphiService.phase )
+		List<Variable> childVariables    = relationships*.child.unique()
+		List<Variable> orphanVariables   = Variable.list().findAll { !childVariables.contains( it ) }
+
+		return [
+				childVariables  : childVariables,
+				orphanVariables : orphanVariables,
+		]
+	}
+
+	def indexStructure = {
 
 		this.variableService.initRelationships()
 		List<Variable> variablesToElicit = this.variableService.getAllParentsVars()
@@ -431,10 +451,20 @@ class ElicitController {
 		redirect( action: parents, params: [ for: params['returnToVar'] ] )
 	}
 
+	def probabilities = {
+		Variable variable = Variable.get( params.for )
+		if ( variable == null ) {
+			throw new Exception( "Not found: $params.id" )
+		}
+
+		return [
+			variable : variable
+		]
+	}
+
 }
 
 class AddVariableCommand {
-
 	String label
 
 	String description

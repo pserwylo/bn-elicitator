@@ -74,6 +74,162 @@ class InsuranceDataLoader extends DataLoader {
 
 	}
 
+	protected void doUpgrade() {
+		if ( State.count() == 0 ) {
+			addVariableStates()
+		}
+	}
+
+	@Override
+	protected Map<String,List<State>> getVariableStates() {
+
+		[
+		    "GoodStudent" : [
+				new State( label : "True",  readableLabel : "Yes" ),
+				new State( label : "False", readableLabel : "No" ),
+		    ],
+		    "Age" : [
+				new State( label : "Adolescent" ),
+				new State( label : "Adult"      ),
+				new State( label : "Senior"     ),
+		    ],
+		    "SocioEcon" : [
+				new State( label : "Prole"       ),
+				new State( label : "Middle"      ),
+				new State( label : "UpperMiddle" ),
+				new State( label : "Wealthy"     ),
+		    ],
+		    "RiskAversion" : [
+				new State( label : "Psychopath"  ),
+				new State( label : "Adventurous" ),
+				new State( label : "Normal"      ),
+				new State( label : "Cautious"    ),
+		    ],
+		    "VehicleYear" : [
+				new State( label : "Current" ),
+				new State( label : "Older"   ),
+		    ],
+		    "ThisCarDam" : [
+				new State( label : "None"     ),
+				new State( label : "Mild"     ),
+				new State( label : "Moderate" ),
+				new State( label : "Severe"   ),
+		    ],
+		    "RuggedAuto" : [
+				new State( label : "EggShell" ),
+				new State( label : "Football" ),
+				new State( label : "Tank"     ),
+		    ],
+		    "Accident" : [
+				new State( label : "None"     ),
+				new State( label : "Mild"     ),
+				new State( label : "Moderate" ),
+				new State( label : "Severe"   ),
+		    ],
+		    "MakeModel" : [
+				new State( label : "SportsCar"   ),
+				new State( label : "Economy"     ),
+				new State( label : "FamilySedan" ),
+				new State( label : "Luxury"      ),
+				new State( label : "SuperLuxury" ),
+		    ],
+		    "DrivQuality" : [
+				new State( label : "Poor"      ),
+				new State( label : "Normal"    ),
+				new State( label : "Excellent" ),
+		    ],
+		    "Mileage" : [
+				new State( label : "FiveThou"   ),
+				new State( label : "TwentyThou" ),
+				new State( label : "FiftyThou"  ),
+				new State( label : "Domino"     ),
+		    ],
+		    "Antilock" : [
+				new State( label : "True"  ),
+				new State( label : "False" ),
+		    ],
+		    "DrivingSkill" : [
+				new State( label : "SubStandard"  ),
+				new State( label : "Normal"       ),
+				new State( label : "Expert"       ),
+		    ],
+		    "SeniorTrain" : [
+				new State( label : "True"  ),
+				new State( label : "False" ),
+		    ],
+		    "ThisCarCost" : [
+				new State( label : "Thousand"    ),
+				new State( label : "TenThou"     ),
+				new State( label : "HundredThou" ),
+				new State( label : "Million"     ),
+		    ],
+		    "Theft" : [
+				new State( label : "True"  ),
+				new State( label : "False" ),
+		    ],
+		    /*"CarValue" : [
+				new State( label : "Thousand"    ),
+				new State( label : "TenThou"     ),
+				new State( label : "HundredThou" ),
+				new State( label : "Million"     ),
+		    ],*/
+		    "HomeBase" : [
+				new State( label : "Secure" ),
+				new State( label : "City"   ),
+				new State( label : "Suburb" ),
+				new State( label : "Rural"  ),
+		    ],
+		    "AntiTheft" : [
+				new State( label : "True"  ),
+				new State( label : "False" ),
+		    ],
+		    "PropCost" : [
+				new State( label : "Thousand"    ),
+				new State( label : "TenThou"     ),
+				new State( label : "HundredThou" ),
+				new State( label : "Million"     ),
+		    ],
+		    "OtherCarCost" : [
+				new State( label : "Thousand"    ),
+				new State( label : "TenThou"     ),
+				new State( label : "HundredThou" ),
+				new State( label : "Million"     ),
+		    ],
+		    "OtherCar" : [
+				new State( label : "True"  ),
+				new State( label : "False" ),
+		    ],
+			/*"MedCost" : [
+				new State( label : "Thousand"    ),
+				new State( label : "TenThou"     ),
+				new State( label : "HundredThou" ),
+				new State( label : "Million"     ),
+			],
+			"Cushioning" : [
+				new State( label : "Poor"      ),
+				new State( label : "Fair"      ),
+				new State( label : "Good"      ),
+				new State( label : "Excellent" ),
+			],*/
+			"Airbag" : [
+				new State( label : "True"  ),
+				new State( label : "False" ),
+			],
+			"ILiCost" : [
+				new State( label : "Thousand"    ),
+				new State( label : "TenThou"     ),
+				new State( label : "HundredThou" ),
+				new State( label : "Million"     ),
+			],
+			"DrivHist" : [
+				new State( label : "Zero" ),
+				new State( label : "One"  ),
+				new State( label : "Many" ),
+			],
+		]
+
+	}
+
 	protected List<Variable> getBackgroundVariables() {
 
 		[

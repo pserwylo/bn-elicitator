@@ -39,6 +39,8 @@ abstract class DataLoader {
 	abstract protected List<Variable> getMediatingVariables()
 	abstract protected List<Variable> getSymptomVariables()
 
+	protected Map<String,List<State>> getVariableStates() {}
+
 	protected void initOther() {}
 
 	void init( ServletContext servletContext ) {
@@ -256,6 +258,7 @@ If this is a mistake, please contact <a href="mailto:peter.serwylo@monash.edu.au
 		saveVariables( problemVariables,    VariableClass.problem    );
 		saveVariables( mediatingVariables,  VariableClass.mediating  );
 		saveVariables( symptomVariables,    VariableClass.symptom    );
+		addVariableStates()
 	}
 
 	private void removeVariables() {
@@ -271,6 +274,25 @@ If this is a mistake, please contact <a href="mailto:peter.serwylo@monash.edu.au
 		vars*.lastModifiedDate = new Date()
 		vars*.save()
 
+	}
+
+	protected final addVariableStates() {
+		variableStates.each {
+			String variableLabel = it.key
+			List<State> states   = it.value
+
+			Variable variable = Variable.findByLabel( variableLabel )
+
+			if ( variable == null ) {
+				throw new Exception( "Could not find variable '$variableLabel' to attach states to. Is it a typo?" )
+			}
+
+			states*.variable = variable
+			states*.save( flush : true )
+
+			variable.states   = states
+			variable.save();
+		}
 	}
 
 	private Boolean isInitialized() {

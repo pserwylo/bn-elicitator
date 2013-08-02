@@ -27,7 +27,7 @@ class Variable implements Comparable<Variable> {
 	static constraints = {
 	}
 
-	static hasMany = [ synonyms: String ]
+	static hasMany = [ synonyms: String, states : State ]
 
 	static mapping = {
 		synonyms( lazy: false )
