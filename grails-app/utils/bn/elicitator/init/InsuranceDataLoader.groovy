@@ -26,6 +26,63 @@ class InsuranceDataLoader extends DataLoader {
 		updateHomePage();
 	}
 
+	protected List<List<String>> getBnArcs() {
+		[
+			[ "Age", "GoodStudent" ],
+			[ "Age", "SocioEcon" ],
+			[ "Age", "RiskAversion" ],
+			[ "Age", "SeniorTrain" ],
+			[ "Age", "DrivingSkill" ],
+			/*[ "Age", "MedCost" ],*/
+			[ "RiskAversion", "SeniorTrain" ],
+			[ "RiskAversion", "DrivHist" ],
+			[ "RiskAversion", "DrivQuality" ],
+			[ "RiskAversion", "MakeModel" ],
+			[ "RiskAversion", "VehicleYear" ],
+			[ "RiskAversion", "HomeBase" ],
+			[ "RiskAversion", "AntiTheft" ],
+			[ "SocioEcon", "GoodStudent" ],
+			[ "SocioEcon", "AntiTheft" ],
+			[ "SocioEcon", "HomeBase" ],
+			[ "SocioEcon", "VehicleYear" ],
+			[ "SocioEcon", "MakeModel" ],
+			[ "SocioEcon", "RiskAversion" ],
+			[ "SocioEcon", "OtherCar" ],
+			[ "AntiTheft", "Theft" ],
+			[ "HomeBase", "Theft" ],
+			[ "Mileage", "CarValue" ],
+			[ "Mileage", "Accident" ],
+			[ "CarValue", "Theft" ],
+			[ "CarValue", "ThisCarCost" ],
+			[ "VehicleYear", "CarValue" ],
+			[ "VehicleYear", "RuggedAuto" ],
+			[ "VehicleYear", "Antilock" ],
+			[ "VehicleYear", "Airbag" ],
+			[ "MakeModel", "CarValue" ],
+			[ "MakeModel", "RuggedAuto" ],
+			[ "MakeModel", "Antilock" ],
+			[ "MakeModel", "Airbag" ],
+			[ "SeniorTrain", "DrivingSkill" ],
+			[ "DrivingSkill", "DrivHist" ],
+			[ "DrivingSkill", "DrivQuality" ],
+			[ "DrivQuality", "Accident" ],
+			[ "Accident", "ThisCarDam" ],
+			[ "Accident", "OtherCarCost" ],
+			[ "Accident", "IliCost" ],
+			/*[ "Accident", "MedCost" ],*/
+			[ "OtherCarCost", "PropCost" ],
+			[ "ThisCarDam", "ThisCarCost" ],
+			[ "ThisCarCost", "PropCost" ],
+			[ "RuggedAuto", "ThisCarDam" ],
+			[ "RuggedAuto", "OtherCarCost" ],
+			/*[ "RuggedAuto", "Cushioning" ],*/
+			[ "Antilock", "Accident" ],
+			/*[ "Airbag", "Cushioning" ],
+			[ "Cushioning", "MedCost" ],*/
+			[ "Theft", "ThisCarCost" ],
+		]
+	}
+
 	protected void updateHomePage() {
 		String homeText = """
 			<h2>How long should this take?</h2>
@@ -317,8 +374,14 @@ class InsuranceDataLoader extends DataLoader {
 				description: "Whether the client has undergone additional training after obtaining their license. Some companies may refer to this as \"Skilled Driving\" or \"Defensive Driving\" courses." ),
 
 			new Variable(
+				label: "CarValue",
+				readableLabel: "(Monetary) value of client's car",
+				usageDescription: "Does the [This] <em>directly</em> influence any of these?",
+				description: "The amount of money that the client could sell their car for."),
+
+			new Variable(
 				label: "ThisCarCost",
-				readableLabel: "Cost to insurer for client's car",
+				readableLabel: "Cost to insurer to fix client's car",
 				usageDescription: "Does the [This] <em>directly</em> influence any of these?",
 				description: "The damage cost for the client's car, in the event of an accident."),
 
@@ -392,7 +455,7 @@ class InsuranceDataLoader extends DataLoader {
 			 */
 
 			new Variable(
-					label: "ILiCost",
+					label: "IliCost",
 					readableLabel: "Cost to insurer for liability/property",
 					usageDescription: "Does the [This] <em>directly</em> influence any of these?",
 					description: "The total cost to the insurer for 3rd party property damage, due to an accident caused by the client." ),
