@@ -20,7 +20,9 @@ package bn.elicitator.init
 import bn.elicitator.*
 import bn.elicitator.auth.Role
 import bn.elicitator.auth.User
+import bn.elicitator.network.Arc
 import grails.util.Holders
+import org.springframework.beans.factory.access.BootstrapException
 
 import javax.servlet.ServletContext;
 
@@ -48,6 +50,7 @@ abstract class DataLoader {
 			initRolesAndAdminUser()
 			initVariableClasses()
 			initVariables()
+			initBnStructure()
 			initContentPages( servletContext )
 			initOther()
 		}
@@ -61,6 +64,67 @@ abstract class DataLoader {
 		updateContentPages()
 		upgradeRoles()
 		doUpgrade()
+	}
+
+	/**
+	 * In some cases, we may already know the BN structure, in which case we will create a bunch of
+	 * {@link bn.elicitator.network.Node}'s and {@link Arc}'s. To do that, specify a list of
+	 * lists. The outer list represents arcs, whereby the inner list represents the parent and child variable labels
+	 * respectively.
+	 * @return If this doesn't return null (like the default implementation does), then we will initialize a bunch
+	 * of nodes and arcs, and then the {@link AppProperties#elicitationPhase} will be switched to "Probabilities",
+	 * because we already know the structure.
+	 */
+	protected List<List<String>> getBnArcs() { null }
+
+	private void initBnStructure() {
+
+		def arcs = bnArcs
+		if ( arcs != null ) {
+			Map<String, Variable> allVariables = Variable.list().collectEntries { Variable variable ->
+				new MapEntry( variable.label, variable )
+			}
+
+			def eachArc = { Closure closure ->
+				arcs.eachWithIndex { it, i ->
+					if ( it.size() != 2 ) {
+						throw new BootstrapException( "Arcs must be a list of items with two Strings, found ${it.size()} at position $i." )
+					}
+
+					String childLabel  = it[ 1 ]
+					if ( !allVariables.containsKey( childLabel ) ) {
+						throw new BootstrapException( "Could not find child node '$childLabel'." )
+					}
+
+					String parentLabel = it[ 0 ]
+					if ( !allVariables.containsKey( parentLabel ) ) {
+						throw new BootstrapException( "Could not find parent node '$parentLabel'." )
+					}
+
+					closure( parentLabel, childLabel )
+				}
+			}
+
+			Map<String, bn.elicitator.network.Node> allNodes = [:]
+			eachArc { String parentLabel, String childLabel ->
+				[ parentLabel, childLabel ].each { String label ->
+					if ( !allNodes.containsKey( label ) ) {
+						allNodes[ label ] = new bn.elicitator.network.Node( variable : allVariables[ label ] )
+					}
+				}
+			}
+
+			allNodes.values().each { node ->
+				node.save( flush : true, failOnError : true )
+			}
+
+			eachArc { String parentLabel, String childLabel ->
+				new Arc( parent : allNodes[ parentLabel ], child : allNodes[ childLabel ], strength : 1.0f ).save( failOnError : true )
+			}
+
+			AppProperties.properties.elicitationPhase = AppProperties.ELICIT_3_PROBABILITIES
+			AppProperties.properties.save( failOnError : true )
+		}
 	}
 
 	protected void updateContentPages() {
