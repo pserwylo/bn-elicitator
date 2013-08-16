@@ -25,34 +25,95 @@
 
 		<g:javascript>
 			$( document ).ready( function() {
-				var scenarios = $( '.scenario' );
-				$( '#total-scenarios' ).html( scenarios.length );
+				var configurations = $( '.compatible-configurations' );
+				$( '#total-scenarios' ).html( configurations.length );
 
 				var currentScenarioIndex = 0;
 
 				var currentScenario = function() {
-					return $( scenarios[ currentScenarioIndex ] );
+					return $( configurations[ currentScenarioIndex ] );
 				};
 
-				var showCurrentScenario = function() {
-					scenarios.hide();
-					currentScenario().show();
-					$( '#scenario-number' ).html( currentScenarioIndex + 1 );
+				configurations.hide();
+				currentScenario().show();
+
+				var nextScenario = function() {
+					currentScenario().hide( 'slide', { direction : 'right', duration : 200 }, function() {
+						currentScenarioIndex ++;
+						if ( currentScenarioIndex < configurations.length ) {
+							currentScenario().show( 'slide', { direction : 'left', duration : 200 } );
+							$( '#scenario-number' ).html( currentScenarioIndex + 1 );
+						}
+					});
 				};
 
-				showCurrentScenario();
+				/**
+				 * Goes through each radio button for the current scenario, and extracts the relevant info
+				 * from the "name" attribute (which really looks like: "parentId=8,parentStateId=23,otherParentId=7")
+				 * and the "value" attribute (which is the otherParentStateId).
+				 * The info is then posted with AJAX to the server for saving.
+				 */
+				var saveStates = function() {
 
-				$( '#btnNext' ).click( function() {
-					currentScenarioIndex ++;
-					if ( currentScenarioIndex < scenarios.length ) {
-						showCurrentScenario();
+					var scenario      = currentScenario();
+					var radios        = scenario.find( 'input[ type=radio ]:checked' );
+					var otherParents  = [];
+
+					// We'll figure these out the first time we crack the loop open below...
+					var parentId      = -1;
+					var parentStateId = -1;
+
+					for ( var i = 0; i < radios.length; i ++ ) {
+
+						var otherParentStateId = parseInt( radios[ i ].value );
+						var info = { otherParentStateId : otherParentStateId };
+
+						// Example name: "variable=8,sibling=7,state=23"
+						var nameParts          = radios[ i ].name.split( "," );
+						for ( var j = 0; j < nameParts.length; j ++ ) {
+							var keyValue = nameParts[ j ].split( "=" );
+							info[ keyValue[ 0 ] ] = parseInt( keyValue[ 1 ] );
+						}
+
+						if ( parentId < 0 ) {
+							console.log( info );
+							parentId      = info.parentId;
+							parentStateId = info.parentStateId;
+						}
+
+						otherParents.push({
+							id      : info.otherParentId,
+							stateId : info.otherParentStateId
+						});
+
+					}
+
+					var data = {
+						parentId     : parentId,
+						stateId      : parentStateId,
+						otherParents : otherParents
+					};
+
+					$.post( '${createLink( [ action : 'ajaxSaveCompatibleParentConfiguration' ] )}', data );
+				};
+
+				var siblingStates = $( '.sibling-states' );
+				siblingStates.buttonset();
+				siblingStates.find( 'input[type=radio]').change( function() {
+					var parent        = $( this ).closest( 'ul.siblings' );
+					var siblingCount  = parent.children().size();
+					var selectedCount = parent.find( 'input[ type=radio ]:checked' ).length;
+
+					if ( siblingCount == selectedCount ) {
+						saveStates( this );
+						nextScenario();
 					}
 				});
 
-			})
+			});
 		</g:javascript>
 
-		<r:require module="elicitChildrenFirst" />
+		<r:require module="elicitProbabilities" />
 
 	</head>
 	
@@ -71,19 +132,17 @@
 						</legend>
 
 						<div id="scenario-header">
-							Scenario <span id='scenario-number'></span> of <span id='total-scenarios'></span>:
+							<g:message code="elicit.probabilities.compatible-configurations.current-total" args="${[
+								"<span id='scenario-number'></span>",
+								"<span id='total-scenarios'></span>",
+							]}" />
 						</div>
 
-						<bnElicit:scenarios variable="${variable}" />
+						<bnElicit:elicitDas2004 variable="${variable}" />
 
 					</fieldset>
 
 					<div class="button-wrapper">
-
-						<button id="btnNext" type="button">
-							Next scenario
-						</button>
-
 						<button id="btnBack" type="button">
 							Back
 						</button>

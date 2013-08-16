@@ -22,22 +22,23 @@ class ElicitProbabilitiesTagLib {
 
 	static namespace = "bnElicit"
 
-	def delphiService
+	def bnService
 
 	/**
 	 * @attr variable REQUIRED
 	 */
 	def scenarios = { attrs ->
-		Variable variable      = attrs.variable
-		List<Variable> parents = Relationship.findAllByDelphiPhaseAndExistsAndIsExistsInitializedAndChild( delphiService.phase, true, true, variable )*.parent.unique()
+
+		Variable child = attrs.variable
+		List<Variable> parents = bnService.getArcsByChild( child )*.parent*.variable
 
 		if ( parents?.size() > 0 ) {
 			List<Set<State>> states = parents.collect { it.states }
 			states.combinations().each { stateCombinations ->
-				out << bnElicit.conditionalScenario( [ variable : variable, parentStates : stateCombinations ] )
+				out << bnElicit.conditionalScenario( [ variable : child, parentStates : stateCombinations ] )
 			}
 		} else {
-			out << bnElicit.marginalScenario( [ variable : variable ] )
+			out << bnElicit.marginalScenario( [ variable : child ] )
 		}
 	}
 
@@ -57,22 +58,118 @@ class ElicitProbabilitiesTagLib {
 							${parentStates.collect { "<li>$it.variable is $it.readableLabel</li>" }.join( "\n" )}
 						</ul>
 					</p>
-					<p class='question'>
-						How likely is it that $child is $childState.readableLabel?
-					</p>
+					${question( [ child : child, state : childState ] )}
 				</div>
 				"""
 		}
 	}
 
 	/**
+	 * @attr child REQUIRED
+	 * @attr state REQUIRED
+	 */
+	def question = { attrs ->
+		Variable child = attrs.child
+		State state    = attrs.state
+		out << """
+			<p class='question'>
+				How likely is it that $child is $state.readableLabel?
+			</p>
+		"""
+	}
+
+	/**
 	 * @attr variable REQUIRED
 	 */
 	def marginalScenario = { attrs ->
-		out << """
-			<div class='scenario'>
-				<span class='question'>How likely is it that $child is Y?</span>
-			</div>
-"""
+		Variable variable = attrs.variable
+		variable.states.each { state ->
+			out << """
+				<div class='scenario'>
+					${question( [ child : variable, state : state ] )}
+				</div>
+			"""
+		}
+
 	}
+
+
+	// =======================================================================================
+	//          Das 2004 - Compatible parent configurations + Importance weighting
+	// =======================================================================================
+
+	/**
+	 * @attr variable REQUIRED
+	 */
+	def elicitDas2004 = { attrs ->
+
+		Variable variable = attrs.variable
+		List<Variable> parents = bnService.getArcsByChild( variable )*.parent*.variable
+
+		if ( parents?.size() > 0 ) {
+			out << bnElicit.compatibleParentConfigurations( [ child : variable, parents : parents ] )
+		} else {
+			out << bnElicit.marginalScenario( [ variable : variable ] )
+		}
+	}
+
+	/**
+	 * @attr child REQUIRED
+	 * @attr parents REQUIRED
+	 */
+	def compatibleParentConfigurations = { attrs ->
+
+		Variable child         = attrs.child
+		List<Variable> parents = attrs.parents
+
+		parents.each { parent ->
+			List<Variable> otherParents = parents.findAll { it != parent }
+			parent.states.each { parentState ->
+				out << bnElicit.compatibleConfigurations( [ parentState : parentState, otherParents : otherParents ] )
+			}
+		}
+	}
+
+	/**
+	 * @attr parentState  REQUIRED
+	 * @attr otherParents REQUIRED
+	 */
+	def compatibleConfigurations = { attrs ->
+
+		State parentState           = attrs.parentState
+		Variable parent             = parentState.variable
+		List<Variable> otherParents = attrs.otherParents
+
+		String messageIfParentState = message( [ code : 'elicit.probabilities.compatible-configurations.if-state', args : [ parent, parentState ] ] )
+		out << """
+			<div class='question compatible-configurations'>
+				<span class='if-state'>$messageIfParentState</span>
+				<ul class='siblings'>
+				"""
+
+		// for ( Variable sibling in siblings ) {
+		otherParents.eachWithIndex{ Variable otherParent, int i ->
+			String messageThenOtherParentState = message( [ code : 'elicit.probabilities.compatible-configurations.then-state', args : [ otherParent ] ] )
+
+			if ( i > 0 ) {
+				messageThenOtherParentState = "and $messageThenOtherParentState"
+			}
+
+			out << """
+				<li>
+					<span class='then-state'>$messageThenOtherParentState</span>
+					<span class='sibling-states'>
+					"""
+
+			for ( State otherParentState in otherParent.states ) {
+				String name = "parentId=$parent.id,parentStateId=$parentState.id,otherParentId=$otherParent.id"
+				String id   = "$name,otherParentStateId=$otherParentState.id"
+				out << "<input type='radio' name='$name' id='$id' value='$otherParentState.id' /><label for='$id'>$otherParentState</label>"
+			}
+			out << "</span></li>"
+		}
+		out << "</ul></div>"
+
+	}
+
 }

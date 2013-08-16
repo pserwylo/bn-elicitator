@@ -20,7 +20,8 @@ package bn.elicitator.init
 import bn.elicitator.*
 import bn.elicitator.auth.Role
 import bn.elicitator.auth.User
-import bn.elicitator.network.Arc
+import bn.elicitator.network.BnArc
+import bn.elicitator.network.BnNode
 import grails.util.Holders
 import org.springframework.beans.factory.access.BootstrapException
 
@@ -41,7 +42,7 @@ abstract class DataLoader {
 	abstract protected List<Variable> getMediatingVariables()
 	abstract protected List<Variable> getSymptomVariables()
 
-	protected Map<String,List<State>> getVariableStates() {}
+	protected Map<String,List<State>> getVariableStates() { [:] }
 
 	protected void initOther() {}
 
@@ -70,7 +71,7 @@ abstract class DataLoader {
 
 	/**
 	 * In some cases, we may already know the BN structure, in which case we will create a bunch of
-	 * {@link bn.elicitator.network.Node}'s and {@link Arc}'s. To do that, specify a list of
+	 * {@link BnNode}'s and {@link BnArc}'s. To do that, specify a list of
 	 * lists. The outer list represents arcs, whereby the inner list represents the parent and child variable labels
 	 * respectively.
 	 * @return If this doesn't return null (like the default implementation does), then we will initialize a bunch
@@ -107,11 +108,11 @@ abstract class DataLoader {
 				}
 			}
 
-			Map<String, bn.elicitator.network.Node> allNodes = [:]
+			Map<String, BnNode> allNodes = [:]
 			eachArc { String parentLabel, String childLabel ->
 				[ parentLabel, childLabel ].each { String label ->
 					if ( !allNodes.containsKey( label ) ) {
-						allNodes[ label ] = new bn.elicitator.network.Node( variable : allVariables[ label ] )
+						allNodes[ label ] = new BnNode( variable : allVariables[ label ] )
 					}
 				}
 			}
@@ -121,7 +122,7 @@ abstract class DataLoader {
 			}
 
 			eachArc { String parentLabel, String childLabel ->
-				new Arc( parent : allNodes[ parentLabel ], child : allNodes[ childLabel ], strength : 1.0f ).save( failOnError : true )
+				new BnArc( parent : allNodes[ parentLabel ], child : allNodes[ childLabel ], strength : 1.0f ).save( failOnError : true )
 			}
 
 			AppProperties.properties.elicitationPhase = AppProperties.ELICIT_3_PROBABILITIES
@@ -343,7 +344,7 @@ If this is a mistake, please contact <a href="mailto:peter.serwylo@monash.edu.au
 	protected final addVariableStates() {
 		variableStates.each {
 			String variableLabel = it.key
-			List<State> states   = it.value
+			List<State> states = it.value
 
 			Variable variable = Variable.findByLabel( variableLabel )
 
@@ -351,10 +352,10 @@ If this is a mistake, please contact <a href="mailto:peter.serwylo@monash.edu.au
 				throw new Exception( "Could not find variable '$variableLabel' to attach states to. Is it a typo?" )
 			}
 
-			states*.variable = variable
-			states*.save( flush : true )
+			states.each { State state ->
+				variable.addToStates( state )
+			}
 
-			variable.states   = states
 			variable.save();
 		}
 	}

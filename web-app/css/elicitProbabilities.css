@@ -1,6 +1,6 @@
 /*
  * Bayesian Network (BN) Elicitator
- * Copyright (C) 2012 Peter Serwylo (peter.serwylo@monash.edu)
+ * Copyright (C) 2013 Peter Serwylo (peter.serwylo@monash.edu)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,31 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package bn.elicitator
+#scenario-header {
+	display: block;
+	margin: 0.5em 0;
+	font-size: 1.2em;
+	text-align: center;
+}
 
-class State {
+.compatible-configurations {
+	margin: 0 1em;
+	text-align: center;
+}
 
-	static belongsTo = [ variable : Variable ]
+.siblings li {
+	margin-top: 0.5em;
+	margin-bottom: 1.5em;
+}
 
-	String label         = ""
-	String readableLabel = ""
-	String description   = ""
-
-	public State( String label, String readableLabel = null, String description = "" ) {
-		this.label         = label
-		this.readableLabel = ( readableLabel?.trim()?.size() > 0 ) ? readableLabel : label
-		this.description   = description
-	}
-
-	void setLabel( String value ) {
-		if ( readableLabel == "" || readableLabel == null ) {
-			readableLabel = value
-		}
-		this.label = value
-	}
-
-	String toString() {
-		readableLabel
-	}
-
+.sibling-states {
+	display: block;
+	margin-top: 0.5em;
 }

@@ -69,7 +69,12 @@ modules = {
 
 	elicitChildrenFirst {
 		dependsOn( [ 'elicitChildren' ] )
-		resource url: 'css/elicitParentsFirst.css'
+		resource url: 'css/elicitChildrenFirst.css'
+	}
+
+	elicitProbabilities {
+		dependsOn( [ 'elicit' ] )
+		resource url: 'css/elicitProbabilities.css'
 	}
 
 	elicitList {

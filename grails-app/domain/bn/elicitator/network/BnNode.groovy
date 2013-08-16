@@ -2,7 +2,7 @@ package bn.elicitator.network
 
 import bn.elicitator.Variable
 
-class Node {
+class BnNode {
 
 	static constraints = {
 	}

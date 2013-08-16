@@ -1,13 +1,13 @@
 package bn.elicitator.network
 
-class Arc {
+class BnArc {
 
 	static constraints = {
 		strength nullable: true
 	}
 
-	Node parent
-	Node child
+	BnNode parent
+	BnNode child
 
 	float strength
 

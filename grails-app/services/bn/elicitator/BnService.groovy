@@ -18,7 +18,8 @@
 
 package bn.elicitator
 
-import bn.elicitator.init.DumbProfiler
+import bn.elicitator.network.BnArc
+import bn.elicitator.network.BnNode
 
 /**
  * All methods in this class presume that we are only operating on data for the current user, unless the method
@@ -229,6 +230,20 @@ class BnService {
 			}
 			child.parents.add( parentNode )
 		}
+	}
+
+	public List<BnArc> getArcsByChild( Variable childVariable) {
+		BnArc.withCriteria {
+			child {
+				variable {
+					eq( 'id', childVariable.id )
+				}
+			}
+		}
+	}
+
+	public List<BnArc> getArcsByChild( BnNode child) {
+		BnArc.findAllByChild( child )
 	}
 
 }

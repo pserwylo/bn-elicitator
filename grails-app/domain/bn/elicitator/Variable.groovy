@@ -27,7 +27,7 @@ class Variable implements Comparable<Variable> {
 	static constraints = {
 	}
 
-	static hasMany = [ synonyms: String, states : State ]
+	static hasMany = [ synonyms : String, states : State ]
 
 	static mapping = {
 		synonyms( lazy: false )
@@ -38,6 +38,8 @@ class Variable implements Comparable<Variable> {
 	Date createdDate
 	User lastModifiedBy
 	Date lastModifiedDate
+
+	List<State> states
 
 	/**
 	 * A human readable label for this variable.
