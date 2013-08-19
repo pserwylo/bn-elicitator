@@ -26,6 +26,6 @@
 	</head>
 	
 	<body>
-		<bn:listSummaryProbabilities childVariables="${childVariables}" orphanVariables="${orphanVariables}"/>
+		<bn:listSummaryProbabilities />
 	</body>
 </html>

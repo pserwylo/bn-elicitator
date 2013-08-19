@@ -2,7 +2,7 @@ package bn.elicitator
 
 import bn.elicitator.auth.User
 
-class Allocation {
+abstract class Allocation {
 
 	static hasMany = [ variables: Variable ]
 
@@ -10,12 +10,12 @@ class Allocation {
 
 	User user
 
-	void addVariable( Variable var, List<Variable> potentialParents ) {
+	void addVariable( Variable var, int numQuestions ) {
 		if ( !variables ) {
 			variables = []
 		}
 		variables.add( var )
-		totalQuestionCount += potentialParents.size()
+		totalQuestionCount += numQuestions
 	}
 
 	String toString() {

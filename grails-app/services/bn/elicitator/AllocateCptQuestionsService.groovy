@@ -1,0 +1,40 @@
+package bn.elicitator
+
+class AllocateCptQuestionsService extends AllocateQuestionsService {
+
+	BnService bnService
+
+	@Override
+	protected def createNew() {
+		new CptAllocation()
+	}
+
+	@Override
+	protected def getAllocationsByCriteria(Closure criteria) {
+		CptAllocation.withCriteria( criteria )
+	}
+
+	@Override
+	protected def list() {
+		CptAllocation.list()
+	}
+
+	@Override
+	protected int expectedSecondsPerQuestion() {
+		15
+	}
+
+	/**
+	 * For each state of each parent, we have one question: "What are the compatible parent configurations?"
+	 * For each compatible parent configuration, we have X questions: "For this configuration, what is the probability
+	 *   of this child state?", where X is the number of states of the child.
+	 * For each parent, we have one question: "How do you weigh this?"
+	 * @param variable
+	 * @return
+	 */
+	protected int questionsRequiredFor( Variable variable ) {
+		List<Variable> parents = bnService.getArcsByChild( variable )*.parent*.variable
+		int numParentStates = parents.size() == 0 ? 0 : parents.sum { it.states.size() }
+		return numParentStates + ( numParentStates * variable.states.size() ) + parents.size()
+	}
+}

@@ -2,19 +2,42 @@ package bn.elicitator
 
 import bn.elicitator.auth.User
 
-class AllocateQuestionsService {
+abstract class AllocateQuestionsService {
 
 	UserService     userService
 	VariableService variableService
 
 	List<User> getOthersAllocatedTo( Variable var ) {
-		List<Allocation> allocations = Allocation.withCriteria {
+		Closure criteria = {
 			variables {
 				eq ( 'id', var.id )
 			}
 		}
-		allocations*.user
+
+		getAllocationsByCriteria( criteria )*.user
 	}
+
+	protected abstract def createNew()
+	protected abstract def getAllocationsByCriteria( Closure criteria )
+	protected abstract def list()
+
+	/**
+	 * For "variable", how many questions will be asked of the participant?
+	 * We use this in conjunction with {@link AllocateQuestionsService#expectedSecondsPerQuestion()} to decide
+	 * how many variables to assign somebody.
+	 * @param variable
+	 * @return
+	 * @see AllocateQuestionsService#expectedSecondsPerQuestion()
+	 */
+	protected abstract int questionsRequiredFor( Variable variable )
+
+	/**
+	 * We use this to decide the maximum number of questions we are willing to assign to each user.
+	 * If the number is high (takes a long time to answer questions) then they will be allocated less.
+	 * @return
+	 * @see AllocateQuestionsService#questionsRequiredFor(Variable)
+	 */
+	protected abstract int expectedSecondsPerQuestion()
 
 	/**
 	 * For each variable class, figure out how many variables there are in it,
@@ -22,58 +45,17 @@ class AllocateQuestionsService {
 	 * tally is the total number of questions to be asked.
 	 * @return
 	 */
-	int countTotalQuestions() {
+	public int countTotalQuestions() {
 		int count = 0;
 		variableService.eachVariableClass { VariableClass varClass, List<Variable> varsInClass, List<Variable> potentialChildren ->
-			int countVarsInClass         = varsInClass.size()
+			int countVarsInClass           = varsInClass.size()
 			int countVarsInChildrenClasses = potentialChildren.size()
 			count += ( countVarsInClass * countVarsInChildrenClasses )
 		}
 		return count
 	}
 
-	List<Allocation> calcAllocationsForAllUsers( int participantsPerQuestion ) {
-
-		List<User> experts = userService.expertList
-		List<Allocation> allocations = experts.collect { new Allocation( user: it ) }
-
-		if ( experts.size() < participantsPerQuestion ) {
-			throw new IllegalArgumentException( "Not enough experts to allocate $participantsPerQuestion per question (only have ${experts.size()})." )
-		}
-
-		// Find the people with the least amount of variables allocated to
-		// them (at this point in time) and then pick one randomly...
-		Closure getSmallestAllocation = { List<User> excludingUsers ->
-			int min = Integer.MAX_VALUE
-
-			List<Allocation> validAllocations = allocations.findAll { !excludingUsers.contains( it.user ) }
-			validAllocations.each {
-				if ( it.totalQuestionCount < min ) {
-					min = it.totalQuestionCount;
-				}
-			}
-			List<Allocation> smallest = validAllocations.findAll { alloc -> alloc.totalQuestionCount == min }
-			int index = Math.random() * ( smallest.size() - 1 )
-			return smallest[ index ]
-		}
-
-		variableService.eachVariableClass { VariableClass varClass, List<Variable> varsInClass, List<Variable> potentialChildren ->
-			for ( Variable parent in varsInClass ) {
-				// Find a bunch of users (who are at the bottom of the
-				// pecking order so far) to assign this question to...
-				List<User> beenAllocated = []
-				while ( beenAllocated.size() < participantsPerQuestion && beenAllocated.size() <= experts.size() ) {
-					Allocation smallest = getSmallestAllocation( beenAllocated )
-					smallest.addVariable( parent, potentialChildren )
-					beenAllocated.add( smallest.user )
-				}
-			}
-		}
-
-		return allocations
-	}
-
-	public List<Variable> getVarsWithLowestAllocation( int numVars ) {
+	private List<Variable> getVarsWithLowestAllocation( int numVars ) {
 
 		List<Variable> allVars = Variable.list()
 		Collections.shuffle( allVars )
@@ -84,8 +66,8 @@ class AllocateQuestionsService {
 
 		Map<Variable, Integer> allocationCount = [:]
 		allVars.each { allocationCount[ it ] = 0 }
-		List<Allocation> currentAllocations = Allocation.list()
-		currentAllocations.each { allocation ->
+		def currentAllocations = list()
+		currentAllocations.each { Allocation allocation ->
 			allocation.variables.each { var ->
 				allocationCount[ var ] ++
 			}
@@ -109,15 +91,23 @@ class AllocateQuestionsService {
 	}
 
 	public void allocateToUser( User user ) {
+
+		int maxTime      = 15 * 60
+		int maxQuestions = maxTime / expectedSecondsPerQuestion()
+
 		List<Variable> varsToAllocate = getVarsWithLowestAllocation( AppProperties.properties.targetParticipantsPerQuestion )
-		Allocation allocation = new Allocation( user: user )
-		variableService.eachVariableClass { VariableClass varClass, List<Variable> varsInClass, List<Variable> potentialChildren ->
-			varsToAllocate.each { varToAllocate ->
-				if ( varsInClass.contains( varToAllocate ) ) {
-					allocation.addVariable( varToAllocate, potentialChildren )
+		def allocation = createNew()
+		allocation.user = user
+		for ( Variable varToAllocate in varsToAllocate ) {
+			int numQuestions = questionsRequiredFor( varToAllocate )
+			if ( numQuestions > 0 ) {
+				allocation.addVariable( varToAllocate, numQuestions )
+				if ( allocation.totalQuestionCount > maxQuestions ) {
+					break
 				}
 			}
 		}
+
 		allocation.save( flush: true, failOnError: true )
 	}
 }

@@ -45,6 +45,7 @@ import bn.elicitator.events.RemovedCycleEvent
 import bn.elicitator.events.SaveRelationshipEvent
 import bn.elicitator.events.SaveRelationshipLaterRoundEvent
 import bn.elicitator.events.ViewRelationshipsEvent
+import bn.elicitator.network.BnArc
 import grails.converters.JSON
 
 class ElicitController {
@@ -378,15 +379,7 @@ class ElicitController {
 	}
 
 	def indexProbabilities = {
-
-		List<Relationship> relationships = Relationship.findAllByExistsAndIsExistsInitializedAndDelphiPhase( true, true, delphiService.phase )
-		List<Variable> childVariables    = relationships*.child.unique()
-		List<Variable> orphanVariables   = Variable.list().findAll { !childVariables.contains( it ) }
-
-		return [
-				childVariables  : childVariables,
-				orphanVariables : orphanVariables,
-		]
+		return []
 	}
 
 	def indexStructure = {

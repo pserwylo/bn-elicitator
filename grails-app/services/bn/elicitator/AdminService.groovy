@@ -26,7 +26,6 @@ class AdminService {
 	 * Increments the delphiPhase and saves the properties.
 	 */
 	def advanceDelphiPhase() {
-
 		AppProperties.properties.delphiPhase ++
 		AppProperties.properties.save()
 	}

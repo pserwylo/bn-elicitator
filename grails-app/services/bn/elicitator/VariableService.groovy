@@ -129,7 +129,7 @@ class VariableService
 	 * @return
 	 */
 	public List<Variable> getAllParentsVars() {
-		Allocation allocation = Allocation.findByUser( userService.current )
+		StructureAllocation allocation = StructureAllocation.findByUser( userService.current )
 		List<Variable> vars;
 		if ( delphiService.hasPreviousPhase ) {
 			vars = allocation.variables.findAll { hasVisitedAtSomePoint( it ) }.toList()
@@ -183,6 +183,13 @@ class VariableService
 	}
 
 	/**
+	 * @see VariableService#getPotentialChildren(bn.elicitator.Variable)
+	 */
+	public int countPotentialChildren( Variable parent ) {
+		Variable.countByVariableClassInList( parent.variableClass.potentialChildren )
+	}
+
+	/**
 	 * If the variable has been visited by the current user, then the VisitedVariable corresponding to this visit will
 	 * be returned (for the current delphi phase and the current user). Otherwise it will return null.
 	 * @param variable
@@ -199,7 +206,7 @@ class VariableService
 		Integer count = Relationship.countByCreatedByAndDelphiPhase( user, this.delphiService.phase )
 		boolean updated = false;
 		if ( count == 0 ) {
-			Allocation allocation = Allocation.findByUser( user )
+			StructureAllocation allocation = StructureAllocation.findByUser( user )
 			if ( allocation?.variables?.size() > 0 ) {
 				updated = true;
 				eachVariableClass { VariableClass varClass, List<Variable> varsInClass, List<Variable> potentialChildren ->

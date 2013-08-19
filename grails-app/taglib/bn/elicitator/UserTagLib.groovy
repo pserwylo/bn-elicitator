@@ -55,7 +55,7 @@ class UserTagLib {
 	 */
 	def completedInfo = { attrs ->
 		User user             = attrs.user
-		Allocation allocation = Allocation.findByUser( user )
+		StructureAllocation allocation = StructureAllocation.findByUser( user )
 		if (!allocation) {
 			out << "None allocated"
 		} else {

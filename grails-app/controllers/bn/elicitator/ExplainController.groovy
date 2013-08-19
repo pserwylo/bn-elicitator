@@ -23,10 +23,11 @@ import grails.plugins.springsecurity.SpringSecurityService
 
 class ExplainController {
 
-	UserService              userService
-	DelphiService            delphiService
-	SpringSecurityService    springSecurityService
-	AllocateQuestionsService allocateQuestionsService
+	UserService                       userService
+	DelphiService                     delphiService
+	SpringSecurityService             springSecurityService
+	AllocateStructureQuestionsService allocateStructureQuestionsService
+	AllocateCptQuestionsService       allocateCptQuestionsService
 
 	def index() {
 
@@ -76,9 +77,14 @@ class ExplainController {
 				Role.consented.addUser( user, true )
 
 				if ( user.roles.contains( Role.expert ) ) {
-					allocateQuestionsService.allocateToUser( user )
+					if ( AppProperties.properties.elicitationPhase == AppProperties.ELICIT_2_RELATIONSHIPS ) {
+						allocateStructureQuestionsService.allocateToUser( user )
+					} else if ( AppProperties.properties.elicitationPhase == AppProperties.ELICIT_3_PROBABILITIES ) {
+						allocateCptQuestionsService.allocateToUser( user )
+					}
 				} else {
-					new Allocation( user: user, variables: [], totalQuestionCount: 0 ).save()
+					new StructureAllocation( user: user, variables: [], totalQuestionCount: 0 ).save()
+					new CptAllocation      ( user: user, variables: [], totalQuestionCount: 0 ).save()
 				}
 
 				springSecurityService.reauthenticate( user.username )

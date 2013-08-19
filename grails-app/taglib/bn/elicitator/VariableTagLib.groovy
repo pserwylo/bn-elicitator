@@ -18,6 +18,8 @@
 
 package bn.elicitator
 
+import bn.elicitator.network.BnArc
+
 class VariableTagLib {
 
 	static namespace = "bn"
@@ -195,21 +197,12 @@ class VariableTagLib {
 
 	}
 
-	/**
-	 * @attr childVariables REQUIRED
-	 * @attr orphanVariables REQUIRED
-	 */
 	def listSummaryProbabilities = { attrs ->
 
-		List<Variable> childVariables = attrs.childVariables
-		List<Variable> orphanVariables = attrs.orphanVariables
-
-		List<Variable> all = []
-		all.addAll( childVariables )
-		all.addAll( orphanVariables )
+		CptAllocation allocation = CptAllocation.findByUser( userService.current )
 
 		out << "<ul id='all-variables-list' class='variable-list'>\n"
-		for( Variable var in all ) {
+		for( Variable var in allocation.variables ) {
 			out << """
 				<li class='variable-item'>
 					<a href='${createLink( controller: 'elicit', action: 'probabilities', params: [ for: var.id ] )}'>${bn.variable( [ var: var, includeDescription: false ] )}</a>

@@ -114,7 +114,7 @@ class OutputController {
 
 		output.allVariables = variables
 
-		List<Allocation> allocations = Allocation.list()
+		List<StructureAllocation> allocations = StructureAllocation.list()
 
 		if ( cmd.phase > 0 && cmd.phase <= delphiService.phase ) {
 			variables.each { child ->

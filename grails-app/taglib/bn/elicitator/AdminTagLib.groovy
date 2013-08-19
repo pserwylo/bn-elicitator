@@ -19,7 +19,6 @@
 package bn.elicitator
 
 import bn.elicitator.auth.User
-import bn.elicitator.events.FinishedVariableEvent
 import bn.elicitator.events.LoggedEvent
 
 class AdminTagLib {
@@ -36,7 +35,7 @@ class AdminTagLib {
 	 */
 	def allocationList = {
 		List<Variable> allVars          = Variable.list()
-		List<Allocation> allAllocations = Allocation.list()
+		List<StructureAllocation> allAllocations = StructureAllocation.list()
 		Map<Variable, Integer> allocationCounts = [:]
 		int maxCount = Integer.MIN_VALUE
 		int minCount = Integer.MAX_VALUE
