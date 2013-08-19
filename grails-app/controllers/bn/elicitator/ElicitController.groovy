@@ -456,7 +456,7 @@ class ElicitController {
 	}
 
 	def ajaxSaveCompatibleParentConfiguration = {
-		$( )
+
 	}
 
 }
