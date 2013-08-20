@@ -1,6 +1,6 @@
 %{--
   - Bayesian Network (BN) Elicitator
-  - Copyright (C) 2012 Peter Serwylo (peter.serwylo@monash.edu)
+  - Copyright (C) 2013 Peter Serwylo (peter.serwylo@monash.edu)
   -
   - This program is free software: you can redistribute it and/or modify
   - it under the terms of the GNU General Public License as published by
@@ -19,11 +19,11 @@
 <!doctype html>
 <html>
 
-	<head>
-		<meta name="layout" content="main">
-		<title>Likelihood of scenarios involving  ${variable} influencle</title>
+<head>
+	<meta name="layout" content="main">
+	<title>Likelihood of scenarios involving  ${variable} influencle</title>
 
-		<g:javascript>
+	<g:javascript>
 			$( document ).ready( function() {
 				var configurations = $( '.compatible-configurations' );
 				$( '#total-scenarios' ).html( configurations.length );
@@ -34,7 +34,6 @@
 					return $( configurations[ currentScenarioIndex ] );
 				};
 
-				configurations.hide();
 				currentScenario().show();
 
 				var nextScenario = function() {
@@ -55,9 +54,9 @@
 				 */
 				var saveStates = function() {
 
-					var scenario      = currentScenario();
-					var radios        = scenario.find( 'input[ type=radio ]:checked' );
-					var otherParents  = [];
+					var scenario            = currentScenario();
+					var radios              = scenario.find( 'input[ type=radio ]:checked' );
+					var otherParentStateIds = [];
 
 					// We'll figure these out the first time we crack the loop open below...
 					var parentId      = -1;
@@ -76,25 +75,24 @@
 						}
 
 						if ( parentId < 0 ) {
-							console.log( info );
 							parentId      = info.parentId;
 							parentStateId = info.parentStateId;
 						}
 
-						otherParents.push({
-							id      : info.otherParentId,
-							stateId : info.otherParentStateId
-						});
-
+						otherParentStateIds.push( info.otherParentStateId );
 					}
 
 					var data = {
-						parentId     : parentId,
-						stateId      : parentStateId,
-						otherParents : otherParents
+						parentStateId       : parentStateId,
+						otherParentStateIds : otherParentStateIds
 					};
 
-					$.post( '${createLink( [ action : 'ajaxSaveCompatibleParentConfiguration' ] )}', data );
+					console.log( data );
+
+					$.post(
+						'${createLink( [ action : 'ajaxSaveCompatibleParentConfiguration' ] )}',
+						$.param( data )
+					);
 				};
 
 				var siblingStates = $( '.sibling-states' );
@@ -105,59 +103,59 @@
 					var selectedCount = parent.find( 'input[ type=radio ]:checked' ).length;
 
 					if ( siblingCount == selectedCount ) {
-						saveStates( this );
+						saveStates();
 						nextScenario();
 					}
 				});
 
 			});
-		</g:javascript>
+	</g:javascript>
 
-		<r:require module="elicitProbabilities" />
+	<r:require module="elicitProbabilities" />
 
-	</head>
-	
-	<body>
+</head>
 
-		<div class="elicit-probabilities">
+<body>
 
-			<div class="column-wrapper">
+<div class="elicit-probabilities">
 
-				<div class="column-left">
+	<div class="column-wrapper">
 
-					<fieldset class="default">
+		<div class="column-left">
 
-						<legend>
-							Scenarios involving ${variable.readableLabel} <bn:variableDescription var="${variable}" />
-						</legend>
+			<fieldset class="default">
 
-						<div id="scenario-header">
-							<g:message code="elicit.probabilities.compatible-configurations.current-total" args="${[
-								"<span id='scenario-number'></span>",
-								"<span id='total-scenarios'></span>",
-							]}" />
-						</div>
+				<legend>
+					Scenarios involving ${variable.readableLabel} <bn:variableDescription var="${variable}" />
+				</legend>
 
-						<bnElicit:elicitDas2004 variable="${variable}" />
-
-					</fieldset>
-
-					<div class="button-wrapper">
-						<button id="btnBack" type="button">
-							Back
-						</button>
-					</div>
-
+				<div id="scenario-header">
+					<g:message code="elicit.probabilities.compatible-configurations.current-total" args="${[
+							"<span id='scenario-number'>1</span>",
+							"<span id='total-scenarios'></span>",
+					]}" />
 				</div>
 
-				<div class="column-footer">
+				<bnElicit:elicitDas2004 variable="${variable}" />
 
-				</div>
+			</fieldset>
 
+		</div>
+
+		<div class="column-footer">
+
+			<div class="button-wrapper">
+				<button id="btnBack" type="button" onclick="document.location = '${createLink( action : 'index' )}'">
+					Back
+				</button>
 			</div>
 
 		</div>
 
-	</body>
-	
+	</div>
+
+</div>
+
+</body>
+
 </html>

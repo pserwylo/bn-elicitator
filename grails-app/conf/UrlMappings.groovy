@@ -3,7 +3,8 @@ class UrlMappings {
 	static mappings = {
 
 		"/content/admin/$action?/$id?" ( controller: "contentEdit" )
-		"/content/$page?"              ( controller: "contentView")
+		"/content/$page?"              ( controller: "contentView" )
+		"/probabilities/$action?/$id?" ( controller: "das2004" )
 
 		"500"                          ( controller:'error', exception: Exception )
 		"/admin/manage/$action?"       ( controller: "adminManage" )

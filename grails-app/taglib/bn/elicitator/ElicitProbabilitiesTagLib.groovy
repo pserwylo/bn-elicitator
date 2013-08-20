@@ -23,6 +23,7 @@ class ElicitProbabilitiesTagLib {
 	static namespace = "bnElicit"
 
 	def bnService
+	def das2004Service
 
 	/**
 	 * @attr variable REQUIRED
@@ -140,9 +141,15 @@ class ElicitProbabilitiesTagLib {
 		Variable parent             = parentState.variable
 		List<Variable> otherParents = attrs.otherParents
 
+		// TODO: In the future, may want to let people go back and edit responses, but for now - just ignore already answered questions...
+		def compatibleConfig        = das2004Service.getParentConfig( parentState )
+		if ( compatibleConfig ) {
+			return
+		}
+
 		String messageIfParentState = message( [ code : 'elicit.probabilities.compatible-configurations.if-state', args : [ parent, parentState ] ] )
 		out << """
-			<div class='question compatible-configurations'>
+			<div class='question compatible-configurations hidden'>
 				<span class='if-state'>$messageIfParentState</span>
 				<ul class='siblings'>
 				"""
@@ -164,6 +171,7 @@ class ElicitProbabilitiesTagLib {
 			for ( State otherParentState in otherParent.states ) {
 				String name = "parentId=$parent.id,parentStateId=$parentState.id,otherParentId=$otherParent.id"
 				String id   = "$name,otherParentStateId=$otherParentState.id"
+				String selected = ""
 				out << "<input type='radio' name='$name' id='$id' value='$otherParentState.id' /><label for='$id'>$otherParentState</label>"
 			}
 			out << "</span></li>"

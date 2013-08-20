@@ -36,6 +36,7 @@
 
 package bn.elicitator
 
+import bn.elicitator.algorithms.Das2004Service
 import bn.elicitator.auth.*
 import bn.elicitator.events.CreatedVariableEvent
 import bn.elicitator.events.FinishedRoundEvent
@@ -54,6 +55,7 @@ class ElicitController {
 	DelphiService       delphiService
 	BnService           bnService
 	UserService         userService
+	Das2004Service      das2004Service
 
 	def beforeInterceptor = {
 		if ( !delphiService.hasPreviousPhase && !userService.current.hasConsented ) {
@@ -372,14 +374,10 @@ class ElicitController {
 
 	def index = {
 		if ( AppProperties.properties.elicitationPhase == AppProperties.ELICIT_3_PROBABILITIES ) {
-			forward( action : 'indexProbabilities' )
+			forward( controller : 'das2004' )
 		} else {
 			forward( action : 'indexStructure' )
 		}
-	}
-
-	def indexProbabilities = {
-		return []
 	}
 
 	def indexStructure = {
@@ -442,21 +440,6 @@ class ElicitController {
 
 		CreatedVariableEvent.logEvent( var, returnTo )
 		redirect( action: parents, params: [ for: params['returnToVar'] ] )
-	}
-
-	def probabilities = {
-		Variable variable = Variable.get( params.for )
-		if ( variable == null ) {
-			throw new Exception( "Not found: $params.id" )
-		}
-
-		return [
-			variable : variable
-		]
-	}
-
-	def ajaxSaveCompatibleParentConfiguration = {
-
 	}
 
 }

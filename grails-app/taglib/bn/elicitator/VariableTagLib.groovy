@@ -205,7 +205,7 @@ class VariableTagLib {
 		for( Variable var in allocation.variables ) {
 			out << """
 				<li class='variable-item'>
-					<a href='${createLink( controller: 'elicit', action: 'probabilities', params: [ for: var.id ] )}'>${bn.variable( [ var: var, includeDescription: false ] )}</a>
+					<a href='${createLink( controller: 'das2004', action: 'expected', params: [ id : var.id ] )}'>${bn.variable( [ var: var, includeDescription: false ] )}</a>
 				</li>
 				"""
 		}
