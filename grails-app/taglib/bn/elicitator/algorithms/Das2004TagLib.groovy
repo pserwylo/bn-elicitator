@@ -100,6 +100,12 @@ class Das2004TagLib {
 		State childState                           = attrs.childState
 		CompatibleParentConfiguration parentConfig = attrs.parentConfiguration
 
+		// TODO: In the future, may want to let people go back and edit responses, but for now - just ignore already answered questions...
+		def existingEstimation = das2004Service.getProbabilityEstimation( childState, parentConfig )
+		if ( existingEstimation ) {
+			return
+		}
+
 		out << "<div class='question likelihood hidden'>"
 
 		parentConfig.allParentStates().eachWithIndex { State parentState, int i ->

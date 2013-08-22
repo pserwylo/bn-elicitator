@@ -55,7 +55,7 @@
 	margin: 1em 0;
 }
 
-.if-state {
+.if-state, .then-probability {
 	display: block;
 	margin: 0.3em 0;
 }
@@ -68,4 +68,34 @@
 
 .if-state .state, .then-state .state {
 	font-weight: bold;
+}
+
+@media screen and ( max-width: 800px ) {
+
+	.probabilities .ui-button {
+		display: block;
+		width: 100%;
+		margin: 0.3em auto;
+		border-radius: 0.3em;
+		font-size: 1em;
+	}
+
+	.probabilities .ui-button-text {
+		margin: 0.1em;
+		line-height: 1.1em;
+	}
+
+	.probabilities {
+		float: left;
+		width: 160px;
+		padding-right: 0.5em;
+		border-right: solid 1px #ccc;
+	}
+
+	.then-state {
+		padding-left: 0.5em;
+		margin-top: 6em;
+		display: block;
+	}
+
 }

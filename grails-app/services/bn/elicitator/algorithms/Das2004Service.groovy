@@ -75,10 +75,6 @@ class Das2004Service {
 
     }
 
-	public CompatibleParentConfiguration getParentConfig( State state ) {
-		CompatibleParentConfiguration.findByCreatedByAndParentState( userService.current, state )
-	}
-
 	public List<CompatibleParentConfiguration> getParentConfigurationsForChild( Variable variable, List<Variable> parents = null ) {
 		if ( parents == null ) {
 			parents = bnService.getArcsByChild( variable )*.parent*.variable
@@ -89,5 +85,13 @@ class Das2004Service {
 		configs.findAll {
 			CollectionUtils.isEqualCollection( it.allParentStates()*.variable, parents )
 		}
+	}
+
+	public CompatibleParentConfiguration getParentConfig( State state ) {
+		CompatibleParentConfiguration.findByCreatedByAndParentState( userService.current, state )
+	}
+
+	public ProbabilityEstimation getProbabilityEstimation( State childState, CompatibleParentConfiguration parentConfig ) {
+		ProbabilityEstimation.findByCreatedByAndChildStateAndParentConfiguration( userService.current, childState, parentConfig )
 	}
 }
