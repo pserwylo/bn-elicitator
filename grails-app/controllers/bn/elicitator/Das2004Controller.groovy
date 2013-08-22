@@ -1,15 +1,46 @@
 package bn.elicitator
 
+import bn.elicitator.algorithms.Das2004Service
 import grails.converters.JSON
 
 class Das2004Controller {
+
+	Das2004Service das2004Service
 
 	def index = {
 		return []
 	}
 
 	/**
-	 * Compatible parent configurations
+	 * Elicit probability distributions for each compatible parent configuration.
+	 */
+	def likelihood = {
+		Variable variable = Variable.get( params.getLong( 'id' ) ?: 0 )
+		if ( variable == null ) {
+			throw new Exception( "Not found: $params.id" )
+		}
+
+		return [ variable : variable ]
+	}
+
+	def ajaxSaveProbabilityEstimation = {
+
+		long childStateId            = params.getLong( 'childStateId' ) ?: 0
+		long parentConfigurationId   = params.getLong( 'parentConfigurationId' ) ?: 0
+		double probabilityPercentage = params.getDouble( 'probabilityPercentage' ) ?: 0
+
+		try {
+			das2004Service.saveProbabilityEstimation( childStateId, parentConfigurationId, probabilityPercentage / 100 )
+			render( [ status : "success" ] as JSON )
+		} catch ( IllegalArgumentException e ) {
+			response.sendError( 400, e.message )
+		} catch ( Exception e ) {
+			response.sendError( 500, e.message )
+		}
+	}
+
+	/**
+	 * Elicit compatible parent configurations
 	 */
 	def expected = {
 		Variable variable = Variable.get( params.getLong( 'id' ) ?: 0 )
@@ -17,9 +48,7 @@ class Das2004Controller {
 			throw new Exception( "Not found: $params.id" )
 		}
 
-		return [
-			variable : variable
-		]
+		return [ variable : variable ]
 	}
 
 	def ajaxSaveCompatibleParentConfiguration = {

@@ -1,24 +1,6 @@
 /*
  * Bayesian Network (BN) Elicitator
- * Copyright (C) 2012 Peter Serwylo (peter.serwylo@monash.edu)
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/*
- * Bayesian Network (BN) Elicitator
- * Copyright (C) 11/12/12 1:13 PM.$year Peter Serwylo (peter.serwylo@monash.edu)
+ * Copyright (C) 2013 Peter Serwylo (peter.serwylo@monash.edu)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +18,6 @@
 
 package bn.elicitator
 
-import bn.elicitator.algorithms.Das2004Service
 import bn.elicitator.auth.*
 import bn.elicitator.events.CreatedVariableEvent
 import bn.elicitator.events.FinishedRoundEvent
@@ -46,7 +27,6 @@ import bn.elicitator.events.RemovedCycleEvent
 import bn.elicitator.events.SaveRelationshipEvent
 import bn.elicitator.events.SaveRelationshipLaterRoundEvent
 import bn.elicitator.events.ViewRelationshipsEvent
-import bn.elicitator.network.BnArc
 import grails.converters.JSON
 
 class ElicitController {
@@ -55,7 +35,6 @@ class ElicitController {
 	DelphiService       delphiService
 	BnService           bnService
 	UserService         userService
-	Das2004Service      das2004Service
 
 	def beforeInterceptor = {
 		if ( !delphiService.hasPreviousPhase && !userService.current.hasConsented ) {

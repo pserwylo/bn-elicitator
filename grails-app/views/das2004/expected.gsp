@@ -21,7 +21,7 @@
 
 <head>
 	<meta name="layout" content="main">
-	<title>Likelihood of scenarios involving  ${variable} influencle</title>
+	<title>Likelihood of scenarios involving  ${variable}</title>
 
 	<g:javascript>
 			$( document ).ready( function() {
@@ -126,17 +126,17 @@
 			<fieldset class="default">
 
 				<legend>
-					Scenarios involving ${variable.readableLabel} <bn:variableDescription var="${variable}" />
+					<g:message code="elicit.probabilities.expected.header" args="${[ "$variable.readableLabel ${bn.variableDescription( [ var : variable ] )}" ]}" />
 				</legend>
 
 				<div id="scenario-header">
-					<g:message code="elicit.probabilities.compatible-configurations.current-total" args="${[
+					<g:message code="elicit.probabilities.expected.current-total" args="${[
 							"<span id='scenario-number'>1</span>",
 							"<span id='total-scenarios'></span>",
 					]}" />
 				</div>
 
-				<bnElicit:elicitDas2004 variable="${variable}" />
+				<das2004:expected variable="${variable}" />
 
 			</fieldset>
 

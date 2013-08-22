@@ -1,13 +1,47 @@
 package bn.elicitator.algorithms
 
+import bn.elicitator.BnService
 import bn.elicitator.State
 import bn.elicitator.UserService
+import bn.elicitator.Variable
 import bn.elicitator.das2004.CompatibleParentConfiguration
+import bn.elicitator.das2004.ProbabilityEstimation
 import org.apache.commons.collections.CollectionUtils
 
 class Das2004Service {
 
 	UserService userService
+	BnService   bnService
+
+	public void saveProbabilityEstimation( long childStateId, long parentConfigurationId, double probability )
+		throws IllegalArgumentException {
+
+		State childState = State.get( childStateId )
+		if ( childState == null ) {
+			throw new IllegalArgumentException( "Could not find state $childStateId" )
+		}
+
+		CompatibleParentConfiguration parentConfig = CompatibleParentConfiguration.get( parentConfigurationId )
+		if ( parentConfig == null ) {
+			throw new IllegalArgumentException( "Could not find parent configuration $parentConfigurationId" )
+		}
+
+		def estimation = ProbabilityEstimation.findByCreatedByAndChildStateAndParentConfiguration( userService.current, childState, parentConfig )
+
+		if ( estimation != null ) {
+			if ( estimation.probability != probability ) {
+				estimation.probability = probability
+				estimation.save()
+			}
+		} else {
+			new ProbabilityEstimation(
+				createdBy           : userService.current,
+				childState          : childState,
+				parentConfiguration : parentConfig,
+				probability         : probability,
+			).save()
+		}
+	}
 
     public void saveCompatibleParentConfiguration( long parentStateId, List<Long> otherParentStateIds )
 		throws IllegalArgumentException {
@@ -43,5 +77,17 @@ class Das2004Service {
 
 	public CompatibleParentConfiguration getParentConfig( State state ) {
 		CompatibleParentConfiguration.findByCreatedByAndParentState( userService.current, state )
+	}
+
+	public List<CompatibleParentConfiguration> getParentConfigurationsForChild( Variable variable, List<Variable> parents = null ) {
+		if ( parents == null ) {
+			parents = bnService.getArcsByChild( variable )*.parent*.variable
+		}
+
+		def configs = CompatibleParentConfiguration.findAllByCreatedBy( userService.current )
+
+		configs.findAll {
+			CollectionUtils.isEqualCollection( it.allParentStates()*.variable, parents )
+		}
 	}
 }

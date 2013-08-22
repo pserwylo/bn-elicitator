@@ -16,6 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* =======================================================
+              Compatible parent configurations
+   ======================================================= */
+
 #scenario-header {
 	display: block;
 	margin: 0.5em 0;
@@ -36,4 +40,32 @@
 .sibling-states {
 	display: block;
 	margin-top: 0.5em;
+}
+
+/* =======================================================
+        Probability distribution of child over parents
+   ======================================================= */
+
+.question.likelihood {
+	text-align: center;
+}
+
+.probabilities {
+	display: block;
+	margin: 1em 0;
+}
+
+.if-state {
+	display: block;
+	margin: 0.3em 0;
+}
+
+.probability-explaination {
+	display: block;
+	font-size: 0.75em;
+	font-weight: normal;
+}
+
+.if-state .state, .then-state .state {
+	font-weight: bold;
 }

@@ -29,6 +29,12 @@ class CompatibleParentConfiguration {
 		CollectionUtils.isEqualCollection( thisStates, thatStates )
 	}
 
+	Set<State> allParentStates() {
+		Set<State> set = [ parentState ]
+		set.addAll( otherParentStates )
+		return set
+	}
+
 	boolean hasState(State state) {
 		for ( State s in otherParentStates ) {
 			if ( s.id == state.id ) {
