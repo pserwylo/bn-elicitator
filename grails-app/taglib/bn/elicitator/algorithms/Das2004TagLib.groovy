@@ -39,6 +39,151 @@ class Das2004TagLib {
 		"Certain"     : 99,
 	]
 
+	final Map<Double, String> WEIGHTS = [
+		(2) : "",
+		(3) : "Only a little",
+		(4) : "",
+		(5) : "Strongly",
+		(6) : "",
+		(7) : "Demonstratably",
+		(8) : "",
+		(9) : "Absolutely",
+	]
+
+	// ===================================================================
+	//                           Parent Weights
+	// ===================================================================
+
+	/**
+	 * @attr variable REQUIRED
+	 */
+	def importance = { attrs ->
+
+		Variable variable = attrs.variable
+		List<Variable> parents = bnService.getArcsByChild( variable )*.parent*.variable
+
+		if ( parents?.size() > 0 ) {
+			out << das2004.weightElicitation( [ child : variable, parents : parents ] )
+		} else {
+			throw new Exception( "Marginal probability elicitation not supported yet." )
+		}
+	}
+
+	/**
+	 * @attr child REQUIRED
+	 * @attr parents REQUIRED
+	 */
+	def weightElicitation = { attrs ->
+
+		if ( !attrs.containsKey( 'child' ) ) {
+			throwTagError( "Tag [weightElicitation] missing required [child] attribute." )
+		}
+
+		if ( !attrs.containsKey( 'parents' ) ) {
+			throwTagError( "Tag [weightElicitation] missing required [parents] attribute." )
+		}
+
+		Variable child         = attrs.child
+		List<Variable> parents = attrs.parents
+
+		for ( int y = 0; y < parents.size() - 1; y ++ ) {
+			for ( int x = y + 1; x < parents.size(); x ++ ) {
+
+				Variable parentOne = parents.get( x )
+				Variable parentTwo = parents.get( y )
+
+				out << das2004.pairwiseComparison( [ child : child, parentOne : parentOne, parentTwo : parentTwo ])
+			}
+		}
+	}
+
+	/**
+	 * @attr child     REQUIRED
+	 * @attr parentOne REQUIRED
+	 * @attr parentTwo REQUIRED
+	 */
+	def pairwiseComparison = { attrs ->
+
+		if ( !attrs.containsKey( 'child' ) ) {
+			throwTagError( "Tag [pairwiseComparison] missing required [child] attribute." )
+		}
+
+		if ( !attrs.containsKey( 'parentOne' ) ) {
+			throwTagError( "Tag [pairwiseComparison] missing required [parentOne] attribute." )
+		}
+
+		if ( !attrs.containsKey( 'parentTwo' ) ) {
+			throwTagError( "Tag [pairwiseComparison] missing required [parentTwo] attribute." )
+		}
+
+		Variable child     = attrs.child
+		Variable parentOne = attrs.parentOne
+		Variable parentTwo = attrs.parentTwo
+
+		// TODO: In the future, may want to let people go back and edit responses, but for now - just ignore already answered questions...
+		def existingComparison = das2004Service.getPairwiseComparison( child, parentOne, parentTwo )
+		if ( existingComparison ) {
+			return
+		}
+
+		String name   = "childId=$child.id,parentOneId=$parentOne.id,parentTwoId=$parentTwo.id"
+		String idOne  = "$name,this=one"
+		String idSame = "$name,this=same"
+		String idTwo  = "$name,this=two"
+
+		out << """
+			<div class='question comparison hidden'>
+				<div class='which'>
+					<div class='more-impotant'>
+						${message( [ code : 'elicit.probabilities.importance.which', args : [ child.readableLabel ] ])}
+					</div>
+					<div class='most-important'>
+						<div class='large'>
+							<input type='radio' name='$name' id='$idOne' value='$parentOne.id' />
+							<label for='$idOne'>$parentOne</label>
+						</div>
+						<div class='small'>
+							<input type='radio' name='$name' id='$idSame' value='0' />
+							<label for='$idSame'>About the same</label>
+						</div>
+						<div class='large'>
+							<input type='radio' name='$name' id='$idTwo' value='$parentTwo.id' />
+							<label for='$idTwo'>$parentTwo</label>
+						</div>
+					</div>
+				</div>
+				<div class='how-much hidden'>
+					${message( [ code : 'elicit.probabilities.importance.how-much' ] )}
+					<div class='weights'>
+					"""
+
+		WEIGHTS.each {
+			int weight   = it.key
+
+			String label = "$weight times"
+			if ( it.value ) {
+				label += " <span class='label'>($it.value)</span>"
+			}
+
+
+			String weightName = "$name,weight"
+			String weightId   = "$weightName,weight=$weight"
+
+			out << """
+				<input type='radio' name='$weightName' value='$weight' id='$weightId' />
+				<label for='$weightId'>$label</label>
+			"""
+
+		}
+
+		out << """
+					</div>
+				</div>
+			</div>
+			"""
+
+	}
+
 	// ===================================================================
 	//               Probability distribution elicitation
 	// ===================================================================

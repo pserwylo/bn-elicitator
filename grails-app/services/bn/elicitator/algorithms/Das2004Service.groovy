@@ -5,6 +5,7 @@ import bn.elicitator.State
 import bn.elicitator.UserService
 import bn.elicitator.Variable
 import bn.elicitator.das2004.CompatibleParentConfiguration
+import bn.elicitator.das2004.PairwiseComparison
 import bn.elicitator.das2004.ProbabilityEstimation
 import org.apache.commons.collections.CollectionUtils
 
@@ -12,6 +13,54 @@ class Das2004Service {
 
 	UserService userService
 	BnService   bnService
+
+	public void saveComparison( long childId, long parentOneId, long parentTwoId, long mostImportantParentId, int weight )
+		throws IllegalArgumentException {
+
+		Variable child = Variable.get( childId )
+		if ( child == null ) {
+			throw new IllegalArgumentException( "Could not find child variable $childId" )
+		}
+
+		Variable parentOne = Variable.get( parentOneId )
+		if ( parentOne == null ) {
+			throw new IllegalArgumentException( "Could not find parent variable $parentOneId" )
+		}
+
+		Variable parentTwo = Variable.get( parentTwoId )
+		if ( parentTwo == null ) {
+			throw new IllegalArgumentException( "Could not find parent variable $parentTwoId" )
+		}
+
+		Variable mostImportantParent = null
+		def valid = [ 0, parentOne.id, parentTwo.id ]
+		if ( mostImportantParentId == 0 || mostImportantParentId == parentOne.id || mostImportantParentId == parentTwo.id ) {
+			if ( mostImportantParentId != 0 ) {
+				mostImportantParent = mostImportantParentId == parentOne.id ? parentOne : parentTwo
+			}
+		} else {
+			throw new IllegalArgumentException( "Most important variable '$mostImportantParentId' must be one of 0, $parentOne.id or $parentTwo.id")
+		}
+
+		def comparison = PairwiseComparison.findByCreatedByAndChildAndParentOneAndParentTwo( userService.current, child, parentOne, parentTwo )
+
+		if ( comparison != null ) {
+			if ( comparison.weight != weight || comparison.mostImportantParent != mostImportantParent ) {
+				comparison.mostImportantParent = mostImportantParent
+				comparison.weight = weight
+				comparison.save()
+			}
+		} else {
+			new PairwiseComparison(
+				createdBy           : userService.current,
+				child               : child,
+				parentOne           : parentOne,
+				parentTwo           : parentTwo,
+				mostImportantParent : mostImportantParent,
+				weight              : weight,
+			).save()
+		}
+	}
 
 	public void saveProbabilityEstimation( long childStateId, long parentConfigurationId, double probability )
 		throws IllegalArgumentException {
@@ -93,5 +142,9 @@ class Das2004Service {
 
 	public ProbabilityEstimation getProbabilityEstimation( State childState, CompatibleParentConfiguration parentConfig ) {
 		ProbabilityEstimation.findByCreatedByAndChildStateAndParentConfiguration( userService.current, childState, parentConfig )
+	}
+
+	public PairwiseComparison getPairwiseComparison( Variable child, Variable parentOne, Variable parentTwo ) {
+		PairwiseComparison.findByCreatedByAndChildAndParentOneAndParentTwo( userService.current, child, parentOne, parentTwo )
 	}
 }

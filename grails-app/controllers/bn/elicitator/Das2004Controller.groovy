@@ -12,6 +12,33 @@ class Das2004Controller {
 	}
 
 	/**
+	 * Calculate parent weights.
+	 */
+	def importance = {
+		Variable variable = Variable.get( params.getLong( 'id' ) ?: 0 )
+		if ( variable == null ) {
+			throw new Exception( "Not found: $params.id" )
+		}
+
+		return [ variable : variable ]
+	}
+
+	def ajaxSaveComparison = {
+		long childId         = params.getLong( 'childId' )               ?: 0
+		long parentOneId     = params.getLong( 'parentOneId' )           ?: 0
+		long parentTwoId     = params.getLong( 'parentTwoId' )           ?: 0
+		long mostImportantId = params.getLong( 'mostImportantParentId' ) ?: 0
+		int weight           = params.getInt( 'weight' )                 ?: 0
+
+		try {
+			das2004Service.saveComparison( childId, parentOneId, parentTwoId, mostImportantId, weight )
+			render( [ status : "success" ] as JSON )
+		} catch ( IllegalArgumentException e ) {
+			response.sendError( 400, e.message )
+		}
+	}
+
+	/**
 	 * Elicit probability distributions for each compatible parent configuration.
 	 */
 	def likelihood = {
@@ -34,8 +61,6 @@ class Das2004Controller {
 			render( [ status : "success" ] as JSON )
 		} catch ( IllegalArgumentException e ) {
 			response.sendError( 400, e.message )
-		} catch ( Exception e ) {
-			response.sendError( 500, e.message )
 		}
 	}
 
@@ -69,8 +94,6 @@ class Das2004Controller {
 			render( [ status : "success" ] as JSON )
 		} catch ( IllegalArgumentException e ) {
 			response.sendError( 400, e.message )
-		} catch ( Exception e ) {
-			response.sendError( 500, e.message )
 		}
 	}
 
