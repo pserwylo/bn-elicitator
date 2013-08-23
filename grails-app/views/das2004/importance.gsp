@@ -24,7 +24,18 @@
 
 	<g:javascript>
 			$( document ).ready( function() {
+
+				var nextScreen = function() {
+					document.location = '${createLink( [ action : 'index', params : [ completedId : variable.id ] ] )}';
+				};
+
 				var comparisons = $( '.comparison' );
+
+				if ( comparisons.length == 0 ) {
+					nextScreen();
+					return;
+				}
+
 				$( '#total-scenarios' ).html( comparisons.length );
 
 				var currentComparisonIndex = 0;
@@ -41,6 +52,8 @@
 						if ( currentComparisonIndex < comparisons.length ) {
 							currentComparison().show( 'slide', { direction : 'left', duration : 200 } );
 							$( '#scenario-number' ).html( currentComparisonIndex + 1 );
+						} else {
+							nextScreen();
 						}
 					});
 				};

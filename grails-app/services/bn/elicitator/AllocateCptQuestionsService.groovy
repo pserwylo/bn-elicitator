@@ -35,6 +35,6 @@ class AllocateCptQuestionsService extends AllocateQuestionsService {
 	protected int questionsRequiredFor( Variable variable ) {
 		List<Variable> parents = bnService.getArcsByChild( variable )*.parent*.variable
 		int numParentStates = parents.size() == 0 ? 0 : parents.sum { it.states.size() }
-		return numParentStates + ( numParentStates * variable.states.size() ) + parents.size()
+		return numParentStates + ( numParentStates * variable.states.size() ) + ( ( parents.size() * parents.size() - parents.size() ) / 2 )
 	}
 }

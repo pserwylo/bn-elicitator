@@ -25,6 +25,13 @@
 	</head>
 	
 	<body>
+
+		<g:if test="${completedVariable}">
+			<div class="message">
+				Completed variable ${completedVariable}!
+			</div>
+		</g:if>
+
 		<bn:listSummaryProbabilities />
 	</body>
 </html>

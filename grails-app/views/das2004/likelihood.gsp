@@ -24,7 +24,18 @@
 
 	<g:javascript>
 		$( document ).ready( function() {
+
+			var nextScreen = function() {
+				document.location = '${createLink( [ action : 'importance', params : [ id : variable.id ] ] )}';
+			};
+
 			var questions = $( '.question.likelihood' );
+
+			if ( questions.length == 0 ) {
+				nextScreen();
+				return;
+			}
+
 			$( '#total-scenarios' ).html( questions.length );
 
 			var currentQuestionIndex = 0;
@@ -41,6 +52,8 @@
 					if ( currentQuestionIndex < questions.length ) {
 						currentQuestion().show( 'slide', { direction : 'left', duration : 200 } );
 						$( '#scenario-number' ).html( currentQuestionIndex + 1 );
+					} else {
+						nextScreen();
 					}
 				});
 			};

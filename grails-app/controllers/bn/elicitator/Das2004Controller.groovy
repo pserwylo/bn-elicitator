@@ -8,7 +8,17 @@ class Das2004Controller {
 	Das2004Service das2004Service
 
 	def index = {
-		return []
+
+		long completedId = params.getLong( 'completedId' ) ?: 0
+
+		Variable completed = null
+		if ( completedId > 0 ) {
+			// TODO: Save a 'completed' flag against the allocation so that we can remove it from the list of
+			// questions to answer
+			completed = Variable.get( completedId )
+		}
+
+		return [ completedVariable : completed ]
 	}
 
 	/**
