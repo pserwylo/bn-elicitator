@@ -222,8 +222,22 @@ class Das2004TagLib {
 
 		def parentConfigurations = das2004Service.getParentConfigurationsForChild( child, parents )
 		child.states.each { State childState ->
-			parentConfigurations.each { CompatibleParentConfiguration parentConfiguration ->
-				out <<  das2004.distributionOverParents( [ childState : childState, parentConfiguration : parentConfiguration ] )
+			parentConfigurations.eachWithIndex { CompatibleParentConfiguration parentConfiguration, int i ->
+
+				// Compare to all previous items and decide if we really need to ask this question...
+				boolean ignore = false
+				for ( int j = 0; j < i; j ++ ) {
+					CompatibleParentConfiguration one = parentConfigurations[ j ]
+					CompatibleParentConfiguration two = parentConfiguration
+					if ( parentConfigurations[ j ].equivalentTo( parentConfiguration ) ) {
+						ignore = true
+						break
+					}
+				}
+
+				if ( !ignore ) {
+					out <<  das2004.distributionOverParents( [ childState : childState, parentConfiguration : parentConfiguration ] )
+				}
 			}
 		}
 	}

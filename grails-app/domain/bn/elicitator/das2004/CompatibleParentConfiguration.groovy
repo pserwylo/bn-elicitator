@@ -15,7 +15,13 @@ class CompatibleParentConfiguration {
 	State parentState
 	User  createdBy
 
-	boolean equals( CompatibleParentConfiguration that ) {
+	/**
+	 * Didn't want to use the "equals" method, because two configurations which are equivalent feels slightly different
+	 * than in the coding sense, where we consider two objects "equal".
+	 * @param that
+	 * @return
+	 */
+	boolean equivalentTo( CompatibleParentConfiguration that ) {
 		if ( that == null || this.createdBy != that.createdBy ) {
 			return false
 		}
@@ -26,7 +32,7 @@ class CompatibleParentConfiguration {
 		def thatStates = [ that.parentState ]
 		thatStates.addAll( that.otherParentStates )
 
-		CollectionUtils.isEqualCollection( thisStates, thatStates )
+		CollectionUtils.isEqualCollection( thisStates*.id, thatStates*.id )
 	}
 
 	Set<State> allParentStates() {
@@ -42,5 +48,10 @@ class CompatibleParentConfiguration {
 			}
 		}
 		return false
+	}
+
+	@Override
+	String toString() {
+		"$parentState.readableLabel, ${otherParentStates.join( ", ")}"
 	}
 }
