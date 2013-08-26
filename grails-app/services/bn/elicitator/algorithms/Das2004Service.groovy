@@ -70,12 +70,15 @@ class Das2004Service {
 			throw new IllegalArgumentException( "Could not find state $childStateId" )
 		}
 
-		CompatibleParentConfiguration parentConfig = CompatibleParentConfiguration.get( parentConfigurationId )
-		if ( parentConfig == null ) {
-			throw new IllegalArgumentException( "Could not find parent configuration $parentConfigurationId" )
+		CompatibleParentConfiguration parentConfig = null
+		if ( parentConfigurationId > 0 ) {
+			parentConfig = CompatibleParentConfiguration.get( parentConfigurationId )
+			if ( parentConfig == null ) {
+				throw new IllegalArgumentException( "Could not find parent configuration $parentConfigurationId" )
+			}
 		}
 
-		def estimation = ProbabilityEstimation.findByCreatedByAndChildStateAndParentConfiguration( userService.current, childState, parentConfig )
+		def estimation = getProbabilityEstimation( childState, parentConfig )
 
 		if ( estimation != null ) {
 			if ( estimation.probability != probability ) {
@@ -92,6 +95,12 @@ class Das2004Service {
 		}
 	}
 
+	public void populateSingleParentConfigurations( Variable parent ) {
+		parent.states.each { State parentState ->
+			saveCompatibleParentConfiguration( parentState, [] )
+		}
+	}
+
     public void saveCompatibleParentConfiguration( long parentStateId, List<Long> otherParentStateIds )
 		throws IllegalArgumentException {
 
@@ -104,6 +113,11 @@ class Das2004Service {
 		if ( !CollectionUtils.isEqualCollection( otherParentStates*.id, otherParentStateIds ) ) {
 			throw new IllegalArgumentException( "Tried to find states $otherParentStateIds but found ${otherParentStates*.id}" )
 		}
+
+		saveCompatibleParentConfiguration( parentState, otherParentStates )
+	}
+
+	public void saveCompatibleParentConfiguration( State parentState, List<State> otherParentStates ) {
 
 		def existing = CompatibleParentConfiguration.findByCreatedByAndParentState( userService.current, parentState )
 
@@ -132,7 +146,7 @@ class Das2004Service {
 		def configs = CompatibleParentConfiguration.findAllByCreatedBy( userService.current )
 
 		configs.findAll {
-			CollectionUtils.isEqualCollection( it.allParentStates()*.variable, parents )
+			CollectionUtils.isEqualCollection( it.allParentStates()*.variable*.id, parents*.id )
 		}
 	}
 
@@ -141,7 +155,11 @@ class Das2004Service {
 	}
 
 	public ProbabilityEstimation getProbabilityEstimation( State childState, CompatibleParentConfiguration parentConfig ) {
-		ProbabilityEstimation.findByCreatedByAndChildStateAndParentConfiguration( userService.current, childState, parentConfig )
+		if ( parentConfig != null ) {
+			ProbabilityEstimation.findByCreatedByAndChildStateAndParentConfiguration( userService.current, childState, parentConfig )
+		} else {
+			ProbabilityEstimation.findByCreatedByAndChildState( userService.current, childState )
+		}
 	}
 
 	public PairwiseComparison getPairwiseComparison( Variable child, Variable parentOne, Variable parentTwo ) {

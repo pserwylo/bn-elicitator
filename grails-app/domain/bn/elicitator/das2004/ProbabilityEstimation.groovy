@@ -6,6 +6,7 @@ import bn.elicitator.auth.User
 class ProbabilityEstimation {
 
 	static constraints = {
+		parentConfiguration( nullable : true )
 	}
 
 	State childState

@@ -35,6 +35,20 @@ class AllocateCptQuestionsService extends AllocateQuestionsService {
 	protected int questionsRequiredFor( Variable variable ) {
 		List<Variable> parents = bnService.getArcsByChild( variable )*.parent*.variable
 		int numParentStates = parents.size() == 0 ? 0 : parents.sum { it.states.size() }
-		return numParentStates + ( numParentStates * variable.states.size() ) + ( ( parents.size() * parents.size() - parents.size() ) / 2 )
+
+		int countCompatibleParentConfigurations      = 0
+		int countConditionalProbabilityDistributions = 0
+		int countAHP                                 = 0
+
+		if ( parents.size() > 1 ) {
+			countCompatibleParentConfigurations      = numParentStates
+			countConditionalProbabilityDistributions = numParentStates * variable.states.size()
+			countAHP                                 = ( ( parents.size() * parents.size() - parents.size() ) / 2 )
+		} else if ( parents.size() == 1 ) {
+			countConditionalProbabilityDistributions = variable.states.size() * numParentStates
+		} else {
+			countConditionalProbabilityDistributions = variable.states.size()
+		}
+		return countCompatibleParentConfigurations + countConditionalProbabilityDistributions + countAHP
 	}
 }

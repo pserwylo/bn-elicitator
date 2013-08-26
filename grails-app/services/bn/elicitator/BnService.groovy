@@ -232,7 +232,7 @@ class BnService {
 		}
 	}
 
-	public List<BnArc> getArcsByChild( Variable childVariable) {
+	public List<BnArc> getArcsByChild( Variable childVariable ) {
 		BnArc.withCriteria {
 			child {
 				variable {
@@ -242,8 +242,18 @@ class BnService {
 		}
 	}
 
+	public List<BnArc> getArcsByChildren( List<Variable> children ) {
+		BnArc.withCriteria {
+			child {
+				variable {
+					inList( 'id', children*.id )
+				}
+			}
+		}
+	}
+
 	public List<BnArc> getArcsByChild( BnNode child) {
-		BnArc.findAllByChild( child )
+		getArcsByChild( child.variable )
 	}
 
 }

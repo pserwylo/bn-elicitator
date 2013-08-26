@@ -26,7 +26,7 @@
 		$( document ).ready( function() {
 
 			var nextScreen = function() {
-				document.location = '${createLink( [ action : 'importance', params : [ id : variable.id ] ] )}';
+				document.location = '<das2004:afterLikelihood variable="${variable}" />';
 			};
 
 			var questions = $( '.question.likelihood' );

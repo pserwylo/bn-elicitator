@@ -197,20 +197,4 @@ class VariableTagLib {
 
 	}
 
-	def listSummaryProbabilities = { attrs ->
-
-		CptAllocation allocation = CptAllocation.findByUser( userService.current )
-
-		out << "<ul id='all-variables-list' class='variable-list'>\n"
-		for( Variable var in allocation.variables ) {
-			out << """
-				<li class='variable-item'>
-					<a href='${createLink( controller: 'das2004', action: 'expected', params: [ id : var.id ] )}'>${bn.variable( [ var: var, includeDescription: false ] )}</a>
-				</li>
-				"""
-		}
-		out << "</ul>\n"
-
-	}
-
 }

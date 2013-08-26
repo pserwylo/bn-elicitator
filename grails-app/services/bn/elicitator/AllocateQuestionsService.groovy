@@ -55,12 +55,12 @@ abstract class AllocateQuestionsService {
 		return count
 	}
 
-	private List<Variable> getVarsWithLowestAllocation( int numVars ) {
+	private List<Variable> getVarsWithLowestAllocation( int maxQuestions ) {
 
 		List<Variable> allVars = Variable.list()
 		Collections.shuffle( allVars )
 
-		if ( allVars.size() < numVars ) {
+		if ( allVars.size() == 0 ) {
 			return []
 		}
 
@@ -73,8 +73,9 @@ abstract class AllocateQuestionsService {
 			}
 		}
 
-		List<Variable> lowestCount = []
-		while ( lowestCount.size() < numVars ) {
+		int totalQuestionsForLowestCount = 0
+		List<Variable> lowestCount       = []
+		while ( totalQuestionsForLowestCount < maxQuestions ) {
 
 			Map.Entry<Variable, Integer> lowestEntry = null
 			allocationCount.each { Map.Entry<Variable, Integer> entry ->
@@ -84,7 +85,12 @@ abstract class AllocateQuestionsService {
 				}
 			}
 
+			if ( lowestEntry == null ) {
+				break;
+			}
+
 			lowestCount.add( lowestEntry.key )
+			totalQuestionsForLowestCount += questionsRequiredFor( lowestEntry.key )
 		}
 
 		return lowestCount
@@ -92,10 +98,10 @@ abstract class AllocateQuestionsService {
 
 	public void allocateToUser( User user ) {
 
-		int maxTime      = 15 * 60
-		int maxQuestions = maxTime / expectedSecondsPerQuestion()
+		int maxTime      = 1500 * 60
+		int maxQuestions = maxTime / expectedSecondsPerQuestion() // AppProperties.properties.targetParticipantsPerQuestion
 
-		List<Variable> varsToAllocate = getVarsWithLowestAllocation( AppProperties.properties.targetParticipantsPerQuestion )
+		List<Variable> varsToAllocate = getVarsWithLowestAllocation( maxQuestions )
 		def allocation = createNew()
 		allocation.user = user
 		for ( Variable varToAllocate in varsToAllocate ) {

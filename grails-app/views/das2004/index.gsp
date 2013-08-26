@@ -32,6 +32,6 @@
 			</div>
 		</g:if>
 
-		<bn:listSummaryProbabilities />
+		<das2004:listSummaryProbabilities />
 	</body>
 </html>

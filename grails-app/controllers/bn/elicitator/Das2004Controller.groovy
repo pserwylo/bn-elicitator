@@ -9,7 +9,7 @@ class Das2004Controller {
 
 	def index = {
 
-		long completedId = params.getLong( 'completedId' ) ?: 0
+		long completedId = params.getLong( 'id' ) ?: 0
 
 		Variable completed = null
 		if ( completedId > 0 ) {

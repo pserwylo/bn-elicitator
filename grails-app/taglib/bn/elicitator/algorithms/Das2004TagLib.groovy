@@ -18,15 +18,18 @@
 
 package bn.elicitator.algorithms
 
+import bn.elicitator.CptAllocation
 import bn.elicitator.State
 import bn.elicitator.Variable
 import bn.elicitator.das2004.CompatibleParentConfiguration
+import bn.elicitator.network.BnArc
 
 class Das2004TagLib {
 
 	static namespace = "das2004"
 
 	def bnService
+	def userService
 	def das2004Service
 
 	final Map<String,Double> PROBABILITIES = [
@@ -50,6 +53,33 @@ class Das2004TagLib {
 		(9) : "Absolutely",
 	]
 
+
+
+	// ===================================================================
+	//                           Misc stuff
+	// ===================================================================
+
+	def listSummaryProbabilities = { attrs ->
+
+		CptAllocation allocation = CptAllocation.findByUser( userService.current )
+
+		List<BnArc> relevantArcs = bnService.getArcsByChildren( allocation.variables.toList() )
+
+		out << "<ul id='all-variables-list' class='variable-list'>\n"
+		for( Variable var in allocation.variables ) {
+			int parentCount = relevantArcs.count { it.child.variable.id == var.id }
+			String action = ( parentCount > 1 ) ? "expected" : "likelihood"
+			out << """
+				<li class='variable-item'>
+					<a href='${createLink( controller: 'das2004', action: action, params: [ id : var.id ] )}'>${bn.variable( [ var: var, includeDescription: false ] )}</a>
+				</li>
+				"""
+		}
+		out << "</ul>\n"
+
+	}
+
+
 	// ===================================================================
 	//                           Parent Weights
 	// ===================================================================
@@ -62,10 +92,10 @@ class Das2004TagLib {
 		Variable variable = attrs.variable
 		List<Variable> parents = bnService.getArcsByChild( variable )*.parent*.variable
 
-		if ( parents?.size() > 0 ) {
+		if ( parents?.size() > 1 ) {
 			out << das2004.weightElicitation( [ child : variable, parents : parents ] )
 		} else {
-			throw new Exception( "Marginal probability elicitation not supported yet." )
+			clientRedirect( 'index' )
 		}
 	}
 
@@ -196,11 +226,33 @@ class Das2004TagLib {
 		Variable variable = attrs.variable
 		List<Variable> parents = bnService.getArcsByChild( variable )*.parent*.variable
 
-		if ( parents?.size() > 0 ) {
+		if ( parents?.size() >= 1 ) {
 			out << das2004.distributionElicitation( [ child : variable, parents : parents ] )
 		} else {
-			throw new Exception( "Marginal probability elicitation not supported yet." )
+			if ( parents.size() == 1 ) {
+				das2004Service.populateSingleParentConfigurations( parents[ 0 ] )
+			}
+
+			variable.states.each { State state ->
+				out << das2004.distributionOverParents( [ childState : state ] )
+			}
 		}
+	}
+
+	/**
+	 * @attr variable REQUIRED
+	 */
+	def afterLikelihood = { attrs ->
+
+		if ( !attrs.containsKey( 'variable' ) ) {
+			throwTagError( "Tag [afterLikelihood] missing required [variable] attribute." )
+		}
+
+		Variable variable = attrs.variable
+
+		int count = bnService.getArcsByChild( variable ).size()
+		String action = ( count > 1 ) ? 'importance' : 'index'
+		out << createLink( [ controller : 'das2004', action : action, params : [ id : variable.id ] ] )
 	}
 
 	/**
@@ -227,8 +279,6 @@ class Das2004TagLib {
 				// Compare to all previous items and decide if we really need to ask this question...
 				boolean ignore = false
 				for ( int j = 0; j < i; j ++ ) {
-					CompatibleParentConfiguration one = parentConfigurations[ j ]
-					CompatibleParentConfiguration two = parentConfiguration
 					if ( parentConfigurations[ j ].equivalentTo( parentConfiguration ) ) {
 						ignore = true
 						break
@@ -244,7 +294,7 @@ class Das2004TagLib {
 
 	/**
 	 * @attr childState REQUIRED
-	 * @attr parentConfiguration REQUIRED
+	 * @attr parentConfiguration
 	 */
 	def distributionOverParents = { attrs ->
 
@@ -252,12 +302,8 @@ class Das2004TagLib {
 			throwTagError( "Tag [distributionOverParents] missing required [childState] attribute." )
 		}
 
-		if ( !attrs.containsKey( 'parentConfiguration' ) ) {
-			throwTagError( "Tag [distributionOverParents] missing required [parentConfiguration] attribute." )
-		}
-
 		State childState                           = attrs.childState
-		CompatibleParentConfiguration parentConfig = attrs.parentConfiguration
+		CompatibleParentConfiguration parentConfig = attrs.containsKey( 'parentConfiguration' ) ? attrs.parentConfiguration : null
 
 		// TODO: In the future, may want to let people go back and edit responses, but for now - just ignore already answered questions...
 		def existingEstimation = das2004Service.getProbabilityEstimation( childState, parentConfig )
@@ -267,13 +313,18 @@ class Das2004TagLib {
 
 		out << "<div class='question likelihood hidden'>"
 
-		parentConfig.allParentStates().eachWithIndex { State parentState, int i ->
-			String ifAnd = i > 0 ? " and " : "If "
-			String messageIfParentState = message( [ code : 'elicit.probabilities.likelihood.if-state', args : [ parentState.variable.readableLabel, parentState.readableLabel ] ] )
-			out << "<span class='if-state $ifAnd'>$ifAnd $messageIfParentState</span>"
+		String messageThenProbability
+		if ( parentConfig ) {
+			parentConfig.allParentStates().eachWithIndex { State parentState, int i ->
+				String ifAnd = i > 0 ? " and " : "If "
+				String messageIfParentState = message( [ code : 'elicit.probabilities.likelihood.if-state', args : [ parentState.variable.readableLabel, parentState.readableLabel ] ] )
+				out << "<span class='if-state $ifAnd'>$ifAnd $messageIfParentState</span>"
+			}
+			messageThenProbability = message( [ code : 'elicit.probabilities.likelihood.then-probability' ] )
+		} else {
+			messageThenProbability = message( [ code : 'elicit.probabilities.likelihood.marginal-probability' ] )
 		}
 
-		String messageThenProbability = message( [ code : 'elicit.probabilities.likelihood.then-probability' ] )
 		out << """
 			<span class='then-probability'>$messageThenProbability</span>
 				<span class='probabilities'>
@@ -282,8 +333,9 @@ class Das2004TagLib {
 		PROBABILITIES.each {
 			String probabilityLabel   = it.key
 			Double probabilityPercent = it.value
+			int parentConfigurationId = parentConfig?.id ?: 0
 			String label              = "$probabilityLabel <span class='probability-explaination'>(About ${(int)(probabilityPercent)}/100 times)</span>"
-			String name               = "parentConfigurationId=$parentConfig.id,childId=$childState.variable.id,childStateId=$childState.id"
+			String name               = "parentConfigurationId=$parentConfigurationId,childId=$childState.variable.id,childStateId=$childState.id"
 			String id                 = "$name,probability=$probabilityPercent"
 			out << "<input type='radio' name='$name' id='$id' value='$probabilityPercent' /><label for='$id'>$label</label>"
 		}
@@ -308,11 +360,19 @@ class Das2004TagLib {
 		Variable variable = attrs.variable
 		List<Variable> parents = bnService.getArcsByChild( variable )*.parent*.variable
 
-		if ( parents?.size() > 0 ) {
+		if ( parents?.size() > 1 ) {
 			out << das2004.compatibleParentConfigurations( [ child : variable, parents : parents ] )
 		} else {
-			throw new Exception( "Marginal probability elicitation not supported yet." )
+			clientRedirect( 'likelihood' )
 		}
+	}
+
+	private void clientRedirect( String dasAction ) {
+		out << """
+			<script type='text/javascript'>
+				document.location = '${createLink( [ controller : 'das2004', action : dasAction ] )}';"
+			</script>
+			"""
 	}
 
 	/**
@@ -343,7 +403,7 @@ class Das2004TagLib {
 		List<Variable> otherParents = attrs.otherParents
 
 		// TODO: In the future, may want to let people go back and edit responses, but for now - just ignore already answered questions...
-		def compatibleConfig        = das2004Service.getParentConfig( parentState )
+		def compatibleConfig = das2004Service.getParentConfig( parentState )
 		if ( compatibleConfig ) {
 			return
 		}
