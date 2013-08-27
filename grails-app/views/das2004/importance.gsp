@@ -26,10 +26,12 @@
 			$( document ).ready( function() {
 
 				var nextScreen = function() {
-					document.location = '${createLink( [ action : 'index', params : [ completedId : variable.id ] ] )}';
+					document.location = '${createLink( [ action : 'index', params : [ id : variable.id ] ] )}';
 				};
 
 				var comparisons = $( '.comparison' );
+				var parent = comparisons.parent();
+				comparisons.detach().sort( function() { return Math.random() - 0.5; } ).appendTo( parent );
 
 				if ( comparisons.length == 0 ) {
 					nextScreen();

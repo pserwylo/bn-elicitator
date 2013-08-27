@@ -23,6 +23,7 @@ import bn.elicitator.State
 import bn.elicitator.Variable
 import bn.elicitator.das2004.CompatibleParentConfiguration
 import bn.elicitator.network.BnArc
+import org.apache.commons.collections.CollectionUtils
 
 class Das2004TagLib {
 
@@ -62,15 +63,16 @@ class Das2004TagLib {
 	def listSummaryProbabilities = { attrs ->
 
 		CptAllocation allocation = CptAllocation.findByUser( userService.current )
-
 		List<BnArc> relevantArcs = bnService.getArcsByChildren( allocation.variables.toList() )
+		List<Long> completedIds  = das2004Service.completed*.id
 
-		out << "<ul id='all-variables-list' class='variable-list'>\n"
+		out << "<ul id='all-children-list' class='variable-list'>\n"
 		for( Variable var in allocation.variables ) {
 			int parentCount = relevantArcs.count { it.child.variable.id == var.id }
 			String action = ( parentCount > 1 ) ? "expected" : "likelihood"
+			String clazz  = completedIds.contains( var.id ) ? "doesnt-need-review" : "needs-review"
 			out << """
-				<li class='variable-item'>
+				<li class='variable-item $clazz'>
 					<a href='${createLink( controller: 'das2004', action: action, params: [ id : var.id ] )}'>${bn.variable( [ var: var, includeDescription: false ] )}</a>
 				</li>
 				"""

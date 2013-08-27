@@ -1,10 +1,13 @@
 package bn.elicitator.algorithms
 
 import bn.elicitator.BnService
+import bn.elicitator.CptAllocation
 import bn.elicitator.State
 import bn.elicitator.UserService
 import bn.elicitator.Variable
 import bn.elicitator.das2004.CompatibleParentConfiguration
+import bn.elicitator.das2004.CompletedDasAllocation
+import bn.elicitator.das2004.CompletedDasVariable
 import bn.elicitator.das2004.PairwiseComparison
 import bn.elicitator.das2004.ProbabilityEstimation
 import org.apache.commons.collections.CollectionUtils
@@ -33,7 +36,6 @@ class Das2004Service {
 		}
 
 		Variable mostImportantParent = null
-		def valid = [ 0, parentOne.id, parentTwo.id ]
 		if ( mostImportantParentId == 0 || mostImportantParentId == parentOne.id || mostImportantParentId == parentTwo.id ) {
 			if ( mostImportantParentId != 0 ) {
 				mostImportantParent = mostImportantParentId == parentOne.id ? parentOne : parentTwo
@@ -164,5 +166,31 @@ class Das2004Service {
 
 	public PairwiseComparison getPairwiseComparison( Variable child, Variable parentOne, Variable parentTwo ) {
 		PairwiseComparison.findByCreatedByAndChildAndParentOneAndParentTwo( userService.current, child, parentOne, parentTwo )
+	}
+
+	public void complete( Variable variable ) {
+
+		CompletedDasVariable completed = CompletedDasVariable.findByCompletedByAndVariable( userService.current, variable )
+
+		if ( !completed ) {
+			new CompletedDasVariable( completedBy : userService.current, variable : variable ).save( flush : true )
+		}
+
+		if ( !hasCompletedAllocation() ) {
+			CptAllocation allocation = CptAllocation.findByUser( userService.current )
+			int completedCount       = CompletedDasVariable.countByCompletedBy( userService.current )
+			if ( completedCount == allocation?.variables?.size() ) {
+				new CompletedDasAllocation( completedBy : userService.current ).save( flush : true )
+			}
+		}
+
+	}
+
+	public boolean hasCompletedAllocation() {
+		CompletedDasAllocation.countByCompletedBy( userService.current ) > 0
+	}
+
+	public List<Variable> getCompleted() {
+		CompletedDasVariable.findAllByCompletedBy( userService.current )*.variable
 	}
 }

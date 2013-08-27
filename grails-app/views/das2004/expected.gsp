@@ -30,6 +30,8 @@
 				};
 
 				var configurations = $( '.compatible-configurations' );
+				var parent = configurations.parent();
+				configurations.detach().sort( function() { return Math.random() - 0.5; } ).appendTo( parent );
 
 				if ( configurations.length == 0 ) {
 					nextScreen();

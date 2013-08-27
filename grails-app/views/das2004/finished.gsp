@@ -20,18 +20,13 @@
 <html>
 	<head>
 		<meta name="layout" content="main">
-		<title>Identify likelihood of scenarios</title>
+		<title>${bn.elicitator.AppProperties.properties.title}</title>
 		<r:require module="elicitList" />
 	</head>
 	
 	<body>
-
-		<g:if test="${flash.message}">
-			<div class="message">
-				${flash.message}
-			</div>
-		</g:if>
-
-		<das2004:listSummaryProbabilities />
+		<div class="message">
+			<g:message code='elicit.probabilities.completed-all' />
+		</div>
 	</body>
 </html>

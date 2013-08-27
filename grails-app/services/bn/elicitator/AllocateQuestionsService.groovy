@@ -98,7 +98,7 @@ abstract class AllocateQuestionsService {
 
 	public void allocateToUser( User user ) {
 
-		int maxTime      = 1500 * 60
+		int maxTime      = 15 * 60
 		int maxQuestions = maxTime / expectedSecondsPerQuestion() // AppProperties.properties.targetParticipantsPerQuestion
 
 		List<Variable> varsToAllocate = getVarsWithLowestAllocation( maxQuestions )

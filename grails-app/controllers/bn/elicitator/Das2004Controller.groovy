@@ -1,6 +1,7 @@
 package bn.elicitator
 
 import bn.elicitator.algorithms.Das2004Service
+import bn.elicitator.das2004.CompletedDasAllocation
 import grails.converters.JSON
 
 class Das2004Controller {
@@ -10,15 +11,24 @@ class Das2004Controller {
 	def index = {
 
 		long completedId = params.getLong( 'id' ) ?: 0
-
-		Variable completed = null
 		if ( completedId > 0 ) {
-			// TODO: Save a 'completed' flag against the allocation so that we can remove it from the list of
-			// questions to answer
-			completed = Variable.get( completedId )
+			Variable completed = Variable.get( completedId )
+			if ( completed != null ) {
+				das2004Service.complete( completed )
+				flash.message = "Completed $completed.readableLabel!"
+			}
+			redirect( action: 'index' )
 		}
 
-		return [ completedVariable : completed ]
+		if ( das2004Service.hasCompletedAllocation() ) {
+			forward( action : 'finished' )
+		} else {
+			return []
+		}
+	}
+
+	def finished = {
+		[]
 	}
 
 	/**

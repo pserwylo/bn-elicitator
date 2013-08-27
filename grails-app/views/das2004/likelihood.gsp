@@ -30,6 +30,10 @@
 			};
 
 			var questions = $( '.question.likelihood' );
+			var parent = questions.parent();
+			questions.detach().sort( function() {
+				return Math.random() - 0.5;
+			}).appendTo( parent );
 
 			if ( questions.length == 0 ) {
 				nextScreen();
