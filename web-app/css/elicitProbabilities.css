@@ -16,6 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+.ui-button {
+	max-width: 200px;
+	vertical-align: top;
+}
+
 /* =======================================================
               Compatible parent configurations
    ======================================================= */

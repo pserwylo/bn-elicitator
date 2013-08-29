@@ -107,8 +107,21 @@
 					);
 				};
 
+				var equalizeHeights = function( items ) {
+					var maxHeight = 0;
+					items.each( function( i, item ) {
+						if ( $( item ).height() > maxHeight ) {
+							maxHeight = $( item ).height();
+							console.log( maxHeight );
+						}
+					}).each( function( i, item ) {
+						$( item ).height( maxHeight );
+					});
+				};
+
 				var siblingStates = $( '.sibling-states' );
 				siblingStates.buttonset();
+				equalizeHeights( siblingStates.find( '.ui-button' ) );
 				siblingStates.find( 'input[type=radio]').change( function() {
 					var parent        = $( this ).closest( 'ul.siblings' );
 					var siblingCount  = parent.children().size();

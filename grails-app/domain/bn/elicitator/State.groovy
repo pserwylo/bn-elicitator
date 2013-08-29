@@ -26,9 +26,9 @@ class State {
 	String readableLabel = ""
 	String description   = ""
 
-	public State( String label, String readableLabel = null, String description = "" ) {
+	public State( String label, String description = "" ) {
 		this.label         = label
-		this.readableLabel = ( readableLabel?.trim()?.size() > 0 ) ? readableLabel : label
+		this.readableLabel = label
 		this.description   = description
 	}
 

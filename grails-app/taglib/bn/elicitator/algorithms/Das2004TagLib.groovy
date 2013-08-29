@@ -23,7 +23,6 @@ import bn.elicitator.State
 import bn.elicitator.Variable
 import bn.elicitator.das2004.CompatibleParentConfiguration
 import bn.elicitator.network.BnArc
-import org.apache.commons.collections.CollectionUtils
 
 class Das2004TagLib {
 
@@ -319,7 +318,7 @@ class Das2004TagLib {
 		if ( parentConfig ) {
 			parentConfig.allParentStates().eachWithIndex { State parentState, int i ->
 				String ifAnd = i > 0 ? " and " : "If "
-				String messageIfParentState = message( [ code : 'elicit.probabilities.likelihood.if-state', args : [ parentState.variable.readableLabel, parentState.readableLabel ] ] )
+				String messageIfParentState = message( [ code : 'elicit.probabilities.likelihood.if-state', args : [ parentState.description ] ] )
 				out << "<span class='if-state $ifAnd'>$ifAnd $messageIfParentState</span>"
 			}
 			messageThenProbability = message( [ code : 'elicit.probabilities.likelihood.then-probability' ] )
@@ -342,7 +341,7 @@ class Das2004TagLib {
 			out << "<input type='radio' name='$name' id='$id' value='$probabilityPercent' /><label for='$id'>$label</label>"
 		}
 
-		String messageThenState = message( [ code : 'elicit.probabilities.likelihood.then-state', args : [ childState.variable.readableLabel, childState.readableLabel ] ] )
+		String messageThenState = message( [ code : 'elicit.probabilities.likelihood.then-state', args : [ childState.description ] ] )
 		out << """
 				</span>
 				<span class='then-state'>$messageThenState</span>
@@ -410,7 +409,7 @@ class Das2004TagLib {
 			return
 		}
 
-		String messageIfParentState = message( [ code : 'elicit.probabilities.expected.if-state', args : [ parent, parentState ] ] )
+		String messageIfParentState = message( [ code : 'elicit.probabilities.expected.if-state', args : [ parentState.description ] ] )
 		out << """
 			<div class='question compatible-configurations hidden'>
 				<span class='if-state'>$messageIfParentState</span>
@@ -433,7 +432,7 @@ class Das2004TagLib {
 			for ( State otherParentState in otherParent.states ) {
 				String name = "parentId=$parent.id,parentStateId=$parentState.id,otherParentId=$otherParent.id"
 				String id   = "$name,otherParentStateId=$otherParentState.id"
-				out << "<input type='radio' name='$name' id='$id' value='$otherParentState.id' /><label for='$id'>$otherParentState</label>"
+				out << "<input type='radio' name='$name' id='$id' value='$otherParentState.id' /><label for='$id'>$otherParentState.description</label>"
 			}
 			out << "</span></li>"
 		}

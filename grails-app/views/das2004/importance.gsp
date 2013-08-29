@@ -48,6 +48,18 @@
 
 				currentComparison().show();
 
+				var equalizeHeights = function( items ) {
+					var maxHeight = -1;
+					items.each( function( i, item ) {
+						if ( $( item ).height() > maxHeight ) {
+							maxHeight = $( item ).height();
+							console.log( maxHeight );
+						}
+					}).each( function( i, item ) {
+						$( item ).height( maxHeight );
+					});
+				};
+
 				var nextComparison = function() {
 					currentComparison().hide( 'slide', { direction : 'right', duration : 200 }, function() {
 						currentComparisonIndex ++;
@@ -98,7 +110,9 @@
 						saveComparison();
 						nextComparison();
 					} else {
-						currentComparison().find( '.how-much' ).show( 'fast' );
+						currentComparison().find( '.how-much' ).show( 'fast', function() {
+							equalizeHeights( currentComparison().find( '.weights .ui-button' ) );
+						});
 					}
 				});
 
