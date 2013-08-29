@@ -151,7 +151,7 @@ class InsuranceDataLoader extends DataLoader {
 				new State( "Senior",     "Client is a senior" ),
 		    ],
 		    "SocioEcon" : [
-				new State( "Prole",  "Client has a lower socio economic status" ),
+				new State( "Prole",  "Client has a lower socio-economic status" ),
 				new State( "Middle", "Client is from the middle class" ),
 				/*new State( "UpperMiddle" ),*/
 				new State( "Wealthy", "Client is from the upper class" ),
@@ -241,20 +241,20 @@ class InsuranceDataLoader extends DataLoader {
 				new State( "False", "Clients car does not have any anti-theft devices installed" ),
 		    ],
 		    "PropCost" : [
-				new State( "Thousand"    ),
-				new State( "TenThou"     ),
-				new State( "HundredThou" ),
-				new State( "Million"     ),
+				new State( "Thousand",    "Client will cause less than \$1,000 in property damage" ),
+				new State( "TenThou",     "Client will cause between \$1,000 and \$10,000 in property damage" ),
+				new State( "HundredThou", "Client will cause between \$10,000 and \$100,000 in property damage" ),
+				new State( "Million",     "Client will cause over \$100,000 in property damage" ),
 		    ],
 		    "OtherCarCost" : [
-					new State( "Thousand",    "Client will claim less than \$1,000 to fix someone else's car involved in an accident" ),
-					new State( "TenThou",     "Client will claim between \$1,000 and \$10,000 to fix someone else's car involved in an accident" ),
-					new State( "HundredThou", "Client will claim between \$10,000 and \$100,000 to fix someone else's car involved in an accident" ),
-					new State( "Million",     "Client will claim over \$100,000 to fix someone else's car involved in an accident" ),
+				new State( "Thousand",    "Client will claim less than \$1,000 to fix someone else's car involved in an accident" ),
+				new State( "TenThou",     "Client will claim between \$1,000 and \$10,000 to fix someone else's car involved in an accident" ),
+				new State( "HundredThou", "Client will claim between \$10,000 and \$100,000 to fix someone else's car involved in an accident" ),
+				new State( "Million",     "Client will claim over \$100,000 to fix someone else's car involved in an accident" ),
 		    ],
 		    "OtherCar" : [
-				new State( "True"  ),
-				new State( "False" ),
+				new State( "True",  "Client owns multiple cars"  ),
+				new State( "False", "Car being insured is client's only car" ),
 		    ],
 			/*"MedCost" : [
 				new State( "Thousand"    ),
