@@ -38,6 +38,7 @@ grails.project.dependency.resolution = {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
         runtime 'mysql:mysql-connector-java:5.1.23'
+        runtime 'Jama:Jama:1.0.3'
 
         // runtime 'NeticaJ:NeticaJ:4.19'
     }

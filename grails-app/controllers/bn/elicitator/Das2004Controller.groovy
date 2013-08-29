@@ -8,6 +8,10 @@ class Das2004Controller {
 
 	Das2004Service das2004Service
 
+	def calc = {
+		das2004Service.performCalculations()
+	}
+
 	def index = {
 
 		long completedId = params.getLong( 'id' ) ?: 0

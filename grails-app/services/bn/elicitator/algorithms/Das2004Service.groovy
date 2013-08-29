@@ -1,15 +1,20 @@
 package bn.elicitator.algorithms
 
+import Jama.EigenvalueDecomposition
+import Jama.Matrix
 import bn.elicitator.BnService
 import bn.elicitator.CptAllocation
 import bn.elicitator.State
 import bn.elicitator.UserService
 import bn.elicitator.Variable
+import bn.elicitator.auth.User
 import bn.elicitator.das2004.CompatibleParentConfiguration
 import bn.elicitator.das2004.CompletedDasAllocation
 import bn.elicitator.das2004.CompletedDasVariable
 import bn.elicitator.das2004.PairwiseComparison
 import bn.elicitator.das2004.ProbabilityEstimation
+import bn.elicitator.network.BnArc
+import bn.elicitator.network.BnNode
 import org.apache.commons.collections.CollectionUtils
 
 class Das2004Service {
@@ -193,4 +198,118 @@ class Das2004Service {
 	public List<Variable> getCompleted() {
 		CompletedDasVariable.findAllByCompletedBy( userService.current )*.variable
 	}
+
+	/**
+	 * After everybody has submitted their answers to each of the questions we required, actually
+	 * perform the calculations required.
+	 */
+	public void performCalculations() {
+
+		List<CptAllocation> allocations = CptAllocation.list()
+
+		allocations.each { CptAllocation allocation ->
+
+			allocation.variables.each { Variable variable ->
+
+				def completed = CompletedDasVariable.countByVariableAndCompletedBy( variable, allocation.user ) > 0
+				if ( !completed ) {
+					return
+				}
+
+				calculateUsersCpt( variable, allocation.user )
+			}
+
+		}
+
+	}
+
+	private void calculateUsersCpt( Variable child, User user ) {
+
+		List<Variable> parents = bnService.getArcsByChild( child )*.parent*.variable
+		Map<Variable, BigDecimal> weights = calculateWeights( child, parents, user )
+
+	}
+
+	private Map<Variable, BigDecimal> calculateWeights( Variable child, List<Variable> parents, User user ) {
+
+		WeightMatrix matrix = new WeightMatrix( parents )
+
+		def comparisons = PairwiseComparison.findAllByCreatedByAndChild( user, child )
+		comparisons.each { PairwiseComparison comparison ->
+			BigDecimal weight = 1
+			if ( comparison.mostImportantParent?.id == comparison.parentOne.id ) {
+				weight = comparison.weight
+			} else if ( comparison.mostImportantParent?.id == comparison.parentTwo.id ) {
+				weight = 1 / comparison.weight
+			}
+			matrix.set( comparison.parentOne, comparison.parentTwo, weight )
+		}
+
+		return matrix.calcWeights()
+
+	}
+
+	/**
+	 *
+	 *       How much
+	 *   <-    more    ->
+	 *      do these...
+	 *
+	 *     W   X   Y   Z
+	 *   +---+---+---+---+      ^
+	 * W | 1 |   |   |   |      |
+	 *   +---+---+---+---+
+	 * X |   | 1 | 3 |   |  influence
+	 *   +---+---+---+---+
+	 * Y |   |1/3| 1 |   |    these?
+	 *   +---+---+---+---+
+	 * Z |   |   |   | 1 |      |
+	 *   +---+---+---+---+      v
+	 *
+	 *   e.g. Y is three times more important than X, while X is 1/3rd the importance of Y.
+	 *
+	 */
+	static class WeightMatrix {
+
+		private Map<Variable,Map<Variable,BigDecimal>> matrix = [:]
+
+		public WeightMatrix( List<Variable> variables ) {
+			variables.each { Variable variable ->
+				matrix[ variable ] = [:]
+				variables.each { Variable other ->
+					matrix[ variable ][ other ] = variable.id == other.id ? 1 : null
+				}
+			}
+		}
+
+		public void set( Variable one, Variable two, BigDecimal weight ) {
+			matrix[ one ][ two ] = weight
+			matrix[ two ][ one ] = 1 / weight
+		}
+
+		public Map<Variable, BigDecimal> calcWeights() {
+
+			List<Variable> indexes = matrix.keySet().toList()
+
+			double[][] values = new double[ matrix.size() ][ matrix.size() ]
+
+			indexes.eachWithIndex { Variable one, int i ->
+				indexes.eachWithIndex { Variable two, int j ->
+					values[ i ][ j ] = matrix[ one ][ two ]
+				}
+			}
+
+			Matrix eigenVectors = new Matrix( values ).eig().v
+
+			Map<Variable, BigDecimal> weights = [:]
+			indexes.eachWithIndex { Variable variable, int i ->
+				weights[ variable ] = eigenVectors.get( i, 0 )
+			}
+
+			return weights
+
+		}
+
+	}
+
 }
