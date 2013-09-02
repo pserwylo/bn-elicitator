@@ -22,7 +22,7 @@ class CompatibleParentConfiguration {
 	 * @return
 	 */
 	boolean equivalentTo( CompatibleParentConfiguration that ) {
-		if ( that == null || this.createdBy != that.createdBy ) {
+		if ( that == null || this.createdBy.id != that.createdBy.id ) {
 			return false
 		}
 
@@ -50,8 +50,7 @@ class CompatibleParentConfiguration {
 		return false
 	}
 
-	@Override
-	String toString() {
+	String getReadableDescription() {
 		"$parentState.readableLabel, ${otherParentStates.join( ", ")}"
 	}
 }

@@ -43,4 +43,12 @@ class State {
 		readableLabel
 	}
 
+	String getDescription() {
+		if ( this.description?.size() > 0 ) {
+			return this.description
+		} else {
+			return "$variable = $label"
+		}
+	}
+
 }

@@ -1,6 +1,5 @@
 package bn.elicitator.algorithms
 
-import Jama.EigenvalueDecomposition
 import Jama.Matrix
 import bn.elicitator.BnService
 import bn.elicitator.CptAllocation
@@ -13,8 +12,6 @@ import bn.elicitator.das2004.CompletedDasAllocation
 import bn.elicitator.das2004.CompletedDasVariable
 import bn.elicitator.das2004.PairwiseComparison
 import bn.elicitator.das2004.ProbabilityEstimation
-import bn.elicitator.network.BnArc
-import bn.elicitator.network.BnNode
 import org.apache.commons.collections.CollectionUtils
 
 class Das2004Service {
@@ -84,6 +81,22 @@ class Das2004Service {
 				throw new IllegalArgumentException( "Could not find parent configuration $parentConfigurationId" )
 			}
 		}
+
+		updateProbabilityEstimation( childState, parentConfig, probability )
+
+		// Look for compatible configurations which are the same, but for which we don't ask the user
+		// questions, so that we can populate it too. This will make calculations easier later on if
+		// we have all of the data available.
+		if ( parentConfig != null ) {
+			def otherConfigs = CompatibleParentConfiguration.findAllByCreatedByAndIdNotEqual( userService.current, parentConfig.id )
+			def equivalentConfigs = otherConfigs.findAll { it.equivalentTo( parentConfig ) }
+			equivalentConfigs.each {
+				updateProbabilityEstimation( childState, it, probability )
+			}
+		}
+	}
+
+	private void updateProbabilityEstimation( State childState, CompatibleParentConfiguration parentConfig, double probability ) {
 
 		def estimation = getProbabilityEstimation( childState, parentConfig )
 
@@ -227,7 +240,62 @@ class Das2004Service {
 
 		List<Variable> parents = bnService.getArcsByChild( child )*.parent*.variable
 		Map<Variable, BigDecimal> weights = calculateWeights( child, parents, user )
+		weightedSum( child, parents, user, weights )
 
+	}
+
+	static class AlgorithmException extends Exception {
+
+		public AlgorithmException( String message ) {
+			super( "Error while performing Das (2004) calculation: $message" )
+		}
+
+	}
+
+	private void weightedSum( Variable child, List<Variable> parents, User user, Map<Variable, BigDecimal> weights ) {
+
+		List<State> parentConfigs = parents*.states.combinations()
+		parentConfigs.each { List<State> parentConfiguration ->
+
+			def compatibleConfigs = CompatibleParentConfiguration.findAllByCreatedByAndParentStateInList( user, parentConfiguration )
+			def estimations       = ProbabilityEstimation.findAllByCreatedByAndParentConfigurationInList( user, compatibleConfigs )
+
+			Map<State, Double> childStateProbabilities = [:]
+
+			child.states.each { State childState ->
+
+				double probChildState = 0
+				compatibleConfigs.each { CompatibleParentConfiguration config ->
+
+					def probOfConfig = estimations.find {
+						it.parentConfiguration.id == config.id &&
+						it.childState.id == childState.id
+					}
+
+					if ( probOfConfig == null ) {
+						throw new AlgorithmException( "Couldn't find probability estimation for parent configuration $config.id" )
+					}
+
+					if ( !weights.containsKey( config.parentState.variable ) ) {
+						throw new AlgorithmException( "Mismatch between compatible parent configuration $config.id and the pairwise comparisons. Could not find variable $config.parentState.variable in comparisons." )
+					}
+
+					def parentWeight = weights[ config.parentState.variable ]
+					probChildState  += parentWeight * probOfConfig.probability
+
+				}
+
+				childStateProbabilities[ childState ] = probChildState
+			}
+
+			double sum = (double)childStateProbabilities.values().sum()
+			if ( sum <= 0 ) {
+				throw new AlgorithmException( "Probabilities summed to $sum. Should be > 0." )
+			}
+
+			double scale = 1 / sum
+			childStateProbabilities.each { it.value *= scale }
+		}
 	}
 
 	private Map<Variable, BigDecimal> calculateWeights( Variable child, List<Variable> parents, User user ) {
@@ -304,6 +372,17 @@ class Das2004Service {
 			Map<Variable, BigDecimal> weights = [:]
 			indexes.eachWithIndex { Variable variable, int i ->
 				weights[ variable ] = eigenVectors.get( i, 0 )
+			}
+
+			// TODO: Normalise vector...
+			double sum = weights.values().sum() as Double
+			if ( sum == 0 ) {
+				throw new Exception( "Error calculating weights, they summed to 0." )
+			}
+
+			double scale = 1 / sum;
+			weights.each {
+				it.value *= scale
 			}
 
 			return weights

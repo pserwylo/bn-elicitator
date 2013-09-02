@@ -326,8 +326,10 @@ class Das2004TagLib {
 			messageThenProbability = message( [ code : 'elicit.probabilities.likelihood.marginal-probability' ] )
 		}
 
+		String messageThenState = message( [ code : 'elicit.probabilities.likelihood.then-state', args : [ childState.description ] ] )
 		out << """
 			<span class='then-probability'>$messageThenProbability</span>
+				<span class='then-state'>$messageThenState</span>
 				<span class='probabilities'>
 				"""
 
@@ -341,10 +343,8 @@ class Das2004TagLib {
 			out << "<input type='radio' name='$name' id='$id' value='$probabilityPercent' /><label for='$id'>$label</label>"
 		}
 
-		String messageThenState = message( [ code : 'elicit.probabilities.likelihood.then-state', args : [ childState.description ] ] )
 		out << """
 				</span>
-				<span class='then-state'>$messageThenState</span>
 			</div>"""
 	}
 
