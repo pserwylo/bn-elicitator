@@ -3,6 +3,7 @@ package bn.elicitator.algorithms
 import Jama.Matrix
 import bn.elicitator.BnService
 import bn.elicitator.CptAllocation
+import bn.elicitator.Probability
 import bn.elicitator.State
 import bn.elicitator.UserService
 import bn.elicitator.Variable
@@ -229,14 +230,14 @@ class Das2004Service {
 					return
 				}
 
-				calculateUsersCpt( variable, allocation.user )
+				calculateUsersCptForVariable( variable, allocation.user )
 			}
 
 		}
 
 	}
 
-	private void calculateUsersCpt( Variable child, User user ) {
+	private void calculateUsersCptForVariable( Variable child, User user ) {
 
 		List<Variable> parents = bnService.getArcsByChild( child )*.parent*.variable
 		Map<Variable, BigDecimal> weights = calculateWeights( child, parents, user )
@@ -295,7 +296,29 @@ class Das2004Service {
 
 			double scale = 1 / sum
 			childStateProbabilities.each { it.value *= scale }
+
+			saveCalculatedProbabilities( childStateProbabilities, parentConfiguration )
 		}
+	}
+
+	def saveCalculatedProbabilities( Map<State, Double> stateProbabilities, List<State> parentStates ) {
+
+		stateProbabilities.each {
+
+			State childState   = it.key
+			Double probability = it.value
+
+			List<Probability> probs         = Probability.findAllByCreatedByAndChildState( userService.current, childState )
+			Probability existingProbability = probs.find { CollectionUtils.isEqualCollection( probs, parentStates ) }
+			if ( !existingProbability ) {
+				existingProbability = new Probability( createdBy : userService.current, childState : childState, parentStates : parentStates )
+			}
+
+			existingProbability.probability = probability
+			existingProbability.save( flush : true )
+
+		}
+
 	}
 
 	private Map<Variable, BigDecimal> calculateWeights( Variable child, List<Variable> parents, User user ) {

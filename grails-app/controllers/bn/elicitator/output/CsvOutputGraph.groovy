@@ -7,7 +7,7 @@ class CsvOutputGraph extends OutputGraph {
 	StringBuilder rows = new StringBuilder()
 
 	@Override
-	void addEdge(Variable parent, Variable child, Float strength, Integer numUsers, Integer totalUsers) {
+	void addEdge(Variable parent, Variable child, double strength, int numUsers, int totalUsers) {
 		rows.append(numUsers)
 		rows.append(',')
 		rows.append(totalUsers)

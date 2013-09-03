@@ -1,5 +1,6 @@
 package bn.elicitator.output
 
+import bn.elicitator.Cpt
 import bn.elicitator.Variable
 import groovy.util.slurpersupport.GPathResult
 import groovy.util.slurpersupport.NodeChild
@@ -13,6 +14,8 @@ class NeticaOutputGraph extends OutputGraph {
 
 	Map<Variable,VariableFamily> variableFamilies = [:]
 
+	Map<Variable,Cpt> cpts = [:]
+
 	private void putVar( Variable var ) {
 		if ( !variableFamilies.containsKey( var ) ) {
 			variableFamilies.put( var, new VariableFamily( variable: var ) )
@@ -20,7 +23,12 @@ class NeticaOutputGraph extends OutputGraph {
 	}
 
 	@Override
-	void addEdge(Variable parent, Variable child, Float strength, Integer numUsers, Integer totalUsers) {
+	void addCpt( Cpt cpt ) {
+		cpts.put( cpt.variable, cpt )
+	}
+
+	@Override
+	void addEdge(Variable parent, Variable child, double strength, int numUsers, int totalUsers) {
 		putVar( parent )
 		putVar( child  )
 		variableFamilies.get( child  ).parents.add( parent )
@@ -66,7 +74,8 @@ class NeticaOutputGraph extends OutputGraph {
 
 		List<NeticaNode> nodes = variableOrder.collect { variable ->
 			VariableFamily family = variableFamilies.get( variable )
-			new NeticaNode( family : family )
+			Cpt cpt               = cpts.containsKey( variable ) ? cpts[ variable ] : null
+			new NeticaNode( family : family, cpt : cpt )
 		}
 
 		String graphvizSvg = graphvizOutput.generateGraph()

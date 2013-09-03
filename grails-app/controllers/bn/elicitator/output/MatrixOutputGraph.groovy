@@ -16,7 +16,7 @@ abstract class MatrixOutputGraph extends OutputGraph {
 	}
 
 	@Override
-	void addEdge(Variable parent, Variable child, Float strength, Integer numUsers, Integer totalUsers) {
+	void addEdge(Variable parent, Variable child, double strength, int numUsers, int totalUsers) {
 		matrix.put( generateKey( parent, child ), strength )
 	}
 

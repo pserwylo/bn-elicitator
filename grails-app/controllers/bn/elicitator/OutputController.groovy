@@ -1,6 +1,8 @@
 package bn.elicitator
 
 import bn.elicitator.auth.User
+import bn.elicitator.network.BnArc
+import bn.elicitator.network.BnNode
 import bn.elicitator.output.CsvOutputGraph
 import bn.elicitator.output.GraphvizOutputGraph
 import bn.elicitator.output.HtmlMatrixOutputGraph
@@ -14,6 +16,7 @@ class OutputController {
 	def variableService
 	def delphiService
 	def userService
+	def bnService
 
 	def jsonStats = { OutputCommand cmd ->
 		outputGraph( new JsonOutputGraph(), cmd )
@@ -91,32 +94,44 @@ class OutputController {
 
 	private outputGraph( OutputGraph output, OutputCommand cmd ) {
 
-		List<Variable> variables               = Variable.list().sort()
-		List<Relationship> relationships       = Relationship.findAllByExistsAndDelphiPhase( true, cmd.phase ).sort()
-		List<VisitedVariable> visitedVariables = VisitedVariable.findAllByDelphiPhase( cmd.phase )
-
-		if ( cmd.username ) {
-
-			User user = User.findByUsername( cmd.username )
-			if ( !user ) {
-				render "Could not find user $cmd.username."
-				return
-			}
-			relationships = relationships.findAll { it.createdBy = user }
-
-		} else if ( cmd.onlyCompleted ) {
-			relationships = relationships.findAll { relationship ->
-				visitedVariables.find { visited ->
-					visited.visitedBy.id == relationship.createdBy.id && visited.variable.id == relationship.child.id
-				} ? true : false
-			}
-		}
-
+		List<Variable> variables = Variable.list().sort()
 		output.allVariables = variables
 
-		List<StructureAllocation> allocations = StructureAllocation.list()
+		if ( cmd.finalNetwork ) {
 
-		if ( cmd.phase > 0 && cmd.phase <= delphiService.phase ) {
+			List<BnArc> arcs = BnArc.list()
+			arcs.each { BnArc arc ->
+				output.addEdge( arc.parent.variable, arc.child.variable )
+			}
+
+			BnNode.list().each { BnNode node ->
+				Cpt cpt = bnService.getCptFor( node.variable )
+				output.addCpt( cpt )
+			}
+
+		} else if ( cmd.phase > 0 && cmd.phase <= delphiService.phase ) {
+
+			List<Relationship> relationships       = Relationship.findAllByExistsAndDelphiPhase( true, cmd.phase ).sort()
+			List<VisitedVariable> visitedVariables = VisitedVariable.findAllByDelphiPhase( cmd.phase )
+
+			if ( cmd.username ) {
+
+				User user = User.findByUsername( cmd.username )
+				if ( !user ) {
+					render "Could not find user $cmd.username."
+					return
+				}
+				relationships = relationships.findAll { it.createdBy = user }
+
+			} else if ( cmd.onlyCompleted ) {
+				relationships = relationships.findAll { relationship ->
+					visitedVariables.find { visited ->
+						visited.visitedBy.id == relationship.createdBy.id && visited.variable.id == relationship.child.id
+					} ? true : false
+				}
+			}
+
+			List<StructureAllocation> allocations = StructureAllocation.list()
 			variables.each { child ->
 				List<User> childVisitedBy = visitedVariables.findAll { it.variable == child }*.visitedBy
 				int totalUsers
@@ -155,6 +170,8 @@ class OutputController {
 }
 
 class OutputCommand {
+
+	Boolean finalNetwork = false
 
 	Integer phase = AppProperties.properties.delphiPhase
 

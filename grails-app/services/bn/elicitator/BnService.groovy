@@ -18,6 +18,7 @@
 
 package bn.elicitator
 
+import bn.elicitator.auth.User
 import bn.elicitator.network.BnArc
 import bn.elicitator.network.BnNode
 
@@ -254,6 +255,26 @@ class BnService {
 
 	public List<BnArc> getArcsByChild( BnNode child) {
 		getArcsByChild( child.variable )
+	}
+
+	public Cpt getCptFor( Variable childVariable, User user = userService.current ) {
+		List<Probability> probabilities = Probability.withCriteria {
+			childState {
+				variable {
+					eq( 'id', childVariable.id )
+				}
+			}
+
+			if ( user == null ) {
+				isNull( 'createdBy' )
+			} else {
+				createdBy {
+					eq( 'id', userService.current.id )
+				}
+			}
+		}
+
+		new Cpt( probabilities )
 	}
 
 }

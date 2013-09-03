@@ -1,5 +1,6 @@
 package bn.elicitator.output
 
+import bn.elicitator.Cpt
 import bn.elicitator.Variable
 
 /**
@@ -10,4 +11,5 @@ class VariableFamily {
 	List<Variable> parents  = []
 	Variable variable       = null
 	List<Variable> children = []
+	Cpt cpt                 = null
 }
