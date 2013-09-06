@@ -43,11 +43,15 @@ class ContentTagLib {
 	/**
 	 * @attr page REQUIRED
 	 * @attr class
+	 * @attr id
 	 */
 	def link = { attrs, body ->
+
 		String alias
 		String classNames = ""
-		Object page = attrs.page
+		String id         = null
+		Object page       = attrs.page
+
 		if ( page instanceof ContentPage ) {
 			alias = page.alias
 		} else {
@@ -58,7 +62,11 @@ class ContentTagLib {
 			classNames = attrs.remove( 'class' )
 		}
 
-		out << g.link( [ controller : 'contentView', params : [ page : alias ], class : classNames ], body )
+		if ( attrs.containsKey( 'id' ) ) {
+			id = attrs.remove( 'id' )
+		}
+
+		out << g.link( [ controller : 'contentView', elementId : id, params : [ page : alias ], class : classNames ], body )
 	}
 
 }

@@ -23,6 +23,7 @@
 
 .qtip .qtip-content {
 	padding: 1.5em 1.5em 1em 1.5em;
+	line-height: 1.2;
 }
 
 .qtip .button-wrapper {

@@ -23,8 +23,12 @@
 		<title>Identify likelihood of scenarios</title>
 		<r:require module="elicitList" />
 	</head>
-	
+
 	<body>
+
+		<help:help index="1" targetId="first-variable" title="To begin...">
+			More HELP!
+		</help:help>
 
 		<g:if test="${flash.message}">
 			<div class="message">

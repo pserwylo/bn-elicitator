@@ -76,6 +76,11 @@
 			</div>
 		</g:if>--}%
 
+		<help:help index="-10" targetId="action-help" title="Need help?">
+			<p>At any point, you can check out the <bnContent:link page="help">help page</bnContent:link> for detailed help.
+			If this doesn't explain what you were after, feel free to contact <a href="mailto:peter.serwylo@monash.edu">Peter Serwylo</a>.</p>
+		</help:help>
+
 		<div id="headingWrapper">
 			<sec:ifLoggedIn>
 				<div id="user-info">
@@ -83,8 +88,9 @@
 					<g:message code="main.welcome" args="${[ bnUser.realName() ]}" />
 					</div>
 					<bnContent:link
-							page="${ContentPage.HELP}"
-							class="help">
+						id="action-help"
+						page="${ContentPage.HELP}"
+						class="help">
 						Help
 					</bnContent:link>
 					<bnContent:link

@@ -66,13 +66,14 @@ class Das2004TagLib {
 		List<Long> completedIds  = das2004Service.completed*.id
 
 		out << "<ul id='all-children-list' class='variable-list'>\n"
-		for( Variable var in allocation.variables ) {
+		allocation.variables.eachWithIndex { Variable var, int i ->
 			int parentCount = relevantArcs.count { it.child.variable.id == var.id }
 			String action = ( parentCount > 1 ) ? "expected" : "likelihood"
 			String clazz  = completedIds.contains( var.id ) ? "doesnt-need-review" : "needs-review"
+			String id     = i == 0 ? "id='first-variable'" : ""
 			out << """
 				<li class='variable-item $clazz'>
-					<a href='${createLink( controller: 'das2004', action: action, params: [ id : var.id ] )}'>${bn.variable( [ var: var, includeDescription: false ] )}</a>
+					<a $id href='${createLink( controller: 'das2004', action: action, params: [ id : var.id ] )}'>${bn.variable( [ var: var, includeDescription: false ] )}</a>
 				</li>
 				"""
 		}

@@ -20,10 +20,10 @@ if ( typeof bn === 'undefined' ) {
 	bn = {};
 }
 
-bn.HelpInfo = klass( function( target, title, text, index ) {
+bn.HelpInfo = klass( function( targetId, title, text, index ) {
 	this.title  = title;
 	this.text   = text;
-	this.target = target;
+	this.targetId = targetId;
 	this.index  = index;
 }).methods({
 
@@ -60,8 +60,8 @@ bn.HelpClass = klass( function() {
 		}
 	},
 
-	queue : function( index, target, title, text ) {
-		this.helpQueue[ index ] = new bn.HelpInfo( target, title, text, index );
+	queue : function( index, targetId, title, text ) {
+		this.helpQueue[ index ] = new bn.HelpInfo( targetId, title, text, index );
 	},
 
 	hideCurrent : function() {
@@ -72,17 +72,22 @@ bn.HelpClass = klass( function() {
 	},
 
 	show : function() {
+		var self = this;
 		var helpInfo = this.getCurrent();
 		if ( helpInfo != null ) {
 			$(document).ready( function() {
-				$( helpInfo.target ).qtip({
+				var result = $( "#" + helpInfo.targetId ).qtip({
 					id       : helpInfo.getId(),
 					suppress : false,
-					show     : { ready: true },
+					show     : { ready : true },
 					hide     : false,
 					content  : {
 						text  : helpInfo.text,
-						title : helpInfo.title
+						title : helpInfo.title,
+						button : true
+					},
+					style : {
+						classes : 'qtip-green qtip-rounded qtip-shadow'
 					},
 					position : {
 						/*
@@ -93,8 +98,17 @@ bn.HelpClass = klass( function() {
 						adjust   : {
 							method : 'flipinvert'
 						}
+					},
+					events : {
+						render : function() {
+							helpInfo.getDom().find( '.qtip-close' ).click( function() {
+								self.next();
+							})
+						}
 					}
 				});
+
+
 
 			});
 		}
