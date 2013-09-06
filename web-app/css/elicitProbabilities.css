@@ -117,8 +117,9 @@
 	font-weight: normal;
 }
 
-.if-state .state, .then-state .state {
+.if-state .state em, .then-state .state em {
 	font-weight: bold;
+	font-style: normal;
 }
 
 @media screen and ( max-width: 800px ) {

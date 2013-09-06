@@ -112,7 +112,6 @@
 					items.each( function( i, item ) {
 						if ( $( item ).height() > maxHeight ) {
 							maxHeight = $( item ).height();
-							console.log( maxHeight );
 						}
 					}).each( function( i, item ) {
 						$( item ).height( maxHeight );
@@ -144,6 +143,12 @@
 
 <div class="elicit-probabilities">
 
+	<help:help index="1" uniqueId="probabilities-das2004-expected" targetId="scenario-container" title="What do you expect?">
+		Imagine you are considering a request from somebody who wants to insure their car.
+		We have <em>some</em> information and are missing other info.
+		We'd like you to tell us what is most likely the case for the missing information.
+	</help:help>
+
 	<div class="column-wrapper">
 
 		<div class="column-left">
@@ -161,7 +166,9 @@
 					]}" />
 				</div>
 
-				<das2004:expected variable="${variable}" />
+				<div id="scenario-container">
+					<das2004:expected variable="${variable}" />
+				</div>
 
 			</fieldset>
 

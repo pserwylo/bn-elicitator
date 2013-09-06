@@ -26,8 +26,8 @@
 
 	<body>
 
-		<help:help index="1" targetId="first-variable" title="To begin...">
-			More HELP!
+		<help:help index="1" uniqueId="probability-index-completing-survey" targetId="first-variable" title="Completing the survey">
+			<p>To complete the survey, please click on these for questions that will help us better understand what influences these and how likely they are.</p>
 		</help:help>
 
 		<g:if test="${flash.message}">

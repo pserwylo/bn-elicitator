@@ -114,6 +114,10 @@
 
 <div class="elicit-probabilities">
 
+	<help:help index="1" uniqueId="probabilities-das2004-likelihood" targetId="scenario-container" title="How often does this happen?">
+		If you were presented with the above scenario 100 times, how often would you expect this outcome?
+	</help:help>
+
 	<div class="column-wrapper">
 
 		<div class="column-left">
@@ -131,7 +135,9 @@
 					]}" />
 				</div>
 
-				<das2004:likelihood variable="${variable}" />
+				<div id="scenario-container">
+					<das2004:likelihood variable="${variable}" />
+				</div>
 
 			</fieldset>
 

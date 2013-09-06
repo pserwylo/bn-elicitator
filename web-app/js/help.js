@@ -20,11 +20,14 @@ if ( typeof bn === 'undefined' ) {
 	bn = {};
 }
 
-bn.HelpInfo = klass( function( targetId, title, text, index ) {
-	this.title  = title;
-	this.text   = text;
+bn.HelpInfo = klass( function( uniqueId, targetId, title, text, index ) {
+
+	this.title    = title;
+	this.text     = text;
 	this.targetId = targetId;
-	this.index  = index;
+	this.uniqueId = uniqueId;
+	this.index    = index;
+
 }).methods({
 
 	getId : function() {
@@ -60,8 +63,9 @@ bn.HelpClass = klass( function() {
 		}
 	},
 
-	queue : function( index, targetId, title, text ) {
-		this.helpQueue[ index ] = new bn.HelpInfo( targetId, title, text, index );
+	queue : function( index, uniqueId, targetId, title, text ) {
+		bn.log( "Queueing help message for '" + targetId + "'." );
+		this.helpQueue[ index ] = new bn.HelpInfo( uniqueId, targetId, title, text, index );
 	},
 
 	hideCurrent : function() {
@@ -72,44 +76,55 @@ bn.HelpClass = klass( function() {
 	},
 
 	show : function() {
+
 		var self = this;
 		var helpInfo = this.getCurrent();
 		if ( helpInfo != null ) {
+
 			$(document).ready( function() {
-				var result = $( "#" + helpInfo.targetId ).qtip({
-					id       : helpInfo.getId(),
-					suppress : false,
-					show     : { ready : true },
-					hide     : false,
-					content  : {
-						text  : helpInfo.text,
-						title : helpInfo.title,
-						button : true
-					},
-					style : {
-						classes : 'qtip-green qtip-rounded qtip-shadow'
-					},
-					position : {
-						/*
-						my       : 'left center',
-						at       : 'right center',
-						*/
-						viewport : $( window ),
-						adjust   : {
-							method : 'flipinvert'
+
+				var target = $( "#" + helpInfo.targetId );
+
+				if ( target.length == 0 ) {
+
+					bn.log( "Couldn't show help for '" + helpInfo.targetId + "' - element not found." );
+
+				} else {
+
+					bn.log( "Showing help for '" + helpInfo.targetId + "'." );
+
+					target.qtip({
+						id       : helpInfo.getId(),
+						suppress : false,
+						show     : { ready : true },
+						hide     : false,
+						content  : {
+							text  : helpInfo.text,
+							title : helpInfo.title,
+							button : true
+						},
+						style : {
+							classes : 'qtip-green qtip-rounded qtip-shadow'
+						},
+						position : {
+							 my       : 'top center',
+							 at       : 'bottom center',
+							viewport : $( window ),
+							adjust   : {
+								method : 'flipinvert'
+							}
+						},
+						events : {
+							render : function() {
+								helpInfo.getDom().find( '.qtip-close' ).click( function() {
+									self.next();
+								})
+							}
 						}
-					},
-					events : {
-						render : function() {
-							helpInfo.getDom().find( '.qtip-close' ).click( function() {
-								self.next();
-							})
-						}
-					}
-				});
+					});
 
-
-
+					$.post( bn.config.webroot + 'helpRead/read', { uniqueId : helpInfo.uniqueId } );
+				}
 			});
 		}
 	},

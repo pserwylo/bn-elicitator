@@ -167,7 +167,7 @@ class Das2004TagLib {
 			<div class='question comparison hidden'>
 				<div class='which'>
 					<div class='more-impotant'>
-						${message( [ code : 'elicit.probabilities.importance.which', args : [ child.readableLabel ] ])}
+						${bn.htmlMessage( [ code : 'elicit.probabilities.importance.which', args : [ child.readableLabel ] ])}
 					</div>
 					<div class='most-important'>
 						<div class='large'>
@@ -185,7 +185,7 @@ class Das2004TagLib {
 					</div>
 				</div>
 				<div class='how-much hidden'>
-					${message( [ code : 'elicit.probabilities.importance.how-much' ] )}
+					${bn.htmlMessage( [ code : 'elicit.probabilities.importance.how-much' ] )}
 					<div class='weights'>
 					"""
 
@@ -319,15 +319,15 @@ class Das2004TagLib {
 		if ( parentConfig ) {
 			parentConfig.allParentStates().eachWithIndex { State parentState, int i ->
 				String ifAnd = i > 0 ? " and " : "If "
-				String messageIfParentState = message( [ code : 'elicit.probabilities.likelihood.if-state', args : [ parentState.description ] ] )
+				String messageIfParentState = bn.htmlMessage( [ code : 'elicit.probabilities.likelihood.if-state', args : [ parentState.description ] ] )
 				out << "<span class='if-state $ifAnd'>$ifAnd $messageIfParentState</span>"
 			}
-			messageThenProbability = message( [ code : 'elicit.probabilities.likelihood.then-probability' ] )
+			messageThenProbability = bn.htmlMessage( [ code : 'elicit.probabilities.likelihood.then-probability' ] )
 		} else {
-			messageThenProbability = message( [ code : 'elicit.probabilities.likelihood.marginal-probability' ] )
+			messageThenProbability = bn.htmlMessage( [ code : 'elicit.probabilities.likelihood.marginal-probability' ] )
 		}
 
-		String messageThenState = message( [ code : 'elicit.probabilities.likelihood.then-state', args : [ childState.description ] ] )
+		String messageThenState = bn.htmlMessage( [ code : 'elicit.probabilities.likelihood.then-state', args : [ childState.description ] ] )
 		out << """
 			<span class='then-probability'>$messageThenProbability</span>
 				<span class='then-state'>$messageThenState</span>
@@ -410,7 +410,7 @@ class Das2004TagLib {
 			return
 		}
 
-		String messageIfParentState = message( [ code : 'elicit.probabilities.expected.if-state', args : [ parentState.description ] ] )
+		String messageIfParentState = bn.htmlMessage( [ code : 'elicit.probabilities.expected.if-state', args : [ parentState.description ] ] )
 		out << """
 			<div class='question compatible-configurations hidden'>
 				<span class='if-state'>$messageIfParentState</span>
@@ -418,7 +418,7 @@ class Das2004TagLib {
 				"""
 
 		otherParents.eachWithIndex{ Variable otherParent, int i ->
-			String messageThenOtherParentState = message( [ code : 'elicit.probabilities.expected.then-state', args : [ otherParent ] ] )
+			String messageThenOtherParentState = bn.htmlMessage( [ code : 'elicit.probabilities.expected.then-state', args : [ otherParent ] ] )
 
 			if ( i > 0 ) {
 				messageThenOtherParentState = "and $messageThenOtherParentState"

@@ -36,9 +36,19 @@
 		<link rel="apple-touch-icon" href="${resource(dir: 'images', file: 'apple-touch-icon.png')}">
 		<link rel="apple-touch-icon" sizes="114x114" href="${resource(dir: 'images', file: 'apple-touch-icon-retina.png')}">
 
-		<g:javascript>
-			window.config = {
-				webroot: '<g:resource absolute="true" dir="/" />'
+		<script type="text/javascript">
+			if ( typeof bn === "undefined" ) {
+				bn = {};
+			}
+
+			bn.config = {
+				webroot : '<g:resource absolute="true" dir="/" />'
+			};
+
+			bn.log = function( message ) {
+				if ( typeof console !== "undefined" ) {
+					console.log( message );
+				}
 			};
 
 			window.onerror = function( msg, url, line ) {
@@ -55,8 +65,7 @@
 					}
 				);
 			};
-
-		</g:javascript>
+		</script>
 
 		<g:javascript library="global"/>
         <r:layoutResources />
@@ -76,9 +85,9 @@
 			</div>
 		</g:if>--}%
 
-		<help:help index="-10" targetId="action-help" title="Need help?">
+		<help:help index="-10" uniqueId="global-help" targetId="action-help" title="Need help?">
 			<p>At any point, you can check out the <bnContent:link page="help">help page</bnContent:link> for detailed help.
-			If this doesn't explain what you were after, feel free to contact <a href="mailto:peter.serwylo@monash.edu">Peter Serwylo</a>.</p>
+			If you still have questions, feel free to contact <a href="mailto:peter.serwylo@monash.edu">Peter Serwylo</a>.</p>
 		</help:help>
 
 		<div id="headingWrapper">
