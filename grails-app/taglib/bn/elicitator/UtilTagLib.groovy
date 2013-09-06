@@ -22,6 +22,10 @@ class UtilTagLib {
 
 	static namespace = "bn"
 
+	def htmlMessage = { attrs, body ->
+		out << g.message(attrs, body).decodeHTML()
+	}
+
 	def backToTop = { attrs, body ->
 		out << "<span class='back-to-top'><a href='#top'>(back to top)</a></span>"
 	}

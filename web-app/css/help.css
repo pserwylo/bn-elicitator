@@ -16,29 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.help-overlay {
-
-	display: none;
-	max-width: 350px;
-	min-width: 150px;
-	padding: 1em;
-	color: #fff;
-	border-radius: 5px;
-	box-shadow: 1px 1px 3px #777;
-	/*background-color: #2a9aec;
-	border: solid 2px #1d57ec;*/
-	background-color: #4c882f;
-	border: solid 2px #396623;
-
+.qtip .qtip-titlebar {
+	font-size: 1.2em;
+	padding: 1.2em;
 }
 
-.help-overlay .button-wrapper {
+.qtip .qtip-content {
+	padding: 1.5em 1.5em 1em 1.5em;
+}
+
+.qtip .button-wrapper {
 	width: 100%;
 	text-align: right;
-	margin-top: 1.2em;
+	margin-top: 1.5em;
 }
 
-.help-overlay .button-wrapper button {
+.qtip .button-wrapper button {
 	background-color: #c75456;
 	border: solid 2px #8e0513;
 	color: #fff;
@@ -48,36 +41,4 @@
 	background-color: #fe9e9f;
 	border: solid 2px #8e0513;
 	color: #fff;
-}
-
-.help-overlay .title {
-	padding-bottom: 0.3em;
-	font-size: 1.2em;
-}
-
-.help-overlay .pointer {
-	width: 0;
-	height: 0;
-	border-bottom: 10px solid transparent;
-	border-top: 10px solid transparent;
-}
-
-.help-overlay.doesnt-fit .pointer {
-	display: none;
-}
-
-.help-overlay.direction-left .pointer {
-	border-left:none;
-	border-right: 20px solid #4c882f;
-	position: absolute;
-	left: -20px;
-	top: 20px;
-}
-
-.help-overlay.direction-right .pointer {
-	border-left: 20px solid #4c882f;
-	border-right:none;
-	position: absolute;
-	right: -20px;
-	top: 20px;
 }

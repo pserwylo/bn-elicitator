@@ -20,9 +20,20 @@ modules = {
 
 	/* Global and utility styles */
 
+	"jquery-ui" {
+		resource url: 'css/lib/jquery-ui/smoothness/jquery-ui.min.css'
+		resource url: 'js/lib/jquery-ui/jquery-ui.min.js'
+
+		resource url: 'css/lib/qtip/jquery.qtip.min.css'
+		resource url: 'js/lib/qtip/jquery.qtip.min.js'
+	}
+
     global {
 		dependsOn( [ 'jquery', 'jquery-ui' ] )
 		resource url: 'css/global.css'
+		resource url: 'css/help.css'
+		resource url: 'js/lib/klass/klass.min.js'
+		resource url: 'js/help.js'
 	}
 
 	variableList {

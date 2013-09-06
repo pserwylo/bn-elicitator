@@ -137,11 +137,11 @@
 	<fieldset class="default">
 
 		<legend>
-			<g:message code="elicit.probabilities.expected.header" args="${[ "$variable.readableLabel ${bn.variableDescription( [ var : variable ] )}" ]}" />
+			<bn:htmlMessage code="elicit.probabilities.expected.header" args="${[ "$variable.readableLabel ${bn.variableDescription( [ var : variable ] )}" ]}" />
 		</legend>
 
 		<div id="scenario-header">
-			<g:message code="elicit.probabilities.expected.current-total" args="${[
+			<bn:htmlMessage code="elicit.probabilities.expected.current-total" args="${[
 					"<span id='scenario-number'>1</span>",
 					"<span id='total-scenarios'></span>",
 			]}" />

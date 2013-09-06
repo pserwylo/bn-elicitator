@@ -28,6 +28,8 @@ class VariableTagLib {
 	VariableService variableService
 	UserService     userService
 
+	static int counter = 1;
+
 	/**
 	 * @attr id
 	 * @attr classes
@@ -64,19 +66,38 @@ class VariableTagLib {
 		out << """<span class='variable $classes'>${var.readableLabel}${includeDescription ? ' ' + bn.variableDescription( [ var: var ] ) : ''}</span>"""
 	}
 
+	public static String nextId() {
+		return "misc-id-${counter++}"
+	}
+
 	public static String generateTooltip( String tooltip, String id = null, String classes = null, String content = null, Boolean includeAlert = true )
 	{
-		id = id ? "id='${id}'" : ""
+		if ( !id ) {
+			id = nextId()
+		}
 
 		if ( content == null ) {
 			content = "(?)"
 		}
 
-		String a    = includeAlert ? "<a href='javascript:alert( \"${tooltip.encodeAsHTML()}\" );'>" : ""
-		String aEnd = includeAlert ? "</a>" : ""
-
-		// Had to fudge the formatting of the HTML so that there was not a space after the tooltip.
-		return """<span ${id} class="tooltip ${classes ?: ''}">${a}${content}${aEnd}<span class="tip">${tooltip.encodeAsHTML().replaceAll( "\n", " <br /> " )}</span></span>""".trim().replaceAll( "\n", "" )
+		"""
+		<span id='$id'>${content}</span>
+		<script type='text/javascript'>
+			\$(document).ready( function() {
+				\$( '#$id' ).qtip({
+					content: {
+						text: "${tooltip.encodeAsJavaScript()}"
+					},
+					position: {
+						viewport: \$( window ),
+						adjust: {
+							method: 'flip'
+						}
+					}
+				});
+			});
+		</script>
+		"""
 	}
 
 	/**

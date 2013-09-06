@@ -16,232 +16,99 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var HelpOverlay = klass( function( domElement ) {
+if ( typeof bn === 'undefined' ) {
+	bn = {};
+}
 
-	var self         = this;
-	this.domElement  = domElement;
-	this.isAlive     = true;
-	this.nextOverlay = null;
-	this.isVisible   = true;
-
-	$( this.domElement ).find( 'button.dismiss').click( function() {
-		self.remove();
-	});
-
-	var detached = $( this.domElement ).detach();
-	$( 'body' ).append( detached );
-
+bn.HelpInfo = klass( function( target, title, text, index ) {
+	this.title  = title;
+	this.text   = text;
+	this.target = target;
+	this.index  = index;
 }).methods({
 
-	hide: function( animate ) {
-		$( this.domElement ).hide();
-		this.isVisible = false;
+	getId : function() {
+		return "tooltip-" + this.index;
 	},
 
-	show: function() {
-		if ( this.isAlive ) {
-			$( this.domElement ).show( 'fade', 'slow' );
-			this.isVisible = true;
-			this.position();
-			this.scrollTo();
-		}
-	},
-
-	scrollTo: function() {
-		if ( this.isAlive ) {
-
-			var overlayTop = $( this.domElement ).offset().top;
-			var overlayHeight = $( this.domElement ).outerHeight();
-
-			var viewportScroll = $( window ).scrollTop();
-			var viewportHeight = $( window ).height();
-
-			// If the item is too far below the screen viewport, we need to scroll down to it, until the bottom of it is visible...
-			if ( overlayTop + overlayHeight > viewportScroll + viewportHeight || overlayTop < viewportScroll) {
-				$( 'body' ).animate( { scrollTop: overlayTop } );
-			}
-		}
-	},
-
-	remove: function() {
-		$( this.domElement ).hide( 'fade', 'slow', function() { $( this ).remove(); } );
-		$.post( window.config.webroot + 'helpRead/read', { messageHash: this.getHash() } );
-		this.isAlive = false;
-
-		if ( this.nextOverlay != null ) {
-			this.nextOverlay.show();
-		}
-	},
-
-	getHash: function() {
-		return $( this.domElement ).find( 'input:hidden[name=hash]' ).val();
-	},
-
-	getIndex: function() {
-		return parseInt( $( this.domElement ).find( 'input:hidden[name=index]' ).val() );
-	},
-
-	setNext: function( next ) {
-		this.nextOverlay = next;
-		return this;
-	},
-
-	getForSelector: function() {
-		return $( this.domElement ).find( 'input:hidden[name=forSelector]').val();
-	},
-
-	shouldDisplay: function() {
-		var needsDisplay = false;
-		var forSelector = this.getForSelector();
-		if ( typeof forSelector === "undefined" ) {
-			needsDisplay = true;
-		} else {
-			var forItem = $( forSelector );
-			if ( forItem.length > 0 ) {
-				needsDisplay = true;
-			}
-		}
-		return needsDisplay;
-	},
-
-	/**
-	 * Position the overlay.
-	 * Take into account whether it is to the left or to the right of the item it is attached to.
-	 */
-	position: function() {
-
-		if ( !this.isAlive || !this.isVisible ) {
-			return false;
-		}
-
-		var forSelector = this.getForSelector();
-		if ( typeof forSelector === "undefined" ) {
-
-			$( this.domElement )
-				.css( 'display' , 'block' )
-				.css( 'position', 'absolute' )
-				.css( 'top'     , 50 )
-				.css( 'left'    , $( window).width() / 2 - $( this.domElement ).width() / 2 );
-
-		} else {
-
-			var forItem = $( forSelector );
-
-			if ( forItem.length == 0 ) {
-				throw new Error( "HelpOverlay: Could not find selector '" + forSelector + "'" );
-			}
-
-			var top = forItem.offset().top - 20;
-
-			var locationValue = $( this.domElement ).find( 'input:hidden[name=location]' ).val();
-			var location = ( typeof locationValue !== "undefined" ) ? locationValue : "right";
-
-			var left = 0;
-
-			if ( location == "left" ) {
-				left = forItem.offset().left - $( this.domElement ).outerWidth() - 20;
-			} else {
-				left = forItem.offset().left + forItem.outerWidth() + 20;
-			}
-
-			$( this.domElement )
-				.css( 'display' , 'block' )
-				.css( 'position', 'absolute' )
-				.css( 'top'     , top )
-				.css( 'left'    , left );
-
-			var overlaywidth = $( this.domElement ).width();
-			var windowWidth  = $( window ).width();
-
-			// If we end up off the screen for some reason, then just centre the message on the screen.
-			if ( left < 5 ) {
-
-				$( this.domElement )
-					.addClass( 'doesnt-fit' )
-					.css     ( 'left', 5 );
-
-			} else if ( left + overlaywidth > windowWidth - 30 ) {
-
-				$( this.domElement )
-					.addClass( 'doesnt-fit' )
-					.css     ( 'left', windowWidth - 30 - overlaywidth );
-
-			} else {
-
-				$( this.domElement ).removeClass( 'doesnt-fit' );
-
-			}
-
-		}
-
-		return true;
+	getDom : function() {
+		return $( "#qtip-" + this.getId() );
 	}
+
 });
 
-var HelpOverlayManager = klass( function() {
+bn.HelpClass = klass( function() {
 
 	var self = this;
-	self.overlays = [];
 
-	$( '.help-overlay' ).each( function() {
-		var overlay = new HelpOverlay( this );
-		if ( overlay.shouldDisplay() ) {
-			self.overlays.push( overlay );
-		}
-	});
-
-	if ( self.overlays.length > 0 ) {
-		$( window ).resize( function() { self.positionAll() } );
-		setTimeout( function(){ self.delayedInit() }, 10 );
-		self.overlays.sort( self.compareOverlays );
-		for ( var i = 1; i < self.overlays.length; i ++ ) {
-			self.overlays[ i - 1 ].setNext( self.overlays[ i ] );
-			self.overlays[ i ].hide( false );
-		}
-	}
+	/** @var bn.HelpInfo[] */
+	this.helpQueue = [];
+	this.current = -1;
+	$( document).ready( function() {
+		setTimeout( function() {
+			self.next();
+		}, 20 );
+	})
 
 }).methods({
 
-	/**
-	 * In response to a window resize, and also after an initial timeout (so that we position stuff after any
-	 * hiding/showing due to toggle buttons is performed).
-	 */
-	positionAll: function() {
-		for ( var i = 0; i < this.overlays.length; i ++ ) {
-			if ( this.overlays[ i ].position() ) {
-				return;
-			}
-		}
-	},
-
-	/**
-	 * Used for the array.sort method, to sort a list of HelpOverlay objects.
-	 * @param a {HelpOverlay}
-	 * @param b {HelpOverlay}
-	 * @return {number}
-	 */
-	compareOverlays: function( a, b ) {
-		if ( a.getIndex() < b.getIndex() ) {
-			return -1;
-		} else if ( a.getIndex() > b.getIndex() ) {
-			return 1;
+	getCurrent : function() {
+		if ( this.current < this.helpQueue.length && typeof this.helpQueue[ this.current ] !== "undefined" ) {
+			return this.helpQueue[ this.current ];
 		} else {
-			if ( typeof console !== "undefined" ) {
-				console.log( "Error: Two help messages have the same index on this page." );
-			}
-			return 0;
+			return null;
 		}
 	},
 
-	delayedInit: function() {
-		this.positionAll();
-		this.overlays[ 0 ].scrollTo();
+	queue : function( index, target, title, text ) {
+		this.helpQueue[ index ] = new bn.HelpInfo( target, title, text, index );
+	},
+
+	hideCurrent : function() {
+		var info = this.getCurrent();
+		if ( info != null ) {
+			info.getDom().qtip( "destroy" );
+		}
+	},
+
+	show : function() {
+		var helpInfo = this.getCurrent();
+		if ( helpInfo != null ) {
+			$(document).ready( function() {
+				$( helpInfo.target ).qtip({
+					id       : helpInfo.getId(),
+					suppress : false,
+					show     : { ready: true },
+					hide     : false,
+					content  : {
+						text  : helpInfo.text,
+						title : helpInfo.title
+					},
+					position : {
+						/*
+						my       : 'left center',
+						at       : 'right center',
+						*/
+						viewport : $( window ),
+						adjust   : {
+							method : 'flipinvert'
+						}
+					}
+				});
+
+			});
+		}
+	},
+
+	next : function() {
+		this.hideCurrent();
+		this.current ++;
+		while ( this.current < this.helpQueue.length && typeof this.helpQueue[ this.current ] === "undefined" ) {
+			this.current ++;
+		}
+		this.show();
 	}
 
 });
 
-(function() {
-
-	new HelpOverlayManager();
-
-})();
+bn.help = new bn.HelpClass();
