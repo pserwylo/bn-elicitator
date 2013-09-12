@@ -104,6 +104,18 @@
 				}
 			});
 
+			probabilityOptions.find( 'label' ).qtip({
+				content : {
+					title : function( api ) {
+						return $( this ).attr( 'data-tooltip-title' );
+					}
+				},
+				position : {
+					my : "top middle",
+					at : "bottom middle"
+				}
+			});
+
 		});
 	</g:javascript>
 
@@ -125,15 +137,11 @@
 			<fieldset class="default">
 
 				<legend>
-					<bn:htmlMessage code="elicit.probabilities.likelihood.header" args="${[ "$variable.readableLabel ${bn.variableDescription( [ var : variable ] )}" ]}" />
+					<bn:htmlMessage code="elicit.probabilities.likelihood.header" />
+					<span class='scenario-counters'>
+						(<span id='scenario-number'>1</span> of <span id='total-scenarios'></span>)
+					</span>
 				</legend>
-
-				<div id="scenario-header">
-					<bn:htmlMessage code="elicit.probabilities.expected.current-total" args="${[
-							"<span id='scenario-number'>1</span>",
-							"<span id='total-scenarios'></span>",
-					]}" />
-				</div>
 
 				<div id="scenario-container">
 					<das2004:likelihood variable="${variable}" />

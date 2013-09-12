@@ -21,6 +21,12 @@
 	vertical-align: top;
 }
 
+.ui-button-text em {
+	font-style: normal;
+	font-size: 0.9em;
+	font-weight: bold;
+}
+
 /* =======================================================
               Compatible parent configurations
    ======================================================= */
@@ -68,7 +74,6 @@
 	display: block;
 	height: 100%;
 	text-align: center;
-	vertical-align: middle;
 }
 
 .small .ui-button {
@@ -78,6 +83,7 @@
 
 .small .ui-button-text {
 	font-weight: normal;
+	font-size: 0.8em;
 }
 
 .label {
@@ -97,8 +103,17 @@
         Probability distribution of child over parents
    ======================================================= */
 
-.question.likelihood {
-	text-align: center;
+ul.if-state li, ul.then-state li {
+	margin: 0.3em 0;
+}
+
+ul.if-state, ul.then-state {
+	margin-left: 1.5em;
+}
+
+.if-state-header, .then-state-header {
+	display: block;
+	margin-top: 1em;
 }
 
 .probabilities {
@@ -112,9 +127,7 @@
 }
 
 .probability-explaination {
-	display: block;
-	font-size: 0.75em;
-	font-weight: normal;
+	display: none;
 }
 
 .if-state .state em, .then-state .state em {
@@ -124,12 +137,25 @@
 
 @media screen and ( max-width: 800px ) {
 
+	fieldset {
+		width: 100%;
+	}
+
 	.probabilities .ui-button {
 		display: block;
 		width: 100%;
+		max-width: none;
 		margin: 0.3em auto;
 		border-radius: 0.3em;
 		font-size: 1em;
+		font-weight: bold;
+	}
+
+	.probability-explaination {
+		display: block;
+		font-size: 0.75em;
+		font-weight: normal;
+		color: #777;
 	}
 
 	.probabilities .ui-button-text {
@@ -137,17 +163,40 @@
 		line-height: 1.1em;
 	}
 
-	.probabilities {
-		float: left;
-		width: 160px;
-		padding-right: 0.5em;
-		border-right: solid 1px #ccc;
+	ul.siblings {
+		display: block;
 	}
 
-	.then-state {
-		padding-left: 0.5em;
-		margin-top: 6em;
+	ul.siblings li {
+		width: 100%;
+	}
+
+	.ui-buttonset,
+	.most-important,
+	.most-important .large {
+		width: 100%;
+	}
+
+	.large .ui-button,
+	.ui-button {
 		display: block;
+		width: 100%;
+		max-width: none;
+		border-radius: 5px;
+		margin: 0.3em 0;
+		height: auto;
+	}
+
+	.scenario-counters {
+		display: block;
+	}
+
+	.ui-button-text .label {
+		display: inline;
+	}
+
+	ul.if-state, ul.then-state {
+		margin-left: 0;
 	}
 
 }

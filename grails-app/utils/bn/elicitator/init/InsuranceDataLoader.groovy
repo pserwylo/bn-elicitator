@@ -174,11 +174,11 @@ class InsuranceDataLoader extends DataLoader {
 		    ],
 		    "RuggedAuto" : [
 				new State( "EggShell", "Clients car is <em>not rugged</em> at all" ),
-				new State( "Football", "Clients car <em>not particularly weak or strong</em>, just regular" ),
+				new State( "Football", "Clients car is <em>not particularly weak or strong</em>, just regular" ),
 				new State( "Tank",     "Clients car is <em>particularly strong</em>" ),
 		    ],
 		    "Accident" : [
-				new State( "None",     "Client will <em>not get into an accident<em>" ),
+				new State( "None",     "Client will <em>not get into an accident</em>" ),
 				new State( "Mild",     "Client will get themselves into a <em>mild accident</em>" ),
 				new State( "Moderate", "Client will end up in a <em>moderate accident</em>" ),
 				new State( "Severe",   "Client will get into a <em>severe accident</em>"  ),
@@ -191,9 +191,9 @@ class InsuranceDataLoader extends DataLoader {
 				/*new State( "SuperLuxury" ),*/
 		    ],
 		    "DrivQuality" : [
-				new State( "Poor"      ),
-				new State( "Normal"    ),
-				new State( "Excellent" ),
+				new State( "Poor",      "Quality of clients driving is <em>poor</em>" ),
+				new State( "Normal",    "Quality of clients driving is <em>normal</em>" ),
+				new State( "Excellent", "Quality of clients driving is <em>excellent</em>" ),
 		    ],
 		    "Mileage" : [
 				new State( "FiveThou",   "Clients car has driven <em>less than 10,000km</em>" ),
@@ -202,17 +202,17 @@ class InsuranceDataLoader extends DataLoader {
 				new State( "Domino",     "Clients car has driven <em>over 100,000km</em>" ),
 		    ],
 		    "Antilock" : [
-				new State( "True",  "Clients car <em>has</em> anti-lock brakes installed" ),
-				new State( "False", "Clients car <em>does not have</em> anti-lock brakes" ),
+				new State( "True",  "Clients car <em>has anti-lock brakes</em> installed" ),
+				new State( "False", "Clients car <em>does not have anti-lock</em> brakes" ),
 		    ],
 		    "DrivingSkill" : [
-				new State( "SubStandard"  ),
-				new State( "Normal"       ),
-				new State( "Expert"       ),
+				new State( "SubStandard", "Client is <em>not a very good driver</em>" ),
+				new State( "Normal",      "Client has <em>normal driving skills</em>" ),
+				new State( "Expert",      "Client has <em>excellent driving skills</em>" ),
 		    ],
 		    "SeniorTrain" : [
-				new State( "True",  "Client <em>has received</em> advanced driver training" ),
-				new State( "False", "Client <em>does not have any</em> advanced driver training beyond a license test" ),
+				new State( "True",  "Client <em>has</em> received <em>advanced driver training</em>" ),
+				new State( "False", "Client <em>does not have</em> any <em>advanced driver training</em> beyond a license test" ),
 		    ],
 		    "ThisCarCost" : [
 				new State( "Thousand",    "Client will <em>claim less than \$1,000</em> to fix <em>their</em> car" ),
@@ -237,8 +237,8 @@ class InsuranceDataLoader extends DataLoader {
 				new State( "Rural",  "Client usually parks their car in <em>rural streets</em>"  ),
 		    ],
 		    "AntiTheft" : [
-				new State( "True",  "Clients car <em>has</em> anti-theft device installed"  ),
-				new State( "False", "Clients car <em>does not have</em> any anti-theft devices installed" ),
+				new State( "True",  "Clients car <em>has anti-theft device</em> installed"  ),
+				new State( "False", "Clients car <em>does not have</em> any <em>anti-theft devices</em> installed" ),
 		    ],
 		    "PropCost" : [
 				new State( "Thousand",    "Client will cause <em>less than \$1,000</em> in property damage" ),
@@ -269,8 +269,8 @@ class InsuranceDataLoader extends DataLoader {
 				new State( "Excellent" ),
 			],*/
 			"Airbag" : [
-				new State( "True",  "Clients car <em>has</em> airbags" ),
-				new State( "False", "Clients car <em>doesn't have</em> airbags" ),
+				new State( "True",  "Clients car <em>has airbags</em>" ),
+				new State( "False", "Clients car <em>doesn't have airbags</em>" ),
 			],
 			"IliCost" : [
 				new State( "Thousand"    ),

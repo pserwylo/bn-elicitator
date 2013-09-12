@@ -138,14 +138,8 @@
 
 		<legend>
 			<bn:htmlMessage code="elicit.probabilities.expected.header" args="${[ "$variable.readableLabel ${bn.variableDescription( [ var : variable ] )}" ]}" />
+			(<span id="scenario-number">1</span> of <span id="total-scenarios"></span>)
 		</legend>
-
-		<div id="scenario-header">
-			<bn:htmlMessage code="elicit.probabilities.expected.current-total" args="${[
-					"<span id='scenario-number'>1</span>",
-					"<span id='total-scenarios'></span>",
-			]}" />
-		</div>
 
 		<das2004:importance variable="${variable}" />
 

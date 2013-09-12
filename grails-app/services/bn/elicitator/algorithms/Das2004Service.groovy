@@ -116,10 +116,12 @@ class Das2004Service {
 		}
 	}
 
-	public void populateSingleParentConfigurations( Variable parent ) {
+	public List<CompatibleParentConfiguration> populateSingleParentConfigurations( Variable parent ) {
+		List<CompatibleParentConfiguration> configs = []
 		parent.states.each { State parentState ->
-			saveCompatibleParentConfiguration( parentState, [] )
+			configs.add( saveCompatibleParentConfiguration( parentState, [] ) )
 		}
+		return configs
 	}
 
     public void saveCompatibleParentConfiguration( long parentStateId, List<Long> otherParentStateIds )
@@ -138,7 +140,7 @@ class Das2004Service {
 		saveCompatibleParentConfiguration( parentState, otherParentStates )
 	}
 
-	public void saveCompatibleParentConfiguration( State parentState, List<State> otherParentStates ) {
+	public CompatibleParentConfiguration saveCompatibleParentConfiguration( State parentState, List<State> otherParentStates ) {
 
 		def existing = CompatibleParentConfiguration.findByCreatedByAndParentState( userService.current, parentState )
 
@@ -156,6 +158,8 @@ class Das2004Service {
 			)
 		}
 		toSave.save( flush : true, failOnError : true )
+
+		return toSave
 
     }
 

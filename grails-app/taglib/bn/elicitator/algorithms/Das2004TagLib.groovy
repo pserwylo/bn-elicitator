@@ -174,13 +174,13 @@ class Das2004TagLib {
 							<input type='radio' name='$name' id='$idOne' value='$parentOne.id' />
 							<label for='$idOne'>$parentOne</label>
 						</div>
-						<div class='small'>
-							<input type='radio' name='$name' id='$idSame' value='0' />
-							<label for='$idSame'>About the same</label>
-						</div>
 						<div class='large'>
 							<input type='radio' name='$name' id='$idTwo' value='$parentTwo.id' />
 							<label for='$idTwo'>$parentTwo</label>
+						</div>
+						<div class='large'>
+							<input type='radio' name='$name' id='$idSame' value='0' />
+							<label for='$idSame'>Both have the same influence</label>
 						</div>
 					</div>
 				</div>
@@ -228,16 +228,30 @@ class Das2004TagLib {
 		Variable variable = attrs.variable
 		List<Variable> parents = bnService.getArcsByChild( variable )*.parent*.variable
 
-		if ( parents?.size() >= 1 ) {
+		if ( parents?.size() > 1 ) {
+
+			// We have already elicited the compatible parent configurations, so dive straight
+			// into the conditional probabilities...
 			out << das2004.distributionElicitation( [ child : variable, parents : parents ] )
-		} else {
-			if ( parents.size() == 1 ) {
-				das2004Service.populateSingleParentConfigurations( parents[ 0 ] )
+
+		} else if ( parents.size() == 1 ) {
+
+			// Don't need to elicit compatible parent configurations, because there is only
+			// one parent. But we still elicit conditional probabilities...
+			def configs = das2004Service.populateSingleParentConfigurations( parents[ 0 ] )
+			variable.states.each { State state ->
+				configs.each { CompatibleParentConfiguration config ->
+					out<< das2004.distributionOverParents( [ childState : state, parentConfiguration : config ] )
+				}
 			}
 
+		} else {
+
+			// Marginal probabilities for the variable with no parents...
 			variable.states.each { State state ->
 				out << das2004.distributionOverParents( [ childState : state ] )
 			}
+
 		}
 	}
 
@@ -313,35 +327,52 @@ class Das2004TagLib {
 			return
 		}
 
-		out << "<div class='question likelihood hidden'>"
+		String messageThenStateHeader = bn.htmlMessage( [ code : 'elicit.probabilities.likelihood.then-state-header' ] )
+		String messageThenState       = bn.htmlMessage( [ code : 'elicit.probabilities.likelihood.then-state', args : [ childState.description ] ] )
+		out << """
+			<div class='question likelihood hidden'>
+				<span class='then-state-header'>$messageThenStateHeader</span>
+				<ul class='then-state'>
+					<li>$messageThenState</li>
+				</ul>
+			"""
 
-		String messageThenProbability
 		if ( parentConfig ) {
+			def messageIfStateHeader = bn.htmlMessage( [ code : 'elicit.probabilities.likelihood.if-probability' ] )
+			out << "<span class='if-state-header'>$messageIfStateHeader</span>"
+			out << "<ul class='if-state'>"
 			parentConfig.allParentStates().eachWithIndex { State parentState, int i ->
-				String ifAnd = i > 0 ? " and " : "If "
-				String messageIfParentState = bn.htmlMessage( [ code : 'elicit.probabilities.likelihood.if-state', args : [ parentState.description ] ] )
-				out << "<span class='if-state $ifAnd'>$ifAnd $messageIfParentState</span>"
+				String messageIfState = bn.htmlMessage( [ code : 'elicit.probabilities.likelihood.if-state', args : [ parentState.description ] ] )
+				out << "<li>$messageIfState</li>"
 			}
-			messageThenProbability = bn.htmlMessage( [ code : 'elicit.probabilities.likelihood.then-probability' ] )
-		} else {
-			messageThenProbability = bn.htmlMessage( [ code : 'elicit.probabilities.likelihood.marginal-probability' ] )
+			out << "</ul>"
 		}
 
-		String messageThenState = bn.htmlMessage( [ code : 'elicit.probabilities.likelihood.then-state', args : [ childState.description ] ] )
+
 		out << """
-			<span class='then-probability'>$messageThenProbability</span>
-				<span class='then-state'>$messageThenState</span>
-				<span class='probabilities'>
+			<span class='probabilities'>
 				"""
 
 		PROBABILITIES.each {
 			String probabilityLabel   = it.key
 			Double probabilityPercent = it.value
 			int parentConfigurationId = parentConfig?.id ?: 0
-			String label              = "$probabilityLabel <span class='probability-explaination'>(About ${(int)(probabilityPercent)}/100 times)</span>"
+			String label              = "$probabilityLabel <span class='probability-explaination'>${(int)(probabilityPercent)} out of every 100 occasions</span>"
 			String name               = "parentConfigurationId=$parentConfigurationId,childId=$childState.variable.id,childStateId=$childState.id"
 			String id                 = "$name,probability=$probabilityPercent"
-			out << "<input type='radio' name='$name' id='$id' value='$probabilityPercent' /><label for='$id'>$label</label>"
+			String plural             = probabilityPercent == 1 ? "" : "s"
+			out << """
+				<input 
+					type='radio' 
+					name='$name' 
+					id='$id' 
+					value='$probabilityPercent' />
+			<label 
+				for='$id' 
+				data-tooltip-title='About ${(int)probabilityPercent}% of the time'
+				title="If you were presented with the above scenario <br /><em>100 times</em>, you'd expect this this outcome about <br /><em>${(int)probabilityPercent} time${plural}.</em>"
+			>$label</label>
+		"""
 		}
 
 		out << """

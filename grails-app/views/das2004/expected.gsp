@@ -49,10 +49,10 @@
 				currentScenario().show();
 
 				var nextScenario = function() {
-					currentScenario().hide( 'slide', { direction : 'right', duration : 200 }, function() {
+					currentScenario().hide( 'slide', { direction : 'up', duration : 200 }, function() {
 						currentScenarioIndex ++;
 						if ( currentScenarioIndex < configurations.length ) {
-							currentScenario().show( 'slide', { direction : 'left', duration : 200 } );
+							currentScenario().show( 'slide', { direction : 'down', duration : 200 } );
 							$( '#scenario-number' ).html( currentScenarioIndex + 1 );
 						} else {
 							nextScreen();
@@ -144,9 +144,9 @@
 <div class="elicit-probabilities">
 
 	<help:help index="1" uniqueId="probabilities-das2004-expected" targetId="scenario-container" title="What do you expect?">
-		Imagine you are considering a request from somebody who wants to insure their car.
-		We have <em>some</em> information and are missing other info.
-		We'd like you to tell us what is most likely the case for the missing information.
+		Imagine you are considering a request to insure somebodies car.
+		We have <em>some</em> information, but are missing other info.
+		What is the most likely scenario for the missing information.
 	</help:help>
 
 	<div class="column-wrapper">
@@ -157,14 +157,8 @@
 
 				<legend>
 					<bn:htmlMessage code="elicit.probabilities.expected.header" args="${[ "$variable.readableLabel ${bn.variableDescription( [ var : variable ] )}" ]}" />
+					(<span id="scenario-number">1</span> of <span id="total-scenarios"></span>)
 				</legend>
-
-				<div id="scenario-header">
-					<bn:htmlMessage code="elicit.probabilities.expected.current-total" args="${[
-							"<span id='scenario-number'>1</span>",
-							"<span id='total-scenarios'></span>",
-					]}" />
-				</div>
 
 				<div id="scenario-container">
 					<das2004:expected variable="${variable}" />
