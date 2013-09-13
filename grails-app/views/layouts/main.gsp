@@ -52,8 +52,13 @@
 			};
 
 			window.onerror = function( msg, url, line ) {
+
 				var description = msg + " - " + url + " @ line " + line;
-				console.log( "Uncaught exception: " + description + "\nLogging on the server, then redirecting back here." );
+
+				if ( typeof console !== "undefined" ) {
+					console.log( "Uncaught exception: " + description + "\nLogging on the server, then redirecting back here." );
+				}
+
 				alert( "Uh oh... an unexpected error occurred.\n\nWe'll refresh this page, and if it still persists, please contact peter.serwylo@monash.edu." );
 
 				$.post(

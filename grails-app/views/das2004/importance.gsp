@@ -25,52 +25,7 @@
 	<g:javascript>
 			$( document ).ready( function() {
 
-				var nextScreen = function() {
-					document.location = '${createLink( [ action : 'index', params : [ id : variable.id ] ] )}';
-				};
-
-				var comparisons = $( '.comparison' );
-				var parent = comparisons.parent();
-				comparisons.detach().sort( function() { return Math.random() - 0.5; } ).appendTo( parent );
-
-				if ( comparisons.length == 0 ) {
-					nextScreen();
-					return;
-				}
-
-				$( '#total-scenarios' ).html( comparisons.length );
-
-				var currentComparisonIndex = 0;
-
-				var currentComparison = function() {
-					return $( comparisons[ currentComparisonIndex ] );
-				};
-
-				currentComparison().show();
-
-				var equalizeHeights = function( items ) {
-					var maxHeight = -1;
-					items.each( function( i, item ) {
-						if ( $( item ).height() > maxHeight ) {
-							maxHeight = $( item ).height();
-							console.log( maxHeight );
-						}
-					}).each( function( i, item ) {
-						$( item ).height( maxHeight );
-					});
-				};
-
-				var nextComparison = function() {
-					currentComparison().hide( 'slide', { direction : 'right', duration : 200 }, function() {
-						currentComparisonIndex ++;
-						if ( currentComparisonIndex < comparisons.length ) {
-							currentComparison().show( 'slide', { direction : 'left', duration : 200 } );
-							$( '#scenario-number' ).html( currentComparisonIndex + 1 );
-						} else {
-							nextScreen();
-						}
-					});
-				};
+				var manager = new bn.das2004.Manager( '.comparison', '${createLink( [ action : 'index', params : [ id : variable.id ] ] )}' );
 
 				/**
 				 * Figure out the two variables being compared, extract their id's and then figure out
@@ -81,7 +36,7 @@
 				 */
 				var saveComparison = function() {
 
-					var comparison    = currentComparison();
+					var comparison    = manager.currentQuestion();
 					var mostImportant = comparison.find( '.most-important input[ type=radio ]:checked' );
 
 					// Example name: "childId=1,parentOneId=2,parentTwoId=3"
@@ -108,10 +63,10 @@
 					if ( id == 0 ) {
 						// Equally weighted, so don't bother showing them the "How Much More Weighty" question...
 						saveComparison();
-						nextComparison();
+						maanger.nextQuestion();
 					} else {
-						currentComparison().find( '.how-much' ).show( 'fast', function() {
-							equalizeHeights( currentComparison().find( '.weights .ui-button' ) );
+						manager.currentQuestion().find( '.how-much' ).show( 'fast', function() {
+							manager.equalizeHeights( manager.currentQuestion().find( '.weights .ui-button' ) );
 						});
 					}
 				});
@@ -119,7 +74,7 @@
 				var weights = $( '.weights' ).buttonset();
 				weights.find( 'input[type=radio]' ).change( function() {
 					saveComparison();
-					nextComparison();
+					manager.nextQuestion();
 				});
 
 

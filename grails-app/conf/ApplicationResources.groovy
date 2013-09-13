@@ -84,8 +84,9 @@ modules = {
 	}
 
 	elicitProbabilities {
-		dependsOn( [ 'elicit' ] )
+		dependsOn( [ 'elicit', 'global' ] )
 		resource url: 'css/elicitProbabilities.css'
+		resource url: 'js/das2004.js'
 	}
 
 	elicitList {

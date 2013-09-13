@@ -25,42 +25,7 @@
 	<g:javascript>
 		$( document ).ready( function() {
 
-			var nextScreen = function() {
-				document.location = '<das2004:afterLikelihood variable="${variable}" />';
-			};
-
-			var questions = $( '.question.likelihood' );
-			var parent = questions.parent();
-			questions.detach().sort( function() {
-				return Math.random() - 0.5;
-			}).appendTo( parent );
-
-			if ( questions.length == 0 ) {
-				nextScreen();
-				return;
-			}
-
-			$( '#total-scenarios' ).html( questions.length );
-
-			var currentQuestionIndex = 0;
-
-			var currentQuestion = function() {
-				return $( questions[ currentQuestionIndex ] );
-			};
-
-			currentQuestion().show();
-
-			var nextQuestion = function() {
-				currentQuestion().hide( 'slide', { direction : 'right', duration : 200 }, function() {
-					currentQuestionIndex ++;
-					if ( currentQuestionIndex < questions.length ) {
-						currentQuestion().show( 'slide', { direction : 'left', duration : 200 } );
-						$( '#scenario-number' ).html( currentQuestionIndex + 1 );
-					} else {
-						nextScreen();
-					}
-				});
-			};
+			var manager = new bn.das2004.Manager( '.question.likelihood', '<das2004:afterLikelihood variable="${variable}" />' );
 
 			/**
 			 * Extracts the relevant info from the selected radio button from
@@ -70,7 +35,7 @@
 			 */
 			var saveEstimation = function() {
 
-				var question            = currentQuestion();
+				var question            = manager.currentQuestion();
 				var radio               = question.find( 'input[ type=radio ]:checked' );
 
 				if ( radio.length == 0 ) {
@@ -94,14 +59,17 @@
 			var probabilityOptions = $( '.probabilities' );
 			probabilityOptions.buttonset();
 			probabilityOptions.find( 'input[type=radio]').change( function() {
-				var parent        = $( this ).closest( 'ul.probabilities' );
-				var optionCount   = parent.children().size();
-				var selectedCount = parent.find( 'input[ type=radio ]:checked' ).length;
 
-				if ( optionCount == selectedCount ) {
-					saveEstimation();
-					nextQuestion();
+				if ( manager.isCurrent( this ) ) {
+					var parent        = $( this ).closest( 'ul.probabilities' );
+					var optionCount   = parent.children().size();
+					var selectedCount = parent.find( 'input[ type=radio ]:checked' ).length;
+					if ( optionCount == selectedCount ) {
+						saveEstimation();
+						manager.nextQuestion();
+					}
 				}
+
 			});
 
 			probabilityOptions.find( 'label' ).qtip({

@@ -25,40 +25,8 @@
 	<g:javascript>
 			$( document ).ready( function() {
 
-				var nextScreen = function() {
-					document.location = '${createLink( [ action : 'likelihood', params : [ id : variable.id ] ] )}';
-				};
-
-				var configurations = $( '.compatible-configurations' );
-				var parent = configurations.parent();
-				configurations.detach().sort( function() { return Math.random() - 0.5; } ).appendTo( parent );
-
-				if ( configurations.length == 0 ) {
-					nextScreen();
-					return;
-				}
-
-				$( '#total-scenarios' ).html( configurations.length );
-
-				var currentScenarioIndex = 0;
-
-				var currentScenario = function() {
-					return $( configurations[ currentScenarioIndex ] );
-				};
-
-				currentScenario().show();
-
-				var nextScenario = function() {
-					currentScenario().hide( 'slide', { direction : 'up', duration : 200 }, function() {
-						currentScenarioIndex ++;
-						if ( currentScenarioIndex < configurations.length ) {
-							currentScenario().show( 'slide', { direction : 'down', duration : 200 } );
-							$( '#scenario-number' ).html( currentScenarioIndex + 1 );
-						} else {
-							nextScreen();
-						}
-					});
-				};
+				var nextLink = '${createLink( [ action : 'likelihood', params : [ id : variable.id ] ] )}';
+				var manager = new bn.das2004.Manager( '.compatible-configurations', nextLink );
 
 				/**
 				 * Goes through each radio button for the current scenario, and extracts the relevant info
@@ -68,7 +36,7 @@
 				 */
 				var saveStates = function() {
 
-					var scenario            = currentScenario();
+					var scenario            = manager.currentQuestion();
 					var radios              = scenario.find( 'input[ type=radio ]:checked' );
 					var otherParentStateIds = [];
 
@@ -107,20 +75,9 @@
 					);
 				};
 
-				var equalizeHeights = function( items ) {
-					var maxHeight = 0;
-					items.each( function( i, item ) {
-						if ( $( item ).height() > maxHeight ) {
-							maxHeight = $( item ).height();
-						}
-					}).each( function( i, item ) {
-						$( item ).height( maxHeight );
-					});
-				};
-
 				var siblingStates = $( '.sibling-states' );
 				siblingStates.buttonset();
-				equalizeHeights( siblingStates.find( '.ui-button' ) );
+				manager.equalizeHeights( siblingStates.find( '.ui-button' ) );
 				siblingStates.find( 'input[type=radio]').change( function() {
 					var parent        = $( this ).closest( 'ul.siblings' );
 					var siblingCount  = parent.children().size();
@@ -128,7 +85,7 @@
 
 					if ( siblingCount == selectedCount ) {
 						saveStates();
-						nextScenario();
+						manager.nextQuestion();
 					}
 				});
 
