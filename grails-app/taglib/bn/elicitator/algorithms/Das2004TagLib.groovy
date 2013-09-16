@@ -166,7 +166,7 @@ class Das2004TagLib {
 		out << """
 			<div class='question comparison hidden'>
 				<div class='which'>
-					<div class='more-impotant'>
+					<div class='more-important'>
 						${bn.htmlMessage( [ code : 'elicit.probabilities.importance.which', args : [ child.readableLabel ] ])}
 					</div>
 					<div class='most-important'>

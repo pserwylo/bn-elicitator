@@ -211,7 +211,7 @@ If this is a mistake, please contact <a href="mailto:peter.serwylo@monash.edu.au
 	protected void initContentPages( ServletContext context ) {
 
 		String homeText    = context.getResourceAsStream( "/WEB-INF/resources/default-home.tpl" )?.text;
-		String helpText    = context.getResourceAsStream( "/WEB-INF/resources/default-help.tpl" )?.text;
+		String helpText    = context.getResourceAsStream( "/WEB-INF/resources/default-help-cpt.tpl" )?.text;
 		String privacyText = context.getResourceAsStream( "/WEB-INF/resources/default-privacy-policy.tpl" )?.text;
 
 		new ContentPage(

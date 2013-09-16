@@ -42,18 +42,18 @@ bn.das2004.Manager = klass(function( questionSelector, nextLink ) {
     },
 
     currentQuestion : function() {
-
         return $( this.questions[ this.currentQuestionIndex ] );
-
     },
 
     nextQuestion : function() {
+        $( 'div.qtip' ).filter( ':visible' ).qtip( 'hide' );
         var self = this;
         var previousQuestion = this.currentQuestion();
         self.currentQuestionIndex ++;
         previousQuestion.fadeOut( 100, function() {
             if ( self.currentQuestionIndex < self.questions.length ) {
                 self.currentQuestion().fadeIn( 800 );
+                self.equalizeHeights( self.currentQuestion().find( '.ui-button' ) );
                 $( '#scenario-number' ).html( self.currentQuestionIndex + 1 );
             } else {
                 self.nextScreen();
@@ -62,6 +62,11 @@ bn.das2004.Manager = klass(function( questionSelector, nextLink ) {
     },
 
     equalizeHeights : function( items ) {
+
+        items.each( function( i, item ) {
+            $( item ).css( 'height', '' );
+        });
+
         var maxHeight = 0;
         items.each( function( i, item ) {
             if ( $( item ).height() > maxHeight ) {

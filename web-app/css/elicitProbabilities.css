@@ -61,6 +61,15 @@
 	margin-top: 0.5em;
 }
 
+.more-important {
+	text-align: center;
+}
+
+.more-important em {
+	font-style: normal;
+	font-weight: bold;
+}
+
 .large, .small {
 	display: inline-block;
 }

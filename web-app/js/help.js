@@ -71,7 +71,7 @@ bn.HelpClass = klass( function() {
 	hideCurrent : function() {
 		var info = this.getCurrent();
 		if ( info != null ) {
-			info.getDom().qtip( "destroy" );
+			info.getDom().remove();
 		}
 	},
 

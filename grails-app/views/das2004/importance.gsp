@@ -92,7 +92,7 @@
 	<fieldset class="default">
 
 		<legend>
-			<bn:htmlMessage code="elicit.probabilities.expected.header" args="${[ "$variable.readableLabel ${bn.variableDescription( [ var : variable ] )}" ]}" />
+			<bn:htmlMessage code="elicit.probabilities.importance.header" />
 			(<span id="scenario-number">1</span> of <span id="total-scenarios"></span>)
 		</legend>
 

@@ -206,7 +206,7 @@ class InsuranceDataLoader extends DataLoader {
 				new State( "False", "Clients car <em>does not have anti-lock</em> brakes" ),
 		    ],
 		    "DrivingSkill" : [
-				new State( "SubStandard", "Client is <em>not a very good driver</em>" ),
+				new State( "SubStandard", "Client <em>doesn't</em> have very good <em>driving skills</em>" ),
 				new State( "Normal",      "Client has <em>normal driving skills</em>" ),
 				new State( "Expert",      "Client has <em>excellent driving skills</em>" ),
 		    ],
