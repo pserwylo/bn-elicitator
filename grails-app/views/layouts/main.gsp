@@ -90,10 +90,12 @@
 			</div>
 		</g:if>--}%
 
-		<help:help index="-10" uniqueId="global-help" targetId="action-help" title="Need help?">
-			<p>At any point, you can check out the <bnContent:link page="help">help page</bnContent:link> for detailed help.
-			If you still have questions, feel free to contact <a href="mailto:peter.serwylo@monash.edu">Peter Serwylo</a>.</p>
-		</help:help>
+		<g:if test="${controllerName == 'elicit' || controllerName == 'das2004'}">
+			<help:help index="-10" uniqueId="global-help" targetId="action-help" title="Need help?">
+				<p>At any point, you can check out the <bnContent:link page="help">help page</bnContent:link> for detailed help.
+				If you still have questions, feel free to contact <a href="mailto:peter.serwylo@monash.edu">Peter Serwylo</a>.</p>
+			</help:help>
+		</g:if>
 
 		<div id="headingWrapper">
 			<sec:ifLoggedIn>
