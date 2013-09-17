@@ -30,7 +30,7 @@
 	<h1>Prizes</h1>
 
 	<h3>
-		After the final round of this survey is complete, a prize of $250 will be awarded to one participant who
+		After the final round of this survey is complete, a prize of $100 will be awarded to one participant who
 		completed the survey.
 	</h3>
 

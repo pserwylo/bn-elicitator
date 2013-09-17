@@ -119,25 +119,19 @@ class ExplainController {
 		}
 
 	}
-
-	/**
-	 * Save the fact that the user has consented, but if for some reason they didn't (e.g. JavaScript was stuffed) then
-	 * we will redirect them back to the explanatory statement with an error in the flash scope
-	 * (flash.mustCheckRead = true).
-	 * @return
-	 */
+	
 	def consentPrizes() {
 
-		if ( params && params.containsKey( "consent" ) ) {
-			User user = userService.current
-			if ( params["consent"] == "1" ) {
-				user.isEligibleForPrize()
-			} else {
-				user.isNotEligibleForPrize()
-			}
-			user.save( flush: true )
+		User user = userService.current
+		boolean hasConsented = params?.containsKey( "consent" ) && params.consent == "1"
+
+		if ( hasConsented ) {
+			user.makeEligibleForPrize()
+		} else {
+			user.makeIneligibleForPrize()
 		}
 
+		user.save( flush: true )
 		route()
 	}
 

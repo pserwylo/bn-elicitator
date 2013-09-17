@@ -7,12 +7,12 @@ class User {
 
 	transient springSecurityService
 
-	private static int PRIZE_UNKNOWN = 0;
-	private static int PRIZE_YES     = 1;
-	private static int PRIZE_NO      = 2;
+	private static int PRIZE_YES = 1;
+	private static int PRIZE_NO  = 2;
 
 	static constraints = {
 		consentedDate nullable: true, blank: true
+		eligibleForPrize nullable: true
 
 		// Need to allow null so that validate() works during oauth stuff...
 		email         nullable: true, blank: true
@@ -32,7 +32,7 @@ class User {
 	String email
 	String username
 	String password
-	Integer eligibleForPrize = PRIZE_UNKNOWN;
+	Integer eligibleForPrize;
 	boolean accountLocked = false
 
 	private boolean enabled = true
@@ -50,10 +50,10 @@ class User {
 	boolean hasConsented = false
 	Date consentedDate = null
 
-	boolean knowIfCanWinPrize()  { eligibleForPrize != PRIZE_UNKNOWN }
-	boolean canWinPrize()        { eligibleForPrize == PRIZE_YES     }
-	void isEligibleForPrize()    { eligibleForPrize =  PRIZE_YES     }
-	void isNotEligibleForPrize() { eligibleForPrize =  PRIZE_NO      }
+	boolean knowIfCanWinPrize()   { eligibleForPrize != null      }
+	boolean canWinPrize()         { eligibleForPrize == PRIZE_YES }
+	void makeEligibleForPrize()   { eligibleForPrize =  PRIZE_YES }
+	void makeIneligibleForPrize() { eligibleForPrize =  PRIZE_NO  }
 
 
 	Set<Role> getRoles() {
