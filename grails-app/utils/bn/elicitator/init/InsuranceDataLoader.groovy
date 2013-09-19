@@ -521,29 +521,25 @@ class InsuranceDataLoader extends DataLoader {
 
 <h2><a name="involves">What does the research involve?</a></h2>
 <p>
-	The study involves a short series of online surveys based on the Delphi method. This is a method whereby after
-	each participants has completed the survey once, the results are summarised. These summarised results are presented
-	to you as you complete the survey a second time, giving you the option to revise your answers based on the
-	collective answers given by all the other participants.
+	The study involves a short online survey. It consists of questions about what you think causes car accidents, and
+	how this should affect decisions to sell car insurance to clients. The research will be conducted online, so that
+	you can <a href="#time">complete it at your leisure</a>.
 </p>
 <p>
-	The research will be conducted online, so that you can <a href="#time">complete it at your leisure</a>.
-</p>
-<p>
-	After you complete the primary survey (questions about car insurance), you will also be asked a
-	few short questions about how you felt the process went (questions about the survey process itself) so that I can
-	evaluate whether it was worthwhile eliciting knowledge from you using this online system in preference to
-	person-to-person interviews.
+	After you complete the primary survey (questions about car insurance), you will also be asked a few short questions
+	about how you felt the process went (questions about the survey process itself) so that we can evaluate whether it
+	was worthwhile eliciting knowledge from people using this online system in preference to person-to-person interviews.
 </p>
 
 <h2><a name="time">How much time will the research take?</a></h2>
 <p>
-	You will be asked to complete the survey three, and each time should take around 20 minutes to complete.
-	Each round of the survey will last for one week. If you have not completed the survey after five days, the
-	researchers will send you an email to remind you (if you don't want to receive this email, please contact
-	peter.serwylo@monash.edu and ask to be removed from the email list).
-	Remember that you don’t have to complete the whole survey all at once, the system will save your results 
-	from last time and continue from where you left off.
+	The survey should take around 20 minutes to complete. You can take a break and return at a later date.
+	Remember that you don’t have to complete the whole survey all at once, the system will save your results from
+	last time and continue from where you left off.
+</p>
+<p>
+	However, you will need to complete the survey before the 1st of October 2013 to be eligible for the
+	<a href="payment">prize draw</a>.
 </p>
 
 <h2><a name="discomfort">Inconvenience/discomfort</a></h2>
@@ -551,10 +547,11 @@ class InsuranceDataLoader extends DataLoader {
 	There is no anticipated risk of inconvenience or discomfort while completing this survey.
 </p>
 
-<h2><a name="payment">Payment</a></h2>
+<h2><a name="payment">Prizes / Payment</a></h2>
 <p>
-    If you continue, you will be completing this survey on a voluntary basis, with no monetary reward. I thank you for
-	contributing your time and expertise towards this study.
+	If you continue, you will be eligible to enter a draw for a \$100 prize. More information is provided on the
+	following page, if you choose to continue. Other than the chance of winning the \$100 prize, you will be completing
+	this survey on a voluntary basis, with no other monetary reward.
 </p>
 
 <h2><a name="withdraw">Withdrawing from the research</a></h2>
