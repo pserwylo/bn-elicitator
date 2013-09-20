@@ -36,6 +36,10 @@ modules = {
 		resource url: 'js/help.js'
 	}
 
+	feedback {
+		resource url: 'css/feedback.css'
+	}
+
 	variableList {
 		resource url: 'css/variableList.css'
 	}

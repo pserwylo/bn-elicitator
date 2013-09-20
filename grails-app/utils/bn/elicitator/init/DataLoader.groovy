@@ -20,6 +20,8 @@ package bn.elicitator.init
 import bn.elicitator.*
 import bn.elicitator.auth.Role
 import bn.elicitator.auth.User
+import bn.elicitator.feedback.Option
+import bn.elicitator.feedback.Question
 import bn.elicitator.network.BnArc
 import bn.elicitator.network.BnNode
 import grails.util.Holders
@@ -53,6 +55,7 @@ abstract class DataLoader {
 			initRolesAndAdminUser()
 			initVariableClasses()
 			initVariables()
+			initFeedbackQuestions()
 			initBnStructure()
 			initContentPages( servletContext )
 			initOther()
@@ -67,6 +70,34 @@ abstract class DataLoader {
 		updateContentPages()
 		upgradeRoles()
 		doUpgrade()
+	}
+
+	private void initFeedbackQuestions() {
+
+		Question gender = new Question( "Gender" )
+		gender.addToOptions( [ "Female", "Male" ] )
+		gender.save( flush : true, failOnError : true )
+
+		Question age = new Question( "Age" )
+		age.addToOptions( [ "18-30", "31-40", "41-50", "51-60", "60+" ] )
+		age.save( flush : true, failOnError : true )
+
+		Question experience = new Question( "How experienced are you in using the internet?" )
+		experience.addToOptions( [ "Very experienced", "Some experience", "Limited experience", "No experience" ] )
+		experience.save( flush : true, failOnError : true )
+
+		Question language = new Question( label : "Is English your primary language?" )
+		language.addToOptions( "Yes" )
+		Option notEnglish = language.addToOptions( "No" )
+		language.save( flush : true, failOnError : true )
+
+		Question otherLanguage = new Question( "Which language is your primary language?", notEnglish )
+		otherLanguage.save( flush : true, failOnError : true )
+
+		Question often = new Question( "On a scale of 1 to 5 where 1 is never and 5 is frequently please indicate how often you have searched for health information on the Internet?" )
+		often.addToOptions( [ "Never", "Occasionally", "Often", "Very often", "Frequently" ] )
+		often.save( flush : true, failOnError : true )
+
 	}
 
 	/**
