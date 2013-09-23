@@ -66,7 +66,7 @@
 		<legend>Feedback</legend>
 		<g:form action="save">
 			<bnFeedback:survey questions="${questions}" />
-			<button id="btnDone" class="big">Done</button>
+			<input type="submit" id="btnDone" class="big" value="Done" />
 		</g:form>
 	</fieldset>
 
