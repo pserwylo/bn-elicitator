@@ -62,7 +62,7 @@
 		<div class="consent-checkbox">
 			<input id="consent" type="checkbox" name="consent" value="1" checked="checked"/>
 			<label for="consent">
-				I understand the conditions above and wish to eligible to win the $250 prize.
+				I understand the conditions above and wish to eligible to win the $100 prize.
 				<br />
 				<span class="smaller">
 					(You are still able to continue with this survey without being eligible for a prize).

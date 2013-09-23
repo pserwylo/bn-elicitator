@@ -27,6 +27,9 @@
 	<body>
 		<div class="message">
 			<g:message code='elicit.probabilities.completed-all' />
+			<g:if test="${user.canWinPrize()}">
+				<g:message code='elicit.probabilities.completed-all.in-prize-draw' />
+			</g:if>
 		</div>
 	</body>
 </html>

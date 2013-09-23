@@ -63,7 +63,7 @@
 					if ( id == 0 ) {
 						// Equally weighted, so don't bother showing them the "How Much More Weighty" question...
 						saveComparison();
-						maanger.nextQuestion();
+						manager.nextQuestion();
 					} else {
 						manager.currentQuestion().find( '.how-much' ).show( 'fast', function() {
 							manager.equalizeHeights( manager.currentQuestion().find( '.weights .ui-button' ) );

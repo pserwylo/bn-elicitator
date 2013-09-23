@@ -25,7 +25,7 @@ class FeedbackQuestionLoader {
 		q.addToOptions( "No" )
 		q.save( flush : true, failOnError : true )
 
-		new Question( "Describe what caused the frustration." ).save( flush : true, failOnError : true )
+		new Question( "Describe what caused the frustration.", yes ).save( flush : true, failOnError : true )
 	}
 
 	private void lost() {
@@ -74,7 +74,7 @@ class FeedbackQuestionLoader {
 	private void successful() {
 		Question successful = new Question( label : "Were you able to successfully complete the task set for this website?" )
 		successful.addToOptions( "Yes" )
-		Option notSuccessful = language.addToOptions( "No" )
+		Option notSuccessful = successful.addToOptions( "No" )
 		successful.save( flush : true, failOnError : true )
 
 		Question whyNotSuccessful = new Question( "Can you please describe why not?", notSuccessful )

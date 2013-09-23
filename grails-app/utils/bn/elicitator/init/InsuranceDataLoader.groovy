@@ -87,14 +87,12 @@ class InsuranceDataLoader extends DataLoader {
 		String homeText = """
 			<h2>How long should this take?</h2>
 			<p>
-				It should take approximately 20 mins to complete, and we're looking for you to complete it a total of three times over three weeks. 
-				We'll send you a reminder at the start of each week.
+				It should take approximately 20 mins to complete.
 			</p>
-
 
 			<h2>Who are you?</h2>
 			<p>
-				For the purpose of this study, you should put yourself in the shoes of somebody who runs an insurnace company. 
+				For the purpose of this study, you should put yourself in the shoes of somebody who runs an insurance company.
 				It doesn't matter if you don't have experience dealing with this, we're just after your best guess for each question.
 			</p>
 
@@ -111,9 +109,7 @@ class InsuranceDataLoader extends DataLoader {
 			</p>
 			<br />
 			<p>
-				At this point, we are purely interested in how the various factors which determine risk fit together. 
-				You will be presented with a list of variables, and each one will be potentially influenced by other variables. 
-				You will be asked which variables you think influence others
+				We will ask you questions to ascertain how likely certain scenarios are.
 			</p>
 
 			<div style='text-align: center; margin-top: 2em;'>

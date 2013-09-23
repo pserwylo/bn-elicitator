@@ -1,12 +1,14 @@
 package bn.elicitator
 
 import bn.elicitator.algorithms.Das2004Service
-import bn.elicitator.das2004.CompletedDasAllocation
+import bn.elicitator.feedback.Answer
 import grails.converters.JSON
 
 class Das2004Controller {
 
-	Das2004Service das2004Service
+	Das2004Service              das2004Service
+	UserService                 userService
+	AllocateCptQuestionsService allocateCptQuestionsService
 
 	def calc = {
 		das2004Service.performCalculations()
@@ -25,14 +27,19 @@ class Das2004Controller {
 		}
 
 		if ( das2004Service.hasCompletedAllocation() ) {
-			forward( action : 'finished' )
+			int feedback = Answer.countByAnsweredBy( userService.current )
+			if ( feedback > 0 ) {
+				forward( action : 'finished' )
+			} else {
+				forward( controller : 'feedback' )
+			}
 		} else {
 			return []
 		}
 	}
 
 	def finished = {
-		[]
+		[ user : userService.current ]
 	}
 
 	/**
@@ -40,7 +47,7 @@ class Das2004Controller {
 	 */
 	def importance = {
 		Variable variable = Variable.get( params.getLong( 'id' ) ?: 0 )
-		if ( variable == null ) {
+		if ( variable == null || !allocateCptQuestionsService.isAllocated( variable ) ) {
 			throw new Exception( "Not found: $params.id" )
 		}
 
@@ -67,7 +74,7 @@ class Das2004Controller {
 	 */
 	def likelihood = {
 		Variable variable = Variable.get( params.getLong( 'id' ) ?: 0 )
-		if ( variable == null ) {
+		if ( variable == null || !allocateCptQuestionsService.isAllocated( variable ) ) {
 			throw new Exception( "Not found: $params.id" )
 		}
 
@@ -93,7 +100,7 @@ class Das2004Controller {
 	 */
 	def expected = {
 		Variable variable = Variable.get( params.getLong( 'id' ) ?: 0 )
-		if ( variable == null ) {
+		if ( variable == null || !allocateCptQuestionsService.isAllocated( variable ) ) {
 			throw new Exception( "Not found: $params.id" )
 		}
 

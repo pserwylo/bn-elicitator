@@ -96,9 +96,27 @@ abstract class AllocateQuestionsService {
 		return lowestCount
 	}
 
+	public def getAllocation() {
+		Closure criteria = {
+			user {
+				eq ( 'id', userService.current.id )
+			}
+		}
+		def allocations = getAllocationsByCriteria( criteria )
+		if ( allocations?.size() > 0 ) {
+			return allocations.get( 0 )
+		} else {
+			return null
+		}
+	}
+
+	public boolean isAllocated( Variable variable ) {
+		allocation?.variables*.id.contains( variable.id )
+	}
+
 	public void allocateToUser( User user ) {
 
-		int maxTime      = 150 * 60
+		int maxTime      = 15 * 60
 		int maxQuestions = maxTime / expectedSecondsPerQuestion() // AppProperties.properties.targetParticipantsPerQuestion
 
 		List<Variable> varsToAllocate = getVarsWithLowestAllocation( maxQuestions )

@@ -52,6 +52,7 @@ class User {
 
 	boolean knowIfCanWinPrize()   { eligibleForPrize != null      }
 	boolean canWinPrize()         { eligibleForPrize == PRIZE_YES }
+
 	void makeEligibleForPrize()   { eligibleForPrize =  PRIZE_YES }
 	void makeIneligibleForPrize() { eligibleForPrize =  PRIZE_NO  }
 
