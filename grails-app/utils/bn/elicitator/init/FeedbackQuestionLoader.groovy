@@ -6,20 +6,39 @@ import bn.elicitator.feedback.Question
 class FeedbackQuestionLoader {
 
 	public void initQuestions() {
-		gender()
-		age()
-		internetExperience()
+		geography()
 		language()
-		successful()
-		bestAndWorstThing()
+		inPersonOrOnline()
 		jargon()
-		enoughInformation()
-		read()
-		lost()
-		frustrated()
+		helpSection()
+		wereYouFrustrated()
+		whatMadeYouParticipate()
 	}
 
-	private void frustrated() {
+	private void whatMadeYouParticipate() {
+		new Question( "Why did you participate in this survey?" ).save( flush : true, failOnError : true )
+	}
+
+	private void inPersonOrOnline() {
+		Question question = new Question( "Would you prefer to answer questions via:" )
+		question.addToOptions( [ "An online survey", "An interview with the researcher", "Discussion with other participants at a workshop" ] )
+		question.save( flush : true, failOnError : true )
+	}
+
+	private void geography() {
+		Question q = new Question( "Where do you live?" )
+		Option aus   = q.addToOptions( "Australia" )
+		Option other = q.addToOptions( "Other country" )
+		q.save( flush : true, failOnError : true )
+
+		Question state = new Question( "Which state/territory?", aus )
+		state.addToOptions( [ "Vic", "NSW", "QLD", "NT", "WA", "SA", "Tas", "ACT" ] )
+		state.save( flush : true, failOnError : true )
+
+		new Question( "What country do you live in?", other ).save( flush : true, failOnError : true )
+	}
+
+	private void wereYouFrustrated() {
 		Question q = new Question( "Were you at any stage frustrated completing the survey?" )
 		Option yes = q.addToOptions( "Yes" )
 		q.addToOptions( "No" )
@@ -28,62 +47,14 @@ class FeedbackQuestionLoader {
 		new Question( "Describe what caused the frustration.", yes ).save( flush : true, failOnError : true )
 	}
 
-	private void lost() {
-		Question lost = new Question( "Did you get lost at any stage during the survey?" )
-		Option yes = lost.addToOptions( "Yes" )
-		lost.addToOptions( "No" )
-		lost.save( flush : true, failOnError : true )
-
-		new Question( "Please describe how you got lost.", yes ).save( flush : true, failOnError : true )
-	}
-
-	private void read() {
-		Question read = new Question( "How much information on the site did you actually read?" )
-		read.addToOptions( [ "All of it", "Most of it", "About half", "Skim read only", "None" ] )
-		read.save( flush : true, failOnError : true )
-	}
-
-	private void gender() {
-		def gender = new Question( "Gender" )
-		gender.addToOptions( [ "Female", "Male" ] )
-		gender.save( flush : true, failOnError : true )
-	}
-
-	private void age() {
-		Question age = new Question( "Age" )
-		age.addToOptions( [ "18-30", "31-40", "41-50", "51-60", "60+" ] )
-		age.save( flush : true, failOnError : true )
-	}
-
-	private void internetExperience() {
-		Question experience = new Question( "How experienced are you in using the internet?" )
-		experience.addToOptions( [ "Very experienced", "Some experience", "Limited experience", "No experience" ] )
-		experience.save( flush : true, failOnError : true )
-	}
-
 	private void language() {
 		Question language = new Question( label : "Is English your primary language?" )
 		language.addToOptions( "Yes" )
 		Option notEnglish = language.addToOptions( "No" )
 		language.save( flush : true, failOnError : true )
 
-		Question otherLanguage = new Question( "Which language is your primary language?", notEnglish )
+		Question otherLanguage = new Question( "What is your primary language?", notEnglish )
 		otherLanguage.save( flush : true, failOnError : true )
-	}
-
-	private void successful() {
-		Question successful = new Question( label : "Were you able to successfully complete the task set for this website?" )
-		successful.addToOptions( "Yes" )
-		Option notSuccessful = successful.addToOptions( "No" )
-		successful.save( flush : true, failOnError : true )
-
-		Question whyNotSuccessful = new Question( "Can you please describe why not?", notSuccessful )
-		whyNotSuccessful.save( flush : true, failOnError : true )
-	}
-
-	private void bestAndWorstThing() {
-		new Question( "What was the best thing about the survey?" ).save( flush : true, failOnError : true )
-		new Question( "What was the worst thing about the survey?" ).save( flush : true, failOnError : true )
 	}
 
 	private void jargon() {
@@ -95,17 +66,21 @@ class FeedbackQuestionLoader {
 		new Question( "Describe any problems you experienced with jargon", yesJargon ).save( flush : true, failOnError : true )
 	}
 
-	private void enoughInformation() {
-		Question provideAllInformation = new Question( "Did the survey provide all the information you required to complete the set task?" )
-		provideAllInformation.addToOptions( [ "Yes", "No" ] )
-		provideAllInformation.save( flush : true, failOnError : true )
+	private void helpSection() {
+		Question question = new Question( "Did you visit the help section at any point?" )
+		Option neededHelp = question.addToOptions( "Yes" )
+		question.addToOptions( "No" )
+		Option didntKnow  = question.addToOptions( "I didn't know help was available" )
+		question.save( flush : true, failOnError : true )
 
-		Question wantedMoreInformation = new Question( "Was there anything else you wanted to know but could not find out from the site?" )
-		Option yesWantMoreInfo = wantedMoreInformation.addToOptions( "Yes" )
-		wantedMoreInformation.addToOptions( "No" )
-		wantedMoreInformation.save( flush : true, failOnError : true )
+		new Question( "What did you require help with?", neededHelp ).save( flush : true, failOnError : true )
 
-		new Question( "What else did you want to know?", yesWantMoreInfo ).save( flush : true, failOnError : true )
+		Question wantedButDidntUse = new Question( "Did you require help with anything?", didntKnow )
+		Option yes = wantedButDidntUse.addToOptions( "Yes" )
+		wantedButDidntUse.addToOptions( "No" )
+		wantedButDidntUse.save( flush : true, failOnError : true )
+
+		new Question( "What did you require help with?", yes ).save( flush : true, failOnError : true )
 	}
 
 }

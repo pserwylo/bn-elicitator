@@ -17,6 +17,14 @@
 				return ( parts.length == 2 ) ? parseInt( parts[ 1 ] ) : 0;
 			};
 
+			var getOptionIds = function( question ) {
+				var optionIds = [];
+				question.find( '.response.options' ).each( function( i, item ) {
+					optionIds.push( getOptionId( $( item ).find( 'input[ type=radio ]' ) ) );
+				});
+				return optionIds;
+			};
+
 			var getDependentQuestionId = function( optionId ) {
 				var question = null;
 				if ( optionId > 0 ) {
@@ -35,6 +43,19 @@
 				return question;
 			};
 
+			var hideQuestionAndDependents = function( optionId ) {
+				var nonDependentQuestion = getDependentQuestionId( optionId );
+				if ( nonDependentQuestion != null ) {
+					nonDependentQuestion.hide( 'fast' );
+					var options = getOptionIds( nonDependentQuestion );
+					if ( options.length > 0 ) {
+						for ( var i = 0; i < options.length; i ++ ) {
+							hideQuestionAndDependents( options[ i ] );
+						}
+					}
+				}
+			};
+
 			$( '.response.options' ).buttonset().change( function( item ) {
 				var selected          = $( item.target );
 				var dependentQuestion = getDependentQuestionId( getOptionId( selected ) );
@@ -44,11 +65,12 @@
 
 				var others = selected.closest( '.response' ).find( 'input[type=radio]:not( :checked )' );
 				others.each( function( i, otherRadio ) {
-					var nonDependentQuestion = getDependentQuestionId( getOptionId( otherRadio ) );
-					if ( nonDependentQuestion != null ) {
-						nonDependentQuestion.hide( 'fast' );
-					}
+					hideQuestionAndDependents( getOptionId( otherRadio ) )
 				});
+			});
+
+			$( '.ui-buttonset:visible' ).each( function( i, item ) {
+				bn.utils.equalizeHeights( $( item ).find( '.ui-button' ) );
 			});
 		});
 	</g:javascript>

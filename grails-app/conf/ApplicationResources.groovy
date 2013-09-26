@@ -33,11 +33,13 @@ modules = {
 		resource url: 'css/global.css'
 		resource url: 'css/help.css'
 		resource url: 'js/lib/klass/klass.min.js'
+		resource url: 'js/util.js'
 		resource url: 'js/help.js'
 	}
 
 	feedback {
 		resource url: 'css/feedback.css'
+		dependsOn( 'global' )
 	}
 
 	variableList {
