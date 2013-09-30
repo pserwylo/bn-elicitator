@@ -39,10 +39,10 @@ abstract class DataLoader {
 	 */
 	abstract protected AppProperties getProperties( ServletContext servletContext );
 
-	abstract protected List<Variable> getBackgroundVariables()
-	abstract protected List<Variable> getProblemVariables()
-	abstract protected List<Variable> getMediatingVariables()
-	abstract protected List<Variable> getSymptomVariables()
+	protected List<Variable> getBackgroundVariables() { [] }
+	protected List<Variable> getProblemVariables()    { [] }
+	protected List<Variable> getMediatingVariables()  { [] }
+	protected List<Variable> getSymptomVariables()    { [] }
 
 	protected Map<String,List<State>> getVariableStates() { [:] }
 
@@ -331,7 +331,7 @@ If this is a mistake, please contact <a href="mailto:peter.serwylo@monash.edu.au
 		adminRole.addUser( adminUser )
 	}
 
-	private void initVariables() {
+	protected void initVariables() {
 		removeVariables()
 		saveVariables( backgroundVariables, VariableClass.background );
 		saveVariables( problemVariables,    VariableClass.problem    );
@@ -340,11 +340,11 @@ If this is a mistake, please contact <a href="mailto:peter.serwylo@monash.edu.au
 		addVariableStates()
 	}
 
-	private void removeVariables() {
+	protected void removeVariables() {
 		Variable.list()*.delete()
 	}
 
-	private void saveVariables( List<Variable> vars, VariableClass variableClass ) {
+	protected void saveVariables( List<Variable> vars, VariableClass variableClass ) {
 		User admin = User.findByUsername( 'admin' )
 		vars*.variableClass    = variableClass
 		vars*.createdBy        = admin
@@ -417,7 +417,7 @@ If this is a mistake, please contact <a href="mailto:peter.serwylo@monash.edu.au
 	 *  - Symptom
 	 * And their relationships among themselves.
 	 */
-	private void initVariableClasses() {
+	protected void initVariableClasses() {
 		VariableClass symptom = new VariableClass( name: VariableClass.SYMPTOM )
 		symptom.save( flush: true )
 

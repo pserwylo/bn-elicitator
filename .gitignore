@@ -1,5 +1,6 @@
 # External config file...
 CustomConfig.groovy
+*CustomConfig.groovy
 
 # I keep a db dump here for testing...
 *.sql

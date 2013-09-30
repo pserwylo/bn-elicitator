@@ -1,7 +1,10 @@
 package bn.elicitator.init
+
+import bn.elicitator.VariableClass
+
 /*
  * Bayesian Network (BN) Elicitator
- * Copyright (C) 2012 Peter Serwylo (peter.serwylo@monash.edu)
+ * Copyright (C) 2013 Peter Serwylo (peter.serwylo@monash.edu)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +19,13 @@ package bn.elicitator.init
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-class DevelopmentInsuranceDataLoader extends InsuranceDataLoader {
+
+class DevelopmentChan2010DataLoader extends Chan2010DataLoader {
 
 	protected void initOther() {
 		updateHomePage()
 		initTestUsers( 50, false )
 	}
+
 
 }
