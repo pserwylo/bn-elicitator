@@ -149,18 +149,6 @@ grails.plugins.springsecurity.interceptUrlMap = [
 
 ]
 
-
-grails.plugins.dynamicController.mixins = [
-	'com.burtbeckwith.grails.plugins.appinfo.IndexControllerMixin'      : 'com.burtbeckwith.appinfo_test.AdminManageController',
-	'com.burtbeckwith.grails.plugins.appinfo.Log4jControllerMixin'      : 'com.burtbeckwith.appinfo_test.AdminManageController',
-	'com.burtbeckwith.grails.plugins.appinfo.SpringControllerMixin'     : 'com.burtbeckwith.appinfo_test.AdminManageController',
-	'com.burtbeckwith.grails.plugins.appinfo.MemoryControllerMixin'     : 'com.burtbeckwith.appinfo_test.AdminManageController',
-	'com.burtbeckwith.grails.plugins.appinfo.PropertiesControllerMixin' : 'com.burtbeckwith.appinfo_test.AdminManageController',
-	'com.burtbeckwith.grails.plugins.appinfo.ScopesControllerMixin'     : 'com.burtbeckwith.appinfo_test.AdminManageController',
-	'com.burtbeckwith.grails.plugins.appinfo.ThreadsControllerMixin'    : 'com.burtbeckwith.appinfo_test.AdminManageController',
-	// 'app.info.custom.example.MyConfigControllerMixin'                   : 'com.burtbeckwith.appinfo_test.AdminManageController'
-]
-
 ckeditor {
 	config = "/js/myckconfig.js"
 	skipAllowedItemsCheck = false
@@ -205,3 +193,27 @@ Please visit <a href="$url">$url</a> to complete the registration.<br/>
 Cheers,<br />
 pete.
 '''
+
+// Uncomment and edit the following lines to start using Grails encoding & escaping improvements
+
+/* remove this line 
+// GSP settings
+grails {
+    views {
+        gsp {
+            encoding = 'UTF-8'
+            htmlcodec = 'xml' // use xml escaping instead of HTML4 escaping
+            codecs {
+                expression = 'html' // escapes values inside null
+                scriptlet = 'none' // escapes output from scriptlets in GSPs
+                taglib = 'none' // escapes output from taglibs
+                staticparts = 'none' // escapes output from static template parts
+            }
+        }
+        // escapes all not-encoded output at final stage of outputting
+        filteringCodecForContentType {
+            //'text/html' = 'html'
+        }
+    }
+}
+remove this line */

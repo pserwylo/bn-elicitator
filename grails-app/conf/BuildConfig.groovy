@@ -44,20 +44,22 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-		runtime ":hibernate:$grailsVersion"
+		runtime ":hibernate:3.6.10.1"
 		runtime ":jquery:1.7.1"
 		runtime ":resources:1.1.6"
 		runtime ":database-migration:1.3.2"
 		runtime ':oauth:2.0.1'
 
-		compile ":mail:1.0.1"
+		compile ":mail:1.0.1", {
+			excludes 'spring-test'
+		}
+
 		compile ":jquery:1.7.1"
 		compile ":resources:1.1.6"
 		compile ":famfamfam:1.0.1"
 		compile ":spring-security-core:1.2.7.3"
 		compile ":spring-security-ui:0.2"
 		compile ":spring-security-oauth:2.0.1.1"
-		compile ":app-info:1.0.2"
         compile ":ckeditor:3.6.2.2"
 		compile ":rest-client-builder:1.0.2"
 
@@ -67,6 +69,6 @@ grails.project.dependency.resolution = {
         //runtime ":cached-resources:1.0"
         //runtime ":yui-minify-resources:0.1.4"
 
-        build ":tomcat:$grailsVersion"
+        build ":tomcat:7.0.42"
     }
 }

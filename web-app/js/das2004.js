@@ -19,6 +19,11 @@ bn.das2004.Manager = klass(function( questionSelector, nextLink ) {
     }
 
     this.currentQuestionIndex = 0;
+	for ( var i = 0; i < this.questions.length; i ++ ) {
+		var q = this.questions.get( i );
+		if ( $( q).hasClass( ''))
+	}
+
     $( '#total-scenarios' ).html( this.questions.length );
     this.currentQuestion().show();
 
