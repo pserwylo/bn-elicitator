@@ -210,7 +210,7 @@ If this is a mistake, please contact <a href="mailto:peter.serwylo@monash.edu.au
 
 	protected String replaceContentPlaceholders( String template ) {
 		if (!template) {
-			return "";
+			return "Empty";
 		} else {
 			Map<String, String> placeholders = [
 				'[serverURL]' : Holders.getGrailsApplication().config.grails.serverURL?.toString()

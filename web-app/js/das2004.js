@@ -10,22 +10,27 @@ bn.das2004.Manager = klass(function( questionSelector, nextLink ) {
     this.questionSelector = questionSelector;
     this.questions        = $( this.questionSelector );
 
-    var parent = this.questions.parent();
-    this.questions.detach().sort( function() { return Math.random() - 0.5; } ).appendTo( parent );
-
-    if ( this.questions.length == 0 ) {
-        this.nextScreen();
-        return;
-    }
+	var remainingQuestions = this.questions.find( questionSelector + ":not( .completed )" );
+    var parent = remainingQuestions.parent();
+    remainingQuestions.detach().sort( function() { return Math.random() - 0.5; } ).appendTo( parent );
 
     this.currentQuestionIndex = 0;
 	for ( var i = 0; i < this.questions.length; i ++ ) {
 		var q = this.questions.get( i );
-		if ( $( q).hasClass( ''))
+		if ( !$( q ).hasClass( 'completed' ) ) {
+			this.currentQuestionIndex = i;
+			break;
+		}
 	}
+
+    if ( this.questions.length == 0 || this.questions.length == this.currentQuestionIndex + 1 ) {
+        this.nextScreen();
+        return;
+    }
 
     $( '#total-scenarios' ).html( this.questions.length );
     this.currentQuestion().show();
+	this.updateCounter();
 
 }).methods({
 
@@ -59,12 +64,16 @@ bn.das2004.Manager = klass(function( questionSelector, nextLink ) {
             if ( self.currentQuestionIndex < self.questions.length ) {
                 self.currentQuestion().fadeIn( 800 );
                 self.equalizeHeights( self.currentQuestion().find( '.ui-button' ) );
-                $( '#scenario-number' ).html( self.currentQuestionIndex + 1 );
+                this.updateCounter();
             } else {
                 self.nextScreen();
             }
         });
     },
+
+	updateCounter : function() {
+		$( '#scenario-number' ).html( this.currentQuestionIndex + 1 );
+	},
 
     equalizeHeights : function( items ) {
         bn.utils.equalizeHeights( items );
