@@ -86,6 +86,16 @@
 					if ( siblingCount == selectedCount ) {
 						saveStates();
 						manager.nextQuestion();
+					} else {
+						// Check if the next question is in view, and if not, then scroll down to it.
+						var allSiblingQuestions = $( 'ul.siblings' );
+						for ( var i = 0; i < allSiblingQuestions.length; i ++ ) {
+							var siblingQuestion = $( allSiblingQuestions.get( i ) );
+							var checked = ( siblingQuestion.find( 'input[ type=radio ]:checked' ).length > 0 );
+							if ( !checked ) {
+
+							}
+						}
 					}
 				});
 
