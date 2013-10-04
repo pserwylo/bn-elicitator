@@ -14,7 +14,7 @@ bn.das2004.Manager = klass(function( questionSelector, nextLink ) {
     var parent = remainingQuestions.parent();
     remainingQuestions.detach().sort( function() { return Math.random() - 0.5; } ).appendTo( parent );
 
-    this.currentQuestionIndex = 0;
+    this.currentQuestionIndex = null;
 	for ( var i = 0; i < this.questions.length; i ++ ) {
 		var q = this.questions.get( i );
 		if ( !$( q ).hasClass( 'completed' ) ) {
@@ -23,7 +23,7 @@ bn.das2004.Manager = klass(function( questionSelector, nextLink ) {
 		}
 	}
 
-    if ( this.questions.length == 0 || this.questions.length == this.currentQuestionIndex + 1 ) {
+    if ( this.questions.length == 0 || this.currentQuestionIndex == null ) {
         this.nextScreen();
         return;
     }
@@ -64,7 +64,7 @@ bn.das2004.Manager = klass(function( questionSelector, nextLink ) {
             if ( self.currentQuestionIndex < self.questions.length ) {
                 self.currentQuestion().fadeIn( 800 );
                 self.equalizeHeights( self.currentQuestion().find( '.ui-button' ) );
-                this.updateCounter();
+                self.updateCounter();
             } else {
                 self.nextScreen();
             }
