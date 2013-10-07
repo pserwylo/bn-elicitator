@@ -10,7 +10,8 @@ bn.das2004.Manager = klass(function( questionSelector, nextLink ) {
     this.questionSelector = questionSelector;
     this.questions        = $( this.questionSelector );
 
-	var remainingQuestions = this.questions.find( questionSelector + ":not( .completed )" );
+    var remainingSelector = questionSelector + ":not( .completed )";
+	var remainingQuestions = this.questions.find( remainingSelector );
     var parent = remainingQuestions.parent();
     remainingQuestions.detach().sort( function() { return Math.random() - 0.5; } ).appendTo( parent );
 

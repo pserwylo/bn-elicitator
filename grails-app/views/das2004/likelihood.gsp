@@ -56,6 +56,39 @@
 				$.post( link, info );
 			};
 
+			var needsTooltips = function() {
+				return $( window ).width() >= 800;
+			};
+
+			var addTooltipsToCurrent = function() {
+
+				var labels = manager.currentQuestion().find( 'label' );
+				if ( !needsTooltips() ) {
+					labels.removeAttr( 'title' );
+					return;
+				}
+
+				labels.qtip({
+					content : {
+						title : function( api ) {
+							return $( this ).attr( 'data-tooltip-title' );
+						}
+					},
+					position : {
+						my : "top middle",
+						at : "bottom middle"
+					}
+				});
+			};
+
+			var destroyTooltipsOnCurrent = function() {
+				var labels = manager.currentQuestion().find( 'label' );
+				labels.qtip( 'destroy', true );
+			};
+
+			var fieldset = $( 'fieldset' );
+			bn.utils.scrollToTop( fieldset );
+
 			var probabilityOptions = $( '.probabilities' );
 			probabilityOptions.buttonset();
 			probabilityOptions.find( 'input[type=radio]').change( function() {
@@ -65,24 +98,17 @@
 					var optionCount   = parent.children().size();
 					var selectedCount = parent.find( 'input[ type=radio ]:checked' ).length;
 					if ( optionCount == selectedCount ) {
+						destroyTooltipsOnCurrent();
 						saveEstimation();
 						manager.nextQuestion();
+						addTooltipsToCurrent();
+						bn.utils.scrollToTop( fieldset );
 					}
 				}
 
 			});
 
-			probabilityOptions.find( 'label' ).qtip({
-				content : {
-					title : function( api ) {
-						return $( this ).attr( 'data-tooltip-title' );
-					}
-				},
-				position : {
-					my : "top middle",
-					at : "bottom middle"
-				}
-			});
+			addTooltipsToCurrent();
 
 		});
 	</g:javascript>

@@ -65,8 +65,9 @@
 						saveComparison();
 						manager.nextQuestion();
 					} else {
-						manager.currentQuestion().find( '.how-much' ).show( 'fast', function() {
+						var howMuch = manager.currentQuestion().find( '.how-much' ).show( 'fast', function() {
 							manager.equalizeHeights( manager.currentQuestion().find( '.weights .ui-button' ) );
+							bn.utils.ensureTopIsInView( $( this ) );
 						});
 					}
 				});

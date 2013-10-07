@@ -75,6 +75,8 @@
 					);
 				};
 
+				var fieldset = $( 'fieldset' );
+
 				var siblingStates = $( '.sibling-states' );
 				siblingStates.buttonset();
 				manager.equalizeHeights( siblingStates.find( '.ui-button' ) );
@@ -86,14 +88,16 @@
 					if ( siblingCount == selectedCount ) {
 						saveStates();
 						manager.nextQuestion();
+						bn.utils.scrollToTopIfNotInView( fieldset );
 					} else {
 						// Check if the next question is in view, and if not, then scroll down to it.
-						var allSiblingQuestions = $( 'ul.siblings' );
+						var allSiblingQuestions = parent.children();
 						for ( var i = 0; i < allSiblingQuestions.length; i ++ ) {
 							var siblingQuestion = $( allSiblingQuestions.get( i ) );
 							var checked = ( siblingQuestion.find( 'input[ type=radio ]:checked' ).length > 0 );
 							if ( !checked ) {
-
+								bn.utils.ensureTopIsInView( siblingQuestion );
+								break;
 							}
 						}
 					}
