@@ -1,5 +1,15 @@
 # External config file...
-*CustomConfig.groovy*
+
+# e.g. CarsCustomConfig.groovy...
+*CustomConfig.groovy
+
+# or "CustomConfig.groovy~cars" so that it is ignored by grails unless 
+# I symlink it to CustomConfig.groovy...
+CustomConfig.groovy~*
+
+# ... but don't ignore "CustomConfig.groovy.example"
+
+
 
 # I keep a db dump here for testing...
 *.sql

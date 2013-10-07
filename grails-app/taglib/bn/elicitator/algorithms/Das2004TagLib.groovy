@@ -155,6 +155,7 @@ class Das2004TagLib {
 		// TODO: In the future, may want to let people go back and edit responses, but for now - just ignore already answered questions...
 		def existingComparison = das2004Service.getPairwiseComparison( child, parentOne, parentTwo )
 		if ( existingComparison ) {
+			out << "<div class='question comparison completed hidden'></div>"
 			return
 		}
 
@@ -324,6 +325,7 @@ class Das2004TagLib {
 		// TODO: In the future, may want to let people go back and edit responses, but for now - just ignore already answered questions...
 		def existingEstimation = das2004Service.getProbabilityEstimation( childState, parentConfig )
 		if ( existingEstimation ) {
+			out << "<div class='question likelihood completed hidden'></div>"
 			return
 		}
 
@@ -438,6 +440,7 @@ class Das2004TagLib {
 		// TODO: In the future, may want to let people go back and edit responses, but for now - just ignore already answered questions...
 		def compatibleConfig = das2004Service.getParentConfig( parentState )
 		if ( compatibleConfig ) {
+			out << "<div class='question compatible-configurations completed hidden'></div>"
 			return
 		}
 

@@ -111,7 +111,12 @@ abstract class AllocateQuestionsService {
 	}
 
 	public boolean isAllocated( Variable variable ) {
-		allocation?.variables*.id.contains( variable.id )
+		def alloc = getAllocation()
+		if ( alloc && alloc.variables && alloc.variables.size() > 0 ) {
+			return alloc.variables*.id.contains( variable.id )
+		} else {
+			return false
+		}
 	}
 
 	public void allocateToUser( User user ) {
