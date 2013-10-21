@@ -31,18 +31,18 @@
 
 	<h3>
 		After the final round of this survey is complete, a prize of $100 will be awarded to one participant who
-		completed the survey.
+		completes the survey <em>before the 25th of October 2013.</em>
 	</h3>
 
 	<p>
-		The winner will be drawn randomly from all participants who completed every round of
-		the survey. Participants who withdrew before the end of the survey will not be eligible.
+		The winner will be drawn randomly from all participants who completed the survey.
+		Participants who withdrew before the end of the survey will not be eligible.
 	</p>
 
 	<p>
-		The winner will be contacted via the email address used to signup (or the email used to register their
-		Facebook account – if they signed up for the survey using Facebook). If we are unable to contact the winner
-		via this email after 1 month, they will forfeit the prize and a new winner will be drawn.
+		The winner will be contacted via the email address used to signup<g:if test="${user.username.startsWith( 'facebook_' )}"> (or in your case, the email you used to register your Facebook account)</g:if>.
+		If we are unable to contact the winner via this email after 1 month, they will forfeit the prize and a new
+		winner will be drawn.
 	</p>
 
 	<p>

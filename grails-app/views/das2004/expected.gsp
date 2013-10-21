@@ -115,7 +115,7 @@
 <div class="elicit-probabilities">
 
 	<help:help index="1" uniqueId="probabilities-das2004-expected" targetId="scenario-container" title="What do you expect?">
-		Imagine you are considering a request to insure somebodies car.
+		Imagine you are considering a request to insure somebody's car.
 		We have <em>some</em> information, but are missing other info.
 		What is the most likely scenario for the missing information.
 	</help:help>

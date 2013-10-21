@@ -153,6 +153,9 @@
 								${user.username}
 								<span class="stats">
 									<bnUser:completedInfo user="${user}" />
+									<g:if test="${user.canWinPrize()}">
+										<img src="${fam.icon( [ name : "money" ] )}" />
+									</g:if>
 								</span>
 							</li>
 						</g:each>
@@ -179,31 +182,36 @@
 				</fieldset>
 			</div>
 
-			<div class="column-footer">
-				<fieldset class="default ">
-					<legend>Results</legend>
+			<g:if test="${appProperties.elicitationPhase == bn.elicitator.AppProperties.ELICIT_2_RELATIONSHIPS}">
 
-					<div class="widgets">
-						<form>
-							<select id="graphPhase" name="phase">
-								<g:each in="${1..appProperties.delphiPhase}" var="phase">
-									<option value="${phase}" ${phase == appProperties.delphiPhase ? 'selected="selected"' : ''}>Phase ${phase}</option>
-								</g:each>
-							</select>
-							<select id="graphMinUsers" name="minUsers">
-								<g:each in="${1..totalExperts}" var="count">
-									<option value="${count}">Min ${count} experts</option>
-								</g:each>
-							</select>
-						</form>
-					</div>
+				<div class="column-footer">
+					<fieldset class="default ">
+						<legend>Results</legend>
 
-					<span id="graphStats" class="info"></span>
-					<div id="htmlMatrix"></div>
-					<div class="image stats"></div>
-					
-				</fieldset>
-			</div>
+						<div class="widgets">
+							<form>
+								<select id="graphPhase" name="phase">
+									<g:each in="${1..appProperties.delphiPhase}" var="phase">
+										<option value="${phase}" ${phase == appProperties.delphiPhase ? 'selected="selected"' : ''}>Phase ${phase}</option>
+									</g:each>
+								</select>
+								<select id="graphMinUsers" name="minUsers">
+									<g:each in="${1..totalExperts}" var="count">
+										<option value="${count}">Min ${count} experts</option>
+									</g:each>
+								</select>
+							</form>
+						</div>
+
+						<span id="graphStats" class="info"></span>
+						<div id="htmlMatrix"></div>
+						<div class="image stats"></div>
+
+					</fieldset>
+				</div>
+
+			</g:if>
+
 		</div>
 	
 	</body>

@@ -62,6 +62,7 @@ class Das2004TagLib {
 	def listSummaryProbabilities = { attrs ->
 
 		CptAllocation allocation = CptAllocation.findByUser( userService.current )
+
 		List<BnArc> relevantArcs = bnService.getArcsByChildren( allocation.variables.toList() )
 		List<Long> completedIds  = das2004Service.completed*.id
 

@@ -9,11 +9,13 @@ class ErrorController {
 	EmailService emailService
 
 	def index() {
-		if ( Environment.current.equals( Environment.DEVELOPMENT ) ) {
-			render renderException( exception : request.exception )
-		} else {
-			handleError( 500, request.exception )
-		}
+		handleError( 500, request.exception )
+	}
+
+	def notFound() {
+		flash.message = "Uh oh, we couldn't find what you were looking for."
+		response.status = 404
+		forward( controller: 'home' )
 	}
 
 	def jsError() {
@@ -40,7 +42,7 @@ class ErrorController {
 		if ( url ) {
 			redirect( url : url )
 		} else {
-			redirect( controller: 'elicit' )
+			redirect( controller: 'home' )
 		}
 	}
 
@@ -61,6 +63,7 @@ class ErrorController {
 
 	private void renderError( ErrorDetails error ) {
 		render(
+			layout: 'main',
 			view  : 'error',
 			model : [ error : error ]
 		)

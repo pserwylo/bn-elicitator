@@ -96,10 +96,10 @@ abstract class AllocateQuestionsService {
 		return lowestCount
 	}
 
-	public def getAllocation() {
+	public def getAllocation( User u = userService.current ) {
 		Closure criteria = {
 			user {
-				eq ( 'id', userService.current.id )
+				eq ( 'id', u.id )
 			}
 		}
 		def allocations = getAllocationsByCriteria( criteria )

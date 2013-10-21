@@ -26,6 +26,16 @@ class AdminTagLib {
 	static namespace = "bnAdmin"
 
 	VariableService variableService
+	AllocateStructureQuestionsService allocateStructureQuestionsService
+	AllocateCptQuestionsService allocateCptQuestionsService
+
+	private AllocateQuestionsService getAllocateService() {
+		if ( AppProperties.properties.elicitationPhase == AppProperties.ELICIT_2_RELATIONSHIPS ) {
+			return allocateStructureQuestionsService
+		} else {
+			return allocateCptQuestionsService
+		}
+	}
 
 	/**
 	 * Output a list of variables, and say how many participants they've been allocated to.
@@ -35,7 +45,7 @@ class AdminTagLib {
 	 */
 	def allocationList = {
 		List<Variable> allVars          = Variable.list()
-		List<StructureAllocation> allAllocations = StructureAllocation.list()
+		List<Allocation> allAllocations = allocateService.list()
 		Map<Variable, Integer> allocationCounts = [:]
 		int maxCount = Integer.MIN_VALUE
 		int minCount = Integer.MAX_VALUE

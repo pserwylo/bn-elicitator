@@ -27,7 +27,7 @@
 	<body>
 
 		<help:help index="1" uniqueId="probability-index-completing-survey" targetId="first-variable" title="Completing the survey">
-			<p>The surey will be complete when you have visited each of these links and answered their questions. The <img src='${resource(dir: 'images/icons', file: 'lightbulb.png')}' /> will change to a <img src='${resource(dir: 'images/icons', file: 'accept.png')}' /> to indicate it has been completed.</p>
+			<p>The survey will be complete when you have visited each of these links and answered their questions. The <img src='${resource(dir: 'images/icons', file: 'lightbulb.png')}' /> will change to a <img src='${resource(dir: 'images/icons', file: 'accept.png')}' /> to indicate it has been completed.</p>
 		</help:help>
 
 		<g:if test="${flash.message}">

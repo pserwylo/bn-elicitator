@@ -45,6 +45,8 @@ class UserTagLib {
 	def variableService
 	def delphiService
 	def userService
+	def allocateStructureQuestionsService
+	def allocateCptQuestionsService
 
 	def realName = {
 		out << userService.current?.realName ?: ""
@@ -55,18 +57,26 @@ class UserTagLib {
 	 */
 	def completedInfo = { attrs ->
 		User user             = attrs.user
-		StructureAllocation allocation = StructureAllocation.findByUser( user )
-		if (!allocation) {
+		Allocation a = getAllocation( user )
+		if (!a) {
 			out << "None allocated"
 		} else {
 			int completed = variableService.completedCount( user )
-			int total = allocation.variables?.size()
+			int total = a.variables?.size()
 
 			if ( total == completed )
 			{
 				out << "Completed phase $delphiService.phase "
 			}
 			out << "($completed / $total)"
+		}
+	}
+
+	private Allocation getAllocation( User user ) {
+		if ( AppProperties.properties.elicitationPhase == AppProperties.ELICIT_2_RELATIONSHIPS ) {
+			return allocateQuestionsService.getAllocation( user )
+		} else {
+			return allocateCptQuestionsService.getAllocation( user )
 		}
 	}
 

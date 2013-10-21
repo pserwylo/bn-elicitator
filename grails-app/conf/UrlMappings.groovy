@@ -7,6 +7,7 @@ class UrlMappings {
 		"/probabilities/$action?/$id?" ( controller: "das2004" )
 
 		"500"                          ( controller:'error', exception: Exception )
+		"404"                          ( controller: 'error', action: 'notFound' )
 		"/admin/manage/$action?"       ( controller: "adminManage" )
 		"/auth/oauth/$action?"         ( controller: "springSecurityOAuth" )
 

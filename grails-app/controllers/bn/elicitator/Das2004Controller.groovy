@@ -48,7 +48,8 @@ class Das2004Controller {
 	def importance = {
 		Variable variable = Variable.get( params.getLong( 'id' ) ?: 0 )
 		if ( variable == null || !allocateCptQuestionsService.isAllocated( variable ) ) {
-			throw new Exception( "Not found: $params.id" )
+			redirect( controller: 'error', action: 'notFound' )
+			return
 		}
 
 		return [ variable : variable ]
@@ -75,7 +76,8 @@ class Das2004Controller {
 	def likelihood = {
 		Variable variable = Variable.get( params.getLong( 'id' ) ?: 0 )
 		if ( variable == null || !allocateCptQuestionsService.isAllocated( variable ) ) {
-			throw new Exception( "Not found: $params.id" )
+			redirect( controller: 'error', action: 'notFound' )
+			return
 		}
 
 		return [ variable : variable ]
@@ -101,7 +103,8 @@ class Das2004Controller {
 	def expected = {
 		Variable variable = Variable.get( params.getLong( 'id' ) ?: 0 )
 		if ( variable == null || !allocateCptQuestionsService.isAllocated( variable ) ) {
-			throw new Exception( "Not found: $params.id" )
+			redirect( controller: 'error', action: 'notFound' )
+			return
 		}
 
 		return [ variable : variable ]

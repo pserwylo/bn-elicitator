@@ -153,7 +153,7 @@ class InsuranceDataLoader extends DataLoader {
 				new State( "Wealthy", "Client is from the <em>upper class</em>" ),
 		    ],
 		    "RiskAversion" : [
-				new State( "Psychopath",  "Client has the <em>risk aversion of a psychopath</em>"  ),
+				new State( "Psychopath",  "Client is <em>extremely adventurous</em>"  ),
 				new State( "Adventurous", "Client is <em>adventurous</em>" ),
 				new State( "Normal",      "Client has <em>normal risk aversion</em>" ),
 				new State( "Cautious",    "Client is <em>very cautious</em>" ),
@@ -163,15 +163,15 @@ class InsuranceDataLoader extends DataLoader {
 				new State( "Older",   "Client's car is an <em>older</em> model" ),
 		    ],
 		    "ThisCarDam" : [
-				new State( "None",     "Clients car <em>doesn't get damaged</em>" ),
-				new State( "Mild",     "Clients car <em>receives mild damage</em>" ),
-				new State( "Moderate", "Clients car gets <em>moderately damaged</em>" ),
-				new State( "Severe",   "Clients car gets <em>severely damaged</em>" ),
+				new State( "None",     "Client's car <em>doesn't get damaged</em>" ),
+				new State( "Mild",     "Client's car <em>receives mild damage</em>" ),
+				new State( "Moderate", "Client's car gets <em>moderately damaged</em>" ),
+				new State( "Severe",   "Client's car gets <em>severely damaged</em>" ),
 		    ],
 		    "RuggedAuto" : [
-				new State( "EggShell", "Clients car is <em>not rugged</em> at all" ),
-				new State( "Football", "Clients car is <em>not particularly weak or strong</em>, just regular" ),
-				new State( "Tank",     "Clients car is <em>particularly strong</em>" ),
+				new State( "EggShell", "Client's car is <em>not rugged</em> at all" ),
+				new State( "Football", "Client's car is <em>not particularly weak or strong</em>, just regular" ),
+				new State( "Tank",     "Client's car is <em>particularly strong</em>" ),
 		    ],
 		    "Accident" : [
 				new State( "None",     "Client will <em>not get into an accident</em>" ),
@@ -180,10 +180,10 @@ class InsuranceDataLoader extends DataLoader {
 				new State( "Severe",   "Client will get into a <em>severe accident</em>"  ),
 		    ],
 		    "MakeModel" : [
-				new State( "SportsCar",  "Clients car is a <em>sports car</em>" ),
-				new State( "Economy",    "Clients car is an <em>economy car</em>" ),
-				new State( "FamilySedan", "Clients car is a <em>family sedan</em>" ),
-				new State( "Luxury",      "Clients car is a <em>luxury car</em>" ),
+				new State( "SportsCar",  "Client's car is a <em>sports car</em>" ),
+				new State( "Economy",    "Client's car is an <em>economy car</em>" ),
+				new State( "FamilySedan", "Client's car is a <em>family sedan</em>" ),
+				new State( "Luxury",      "Client's car is a <em>luxury car</em>" ),
 				/*new State( "SuperLuxury" ),*/
 		    ],
 		    "DrivQuality" : [
@@ -192,14 +192,14 @@ class InsuranceDataLoader extends DataLoader {
 				new State( "Excellent", "Quality of clients driving is <em>excellent</em>" ),
 		    ],
 		    "Mileage" : [
-				new State( "FiveThou",   "Clients car has driven <em>less than 10,000km</em>" ),
-				new State( "TwentyThou", "Clients car has driven <em>between 10,000km and 40,000km</em>" ),
-				new State( "FiftyThou",  "Clients car has driven <em>between 40,000km and 100,000km</em>"  ),
-				new State( "Domino",     "Clients car has driven <em>over 100,000km</em>" ),
+				new State( "FiveThou",   "Client's car has driven <em>less than 10,000km</em>" ),
+				new State( "TwentyThou", "Client's car has driven <em>between 10,000km and 40,000km</em>" ),
+				new State( "FiftyThou",  "Client's car has driven <em>between 40,000km and 100,000km</em>"  ),
+				new State( "Domino",     "Client's car has driven <em>over 100,000km</em>" ),
 		    ],
 		    "Antilock" : [
-				new State( "True",  "Clients car <em>has anti-lock brakes</em> installed" ),
-				new State( "False", "Clients car <em>does not have anti-lock</em> brakes" ),
+				new State( "True",  "Client's car <em>has anti-lock brakes</em> installed" ),
+				new State( "False", "Client's car <em>does not have anti-lock</em> brakes" ),
 		    ],
 		    "DrivingSkill" : [
 				new State( "SubStandard", "Client <em>doesn't</em> have very good <em>driving skills</em>" ),
@@ -217,14 +217,14 @@ class InsuranceDataLoader extends DataLoader {
 				new State( "Million",     "Client will <em>claim over \$100,000</em> to fix <em>their</em> car" ),
 			],
 		    "Theft" : [
-				new State( "True",  "Clients car <em>will</em> get stolen" ),
-				new State( "False", "Clients car <em>wont</em> get stolen" ),
+				new State( "True",  "Client's car <em>will</em> get stolen" ),
+				new State( "False", "Client's car <em>will not</em> get stolen" ),
 		    ],
 		    "CarValue" : [
-				new State( "Thousand",    "Clients car is <em>worth less than \$1,000</em> (at time of insuring)" ),
-				new State( "TenThou",     "Clients car is <em>worth between \$1,000 and \$10,000</em> (at time of insuring)" ),
-				new State( "HundredThou", "Clients car is <em>worth between \$10,000 and \$100,000</em> (at time of insuring)" ),
-				new State( "Million",     "Clients car is <em>worth more than \$100,000</em> (at time of insuring)" ),
+				new State( "Thousand",    "Client's car is <em>worth less than \$1,000</em> (at time of insuring)" ),
+				new State( "TenThou",     "Client's car is <em>worth between \$1,000 and \$10,000</em> (at time of insuring)" ),
+				new State( "HundredThou", "Client's car is <em>worth between \$10,000 and \$100,000</em> (at time of insuring)" ),
+				new State( "Million",     "Client's car is <em>worth more than \$100,000</em> (at time of insuring)" ),
 		    ],
 		    "HomeBase" : [
 				new State( "Secure", "Client usually leaves their car in <em>secure parking</em>" ),
@@ -233,8 +233,8 @@ class InsuranceDataLoader extends DataLoader {
 				new State( "Rural",  "Client usually parks their car in <em>rural streets</em>"  ),
 		    ],
 		    "AntiTheft" : [
-				new State( "True",  "Clients car <em>has anti-theft device</em> installed"  ),
-				new State( "False", "Clients car <em>does not have</em> any <em>anti-theft devices</em> installed" ),
+				new State( "True",  "Client's car <em>has anti-theft device</em> installed"  ),
+				new State( "False", "Client's car <em>does not have</em> any <em>anti-theft devices</em> installed" ),
 		    ],
 		    "PropCost" : [
 				new State( "Thousand",    "Client will cause <em>less than \$1,000</em> in property damage" ),
@@ -269,10 +269,10 @@ class InsuranceDataLoader extends DataLoader {
 				new State( "False", "Clients car <em>doesn't have airbags</em>" ),
 			],
 			"IliCost" : [
-				new State( "Thousand"    ),
-				new State( "TenThou"     ),
-				new State( "HundredThou" ),
-				new State( "Million"     ),
+				new State( "Thousand",    "Client will <em>claim less than \$1,000</em> to fix <em>buildings or property</em> damaged in an accident" ),
+				new State( "TenThou",     "Client will <em>claim between \$1,000 and \$10,000</em> to fix <em>buildings or property</em> damaged in an accident" ),
+				new State( "HundredThou", "Client will <em>claim between \$10,000 and \$100,000</em> to fix <em>buildings or property</em> damaged in an accident" ),
+				new State( "Million",     "Client will <em>claim over \$100,000</em> to fix <em>buildings or property</em> damaged in an accident" ),
 			],
 			"DrivHist" : [
 				new State( "Zero", "Client has <em>zero</em> previous insurance claims" ),
@@ -475,44 +475,77 @@ class InsuranceDataLoader extends DataLoader {
 	protected AppProperties getProperties( ServletContext servletContext )
 	{
 		String explanatoryStatement = """
+<style>
+	ul.list {
+        list-style: disc inside;
+        padding-left: 1em;
+	}
+
+	ol.list li {
+        list-style: decimal outside;
+	}
+
+    ul.list, ol.list li {
+        margin-bottom: 0.5em;
+    }
+</style>
+
 <h2>Car Insurance Risk Analysis</h2>
 <p>
-    My name is Peter Serwylo and I am conducting a research project with Dr Grace Rumantir and Professor Frada Burstein
-    from the Caulfield School of Information Technology, Monash University.
-    It is being conducted as part of my PhD research.
+    My name is Peter Serwylo and this study is part of my PhD research project at the Caulfield School of Information
+    Technology, Monash University.
+    Dr Grace Rumantir and Professor Frada Burstein are my research supervisors.
     You are invited to take part in this study.
 </p>
 
 <h2><a name="aim">The aim/purpose of the research</a></h2>
 <p>
-	There are two aims for this research.
-	From the perspective of assessing risk when selling car insurance, it is to build a model to help
-	predict which clients are likely to cost the insurer more.
-	It will do this by gathering knowledge from people such as yourself about what factors are likely
-	to increase the chance of an accident and the total payout required for a client.
+The research has two aims:
 </p>
-<p>
-	The other goal is to investigate different methods to use for building this model. Traditionally, gathering
-	knowledge for such a model would require you and I to meet for a face-to-face interview. I would then manually
-	transcribe the interview and then analyse the transcripts to build the model. This research project aims to elicit
-	the same knowledge from you, but in a way which doesn’t require individual meetings for each participant. To do
-	this, I am researching the practicality of eliciting knowledge from people like you from an online system.
-</p>
+
+<ol class="list">
+	<li>
+		To gathering knowledge from motorists on what factors likely to increase the chance of an accident and the total
+		payout claim by a car insurance holder. This knowledge will be used to build a model for assessing risk of a
+		potential client when selling car insurance.
+	</li>
+	<li>
+		To test a new online knowledge elicitation tool that I have built for the purpose of building risk assessment
+		models in an automated manner. Traditionally, gathering knowledge for such a model would require you and I to
+		meet for a face-to-face interview. I would then manually transcribe the interview and then analyse the
+		transcripts to build the model.
+	</li>
+</ol>
+
 
 <h2><a name="benefits">Possible benefits</a></h2>
 <p>
-	Conducting the knowledge-elicitation process online rather than in a one-to-one interview means that it takes
-	less time for you to contribute to the research by imparting your knowledge. It also means less time for me to
-	analyse the knowledge you have contributed and use it to build the model for assessing risk. It requires
-	less organisation from you and I, due to the fact that you can attend to the online system at your leisure (you
-	don’t have to complete the entire process all at once). Finally, all of these benefits culminate in allowing more
-	participants to contribute their knowledge to the project. The more participants, the better, because the model will
-	include a broader range of knowledge.
+	There are a few benefits in conducting knowledge-elicitation process online vis-à-vis through face-to-face interviews.
 </p>
 <p>
-	Although a model for assessing risk when providing insurance already exists, this survey is being conducted to
-	see if the result from the online survey will align with this pre-existing model. If so, then that will
-	provide evidence that this is a valuable technique for producing these type of models into the future.
+	It requires less time:
+</p>
+<ul class="list">
+	<li>
+		For <em>you</em> to contribute to the research by imparting your knowledge.
+	</li>
+	<li>
+		For <em>me</em> to analyse the knowledge and create the risk assessment model generated from the study.
+	</li>
+</ul>
+<p>
+	It also requires less organisation from all involved as the process can be conducted online at each participant’s
+	convenience.
+</p>
+<p>
+	All these benefits will enable more participants to take part which results in better more informed model.
+</p>
+<p>
+	This part of the PhD research project uses the car insurance domain to build a risk assessment model as the domain
+	already has a model which we can can compare with.
+	We’d like to test if the model resulting from this online survey is similar to the existing model.
+	We can then draw a conclusion whether or not this proposed way of knowledge elicitation is useful for building risk
+	assessment models in other domains.
 </p>
 
 <h2><a name="involves">What does the research involve?</a></h2>
@@ -523,19 +556,17 @@ class InsuranceDataLoader extends DataLoader {
 </p>
 <p>
 	After you complete the primary survey (questions about car insurance), you will also be asked a few short questions
-	about how you felt the process went (questions about the survey process itself) so that we can evaluate whether it
-	was worthwhile eliciting knowledge from people using this online system in preference to person-to-person interviews.
+	about how you felt the process went (questions about the survey process itself).
 </p>
 
 <h2><a name="time">How much time will the research take?</a></h2>
 <p>
-	The survey should take around 20 minutes to complete. You can take a break and return at a later date.
-	Remember that you don’t have to complete the whole survey all at once, the system will save your results from
-	last time and continue from where you left off.
+	The survey should take around 20-30 minutes to complete. You don’t have to complete the whole survey all at once, you
+	can take breaks and the system will save your results from last time and continue from where you left off.
 </p>
 <p>
-	However, you will need to complete the survey before the 1st of October 2013 to be eligible for the
-	<a href="payment">prize draw</a>.
+	To be eligible for the <a href="#payment">prize draw</a>, however, you will need to complete the survey
+	<em>before the 25th of October 2013.</em>
 </p>
 
 <h2><a name="discomfort">Inconvenience/discomfort</a></h2>
@@ -545,40 +576,39 @@ class InsuranceDataLoader extends DataLoader {
 
 <h2><a name="payment">Prizes / Payment</a></h2>
 <p>
-	If you continue, you will be eligible to enter a draw for a \$100 prize. More information is provided on the
-	following page, if you choose to continue. Other than the chance of winning the \$100 prize, you will be completing
-	this survey on a voluntary basis, with no other monetary reward.
+	Upon completion of the survey, you will be eligible to enter a draw for a \$100 prize. More information is provided
+	on the following page.
 </p>
 
 <h2><a name="withdraw">Withdrawing from the research</a></h2>
 <p>
-	As this study is voluntary and you are under no obligation to participate. If you wish to withdraw, please contact
+	This study is voluntary and you are under no obligation to participate. If you wish to withdraw, please contact
 	Peter Serwylo (peter.serwylo@monash.edu.au or 03 9903 2556).
 </p>
 
 <h2><a name="confidentiality">Confidentiality</a></h2>
 <p>
-    During the online survey, you will have your own username and password to access your results. This is to prevent
+    During the online survey, you will be given your own username and password to access your results. This is to prevent
 	other participants or people who stumble upon the website from looking at your results.
 </p>
 <p>
-	Once you have completed the survey, including questions at the end regarding your experience completing the survey,
-	the data will be deidentified. At no point during any publication of results will your name be linked with any data
-	you submitted. If any quotes from you are published, they will be attributed to a pseudonym of the form
-	“Participant 1”, and there will be no way to identify who this pseudonym belongs to.
+	Once you have completed the survey and feedback questions, the data will be de-identified. At no point during any
+	publication of results will your name be linked with any data you submitted. If any quotes from you are published,
+	they will be attributed to a pseudonym of the form "Participant 1", and there will be no way to identify who this
+	pseudonym belongs to.
 </p>
 
 <h2><a name="data-storage">Storage of data</a></h2>
 <p>
     Data collected will be stored in accordance with Monash University regulations, on a secure computer within the
-	Monash network for a period of five years. A report of the study may be submitted for publication, but individual
+	Monash network for a period of five years. A report of the study may be submitted for publications, but individual
 	<a href="#confidentiality">participants will not be identifiable</a> in such a report.
 </p>
 
 <h2><a name="results">Results</a></h2>
 <p>
     If you would like to be informed of the research findings at the end of the study, they will be available
-    <a href="http://firstaid.infotech.monash.edu/survey/run/results">online here</a>.
+    <a href="http://survey.infotech.monash.edu/cars/results">online here</a>.
 	The findings will be accessible for at that web address for at least six months after the completion of the study.
 </p>
 

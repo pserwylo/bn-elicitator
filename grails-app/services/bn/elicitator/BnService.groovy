@@ -234,22 +234,30 @@ class BnService {
 	}
 
 	public List<BnArc> getArcsByChild( Variable childVariable ) {
-		BnArc.withCriteria {
-			child {
-				variable {
-					eq( 'id', childVariable.id )
+		if ( childVariable ) {
+			return BnArc.withCriteria {
+				child {
+					variable {
+						eq( 'id', childVariable.id )
+					}
 				}
 			}
+		} else {
+			return []
 		}
 	}
 
 	public List<BnArc> getArcsByChildren( List<Variable> children ) {
-		BnArc.withCriteria {
-			child {
-				variable {
-					inList( 'id', children*.id )
+		if ( children.size() > 0 ) {
+			return BnArc.withCriteria {
+				child {
+					variable {
+						inList( 'id', children*.id )
+					}
 				}
 			}
+		} else {
+			return []
 		}
 	}
 

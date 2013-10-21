@@ -6,6 +6,8 @@ import bn.elicitator.feedback.Question
 class FeedbackQuestionLoader {
 
 	public void initQuestions() {
+		drivingExperience()
+		ownCar()
 		geography()
 		language()
 		inPersonOrOnline()
@@ -13,6 +15,28 @@ class FeedbackQuestionLoader {
 		helpSection()
 		wereYouFrustrated()
 		whatMadeYouParticipate()
+	}
+
+	private void drivingExperience() {
+		Question license = new Question( "Do you/have you ever held a valid drivers license?" )
+		Option yes = license.addToOptions( "Yes" )
+		license.addToOptions( "No" )
+		license.save( flush : true, failOnError : true )
+
+		Question howLong = new Question( "How long have you held/did you hold this for?", yes )
+		howLong.addToOptions( [ "Less than 1 year", "1 to 4 years", "5 to 10 years", "Longer than 10 years" ] )
+		howLong.save( flush : true, failOnError : true )
+	}
+
+	private void ownCar() {
+		Question own = new Question( "Do you currently own a car?" )
+		Option yes = own.addToOptions( "Yes" )
+		own.addToOptions( "No" )
+		own.save( flush : true, failOnError : true )
+
+		Question insurance = new Question( "How have you insured it?", yes )
+		insurance.addToOptions( [ "Not insured", "3rd party", "Comprehensive" ] )
+		insurance.save( flush : true, failOnError : true );
 	}
 
 	private void whatMadeYouParticipate() {
@@ -48,12 +72,12 @@ class FeedbackQuestionLoader {
 	}
 
 	private void language() {
-		Question language = new Question( label : "Is English your primary language?" )
+		Question language = new Question( label : "Is English your first language?" )
 		language.addToOptions( "Yes" )
 		Option notEnglish = language.addToOptions( "No" )
 		language.save( flush : true, failOnError : true )
 
-		Question otherLanguage = new Question( "What is your primary language?", notEnglish )
+		Question otherLanguage = new Question( "What is your first language?", notEnglish )
 		otherLanguage.save( flush : true, failOnError : true )
 	}
 

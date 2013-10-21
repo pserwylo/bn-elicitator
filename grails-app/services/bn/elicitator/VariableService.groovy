@@ -19,6 +19,7 @@
 package bn.elicitator
 
 import bn.elicitator.auth.User
+import bn.elicitator.das2004.CompletedDasVariable
 import bn.elicitator.events.FinishedVariableEvent
 
 class VariableService
@@ -41,14 +42,22 @@ class VariableService
 	 * Number of variables completed by user *user* (defaults to current user).
 	 */
 	public int completedCount( User user = userService.current ) {
-		VisitedVariable.countByVisitedByAndDelphiPhase( user, delphiService.phase )
+		if ( AppProperties.properties.elicitationPhase == AppProperties.ELICIT_2_RELATIONSHIPS ) {
+			return VisitedVariable.countByVisitedByAndDelphiPhase( user, delphiService.phase )
+		} else {
+			return CompletedDasVariable.countByCompletedBy( user )
+		}
 	}
 
 	/**
 	 * Number of people who have completed variable *var*.
 	 */
 	public int completedCount( Variable var ) {
-		VisitedVariable.countByVariable( var )
+		if ( AppProperties.properties.elicitationPhase == AppProperties.ELICIT_2_RELATIONSHIPS ) {
+			return VisitedVariable.countByVariable( var )
+		} else {
+			return CompletedDasVariable.countByVariable( var )
+		}
 	}
 
 	public void eachVariableClass( Closure closure ) {

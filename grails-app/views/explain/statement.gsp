@@ -37,9 +37,7 @@
 			</g:if>
 
 			<p class="message">
-				Please read this Explanatory Statement in full before making a decision about participating.
-				<br />
-				Once read, click the "Continue" button at the bottom of the page.
+				Please read this Explanatory Statement in full before continuing.
 			</p>
 
 			<g:javascript>
@@ -49,6 +47,14 @@
 					});
 				})();
 			</g:javascript>
+
+			<g:form action="consent">
+				<input id="continue" disabled="disabled" type="submit" class="big" value="Continue" onclick="document.location = '${createLink( controller: 'explain', action: 'consent' )}'" />
+				<label>
+					<input type="checkbox" name="readStatement" value="1"/>
+					I have read and understood this explanatory statement.
+				</label>
+			</g:form>
 
 			<ul id="toc" class="">
 				<g:javascript>
@@ -64,14 +70,6 @@
 			</ul>
 
 			${explanatoryStatement}
-
-			<g:form action="consent">
-				<input id="continue" disabled="disabled" type="submit" class="big" value="Continue" onclick="document.location = '${createLink( controller: 'explain', action: 'consent' )}'" />
-				<label>
-					<input type="checkbox" name="readStatement" value="1"/>
-					I have read and understood this explanatory statement.
-				</label>
-			</g:form>
 
 		</div>
 

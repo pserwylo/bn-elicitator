@@ -25,3 +25,7 @@ h3 {
 p {
 	margin: 0 0 0.6em 0 !important;
 }
+
+#toc {
+	margin-top: 1em;
+}
