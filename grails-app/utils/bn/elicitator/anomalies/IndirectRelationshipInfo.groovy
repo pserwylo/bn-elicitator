@@ -8,7 +8,7 @@ class IndirectRelationshipInfo implements AnomalyInfo {
 
 	private String encodedImage = null;
 
-	public IndirectDiagram(BnService.IndirectRelationship relationship) {
+	public IndirectRelationshipInfo(BnService.IndirectRelationship relationship) {
 		this.relationship = relationship
 	}
 
