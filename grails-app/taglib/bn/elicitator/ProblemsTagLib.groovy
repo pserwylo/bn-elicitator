@@ -46,7 +46,7 @@ class ProblemsTagLib {
 	def removeCycleOptions = { attrs ->
 		BnService.CyclicalRelationship rel = attrs.cyclicalRelationship
 		out << "<ul class='answers'>"
-		rel.relationships.each{ out << bnProblems.removeCycleItem( [ relationship: it ]) }
+		rel.arcs.each{ out << bnProblems.removeCycleItem( [ relationship: it ]) }
 		out << "</ul>"
 	}
 

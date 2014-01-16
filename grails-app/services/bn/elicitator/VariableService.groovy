@@ -21,6 +21,8 @@ package bn.elicitator
 import bn.elicitator.auth.User
 import bn.elicitator.das2004.CompletedDasVariable
 import bn.elicitator.events.FinishedVariableEvent
+import bn.elicitator.network.BnArc
+import bn.elicitator.network.BnNode
 
 class VariableService
 {
@@ -300,6 +302,14 @@ class VariableService
 
 	List<Relationship> getSpecifiedRelationshipsByChild( Variable child ) {
 		return Relationship.findAllByCreatedByAndDelphiPhaseAndChildAndExists( userService.current, delphiService.phase, child, true )
+	}
+
+	List<BnNode> getSpecifiedParents( BnNode child ) {
+		return getSpecifiedArcsByChild( child )*.parent
+	}
+
+	List<BnArc> getSpecifiedArcsByChild( BnNode child ) {
+		return BnArc.findAllByChild( child )
 	}
 
 	/**

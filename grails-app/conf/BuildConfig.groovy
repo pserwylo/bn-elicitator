@@ -44,7 +44,7 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-		runtime ":hibernate:3.6.10.1"
+		runtime ":hibernate:3.6.10.3"
 		runtime ":jquery:1.10.2"
 		runtime ":resources:1.1.6"
 		runtime ":database-migration:1.3.2"

@@ -34,12 +34,23 @@ class AnomalyInsuranceDataLoader extends InsuranceDataLoader {
 	 * study. There are cycles, and other anomalies, which we will try to resolve.
 	 */
 	protected List<List<String>> getBnArcs() {
+
+		/*return [
+			[ "HomeBase", "OtherCar" ],
+			[ "Airbag", "OtherCar" ],
+			[ "Antilock", "Airbag" ],
+			[ "Antilock", "SeniorTrain" ],
+			[ "SeniorTrain", "VehicleYear" ],
+			[ "VehicleYear", "Antilock" ],
+			[ "OtherCar", "VehicleYear" ],
+		]*/
+
 		[
 			[ "Antilock", "ThisCarCost" ],
 			[ "Antilock", "DrivHist" ],
 			[ "SeniorTrain", "OtherCar" ],
 			[ "SeniorTrain", "DrivHist" ],
-			[ "VehicleYear", "ILiCost" ],
+			[ "VehicleYear", "IliCost" ],
 			[ "VehicleYear", "Airbag" ],
 			[ "SocioEcon", "AntiTheft" ],
 			[ "DrivingSkill", "SeniorTrain" ],
@@ -58,7 +69,7 @@ class AnomalyInsuranceDataLoader extends InsuranceDataLoader {
 			[ "DrivHist", "ThisCarCost" ],
 			[ "DrivHist", "DrivingSkill" ],
 			[ "DrivQuality", "RiskAversion" ],
-			[ "DrivHist", "ILiCost" ],
+			[ "DrivHist", "IliCost" ],
 			[ "RiskAversion", "DrivHist" ],
 			[ "RiskAversion", "Airbag" ],
 			[ "RiskAversion", "HomeBase" ],
@@ -87,11 +98,11 @@ class AnomalyInsuranceDataLoader extends InsuranceDataLoader {
 			[ "OtherCar", "Accident" ],
 			[ "Airbag", "VehicleYear" ],
 			[ "Accident", "DrivHist" ],
-			[ "Accident", "ILiCost" ],
+			[ "Accident", "IliCost" ],
 			[ "MakeModel", "ThisCarDam" ],
 			[ "MakeModel", "RuggedAuto" ],
 			[ "Accident", "SeniorTrain" ],
-			[ "Theft", "ILiCost" ],
+			[ "Theft", "IliCost" ],
 			[ "OtherCar", "DrivingSkill" ],
 			[ "OtherCarCost", "Age" ],
 			[ "Age", "MakeModel" ],
@@ -104,8 +115,8 @@ class AnomalyInsuranceDataLoader extends InsuranceDataLoader {
 			[ "DrivQuality", "SeniorTrain" ],
 			[ "DrivQuality", "DrivingSkill" ],
 			[ "Age", "Airbag" ],
-			[ "Age", "ILiCost" ],
-			[ "DrivQuality", "ILiCost" ],
+			[ "Age", "IliCost" ],
+			[ "DrivQuality", "IliCost" ],
 			[ "DrivQuality", "DrivHist" ],
 			[ "SeniorTrain", "Accident" ],
 			[ "SeniorTrain", "ThisCarDam" ],
@@ -121,7 +132,7 @@ class AnomalyInsuranceDataLoader extends InsuranceDataLoader {
 			[ "RiskAversion", "MakeModel" ],
 			[ "RiskAversion", "ThisCarDam" ],
 			[ "AntiTheft", "ThisCarCost" ],
-			[ "ThisCarDam", "ILiCost" ],
+			[ "ThisCarDam", "IliCost" ],
 			[ "AntiTheft", "Theft" ],
 			[ "ThisCarDam", "DrivHist" ],
 		]

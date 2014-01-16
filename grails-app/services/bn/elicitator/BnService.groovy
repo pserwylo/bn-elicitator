@@ -43,43 +43,42 @@ class BnService {
 	 */
 	public class IndirectRelationship {
 
-		Variable child
-		Variable redundantParent
-		Relationship relationship
-		List<List<Variable>> chains = []
+		BnNode child
+		BnNode redundantParent
+		BnArc arc
+		List<List<BnNode>> chains = []
 
 		public String toString()
 		{
-			return "Redundant relationship ${redundantParent} -> ${child} (due to ${chains.join( " and " )})"
+			return "Redundant arc ${redundantParent} -> ${child} (due to ${chains.join( " and " )})"
 		}
 
 	}
 
 	public class CyclicalRelationship {
 
-		private List<Relationship> relationships = []
-		List<Variable> chain = []
+		private List<BnArc> arcs = []
+		List<BnNode> chain = []
 
-		List<Relationship> getRelationships()
-		{
-			return this.relationships
+		List<BnArc> getArcs() {
+			return this.arcs
 		}
 
-		void setChain( List<Variable> chain )
+		void setChain( List<BnNode> chain )
 		{
-			this.relationships = []
+			this.arcs = []
 			this.chain = chain
 			for ( int i = 1; i < this.chain.size(); i ++ )
 			{
-				Variable child = this.chain.get( i - 1 )
-				Variable parent = this.chain.get( i )
-				this.relationships.add( 0, delphiService.getMyCurrentRelationship( parent, child ) )
+				BnNode child = this.chain.get( i - 1 )
+				BnNode parent = this.chain.get( i )
+				this.arcs.add( 0, BnArc.findByParentAndChild( parent, child ) )
 			}
 		}
 
 		public String toString()
 		{
-			return "Cyclical relationships: " + chain*.readableLabel.join( " -> " )
+			return "Cyclical relationships: " + chain.join( " -> " )
 		}
 
 		/**
@@ -97,8 +96,8 @@ class BnService {
 			{
 				if ( that.chain.size() == chain.size() )
 				{
-					List<Variable> myChain = []
-					List<Variable> otherChain = []
+					List<BnNode> myChain = []
+					List<BnNode> otherChain = []
 					myChain.addAll( chain )
 					otherChain.addAll( that.chain )
 
@@ -124,17 +123,17 @@ class BnService {
 
 	/**
 	 * This tree is a tree of all parent-child relationships between variables.
-	 * @see BnService#populateAllParents(bn.elicitator.BnService.TreeNode, java.lang.Boolean)
+	 * @see BnService#populateAllParents(TreeNode, List)
 	 */
-	public class TreeNode {
+	public static class TreeNode {
 
-		Variable var
+		BnNode node
 		TreeNode child = null
 		List<TreeNode> parents = []
 
 		boolean equals( TreeNode compare ) {
 
-			boolean same = ( var == compare.var )
+			boolean same = ( node == compare.node )
 			for ( TreeNode parent in parents ) {
 
 				boolean parentHasEqual = false
@@ -154,19 +153,19 @@ class BnService {
 			return same
 		}
 
-		List<Variable> getDescendantsIncludingSelf() {
-			List<Variable> descendants
+		List<BnNode> getDescendantsIncludingSelf() {
+			List<BnNode> descendants
 			if ( child == null ) {
 				descendants = []
 			} else {
 				descendants = child.getDescendantsIncludingSelf()
 			}
-			descendants.add( var )
+			descendants.add( node )
 			return descendants
 		}
 
-		List<Variable> getDescendants() {
-			List<Variable> descendants = getDescendantsIncludingSelf()
+		List<BnNode> getDescendants() {
+			List<BnNode> descendants = getDescendantsIncludingSelf()
 			descendants.pop()
 			return descendants
 		}
@@ -184,7 +183,21 @@ class BnService {
 			return leaves
 		}
 
-		String toString() { var.readableLabel }
+		String toString() { node }
+
+		void dumpTree( int depth = 0 ) {
+			String pad = ""
+			if ( depth > 0 ) {
+				for (int i = 0; i < depth; i ++ ) {
+					pad += " "
+				}
+				pad += "<-";
+			}
+			print "$pad $node.variable.readableLabel\n"
+			for ( TreeNode parent : parents ) {
+				parent.dumpTree( depth + 1 )
+			}
+		}
 	}
 
 	public void removeCycle( Variable parent, Variable child ) {
@@ -199,28 +212,35 @@ class BnService {
 		}
 	}
 
-	public List<Variable> getSpecifiedParents( Variable child, List<Relationship> allRelationshipsForUser ) {
-		allRelationshipsForUser.findAll { it.child == child }*.parent
+	public List<BnNode> getSpecifiedParents( BnNode child, List<BnArc> allArcs ) {
+		allArcs.findAll { it.child == child }*.parent
 	}
 
-	public List<CyclicalRelationship> getCyclicalRelationships() {
+	public List<CyclicalRelationship> getCyclicalRelationships(List<BnArc> toIgnore = []) {
 
-		List<Variable> allVars                           = Variable.list()
+		List<BnNode> allVars                             = BnNode.list()
 		List<CyclicalRelationship> cyclicalRelationships = []
-		List<Relationship> allRelationships              = Relationship.findAllByCreatedByAndDelphiPhaseAndExists( userService.current, delphiService.phase, true )
+		List<BnArc> allArcs = BnArc.list().findAll { BnArc arc ->
+			toIgnore.count {
+				it.parent.variable.label == arc.parent.variable.label &&
+				it.child.variable.label == arc.child.variable.label
+			} == 0
+		}
 
-		for ( Variable child in allVars ) {
-			TreeNode treeOfParents = new TreeNode( var: child )
-			populateAllParents( treeOfParents, allRelationships )
+		for ( BnNode child in allVars ) {
+			TreeNode treeOfParents = new TreeNode( node: child )
+			print "Checking if $child.variable.label has any cyclical references in it's parent tree..."
+			new ParentPopulator( allArcs ).populateAllParents( treeOfParents )
+			print "Finished checking if $child.variable.label has cyclical parents."
 
 			List<TreeNode> leafNodes = treeOfParents.leaves
 			for ( TreeNode leaf in leafNodes ) {
-				List<Variable> descendants = leaf.descendantsIncludingSelf
-				List<Variable> leafParents = getSpecifiedParents( leaf.var, allRelationships )
-				for ( Variable leafParent in leafParents ) {
+				List<BnNode> descendants = leaf.descendantsIncludingSelf
+				List<BnNode> leafParents = getSpecifiedParents( leaf.node, allArcs )
+				for ( BnNode leafParent in leafParents ) {
 					Integer index = descendants.indexOf( leafParent )
 					if ( index >= 0 ) {
-						List<Variable> chain = [ leaf.var ]
+						List<BnNode> chain = [ leaf.node ]
 						chain.addAll( descendants[ index..descendants.size()-1 ] );
 
 						cyclicalRelationships.add(
@@ -247,15 +267,15 @@ class BnService {
 	 */
 	public List<IndirectRelationship> getRedundantRelationships() {
 
-		List<Variable> allVars = Variable.list()
+		List<BnNode> allVars = BnNode.list()
 		List<IndirectRelationship> redundantRelationships = []
 
-		List<Relationship> allRelationships = Relationship.findAllByCreatedByAndDelphiPhaseAndExists( userService.current, delphiService.phase, true )
+		List<BnArc> allArcs = BnArc.list()
 
-		for ( Variable child in allVars )
+		for ( BnNode child in allVars )
 		{
-			TreeNode treeOfParents = new TreeNode( var: child )
-			populateAllParents( treeOfParents, allRelationships )
+			TreeNode treeOfParents = new TreeNode( node: child )
+			populateAllParents( treeOfParents, allArcs )
 			for ( TreeNode directParent in treeOfParents.parents )
 			{
 				for ( TreeNode otherDirectParent in treeOfParents.parents )
@@ -265,12 +285,12 @@ class BnService {
 						continue;
 					}
 
-					List<Variable> path = otherDirectParent.getPathTo( directParent.var )
+					List<BnNode> path = otherDirectParent.getPathTo( directParent.node )
 					if ( path?.size() > 1 )
 					{
 						path.add( child )
 
-						IndirectRelationship rel = redundantRelationships.find { it.child == child && it.redundantParent == directParent.var }
+						IndirectRelationship rel = redundantRelationships.find { it.child == child && it.redundantParent == directParent.node }
 
 						if ( rel != null )
 						{
@@ -281,8 +301,8 @@ class BnService {
 							redundantRelationships.add(
 								new IndirectRelationship(
 									child: child,
-									redundantParent: directParent.var,
-									relationship: Relationship.findByChildAndParentAndDelphiPhaseAndCreatedBy( child, directParent.var, delphiService.phase, ShiroUser.current ),
+									redundantParent: directParent.node,
+									arc: allArcs.find { it.child == child && parent == directParent.node },
 									chains: [ path ]
 								)
 							)
@@ -297,19 +317,44 @@ class BnService {
 
 	}
 
-	/**
-	 * @param child
-	 */
-	private void populateAllParents( TreeNode child, List<Relationship> allRelationships )
-	{
-		List<Variable> parents = allRelationships.findAll { it.child == child.var }*.parent
-		for ( Variable parent in parents ) {
-			TreeNode parentNode = new TreeNode( var: parent, child: child )
-			if ( !child.getDescendants().contains( parent ) ) {
-				populateAllParents( parentNode, allRelationships )
-			}
-			child.parents.add( parentNode )
+	static class ParentPopulator {
+
+		private List<BnArc> allArcs
+		private Set<BnNode> hasChecked = []
+
+		public ParentPopulator(List<BnArc> allArcs) {
+			this.allArcs = allArcs
 		}
+
+		public void populateAllParents(TreeNode child) {
+
+			if (!hasChecked.contains(child.node)) {
+				hasChecked.add(child.node)
+
+				List<BnNode> parents = allArcs.findAll { BnArc arc -> arc.child == child.node }*.parent
+				// print "Populating parents of $child.node.variable.label (${parents.size()} parents)"
+				for ( BnNode parent in parents )
+				{
+					if ( !child.getDescendants().contains( parent ) )
+					{
+						// print "Recursing into parent $parent.variable.label (looking for parents)"
+						TreeNode parentNode = new TreeNode( node: parent, child: child )
+						populateAllParents( parentNode )
+
+						// print "Finished recursing into $parent.variable.label"
+						// print "Marked $parentNode.node.variable.label as parent of $child.node.variable.label"
+						child.parents.add( parentNode )
+					}
+					else
+					{
+						// print "NOT recursing into parent $parent.variable.label (it is a decendent of $child.node.variable.label)"
+					}
+				}
+				// print "Finished populating parents for $child.node.variable.label"
+			}
+
+		}
+
 	}
 
 	/**
@@ -320,11 +365,11 @@ class BnService {
 	 * @param parent
 	 * @param mediatingChain
 	 */
-	private void findMediatingChain( Variable child, Variable parent, List<Variable> mediatingChain, boolean firstTime = true )
+	private void findMediatingChain( BnNode child, BnNode parent, List<BnNode> mediatingChain, boolean firstTime = true )
 	{
 
-		List<Variable> parents = variableService.getSpecifiedParents( child )
-		for ( Variable p in parents )
+		List<BnNode> parents = variableService.getSpecifiedParents( child )
+		for ( BnNode p in parents )
 		{
 			if ( p == parent )
 			{

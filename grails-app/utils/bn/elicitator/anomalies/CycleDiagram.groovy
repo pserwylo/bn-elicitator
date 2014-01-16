@@ -4,11 +4,6 @@ package bn.elicitator.anomalies
 import bn.elicitator.BnService.CyclicalRelationship
 import bn.elicitator.Variable
 
-abstract class CycleDiagramRenderer {
-
-	abstract protected String getDot()
-
-}
 
 class CycleDiagram extends CycleDiagramRenderer {
 
