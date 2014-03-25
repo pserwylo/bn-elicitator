@@ -114,7 +114,7 @@ public class NeticaNode {
 		attributes.addListAttribute( "parents", family.parents*.label )
 
 		if ( location ) {
-			visualAttributes.addListAttribute( "center", [ location.x, location.y ] )
+			visualAttributes.addListAttribute( "center", [ (int)location.x, (int)location.y ] )
 		}
 
 		return """

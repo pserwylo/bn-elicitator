@@ -1,5 +1,6 @@
 package bn.elicitator
 
+import bn.elicitator.network.BnProbability
 import org.apache.commons.collections.CollectionUtils
 
 
@@ -11,7 +12,7 @@ class Cpt {
 
 	public Cpt( List<Probability> probabilities ) {
 		this.probabilities = probabilities
-		this.variable = probabilities.size() > 0 ? probabilities[ 0 ].childState.variable : null
+		this.variable      = probabilities.size() > 0 ? probabilities[ 0 ].childState.variable : null
 	}
 
 	public Variable getVariable() { this.variable }
@@ -20,8 +21,12 @@ class Cpt {
 
 	double getProbabilityFor( State state, List<State> states ) {
 		Probability probability = probabilities.find {
-			it.childState == state && CollectionUtils.isEqualCollection( states, it.parentStates )
+			it.childState.id == state.id && CollectionUtils.isEqualCollection( states*.id, it.parentStates*.id )
 		}
-		probability?.probability ?: 0
+		if (probability == null) {
+			return 0
+		} else {
+			return probability.probability
+		}
 	}
 }

@@ -79,7 +79,7 @@ class NeticaOutputGraph extends OutputGraph {
 		}
 
 		String graphvizSvg = graphvizOutput.generateGraph()
-		GPathResult svg = new XmlSlurper().parseText( graphvizSvg )
+		GPathResult svg = new XmlSlurper(false, true, true).parseText( graphvizSvg )
 		Double totalHeight = svg.@height.toString()[ 0..-3 ] as Double // Remove the "pt" from the height value.
 		svg.depthFirst().toList().each { NodeChild node ->
 			if ( node.@class == "node" ) {

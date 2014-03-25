@@ -3,6 +3,7 @@ package bn.elicitator
 import bn.elicitator.auth.User
 import bn.elicitator.network.BnArc
 import bn.elicitator.network.BnNode
+import bn.elicitator.output.CptOutputSpreadsheet
 import bn.elicitator.output.CsvOutputGraph
 import bn.elicitator.output.GraphvizOutputGraph
 import bn.elicitator.output.HtmlMatrixOutputGraph
@@ -17,6 +18,13 @@ class OutputController {
 	def delphiService
 	def userService
 	def bnService
+
+	/**
+	 * Outputs csv's of each users probability estimations for each question (child + parent states) they were allocated.
+	 */
+	def cpts = {
+		render new CptOutputSpreadsheet()
+	}
 
 	def jsonStats = { OutputCommand cmd ->
 		outputGraph( new JsonOutputGraph(), cmd )
@@ -105,7 +113,7 @@ class OutputController {
 			}
 
 			BnNode.list().each { BnNode node ->
-				Cpt cpt = bnService.getCptFor( node.variable )
+				Cpt cpt = bnService.getCptFor( node.variable, null )
 				output.addCpt( cpt )
 			}
 

@@ -1,5 +1,6 @@
 package bn.elicitator.algorithms
 
+import Jama.EigenvalueDecomposition
 import Jama.Matrix
 import bn.elicitator.BnService
 import bn.elicitator.CptAllocation
@@ -223,6 +224,8 @@ class Das2004Service {
 	 */
 	public void performCalculations() {
 
+		timestamp( true );
+
 		List<CptAllocation> allocations = CptAllocation.list()
 
 		allocations.each { CptAllocation allocation ->
@@ -244,12 +247,58 @@ class Das2004Service {
 	private void calculateUsersCptForVariable( Variable child, User user ) {
 
 		List<Variable> parents = bnService.getArcsByChild( child )*.parent*.variable
-		Map<Variable, BigDecimal> weights = calculateWeights( child, parents, user )
-		weightedSum( child, parents, user, weights )
+		if ( parents.size() > 1 ) {
+			timestamp()
+			print "Calculating conditional probabilities for $child (${parents.size()} parents)"
+			print "First - get weights for $parents -> $child"
+			Map<Variable, BigDecimal> weights = calculateWeights( child, parents, user )
+			print "Weights calculated: $weights"
+			timestamp()
+			print "Calculating weighted sum for $parents -> $child"
+			timestamp()
+			weightedSum( child, parents, user, weights )
+			print "Finished calculating weighted sum for $parents -> $child"
+			timestamp()
+		} else if ( parents.size() == 1 ) {
+			print "Calculating CPT for $child with single parent"
+			timestamp()
+			singleParentConditional( child, user )
+			timestamp()
+		} else {
+			print "Calculating marginal probability for $child (no parents)"
+			timestamp()
+			calcMarginalProbability( child, user )
+			timestamp()
+		}
 
 	}
 
-	static class AlgorithmException extends Exception {
+	private void calcMarginalProbability( Variable child, User user ) {
+		def estimations = ProbabilityEstimation.findAllByCreatedByAndChildStateInList( user, child.states )
+		estimations.each { ProbabilityEstimation estimation ->
+			new Probability(
+				childState   : estimation.childState,
+				probability  : estimation.probability,
+				createdBy    : user,
+				// Intentionally leave "parentStates" empty.
+			).save()
+		}
+	}
+
+	// TODO: Not sure if this is the right calculation. It looks very similar to calcMarginalProbability, but includes parentStates.
+	private void singleParentConditional( Variable child, User user ) {
+		def estimations = ProbabilityEstimation.findAllByCreatedByAndChildStateInList( user, child.states )
+		estimations.each { ProbabilityEstimation estimation ->
+			new Probability(
+				childState   : estimation.childState,
+				probability  : estimation.probability,
+				createdBy    : user,
+				parentStates : estimation.parentConfiguration.allParentStates(),
+			).save()
+		}
+	}
+
+	static class AlgorithmException extends RuntimeException {
 
 		public AlgorithmException( String message ) {
 			super( "Error while performing Das (2004) calculation: $message" )
@@ -257,13 +306,38 @@ class Das2004Service {
 
 	}
 
+	private long lastTimestamp = 0
+
+	private void timestamp( boolean clear = false ) {
+		long t = System.currentTimeMillis()
+		String output = "# " + t
+		if ( clear ) {
+			lastTimestamp = 0
+		} else {
+			output += " (" + ( t - lastTimestamp ) + "ms)"
+		}
+		print output
+		lastTimestamp = t;
+	}
+
 	private void weightedSum( Variable child, List<Variable> parents, User user, Map<Variable, BigDecimal> weights ) {
 
+		boolean completed = CompletedDasVariable.countByCompletedByAndVariable( user, child ) > 0
+		if ( !completed ) {
+			print "User $user.realName ($user.username) didn't complete the variable '$child', so skipping."
+			return
+		}
+
 		List<State> parentConfigs = parents*.states.combinations()
+		print "Processing ${parentConfigs.size()} possible combinations of parents..."
 		parentConfigs.each { List<State> parentConfiguration ->
 
+			print "Checking parent configurations for ${parentConfiguration}"
+			timestamp()
 			def compatibleConfigs = CompatibleParentConfiguration.findAllByCreatedByAndParentStateInList( user, parentConfiguration )
 			def estimations       = ProbabilityEstimation.findAllByCreatedByAndParentConfigurationInList( user, compatibleConfigs )
+			print "Done"
+			timestamp()
 
 			Map<State, Double> childStateProbabilities = [:]
 
@@ -278,15 +352,26 @@ class Das2004Service {
 					}
 
 					if ( probOfConfig == null ) {
-						throw new AlgorithmException( "Couldn't find probability estimation for parent configuration $config.id" )
-					}
 
-					if ( !weights.containsKey( config.parentState.variable ) ) {
-						throw new AlgorithmException( "Mismatch between compatible parent configuration $config.id and the pairwise comparisons. Could not find variable $config.parentState.variable in comparisons." )
-					}
+						def msg = """
+Couldn't find probability estimation for parent configuration.
+Parent config id: $config.id
+Created by: $config.createdBy.realName ($config.createdBy.username)
+Parent state: $config.parentState
+Other parent states: ${config.otherParentStates*.readableLabel.join(", ")}
+"""
+						print msg
+						// throw new AlgorithmException( msg )
+					} else {
 
-					def parentWeight = weights[ config.parentState.variable ]
-					probChildState  += parentWeight * probOfConfig.probability
+						if ( !weights.containsKey( config.parentState.variable ) ) {
+							throw new AlgorithmException( "Mismatch between compatible parent configuration $config.id and the pairwise comparisons. Could not find variable $config.parentState.variable in comparisons." )
+						}
+
+						def parentWeight = weights[ config.parentState.variable ]
+						probChildState  += parentWeight * probOfConfig.probability
+
+					}
 
 				}
 
@@ -295,31 +380,34 @@ class Das2004Service {
 
 			double sum = (double)childStateProbabilities.values().sum()
 			if ( sum <= 0 ) {
-				throw new AlgorithmException( "Probabilities summed to $sum. Should be > 0." )
+				def msg = "Probabilities summed to $sum. Should be > 0."
+				print "OOPS: $msg"
+				// throw new AlgorithmException( msg )
+			} else {
+
+				double scale = 1 / sum
+				childStateProbabilities.each { it.value *= scale }
+
+				saveCalculatedProbabilities( childStateProbabilities, parentConfiguration, user )
 			}
-
-			double scale = 1 / sum
-			childStateProbabilities.each { it.value *= scale }
-
-			saveCalculatedProbabilities( childStateProbabilities, parentConfiguration )
 		}
 	}
 
-	def saveCalculatedProbabilities( Map<State, Double> stateProbabilities, List<State> parentStates ) {
+	def saveCalculatedProbabilities( Map<State, Double> stateProbabilities, List<State> parentStates, User user ) {
 
 		stateProbabilities.each {
 
 			State childState   = it.key
 			Double probability = it.value
 
-			List<Probability> probs         = Probability.findAllByCreatedByAndChildState( userService.current, childState )
-			Probability existingProbability = probs.find { CollectionUtils.isEqualCollection( probs, parentStates ) }
+			List<Probability> probs         = Probability.findAllByCreatedByAndChildState( user, childState )
+			Probability existingProbability = probs.find { CollectionUtils.isEqualCollection( probs.parentStates*.id, parentStates*.id ) }
 			if ( !existingProbability ) {
-				existingProbability = new Probability( createdBy : userService.current, childState : childState, parentStates : parentStates )
+				existingProbability = new Probability( createdBy : user, childState : childState, parentStates : parentStates )
 			}
 
 			existingProbability.probability = probability
-			existingProbability.save( flush : true )
+			existingProbability.save()
 
 		}
 
@@ -386,31 +474,61 @@ class Das2004Service {
 
 			List<Variable> indexes = matrix.keySet().toList()
 
-			double[][] values = new double[ matrix.size() ][ matrix.size() ]
+			double[][] values = new double[ matrix.size() ][]
 
-			indexes.eachWithIndex { Variable one, int i ->
-				indexes.eachWithIndex { Variable two, int j ->
-					values[ i ][ j ] = matrix[ one ][ two ]
+			try {
+				indexes.eachWithIndex { Variable one, int i ->
+					values[ i ] = new double[ matrix.size() ]
+					// TODO: Don't iterate over this, instead iterate over matrix properly...
+					indexes.eachWithIndex { Variable two, int j ->
+						int value
+						if ( matrix[ one ][ two ] == null ) {
+							value = 0;
+							print "Uh Oh, we found a null value here in matrix[ $one.label ][ $two.label ]"
+						} else {
+							value = matrix[ one ][ two ]
+						}
+						values[ i ][ j ] = value
+					}
 				}
+			} catch ( Exception e ) {
+				print "OOPS: $e.message"
+				return [:]
 			}
 
-			Matrix eigenVectors = new Matrix( values ).eig().v
+			print "  Calculating eigen vectors..."
+
+			EigenvalueDecomposition eigen = new Matrix( values ).eig()
+
+			if ( eigen == null ) {
+				print "Uh oh, couldn't calculate eigen vectors for $values"
+				return [:]
+			}
+
+			Matrix eigenVectors = eigen.v
+
+			print "  Getting weights from eigen vectors..."
 
 			Map<Variable, BigDecimal> weights = [:]
 			indexes.eachWithIndex { Variable variable, int i ->
 				weights[ variable ] = eigenVectors.get( i, 0 )
 			}
 
-			// TODO: Normalise vector...
+			print "  Normalising weights..."
+
 			double sum = weights.values().sum() as Double
 			if ( sum == 0 ) {
-				throw new Exception( "Error calculating weights, they summed to 0." )
+				indexes.eachWithIndex { Variable variable, int i ->
+					weights[ variable ] = 1 / indexes.size()
+				}
+			} else {
+				double scale = 1 / sum;
+				weights.each {
+					it.value *= scale
+				}
 			}
 
-			double scale = 1 / sum;
-			weights.each {
-				it.value *= scale
-			}
+			print "  Weights: " + weights
 
 			return weights
 

@@ -21,6 +21,7 @@ package bn.elicitator
 import bn.elicitator.auth.User
 import bn.elicitator.network.BnArc
 import bn.elicitator.network.BnNode
+import bn.elicitator.network.BnProbability
 
 /**
  * All methods in this class presume that we are only operating on data for the current user, unless the method
@@ -266,23 +267,33 @@ class BnService {
 	}
 
 	public Cpt getCptFor( Variable childVariable, User user = userService.current ) {
-		List<Probability> probabilities = Probability.withCriteria {
-			childState {
-				variable {
-					eq( 'id', childVariable.id )
-				}
-			}
+		List<Probability> probabilities = []
 
-			if ( user == null ) {
-				isNull( 'createdBy' )
-			} else {
+		if ( user != null ) {
+			probabilities = Probability.withCriteria {
+				childState {
+					variable {
+						eq( 'id', childVariable.id )
+					}
+				}
+
 				createdBy {
 					eq( 'id', userService.current.id )
 				}
 			}
+		} else {
+
+			probabilities = BnProbability.withCriteria {
+				childState {
+					variable {
+						eq( 'id', childVariable.id )
+					}
+				}
+			}.collect { it.toProbability() }
+
 		}
 
-		new Cpt( probabilities )
+		return new Cpt( probabilities )
 	}
 
 }
