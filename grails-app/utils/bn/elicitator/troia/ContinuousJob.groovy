@@ -1,13 +1,9 @@
 package bn.elicitator.troia
 
-import bn.elicitator.Probability
-import org.codehaus.groovy.grails.web.json.JSONArray
-import org.codehaus.groovy.grails.web.json.JSONObject
+abstract class ContinuousJob<T> extends Job<T> {
 
-abstract class ContinuousJob extends Job {
-
-	ContinuousJob( String troiaServerAddress ) {
-		super( troiaServerAddress )
+	ContinuousJob( String troiaServerAddress, String jobId ) {
+		super( troiaServerAddress, jobId )
 	}
 
 	@Override

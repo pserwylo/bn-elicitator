@@ -112,16 +112,15 @@ class Das2004Controller {
 	}
 
 	def calc() {
-		render "<p>Performing DAS calculations...</p>"
 		try {
 			das2004Service.performCalculations()
+			redirect( controller : 'adminDash' )
 		} catch ( AlgorithmException e ) {
 			print e.message
 			renderException( exception: e )
 		} catch ( Exception e ) {
 			renderException( exception: e )
 		}
-		return
 	}
 
 	def index = {

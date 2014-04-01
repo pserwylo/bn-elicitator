@@ -1,8 +1,5 @@
 package bn.elicitator.troia
-
 import groovyx.net.http.HttpResponseDecorator
-import groovyx.net.http.RESTClient
-import org.codehaus.groovy.grails.web.json.JSONObject
 
 class TroiaResponse {
 
@@ -21,15 +18,14 @@ class TroiaResponse {
 	String timestamp
 	String redirect
 	String result
-	HttpResponseDecorator response
+	Map response
 	String path
 	double executionTime = -1
 	boolean responseReady
 
 	public TroiaResponse( String path, HttpResponseDecorator response ) {
 
-		this.path     = path
-		this.response = response
+		this.path = path
 
 		if ( response.data == null )
 			throw new MalformedResponseException( this, "No data present in response from server" )
@@ -38,6 +34,7 @@ class TroiaResponse {
 			throw new MalformedResponseException( this, "Invalid data returned by server (expected a Map)" )
 
 		Map data = (Map)response.data
+		this.response = data
 
 		if ( !data.containsKey( "status" ) )
 			throw new MalformedResponseException( this, "Expected 'status' to be returned from server" )

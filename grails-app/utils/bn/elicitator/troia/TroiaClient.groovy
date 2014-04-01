@@ -29,9 +29,12 @@ class TroiaClient {
 	}
 
 	TroiaResponse ensureResponseIsReady( TroiaResponse response ) {
+		int tryCount = 1
 		while ( !response.responseReady ) {
-			print "Response at '$response.path' not ready. Sleeping for 2 seconds, then trying again..."
-			sleep( 2000 )
+			int timeToSleep = Math.min( tryCount * 4 * 1000, 30000 )
+			print "Response at '$response.path' not ready. Sleeping for ${timeToSleep / 1000} seconds, then trying again..."
+			sleep( timeToSleep )
+			tryCount ++;
 			response = doGet( response.path )
 		}
 		return response

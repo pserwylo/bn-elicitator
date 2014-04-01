@@ -1,21 +1,21 @@
 package bn.elicitator.troia
 
-import bn.elicitator.Probability
-import groovyx.net.http.HttpResponseException
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
 
-abstract class Job {
+abstract class Job<T> {
 
 	private TroiaClient client
 	private String id
 
-	public Job( String troiaServerAddress ) {
+	public Job( String troiaServerAddress, String jobId ) {
 		client = new TroiaClient( troiaServerAddress )
+		id     = jobId
 	}
 
 	abstract protected String getAlgorithm()
 	abstract protected List<Assign> getAssigns()
+	abstract protected T predictionFromData(Object data)
 
 	public String getId() {
 		this.id
@@ -27,15 +27,15 @@ abstract class Job {
 		compute()
 	}
 
-	Object predictions() {
+	List<T> predictions() {
 		def response = client.getFollowRedirects( "jobs/$id/objects/prediction" )
 		response = client.ensureResponseIsReady( response )
-		response.result
+		response.response.result.collect { predictionFromData( it ) }
 	}
 
 	private void start() {
 		def response = client.post( "jobs", new JSONObject( 'algorithm': algorithm ) )
-		this.id = extractJobId( response )
+		id = extractJobId( response )
 	}
 
 	private void compute() {

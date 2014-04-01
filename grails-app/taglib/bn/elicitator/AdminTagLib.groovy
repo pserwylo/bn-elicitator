@@ -17,7 +17,6 @@
  */
 
 package bn.elicitator
-
 import bn.elicitator.auth.User
 import bn.elicitator.events.LoggedEvent
 

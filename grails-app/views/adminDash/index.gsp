@@ -131,6 +131,12 @@
 				</fieldset>
 			</div>
 
+			<div class="column-header">
+				<fieldset class="default ">
+					<legend>Completed BN</legend>
+					<bnAdmin:completedBn />
+				</fieldset>
+			</div>
 
 			<div class="column-left">
 				<fieldset class="default ">

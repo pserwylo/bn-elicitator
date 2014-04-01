@@ -1,9 +1,6 @@
 package bn.elicitator.network
-
 import bn.elicitator.Probability
 import bn.elicitator.State
-import bn.elicitator.auth.User
-
 /**
  * The probability for this configuration of child and parent states, which will be output with the final Bn.
  *
@@ -26,6 +23,14 @@ class BnProbability {
 			childState : childState,
 			probability : probability,
 			parentStates : parentStates,
+		)
+	}
+
+	static BnProbability fromProbability( Probability p ) {
+		new BnProbability(
+			childState   : p.childState,
+			probability  : p.probability,
+			parentStates : p.parentStates
 		)
 	}
 }
