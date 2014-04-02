@@ -6,7 +6,7 @@ class DawidSkeneTestController {
 
 	def index() {
 
-		CptJob job = new CptJob( "http://localhost:8080/troia" )
+		CptJob job = new CptJob( "http://uni.peter.serwylo.com:8080/troia" )
 		job.run()
 
 		// Currently, I'm doing this in a new request because I can't find out why the MySQL connection
@@ -17,7 +17,7 @@ class DawidSkeneTestController {
 
 	def saveCptsToBn() {
 
-		CptJob job = new CptJob( "http://localhost:8080/troia", (String)params[ "jobId" ] )
+		CptJob job = new CptJob( "http://uni.peter.serwylo.com:8080/troia", (String)params[ "jobId" ] )
 		job.predictions().each {
 			BnProbability.fromProbability( it.probability ).save( failOnError : true )
 		}

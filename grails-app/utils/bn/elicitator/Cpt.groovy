@@ -19,10 +19,19 @@ class Cpt {
 
 	public List<Probability> getProbabilities() { this.probabilities }
 
-	double getProbabilityFor( State state, List<State> states ) {
+	double getProbabilityFor( State state, List<State> parentStates ) {
+
 		Probability probability = probabilities.find {
-			it.childState.id == state.id && CollectionUtils.isEqualCollection( states*.id, it.parentStates*.id )
+			if ( it.childState.id != state.id ) {
+				return false
+			} else {
+				if (parentStates?.size() > 0)
+					return CollectionUtils.isEqualCollection(parentStates*.id, it.parentStates*.id)
+				else
+					return true
+			}
 		}
+
 		if (probability == null) {
 			return 0
 		} else {

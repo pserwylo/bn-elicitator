@@ -68,30 +68,47 @@ public class NeticaNode {
 		// By doing this, I am forcing it to end up as a breadth first search.
 		def parentConfigs = family.parents.reverse()*.states.combinations().collect { it.reverse() }
 
-		parentConfigs.eachWithIndex { List<State> parentConfig, int i ->
-			boolean lastRow = ( i == ( parentConfigs.size() - 1 ) )
+		if ( parentConfigs.size() > 0 ) {
+			parentConfigs.eachWithIndex { List<State> parentConfig, int i ->
+				boolean lastRow = (i == (parentConfigs.size() - 1))
 
-			family.variable.states.eachWithIndex { State variableState, int j ->
-				boolean lastCol = ( j == ( family.variable.states.size() - 1 ) )
+				family.variable.states.eachWithIndex { State variableState, int j ->
+					boolean lastCol = (j == (family.variable.states.size() - 1))
 
-				double probability = cpt.getProbabilityFor( variableState, parentConfig )
-				String valueString = format.format( probability )
-				if ( !lastCol ) {
-					valueString += ","
-				} else{
-					valueString += lastRow ? ");" : ","
+					double probability = cpt.getProbabilityFor(variableState, parentConfig)
+					String valueString = format.format(probability)
+					if (!lastCol) {
+						valueString += ","
+					} else {
+						valueString += lastRow ? ");" : ","
+					}
+
+					probs += padString(valueString, maxLength)
 				}
 
-				probs += padString( valueString, maxLength )
-			}
+				probs += "// "
+				parentConfig*.label.each { String parentStateLabel ->
+					probs += padString(parentStateLabel, maxLength)
+				}
 
-			probs += "// "
-			parentConfig*.label.each { String parentStateLabel ->
-				probs += padString( parentStateLabel, maxLength )
+				if (!lastRow) {
+					probs += "\n"
+				}
 			}
+		} else {
+			family.variable.states.eachWithIndex { State variableState, int j ->
 
-			if ( !lastRow ) {
-				probs += "\n"
+				boolean lastCol = (j == (family.variable.states.size() - 1))
+
+				double probability = cpt.getProbabilityFor(variableState, [])
+				String valueString = format.format(probability)
+				if (!lastCol) {
+					valueString += ","
+				} else {
+					valueString += ");"
+				}
+
+				probs += padString(valueString, maxLength)
 			}
 		}
 

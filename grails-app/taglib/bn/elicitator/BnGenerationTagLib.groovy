@@ -69,7 +69,13 @@ class BnGenerationTagLib {
 	}
 
 	private def completeNetwork() {
-		out << "<h2>Network complete</h2>"
+		def link = createLink( controller : "output", action : "netica", params : [ finalNetwork : true ] )
+		out << """
+<h2>Network complete</h2>
+<p>
+	<input type="button" value="Download Netica file" onclick="document.location='$link'" />
+</p>
+"""
 
 	}
 
