@@ -33,4 +33,13 @@ class BnProbability {
 			parentStates : p.parentStates
 		)
 	}
+
+	String toString() {
+		if ( parentStates.size() == 0 ) {
+			"P( $childState.variable.label = $childState.label )"
+		} else {
+			def given = parentStates.collect{ "$it.variable.label = $it.label" }
+			"P( $childState.variable.label = $childState.label | ${given.join( ", ")} )"
+		}
+	}
 }

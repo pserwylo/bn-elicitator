@@ -3,14 +3,7 @@ package bn.elicitator
 import bn.elicitator.auth.User
 import bn.elicitator.network.BnArc
 import bn.elicitator.network.BnNode
-import bn.elicitator.output.CptOutputSpreadsheet
-import bn.elicitator.output.CsvOutputGraph
-import bn.elicitator.output.GraphvizOutputGraph
-import bn.elicitator.output.HtmlMatrixOutputGraph
-import bn.elicitator.output.JsonMatrixOutputGraph
-import bn.elicitator.output.JsonOutputGraph
-import bn.elicitator.output.NeticaOutputGraph
-import bn.elicitator.output.OutputGraph
+import bn.elicitator.output.*
 
 class OutputController {
 
@@ -52,6 +45,10 @@ class OutputController {
 
 	def netica = { OutputCommand cmd ->
 		outputGraph( new NeticaOutputGraph(), cmd )
+	}
+
+	def genie = { OutputCommand cmd ->
+		outputGraph( new GeNIeOutputGraph(), cmd )
 	}
 
 	def comments = { OutputCommentsCommand cmd ->

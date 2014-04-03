@@ -1,17 +1,11 @@
 package bn.elicitator.output
 
-import bn.elicitator.Cpt
 import bn.elicitator.State
 import bn.elicitator.Variable
 
-import java.awt.Point
 import java.text.DecimalFormat
 
-public class NeticaNode {
-
-	VariableFamily family
-	Cpt            cpt
-	Point          location
+public class NeticaNode extends SerializedBnNode {
 
 	private NeticaNodeAttributes attributes       = new NeticaNodeAttributes()
 	private NeticaNodeAttributes visualAttributes = new NeticaNodeAttributes()
