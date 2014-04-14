@@ -1,4 +1,5 @@
 package bn.elicitator.init
+import bn.elicitator.*
 /*
  * Bayesian Network (BN) Elicitator
  * Copyright (C) 2012 Peter Serwylo (peter.serwylo@monash.edu)
@@ -16,18 +17,14 @@ package bn.elicitator.init
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-import bn.elicitator.*
 import bn.elicitator.auth.Role
 import bn.elicitator.auth.User
-import bn.elicitator.feedback.Option
-import bn.elicitator.feedback.Question
 import bn.elicitator.network.BnArc
 import bn.elicitator.network.BnNode
 import grails.util.Holders
 import org.springframework.beans.factory.access.BootstrapException
 
-import javax.servlet.ServletContext;
+import javax.servlet.ServletContext
 
 abstract class DataLoader {
 
@@ -363,14 +360,15 @@ If this is a mistake, please contact <a href="mailto:peter.serwylo@monash.edu.au
 			Variable variable = Variable.findByLabel( variableLabel )
 
 			if ( variable == null ) {
-				throw new Exception( "Could not find variable '$variableLabel' to attach states to. Is it a typo?" )
-			}
+				// throw new Exception( "Could not find variable '$variableLabel' to attach states to. Is it a typo?" )
+			} else {
 
-			states.each { State state ->
-				variable.addToStates( state )
-			}
+				states.each { State state ->
+					variable.addToStates(state)
+				}
 
-			variable.save();
+				variable.save();
+			}
 		}
 	}
 
