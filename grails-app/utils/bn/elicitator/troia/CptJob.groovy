@@ -1,5 +1,4 @@
 package bn.elicitator.troia
-
 import bn.elicitator.Probability
 import bn.elicitator.State
 

@@ -3,13 +3,30 @@ package bn.elicitator
 import bn.elicitator.network.BnNode
 import bn.elicitator.network.BnProbability
 import bn.elicitator.troia.CptJob
+import bn.elicitator.troia.StructureJob
 import org.apache.commons.collections.CollectionUtils
 
 class DawidSkeneTestController {
 
-	def index() {
+	private final String TROIA_URL = "http://uni.peter.serwylo.com:8080/troia"
 
-		CptJob job = new CptJob( "http://uni.peter.serwylo.com:8080/troia" )
+	def structure() {
+		StructureJob job = new StructureJob( TROIA_URL )
+		job.run()
+
+		render "<h1>Worker quality</h1>"
+		render "<p>(for Delphi phase 1 only)</p>"
+		render "<ul>"
+		new TreeMap<Long, Double>( job.estimatedWorkerQuality() ).sort { it1, it2 -> it1.value <=> it2.value }.each {
+			render "<li>$it.key: $it.value</li>"
+		}
+		render "</ul>"
+
+	}
+
+	def cpt() {
+
+		CptJob job = new CptJob( TROIA_URL )
 		job.run()
 
 		// Currently, I'm doing this in a new request because I can't find out why the MySQL connection

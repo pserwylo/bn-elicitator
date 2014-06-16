@@ -1,29 +1,29 @@
 package bn.elicitator.troia
 
+import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
 
-abstract class ContinuousJob<T> extends Job<T> {
+abstract class DiscreteJob<T> extends Job<T> {
 
-	ContinuousJob( String troiaServerAddress, String jobId ) {
+	DiscreteJob( String troiaServerAddress, String jobId ) {
 		super( troiaServerAddress, jobId )
 	}
 
 	@Override
 	protected String getAlgorithm() {
-		"GALC"
+		"BDS"
 	}
 
 	@Override
 	protected void appendDataForJobCreation( JSONObject data ) {
-
+		data.put( "categories", new JSONArray( categories ) )
 	}
 
 	@Override
 	protected Object prepareAssignLabel( Object label ) {
-		new JSONObject( value : label )
+		label
 	}
 
-	def estimatedWorkerQuality() {
-		throw new UnsupportedOperationException( "Continuous jobs don't support estimations of worker quality." )
-	}
+	protected abstract Collection getCategories();
+
 }

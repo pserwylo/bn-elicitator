@@ -15,7 +15,9 @@ abstract class Job<T> {
 
 	abstract protected String getAlgorithm()
 	abstract protected List<Assign> getAssigns()
-	abstract protected T predictionFromData(Object data)
+	abstract protected T predictionFromData( Object data )
+	abstract protected void appendDataForJobCreation( JSONObject data )
+	abstract protected Object prepareAssignLabel( Object label )
 
 	public String getId() {
 		this.id
@@ -33,8 +35,18 @@ abstract class Job<T> {
 		response.response.result.collect { predictionFromData( it ) }
 	}
 
+	Map<Long, Double> estimatedWorkerQuality() {
+		def response = client.getFollowRedirects( "jobs/$id/workers/quality/estimated" )
+		response = client.ensureResponseIsReady( response )
+		response.response.result.collectEntries {
+			[ ( it.workerName as Long ) : it.value ]
+		}
+	}
+
 	private void start() {
-		def response = client.post( "jobs", new JSONObject( 'algorithm': algorithm ) )
+		def data = new JSONObject( 'algorithm': algorithm )
+		appendDataForJobCreation( data )
+		def response = client.post( "jobs", data )
 		id = extractJobId( response )
 	}
 
@@ -56,7 +68,15 @@ abstract class Job<T> {
 
 		// TODO: Change to "collect" instead of create + .each + .add ...
 		JSONArray jsonAssigns = new JSONArray()
-		assigns.each { Assign it -> jsonAssigns.add( it.toJSON() ) }
+		assigns.each { Assign it ->
+			jsonAssigns.add(
+				new JSONObject(
+					worker : it.worker,
+					object : it.object,
+					label  : prepareAssignLabel( it.label ),
+				)
+			)
+		}
 
 		def response = client.post( "jobs/$id/assigns", new JSONObject( assigns : jsonAssigns ) )
 
