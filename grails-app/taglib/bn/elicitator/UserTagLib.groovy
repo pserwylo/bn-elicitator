@@ -74,7 +74,7 @@ class UserTagLib {
 
 	private Allocation getAllocation( User user ) {
 		if ( AppProperties.properties.elicitationPhase == AppProperties.ELICIT_2_RELATIONSHIPS ) {
-			return allocateQuestionsService.getAllocation( user )
+			return allocateStructureQuestionsService.getAllocation( user )
 		} else {
 			return allocateCptQuestionsService.getAllocation( user )
 		}

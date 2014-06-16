@@ -95,7 +95,7 @@ class InvestigateBnTagLib {
 			id          : attrs.id,
 			name        : attrs.name,
 			optionKey   : 'id',
-			optionValue : 'readableLabel',
+			optionValue : { it -> "$it.readableLabel ($it.label)" },
 			from        : variables,
 			value       : selectedId,
 			noSelection : selectedId ? null : [ 0 : '-- Select variable --' ]

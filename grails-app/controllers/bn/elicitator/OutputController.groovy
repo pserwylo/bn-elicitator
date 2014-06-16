@@ -51,6 +51,10 @@ class OutputController {
 		outputGraph( new GeNIeOutputGraph(), cmd )
 	}
 
+	def hugin = { OutputCommand cmd ->
+		outputGraph( new HuginOutputGraph(), cmd )
+	}
+
 	def comments = { OutputCommentsCommand cmd ->
 
 		StringBuilder output = new StringBuilder()

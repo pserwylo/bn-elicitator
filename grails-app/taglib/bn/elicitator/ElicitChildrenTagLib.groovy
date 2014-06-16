@@ -138,7 +138,7 @@ class ElicitChildrenTagLib {
 		List<Variable> listNo             = []
 		List<Variable> listNoAll          = []
 		List<Variable> reviewedVars       = variableService.myReviewedRelationshipsForParent( parent )*.relationship*.child
-		List<User> usersAllocatedToParent = allocateStructureQuestionsService.getOthersAllocatedTo( parent, StructureAllocation.class )
+		List<User> usersAllocatedToParent = allocateStructureQuestionsService.getOthersAllocatedTo( parent )
 		Integer totalOtherUsers           = usersAllocatedToParent.size() - 1
 		Map<Variable, List<Relationship>> allRelationships = [:]
 		Map<Variable, Integer>            allOthersCount   = [:]

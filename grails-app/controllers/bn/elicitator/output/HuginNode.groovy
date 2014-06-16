@@ -5,6 +5,26 @@ import java.text.DecimalFormat
 
 public class HuginNode extends SerializedBnNode {
 
+	public String getNodeString() {
+		"""
+node $family.variable.label
+{
+	label = "$family.variable.label"
+	position = (${(int)location.x} ${(int)location.y});
+	states = (${family.variable.states.collect { '"' + it.label + '"' }.join( " " )});
+}
+"""
+	}
+
+	public String getProbabilityString() {
+		"""
+potential ($family.variable.label |${family.parents.join(' ')})
+{
+	data = ();
+}
+"""
+	}
+
 	def generateProbs() {
 
 		if ( !cpt ) {

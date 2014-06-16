@@ -320,6 +320,36 @@ class Das2004Service {
 		lastTimestamp = t;
 	}
 
+	private List<CompatibleParentConfiguration> allCompatibleConfigs = null
+
+	private List<CompatibleParentConfiguration> findCompatibleConfigs( User createdBy, List<State> parentConfigurations ) {
+		if ( allCompatibleConfigs == null ) {
+			allCompatibleConfigs = CompatibleParentConfiguration.list()
+		}
+
+		def parentConfigIds = parentConfigurations*.id
+
+		allCompatibleConfigs.findAll {
+			it.createdBy.id == createdBy.id &&
+			parentConfigIds.contains( it.parentState.id )
+		}
+	}
+
+	private List<ProbabilityEstimation> allEstimations = null
+
+	private List<ProbabilityEstimation> findEstimations( User createdBy, List<CompatibleParentConfiguration> compatibleConfigs ) {
+		if ( allEstimations == null ) {
+			allEstimations = ProbabilityEstimation.list()
+		}
+
+		def compatibleConfigIds = compatibleConfigs*.id
+
+		allEstimations.findAll {
+			it.createdBy.id == createdBy.id &&
+			compatibleConfigIds.contains( it.parentConfiguration.id )
+		}
+	}
+
 	private void weightedSum( Variable child, List<Variable> parents, User user, Map<Variable, BigDecimal> weights ) {
 
 		boolean completed = CompletedDasVariable.countByCompletedByAndVariable( user, child ) > 0
@@ -334,8 +364,10 @@ class Das2004Service {
 
 			print "Checking parent configurations for ${parentConfiguration}"
 			timestamp()
-			def compatibleConfigs = CompatibleParentConfiguration.findAllByCreatedByAndParentStateInList( user, parentConfiguration )
-			def estimations       = ProbabilityEstimation.findAllByCreatedByAndParentConfigurationInList( user, compatibleConfigs )
+			// def compatibleConfigs = CompatibleParentConfiguration.findAllByCreatedByAndParentStateInList( user, parentConfiguration )
+			def compatibleConfigs = findCompatibleConfigs( user, parentConfiguration )
+			// def estimations       = ProbabilityEstimation.findAllByCreatedByAndParentConfigurationInList( user, compatibleConfigs )
+			def estimations       = findEstimations( user, compatibleConfigs )
 			print "Done"
 			timestamp()
 
