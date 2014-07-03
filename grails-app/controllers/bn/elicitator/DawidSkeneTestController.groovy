@@ -1,5 +1,6 @@
 package bn.elicitator
 
+import bn.elicitator.auth.User
 import bn.elicitator.network.BnNode
 import bn.elicitator.network.BnProbability
 import bn.elicitator.troia.CptJob
@@ -14,10 +15,18 @@ class DawidSkeneTestController {
 		StructureJob job = new StructureJob( TROIA_URL )
 		job.run()
 
+		def workerQuality = job.estimatedWorkerQuality()
+
+		workerQuality.each {
+			User user = User.get( it.key )
+			user.estimatedQuality = it.value
+			user.save( failOnError : true )
+		}
+
 		render "<h1>Worker quality</h1>"
 		render "<p>(for Delphi phase 1 only)</p>"
 		render "<ul>"
-		new TreeMap<Long, Double>( job.estimatedWorkerQuality() ).sort { it1, it2 -> it1.value <=> it2.value }.each {
+		workerQuality.sort { it1, it2 -> it1.value <=> it2.value }.each {
 			render "<li>$it.key: $it.value</li>"
 		}
 		render "</ul>"

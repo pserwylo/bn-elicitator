@@ -18,6 +18,8 @@
 
 package bn.elicitator
 
+import bn.elicitator.auth.User
+
 class InvestigateBnController {
 
 	def index() {
@@ -28,10 +30,11 @@ class InvestigateBnController {
 
 		Variable parent = null
 		Variable child  = null
+		User user       = null
 		List<Variable> children = []
 
 		if ( params.containsKey( 'parentId' ) ) {
-			parent = getVariableFromParams( 'parentId' )
+			parent   = getVariableFromParams( 'parentId' )
 			children = Relationship.findAllByParent( parent ).unique { it.child.id }*.child.sort { it1, it2 -> it1.readableLabel <=> it2.readableLabel }
 		}
 
@@ -39,9 +42,17 @@ class InvestigateBnController {
 			child = getVariableFromParams( 'childId' )
 		}
 
+		if (params.containsKey( 'userId' ) ) {
+			user = getUserFromParams( 'userId' )
+		}
+
+		List<User> users = User.list()
+
 		return [
 		    parent   : parent,
 			child    : child,
+			user     : user,
+			users    : users,
 			children : children,
 		]
 
@@ -51,10 +62,20 @@ class InvestigateBnController {
 		Variable variable = null
 		if ( params.containsKey( variableIdKey ) ) {
 			try {
-				variable = Variable.get( params[ variableIdKey ] as Integer )
+				variable = Variable.get( params[ variableIdKey ] as Long )
 			} catch ( NumberFormatException ignored ) {}
 		}
 		return variable
+	}
+
+	private User getUserFromParams( String userIdKey ) {
+		User user = null
+		if ( params.containsKey( userIdKey ) ) {
+			try {
+				user = User.get( params[ userIdKey ] as Long )
+			} catch ( NumberFormatException ignored ) {}
+		}
+		return user
 	}
 
 }

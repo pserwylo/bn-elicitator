@@ -27,6 +27,9 @@ class UserService {
 
 	SpringSecurityService springSecurityService
 
+	private Float minEstimatedQuality = null
+	private Float maxEstimatedQuality = null
+
 	User getCurrent() {
 		(User)springSecurityService.currentUser
 	}
@@ -71,5 +74,27 @@ class UserService {
 		if ( user && user.username != "admin" ) {
 			user.delete()
 		}
+	}
+
+	float getMaxEstimatedQuality() {
+		if ( this.maxEstimatedQuality == null ) {
+			this.maxEstimatedQuality = User.createCriteria().get {
+				projections {
+					max "estimatedQuality"
+				}
+			} as Float
+		}
+		this.maxEstimatedQuality
+	}
+
+	float getMinEstimatedQuality() {
+		if ( this.minEstimatedQuality == null ) {
+			this.minEstimatedQuality = User.createCriteria().get {
+				projections {
+					min "estimatedQuality"
+				}
+			} as Float
+		}
+		this.minEstimatedQuality
 	}
 }

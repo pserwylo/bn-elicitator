@@ -18,12 +18,12 @@
 		</g:if>
 		<g:else test="${children?.size() > 1}">
 
-			<bnInvestigate:variableList id="childList" name="childList" variables="${children}" selectedId="${child ? child.id : null}" />
+			<bnInvestigate:childVariableList id="childList" name="childList" variables="${children}" selectedId="${child ? child.id : null}" assignedToUser="${user}" />
 
 			<script>
 				$( '#childList' ).change(function() {
-					var url = '${createLink(action: 'arcs')}';
-					document.location = url + '?parentId=${parent.id}&childId=' + $( this ).val();
+					var url = '${createLink( action : 'arcs', params : [ userId : user?.id ?: 0 ] )}';
+					document.location = url + '&parentId=${parent.id}&childId=' + $( this ).val();
 				});
 			</script>
 

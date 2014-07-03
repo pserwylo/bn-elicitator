@@ -1,7 +1,7 @@
 <fieldset class="default">
 	<legend>${parent} &rarr; ${child}</legend>
 
-	<bnInvestigate:arcSummary parent="${parent}" child="${child}" />
+	<bnInvestigate:arcSummary parent="${parent}" child="${child}" user="${user}" />
 
 	<script type="text/javascript">
 		$( '.user' ).hover( function() {

@@ -1,7 +1,5 @@
 package bn.elicitator.auth
-
 import bn.elicitator.events.LoginEvent
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 class User {
 
@@ -15,9 +13,10 @@ class User {
 		eligibleForPrize nullable: true
 
 		// Need to allow null so that validate() works during oauth stuff...
-		email         nullable: true, blank: true
-		realName      nullable: true, blank: true
-		password      nullable: true, blank: true
+		email            nullable: true, blank: true
+		realName         nullable: true, blank: true
+		password         nullable: true, blank: true
+		estimatedQuality nullable: true, blank: true
 	}
 
 	static mapping = {
@@ -34,6 +33,7 @@ class User {
 	String password
 	Integer eligibleForPrize;
 	boolean accountLocked = false
+	float   estimatedQuality = 0.0
 
 	private boolean enabled = true
 	boolean getEnabled() { enabled }
