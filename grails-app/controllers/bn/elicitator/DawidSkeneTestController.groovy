@@ -1,6 +1,7 @@
 package bn.elicitator
 
 import bn.elicitator.auth.User
+import bn.elicitator.network.BnArc
 import bn.elicitator.network.BnNode
 import bn.elicitator.network.BnProbability
 import bn.elicitator.troia.CptJob
@@ -15,8 +16,39 @@ class DawidSkeneTestController {
 		StructureJob job = new StructureJob( TROIA_URL )
 		job.run()
 
-		def workerQuality = job.estimatedWorkerQuality()
+		def predictions = job.predictions();
 
+		BnArc.list().each {
+			it.delete()
+		}
+
+		predictions.each {
+
+			if ( it.relationship.exists ) {
+
+				BnNode parent = BnNode.findByVariable( it.relationship.parent )
+				BnNode child  = BnNode.findByVariable( it.relationship.child  )
+
+				if ( !parent ) {
+					parent = new BnNode( variable : it.relationship.parent )
+					parent.save( flush : true, failOnError : true )
+				}
+
+				if ( !child ) {
+					child = new BnNode( variable : it.relationship.child )
+					child.save( flush : true, failOnError : true )
+				}
+
+				BnArc arc = BnArc.findByParentAndChild( parent, child )
+				if ( !arc ) {
+					arc = new BnArc( parent : parent, child : child )
+					arc.save( flush : true, failOnError: true )
+				}
+
+			}
+		}
+
+		def workerQuality = job.estimatedWorkerQuality()
 		workerQuality.each {
 			User user = User.get( it.key )
 			user.estimatedQuality = it.value
