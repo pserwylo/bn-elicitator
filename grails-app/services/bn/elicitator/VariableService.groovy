@@ -17,12 +17,10 @@
  */
 
 package bn.elicitator
-
 import bn.elicitator.auth.User
 import bn.elicitator.events.FinishedVariableEvent
-import bn.elicitator.init.DumbProfiler
 
-class VariableService 
+class VariableService
 {
 
 	DelphiService delphiService
@@ -131,7 +129,7 @@ class VariableService
 		if ( delphiService.hasPreviousPhase ) {
 			vars = allocation.variables.findAll { hasVisitedLastRound( it ) }.toList()
 		} else {
-			vars = allocation.variables
+			vars = allocation.variables.toList()
 		}
 		vars.sort( new VariableSorter() )
 	}
