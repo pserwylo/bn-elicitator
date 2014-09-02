@@ -13,18 +13,27 @@ class DawidSkeneTestController {
 	private final String TROIA_URL = "http://uni.peter.serwylo.com:8080/troia"
 
 	def structure() {
+
 		StructureJob job = new StructureJob( TROIA_URL )
+
+        if (params.containsKey("arcPrior")) {
+            job.arcPrior = params.remove("arcPrior") as Double
+        }
+
 		job.run()
 
 		def predictions = job.predictions();
 
 		BnArc.list().each {
-			it.delete()
+			it.delete( flush : true )
 		}
 
+        int count = 0;
 		predictions.each {
 
 			if ( it.relationship.exists ) {
+
+                count ++;
 
 				BnNode parent = BnNode.findByVariable( it.relationship.parent )
 				BnNode child  = BnNode.findByVariable( it.relationship.child  )
@@ -48,6 +57,16 @@ class DawidSkeneTestController {
 			}
 		}
 
+        render "<h1>Dawid & Skene completed</h1>"
+        if (job.arcPrior >= 0) {
+            render "<p><strong>Arc prior:</strong> $job.arcPrior)</p>"
+        }
+        render "<p><strong>Arcs:</strong> $count / ${predictions.size()}</p>"
+
+        render "<a href='${g.createLink( controller : 'output', action : 'csv', params : [ finalNetwork : true ] )}'>CSV output</a>"
+
+
+        /*
 		def workerQuality = job.estimatedWorkerQuality()
 		workerQuality.each {
 			User user = User.get( it.key )
@@ -56,12 +75,18 @@ class DawidSkeneTestController {
 		}
 
 		render "<h1>Worker quality</h1>"
+
+        if (job.arcPrior >= 0) {
+            render "<h2>Arc prior: $job.arcPrior</h2>"
+        }
+
 		render "<p>(for Delphi phase 1 only)</p>"
 		render "<ul>"
 		workerQuality.sort { it1, it2 -> it1.value <=> it2.value }.each {
 			render "<li>$it.key: $it.value</li>"
 		}
 		render "</ul>"
+        */
 
 	}
 

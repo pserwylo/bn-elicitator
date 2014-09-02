@@ -5,9 +5,29 @@ import bn.elicitator.Variable
 
 class StructureJob extends DiscreteJob<DawidSkeneRelationship> {
 
+    /**
+     * The prior probability that any particular arc should be included in the BN.
+     */
+    private double arcPrior = -1
+
 	StructureJob( String troiaServerAddress, String jobId = null ) {
 		super( troiaServerAddress, jobId )
 	}
+
+    public void setArcPrior(double value) {
+        if ( value < 0 || value > 1 ) {
+            throw new Exception( "Arc prior must be between 0 and 1" )
+        }
+        this.arcPrior = value
+    }
+
+    public double getArcPrior() {
+        this.arcPrior
+    }
+
+    protected Map<String, Double> getCategoryPriors() {
+         arcPrior >= 0 ? [ "Yes" : arcPrior, "No"  : 1 - arcPrior ] : super.categoryPriors
+    }
 
 	@Override
 	protected List<Assign> getAssigns() {

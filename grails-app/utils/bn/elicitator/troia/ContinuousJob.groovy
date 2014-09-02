@@ -23,7 +23,7 @@ abstract class ContinuousJob<T> extends Job<T> {
 		new JSONObject( value : label )
 	}
 
-	def estimatedWorkerQuality() {
+	Map<Long, Double> estimatedWorkerQuality() {
 		throw new UnsupportedOperationException( "Continuous jobs don't support estimations of worker quality." )
 	}
 }
