@@ -1,4 +1,13 @@
 // Copy this file to bn-elicitator.config.groovy, and specify the appropriate properties.
+// It must live in one of the following locations:
+// The file itself will have to be in one of the following locations:
+// 
+//   $HOME/.grails/bn-elicitator-config.groovy
+// 
+//   /etc/bn-elicitator/config.groovy (sorry Windows users, will have to think of a better place on request).
+// 
+//   bn-elicitator.config.location Java system property (e.g. `grails -Dbn-elicitator.config.location=/tmp/config.groovy`)
+//
 // DO NOT check this file into version control for a public project, as it will contain
 // secrets that you do not want to share.
 
@@ -13,12 +22,13 @@ environments {
 }
 
 bn {
-	// This should be a class which extends bn.elicitator.init.DataLoader, and specifies which variables to use
-	// in your project, what states they can take, what variable class they belong to, and provides descriptions
-	// of each.
-	// It will also be responsible for configuring what your home page looks like, and how your consent form 
-	// is presented.
-	dataLoaderClass = bn.elicitator.init.loaders.UnconfiguredDataLoader
+	// This should be a .groovy file containing a class which extends "bn.elicitator.init.DataLoader". Feel free to
+	// place the file wherever you want. A good starting point is to copy the 
+	// "grails-app/utils/bn/elicitator/loaders/ExampleDataLoader.groovy" file and modify it to your needs.
+	// It will specify which variables to use in your project, what states they can take, what variable class they 
+	// belong to, and provides descriptions of each.
+	// It will also be responsible for configuring what your home page looks like, and how your consent form is presented.
+	dataLoaderClass = "/etc/bn-elicitator/data-loader.groovy"
 }
 
 // Uncomment this and configure if you want to be able to have the system send emails to users,
