@@ -68,5 +68,38 @@ class ContentTagLib {
 
 		out << g.link( [ controller : 'contentView', elementId : id, params : [ page : alias ], class : classNames ], body )
 	}
+	
+	
+	/**
+	 * @attr label REQUIRED
+	 * @attr class
+	 * @attr id
+	 */
+	def editLink = { attrs, body ->
 
+		ContentPage page  = null
+		String classNames = ""
+		String id         = null
+
+		if ( attrs.containsKey( 'class' ) ) {
+			classNames = attrs.remove( 'class' )
+		}
+
+		if ( attrs.containsKey( 'id' ) ) {
+			id = attrs.remove( 'id' )
+		}
+
+		if ( !attrs.containsKey( 'label' ) ) {
+			throw new Exception( 'Missing required attribute "label"' )
+		} else {
+			String label = attrs.remove( 'label' );
+			page = ContentPage.findByAlias( label )
+			if ( !page ) {
+				throw new Exception( "Couldn't find page with label \"$label\"" )
+			}
+		}
+
+		out << g.link( [ controller : 'contentEdit', elementId : id, params : [ id : page.id ], class : classNames ], body )
+	}
+	
 }

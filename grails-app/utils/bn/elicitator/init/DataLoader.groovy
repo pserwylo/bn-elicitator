@@ -232,11 +232,20 @@ If this is a mistake, please contact <a href="mailto:peter.serwylo@monash.edu.au
 		""
 	}
 
+	/**
+	 * If this is empty, then prizes will not be enabled. Otherwise, explain the prize here and
+	 * after agreeing to the consent form, people will be asked to opt-in to the prize winning.
+	 */
+	protected String getPrizePageContent() {
+		""
+	}
+
 	protected void initContentPages( ServletContext context ) {
 
 		String homeText    = context.getResourceAsStream( "/WEB-INF/resources/default-home.tpl" )?.text;
 		String helpText    = context.getResourceAsStream( "/WEB-INF/resources/default-help-cpt.tpl" )?.text;
 		String privacyText = context.getResourceAsStream( "/WEB-INF/resources/default-privacy-policy.tpl" )?.text;
+		String prizeText   = prizePageContent
 
 		if ( ! homeText    ) homeText    = homePageContent
 		if ( ! helpText    ) helpText    = helpPageContent
@@ -260,6 +269,13 @@ If this is a mistake, please contact <a href="mailto:peter.serwylo@monash.edu.au
 			label   : "Privacy Policy",
 			alias   : ContentPage.PRIVACY_POLICY,
 			content : replaceContentPlaceholders( privacyText ),
+			canDelete : false,
+		).save( failOnError : true )
+
+		new ContentPage(
+			label   : "Prize Explanation",
+			alias   : ContentPage.PRIZE,
+			content : replaceContentPlaceholders( prizeText ),
 			canDelete : false,
 		).save( failOnError : true )
 

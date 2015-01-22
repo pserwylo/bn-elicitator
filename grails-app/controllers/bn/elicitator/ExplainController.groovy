@@ -36,14 +36,29 @@ class ExplainController {
 	}
 
 	private void route() {
+		
 		User user = userService.current
-		if ( user.knowIfCanWinPrize() && user.hasConsented ) {
-			redirect( controller: 'elicit' )
-		} else if ( user.hasConsented ) {
-			redirect( action: 'prize' )
+		
+		if ( AppProperties.properties.arePrizesEnabled() ) {
+			
+			if ( user.knowIfCanWinPrize() && user.hasConsented ) {
+				redirect( controller: 'elicit' )
+			} else if ( user.hasConsented ) {
+				redirect( action: 'prize' )
+			} else {
+				redirect( action: 'statement' )
+			}
+			
 		} else {
-			redirect( action: 'statement' )
+			
+			if ( user.hasConsented ) {
+				redirect( controller: 'elicit' )
+			} else {
+				redirect( action: 'statement' )
+			}
+			
 		}
+		
 	}
 
 	def prize() {
@@ -69,7 +84,6 @@ class ExplainController {
 
 		if ( delphiService.hasPreviousPhase ) {
 			forward( controller: 'contentView', params : [ page : ContentPage.CANT_REGISTER_THIS_ROUND ] )
-			return
 		} else {
 			return [ explanatoryStatement: AppProperties.properties.explanatoryStatement ]
 		}

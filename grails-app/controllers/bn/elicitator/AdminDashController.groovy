@@ -48,6 +48,24 @@ class AdminDashController {
 
 	}
 
+	def editStudyDetails() {
+		
+		return [
+			appProperties : AppProperties.properties
+		]
+		
+	}
+	
+	def saveStudyDetails() {
+		
+		AppProperties.properties.title = params.title
+		AppProperties.properties.adminEmail = params.adminEmail
+		AppProperties.properties.save()
+		
+		forward( action: 'index' )
+
+	}
+	
 	def initRelationships() {
 		int count = 0
 		User.list().each { user ->

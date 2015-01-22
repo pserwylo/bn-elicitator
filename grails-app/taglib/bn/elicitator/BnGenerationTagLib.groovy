@@ -50,8 +50,11 @@ class BnGenerationTagLib {
 		int numArcs  = BnArc.count()
 		int numCpts  = BnProbability.count()
 
+		boolean showOverview = true
+		
 		if ( numNodes == 0 ) {
 			noCompletedBn()
+			showOverview = false
 		} else if ( numArcs == 0 ) {
 			noCompletedArcs()
 		} else if ( numCpts == 0 ) {
@@ -60,18 +63,20 @@ class BnGenerationTagLib {
 			completeNetwork()
 		}
 
-		out << """
-<h3>BN statistics</h3>
-<p><strong>$numNodes</strong> nodes</p>
-<p><strong>$numArcs</strong> arcs</p>
-<p><strong>$numCpts</strong> parameters</p>
+		if ( showOverview ) {
+			out << """
+				<h3>BN statistics</h3>
+				<p><strong>$numNodes</strong> nodes</p>
+				<p><strong>$numArcs</strong> arcs</p>
+				<p><strong>$numCpts</strong> parameters</p>
 """
+		}
 	}
 
 	private def completeNetwork() {
 		def link = createLink( controller : "output", action : "netica", params : [ finalNetwork : true ] )
 		out << """
-<h2>Network complete</h2>
+<h3>Network complete</h3>
 <p>
 	<input type="button" value="Download Netica file" onclick="document.location='$link'" />
 </p>
@@ -81,17 +86,17 @@ class BnGenerationTagLib {
 
 	private def noCompletedBn() {
 		out << """
-<h2>No nodes found</h2>
+<h3>No nodes found</h3>
 <p>This probably means that we haven't completed the first phase yet (structure elicitation).</p>
 """
 	}
 
 	private def noCompletedArcs() {
-		out << "<h2>No arcs found</h2>"
+		out << "<h3>No arcs found</h3>"
 	}
 
 	private def noCompletedCpts() {
-		out << "<h2>No CPTS found</h2>"
+		out << "<h3>No CPTS found</h3>"
 
 		int numProbabilities = Probability.count()
 		int numEstimations   = ProbabilityEstimation.count()

@@ -21,7 +21,7 @@
 						<h2><g:message code="springSecurity.login.header"/></h2>
 						<g:if test="${delphiPhase == 1}">
 							<div class="info">
-								If you have any problems registering for this survey, please contact <a href="mailto:peter.serwylo@monash.edu">Peter Serwylo.</a>
+								If you have any problems registering for this survey, please contact <a href="mailto:${bn.elicitator.AppProperties.properties.adminEmail}">${bn.elicitator.AppProperties.properties.adminEmail}.</a>
 							</div>
 						</g:if>
 					</div>

@@ -86,7 +86,7 @@ class VariableTagLib {
 			\$(document).ready( function() {
 				\$( '#$id' ).qtip({
 					content: {
-						text: "${tooltip.encodeAsJavaScript()}"
+						text: "${tooltip.encodeAsJavaScript().replaceAll( '\n', '<br />')}"
 					},
 					position: {
 						viewport: \$( window ),

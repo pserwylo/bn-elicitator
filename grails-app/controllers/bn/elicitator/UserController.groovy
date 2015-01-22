@@ -199,6 +199,8 @@ class UserController {
 class SaveUserCommand {
 
 	User existingUser = null
+	
+	String existingUsername = null
 
 	String username
 
@@ -216,7 +218,7 @@ class SaveUserCommand {
 	{
 		if ( this.existingUser == null )
 		{
-			this.existingUser = User.findByUsername( params['existingUsername'] )
+			this.existingUser = User.findByUsername( existingUsername )
 		}
 		return this.existingUser
 	}

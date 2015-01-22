@@ -115,26 +115,25 @@
 				<fieldset class="default ">
 					<legend>Study overview</legend>
 
-					<input type="button" value="Advance to next delphi phase" onclick="document.location = '${createLink( action: 'confirmAdvanceDelphiPhase' )}'" />
-					<input type="button" value="Edit details" onclick="document.location = '${createLink( action: 'editStudyDetails' )}'" />
-					<input type="button" value="Init relationships" onclick="document.location = '${createLink( action: 'initRelationships' )}'" />
-
 					<div class="overview">
 						<div class="info">
 							<span class="label">Name:</span> ${appProperties.title}
 						</div>
 						<div class="info">
-							<span class="label">Delphi Phase:</span> ${appProperties.delphiPhase}
+							<span class="label">Admin Email:</span> ${appProperties.adminEmail}
 						</div>
+						<div class="info">
+							<span class="label">Prizes:</span> ${appProperties.arePrizesEnabled() ? "Enabled" : "Disabled"}
+						</div>
+						%{--<div class="info">
+							<span class="label">Delphi Phase:</span> ${appProperties.delphiPhase}
+						</div>--}%
 					</div>
 
-				</fieldset>
-			</div>
+					<input type="button" value="Edit details" onclick="document.location = '${createLink( action: 'editStudyDetails' )}'" />
+					%{--<input type="button" value="Advance to next delphi phase" onclick="document.location = '${createLink( action: 'confirmAdvanceDelphiPhase' )}'" />--}%
+					%{--<input type="button" value="Init relationships" onclick="document.location = '${createLink( action: 'initRelationships' )}'" />--}%
 
-			<div class="column-header">
-				<fieldset class="default ">
-					<legend>Completed BN</legend>
-					<bnAdmin:completedBn />
 				</fieldset>
 			</div>
 
@@ -185,6 +184,13 @@
 
 					<bnAdmin:allocationList />
 
+				</fieldset>
+			</div>
+
+			<div class="column-footer">
+				<fieldset class="default ">
+					<legend>Completed BN</legend>
+					<bnAdmin:completedBn />
 				</fieldset>
 			</div>
 

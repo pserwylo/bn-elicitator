@@ -59,12 +59,16 @@
 			<ul id="toc" class="">
 				<g:javascript>
 					(function(){
-						$( 'h2').each( function( i, item ) {
-							var safeString = $( item ).text().replace( /[^a-zA-Z0-9]+/g, '' );
-							$( item ).before( '<a name="' + safeString + '"></a>' );
-							$( item ).after( "<span class='back-to-top'><a href='#top'>(back to top)</a></span>" );
-							$( '#toc' ).append( '<li><a href="#' + safeString + '">' + $( item).text() + '</a></li>' );
-						});
+						// If more than 4 sub headings, then build a table of contents...
+						var h2s = $( 'h2' );
+						if ( h2s.length > 4 ) {
+							h2s.each( function( i, item ) {
+								var safeString = $( item ).text().replace( /[^a-zA-Z0-9]+/g, '' );
+								$( item ).before( '<a name="' + safeString + '"></a>' );
+								$( item ).after( "<span class='back-to-top'><a href='#top'>(back to top)</a></span>" );
+								$( '#toc' ).append( '<li><a href="#' + safeString + '">' + $( item).text() + '</a></li>' );
+							});
+						}
 					})();
 				</g:javascript>
 			</ul>
