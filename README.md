@@ -23,7 +23,16 @@ This project is licensed under the GPLv3 license (http://www.gnu.org/licenses/gp
 
 ### Dependencies
 
+#### Building
+
 You will require [Grails](http://www.grails.org) in order to run this software.
+The current version of BN Elicitator was built and tested using Grails 2.3.4 ([.zip, 136mb](http://dist.springframework.org.s3.amazonaws.com/release/GRAILS/grails-2.3.4.zip)).
+It may be possible to upgrade to 2.4.* or later, but this hasn't been tested yet.
+
+#### Running
+
+The bn-elicitator.war ([view downloads](https://github.com/pserwylo/bn-elicitator/releases)) file contains all of the dependencies inside, so you should be able to plop it into any J2EE server.
+Follow the relevant documentation for your server (e.g. Tomcat, Jetty, etc) for how to do this.
 
 ### CustomConfig.groovy
 
