@@ -1,7 +1,10 @@
-// Copy this file to bn-elicitator.config.groovy, and specify the appropriate properties for mail and database setup before compiling
+// Copy this file to bn-elicitator.config.groovy, and specify the appropriate properties.
+// DO NOT check this file into version control for a public project, as it will contain
+// secrets that you do not want to share.
 
 environments {
 	development {
+		// Most likely "http://localhost:8080/bn-elicitator" during development
 		grails.serverURL = "http://host.name/path/to/deployment"
 	}
 	production {
@@ -10,13 +13,21 @@ environments {
 }
 
 bn {
-	dataLoaderClass = bn.elicitator.init.InsuranceDataLoader
+	// This should be a class which extends bn.elicitator.init.DataLoader, and specifies which variables to use
+	// in your project, what states they can take, what variable class they belong to, and provides descriptions
+	// of each.
+	// It will also be responsible for configuring what your home page looks like, and how your consent form 
+	// is presented.
+	dataLoaderClass = bn.elicitator.init.loaders.UnconfiguredDataLoader
 }
 
+// Uncomment this and configure if you want to be able to have the system send emails to users,
+// or send emails to you (e.g. if there are errors).
+/*
 grails {
-	plugins.springsecurity.ui.register.emailFrom    = "peter.serwylo@monash.edu"
+	plugins.springsecurity.ui.register.emailFrom = "your.email@example.com"
 	mail {
-		host     = "smtp.gmail.com"
+		host     = "smtp.example.com"
 		port     = 465
 		username = "username"
 		password = "password"
@@ -28,7 +39,9 @@ grails {
 		]
 	}
 }
+*/
 
+// See http://grails.github.io/grails-doc/latest/guide/conf.html#dataSource for details of how to configure this block.
 dataSource {
 	dbCreate        = "update"
 	url             = "jdbc:mysql://host/database"
@@ -36,12 +49,30 @@ dataSource {
 	dialect         = "org.hibernate.dialect.MySQL5InnoDBDialect"
 	username        = "username"
 	password        = "username"
+	
+	// This is to prevent "java.io.EOFException: Can not read response from server. Expected to read 4 bytes, read 0 bytes before connection was unexpectedly lost." errors.
+	// http://grails4you.com/2012/04/grails-and-java-io-eofexception-can-not-read-response-from-server/
+	properties {
+		maxActive = -1
+		maxIdle = 8
+		minIdle = 0
+		maxWait = 180000
+		minEvictableIdleTimeMillis = 1000 * 60 * 15
+		timeBetweenEvictionRunsMillis = 1000 * 60 * 15
+		numTestsPerEvictionRun = 3
+		testOnBorrow = true
+		testWhileIdle = true
+		testOnReturn = false
+		validationQuery = "select 1"
+	}
+
 }
 
-// I wanted to move most of this to the regular config, but I need access to the
-// serverURL variable which is defined above, so I just put the entire configuration
-// here. Long story short, only add your key and your secret to the CustomConfig.groovy,
-// don't modify the other options
+// Ideally, this should mostly be moved to the regular config, so that the successUri, failureUri, callback,
+// and api are all constant - and only the key and secret are in this config file.
+// However, the callback depends on the serverURL variable which is defined above, and not available in the
+// regular config file. As such, you should add your key and your secret to the CustomConfig.groovy,
+// but don't modify the other options.
 oauth {
 	providers {
 		facebook {

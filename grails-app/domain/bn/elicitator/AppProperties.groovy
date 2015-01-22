@@ -39,7 +39,7 @@ class AppProperties {
 
 	Integer delphiPhase = 1
 
-	Integer elicitationPhase = ELICIT_1_VARIABLES
+	Integer elicitationPhase = ELICIT_2_RELATIONSHIPS
 
 	String title = "Online Knowledge Elicitation"
 

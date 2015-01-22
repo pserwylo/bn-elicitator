@@ -1,4 +1,4 @@
-package bn.elicitator.init
+package bn.elicitator.init.loaders
 /*
  * Bayesian Network (BN) Elicitator
  * Copyright (C) 2013 Peter Serwylo (peter.serwylo@monash.edu)
@@ -22,9 +22,17 @@ import bn.elicitator.ContentPage
 import bn.elicitator.State
 import bn.elicitator.Variable
 import bn.elicitator.VariableClass
+import bn.elicitator.init.DataLoader
 
 import javax.servlet.ServletContext
 
+/**
+ * Toying with the idea of using additional variable classes beyond Background, Mediating, Problem and Symptom.
+ * Based on the network from:
+ * 
+ *  Chan, T.; Ross, H.; Hoverman, S. & Powell, B. (2010). "Participatory development of a Bayesian network model for catchment-based water resource management". Water Resources Research, 46.
+ *
+ */
 class Chan2010DataLoader extends DataLoader {
 
 	protected void initOther() {
@@ -34,9 +42,6 @@ class Chan2010DataLoader extends DataLoader {
 	protected void updateHomePage() {
 		String homeText = """
 			<h2>Chan et al 2010</h2>
-			<p>
-				This is a demo site, that I populated with variables from the
-			</p>
 
 			<div style='text-align: center; margin-top: 2em;'>
 				<p>

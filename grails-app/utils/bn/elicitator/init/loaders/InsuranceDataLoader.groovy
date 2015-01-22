@@ -1,4 +1,4 @@
-package bn.elicitator.init
+package bn.elicitator.init.loaders
 /*
  * Bayesian Network (BN) Elicitator
  * Copyright (C) 2012 Peter Serwylo (peter.serwylo@monash.edu)
@@ -18,8 +18,17 @@ package bn.elicitator.init
  */
 
 import bn.elicitator.*
+import bn.elicitator.init.DataLoader
+
 import javax.servlet.ServletContext
 
+/**
+ * Uses variables (and relationships based on the "Car Insurance" Bayesian network:
+ *
+ *   Binder J, Koller D, Russell S, Kanazawa K (1997). "Adaptive Probabilistic Networks with Hidden Variables". Machine Learning, 29(2-3), 213-244.
+ *      
+ *   http://www.cs.huji.ac.il/site/labs/compbio/Repository/Datasets/insurance/insurance.htm
+ */
 class InsuranceDataLoader extends DataLoader {
 
 	protected void initOther() {

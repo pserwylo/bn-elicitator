@@ -1,4 +1,4 @@
-package bn.elicitator.init
+package bn.elicitator.init.loaders
 /*
  * Bayesian Network (BN) Elicitator
  * Copyright (C) 2012 Peter Serwylo (peter.serwylo@monash.edu)
@@ -22,6 +22,10 @@ import bn.elicitator.auth.User
 import bn.elicitator.init.DataLoader;
 import javax.servlet.ServletContext;
 
+/**
+ * This was initially used to try and elicit a BN to do with "Mass Gathering Medical Care" (MGMC). 
+ * It was dumped after a first survey was attempted, but is kept here for prosterity.
+ */
 class MgmcDataLoader extends DataLoader {
 
 	protected List<Variable> getBackgroundVariables() {
@@ -221,8 +225,8 @@ class MgmcDataLoader extends DataLoader {
 	protected AppProperties getProperties( ServletContext servletContext )
 	{
 		new AppProperties(
-			adminEmail          : "peter@serwylo.com",
-			url                 : "http://uni.peter.serwylo.com:8080/bn-elicitator",
+			adminEmail          : "your.email@example.com",
+			url                 : "http://localhost:8080/bn-elicitator",
 			title               : "First aid project",
 			delphiPhase         : 1,
 			elicitationPhase    : AppProperties.ELICIT_2_RELATIONSHIPS,
