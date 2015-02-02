@@ -207,7 +207,7 @@ If this is a mistake, please contact <a href="mailto:peter.serwylo@monash.edu.au
 
 	protected String replaceContentPlaceholders( String template ) {
 		if (!template) {
-			return "Empty";
+			return "";
 		} else {
 			Map<String, String> placeholders = [
 				'[serverURL]' : Holders.getGrailsApplication().config.grails.serverURL?.toString()
@@ -359,6 +359,10 @@ If this is a mistake, please contact <a href="mailto:peter.serwylo@monash.edu.au
 		adminUser.save( flush: true, failOnError: true )
 
 		adminRole.addUser( adminUser )
+        
+        if ( numTestUsersToCreate > 0 ) {
+            initTestUsers( numTestUsersToCreate, false )
+        }
 	}
 
 	protected void initVariables() {
@@ -420,6 +424,12 @@ If this is a mistake, please contact <a href="mailto:peter.serwylo@monash.edu.au
 		AppProperties.properties.save();
 	}
 
+    /**
+     * Override this and return a number greater than 0 in order to populate the
+     * database with that many test users (username and password: expert1 ... through to expertX)
+     */
+    protected int getNumTestUsersToCreate() { 0 }
+    
 	/**
 	 * Helper function if we want to bootstrap a bunch of test users.
 	 * @param number

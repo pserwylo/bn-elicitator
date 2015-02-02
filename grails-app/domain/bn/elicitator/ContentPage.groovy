@@ -10,12 +10,16 @@ class ContentPage {
 	public static final String CANT_REGISTER_THIS_ROUND = "cant-register"
 
 	static mapping = {
-		content type: "text"
+		content type: "text", blank: true, nullable: true
 	}
 
-	String content
+	String content = ""
 	String label
 	String alias
 	boolean canDelete = true
+    
+    public String getContent() {
+        content ?: ""
+    }
 
 }

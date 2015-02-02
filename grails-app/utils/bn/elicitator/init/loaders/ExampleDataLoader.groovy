@@ -48,6 +48,17 @@ class ExampleDataLoader extends DataLoader {
         """
     }
 
+    /**
+     * This will create a number of people with the username and password:
+     *  * expert1
+     *  * expert2
+     *  * etc...
+     */
+    @Override
+    protected int getNumTestUsersToCreate() {
+        10
+    }
+
     @Override
     protected AppProperties getProperties(ServletContext servletContext) {
         new AppProperties(
