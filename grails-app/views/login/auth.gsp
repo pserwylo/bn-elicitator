@@ -26,25 +26,36 @@
 						</g:if>
 					</div>
 					<div class="column-left">
+                        
+                        %{-- If facebook is NOT enabled, leave the regular login to fill the left column,
+                             otherwise, occupy this with Facebook login, and add regular login on the right. --}%
+                        <g:if test="${config.isFacebookLoginEnabled()}">
+                            
+                        <fieldset class="default">
+                            <legend>${registerLoginLabel} via Facebook</legend>
+                            <oauth:connect provider="facebook" id="facebook-connect-link">
+                                <div class="facebook-connect">
+                                    <span style="display: none">Connect with facebook</span>
+                                </div>
+                            </oauth:connect>
+                            <p class="description">
+                                To see why we ask Facebook for
+                                "your public profile, friend list and email address", read our brief
+                                <bnContent:link page="${bn.elicitator.ContentPage.PRIVACY_POLICY}">
+                                    privacy policy
+                                </bnContent:link>.
+                            </p>
+                        </fieldset>
+                    </div>
+                    <div class="column-right">
+                            
+                        </g:if>
+                    
 						<fieldset class="default">
-							<legend>${registerLoginLabel} via Facebook</legend>
-							<oauth:connect provider="facebook" id="facebook-connect-link">
-								<div class="facebook-connect">
-									<span style="display: none">Connect with facebook</span>
-								</div>
-							</oauth:connect>
-							<p class="description">
-								To see why we ask Facebook for
-								"your public profile, friend list and email address", read our brief
-								<bnContent:link page="${bn.elicitator.ContentPage.PRIVACY_POLICY}">
-									privacy policy
-								</bnContent:link>.
-							</p>
-						</fieldset>
-					</div>
-					<div class="column-right">
-						<fieldset class="default">
-							<legend>${registerLoginLabel} with password</legend>
+							<legend>
+                                ${registerLoginLabel} 
+                                <g:if test="${config.isFacebookLoginEnabled()}">with password</g:if>
+                            </legend>
 
 							<form action='${postUrl}' method='POST' id='loginForm' class='cssform'>
 								<p class="form-element">

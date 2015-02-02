@@ -24,7 +24,7 @@ environments {
 bn {
 	// This should be a .groovy file containing a class which extends "bn.elicitator.init.DataLoader". Feel free to
 	// place the file wherever you want. A good starting point is to copy the 
-	// "grails-app/utils/bn/elicitator/loaders/ExampleDataLoader.groovy" file and modify it to your needs.
+	// "grails-app/utils/bn/elicitator/init/loaders/ExampleDataLoader.groovy" file and modify it to your needs.
 	// It will specify which variables to use in your project, what states they can take, what variable class they 
 	// belong to, and provides descriptions of each.
 	// It will also be responsible for configuring what your home page looks like, and how your consent form is presented.
@@ -33,6 +33,10 @@ bn {
 
 // Uncomment this and configure if you want to be able to have the system send emails to users,
 // or send emails to you (e.g. if there are errors).
+// 
+// NOTE: If you leave emails disabled, then people will not be asked to confirm their email addresses
+//   when registering. Rather, it will trust that any email used to register is valid. If email sending
+//   is configured, then people will be sent a confirmation email with a "complete registration" link.
 /*
 grails {
 	plugins.springsecurity.ui.register.emailFrom = "your.email@example.com"
@@ -83,6 +87,7 @@ dataSource {
 // However, the callback depends on the serverURL variable which is defined above, and not available in the
 // regular config file. As such, you should add your key and your secret to the CustomConfig.groovy,
 // but don't modify the other options.
+/*
 oauth {
 	providers {
 		facebook {
@@ -95,3 +100,4 @@ oauth {
 		}
 	}
 }
+*/

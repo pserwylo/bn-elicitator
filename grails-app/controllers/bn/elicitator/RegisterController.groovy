@@ -56,21 +56,29 @@ class RegisterController extends grails.plugins.springsecurity.ui.RegisterContro
 			return
 		}
 
-		String url = generateLink('verifyRegistration', [t: registrationCode.token])
+        if ( new Config( grailsApplication ).canSendEmails ) {
 
-		def conf = SpringSecurityUtils.securityConfig
-		def body = conf.ui.register.emailBody
-		if (body.contains('$')) {
-			body = evaluate(body, [user: user, url: url])
-		}
-		mailService.sendMail {
-			to command.email
-			from conf.ui.register.emailFrom
-			subject conf.ui.register.emailSubject
-			html body.toString()
-		}
+            String url = generateLink('verifyRegistration', [t: registrationCode.token])
 
-		render view: 'index', model: [emailSent: true, command: command]
+            def conf = SpringSecurityUtils.securityConfig
+            def body = conf.ui.register.emailBody
+            if (body.contains('$')) {
+                body = evaluate(body, [user: user, url: url])
+            }
+            mailService.sendMail {
+                to command.email
+                from conf.ui.register.emailFrom
+                subject conf.ui.register.emailSubject
+                html body.toString()
+            }
+
+            render view: 'index', model: [emailSent: true, command: command]
+
+        } else {
+            
+            redirect action: verifyRegistration, params: [ t: registrationCode.token ]
+            
+        }
 	}
 
 	/**

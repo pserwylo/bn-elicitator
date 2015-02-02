@@ -1,5 +1,6 @@
 package bn.elicitator.auth
 
+import bn.elicitator.Config
 import grails.converters.JSON
 
 import javax.servlet.http.HttpServletResponse
@@ -56,7 +57,8 @@ class LoginController {
 		String postUrl = "${request.contextPath}${config.apf.filterProcessesUrl}"
 		render view: view, model: [ postUrl: postUrl,
 		                            rememberMeParameter: config.rememberMe.parameter,
-		                            delphiPhase: delphiService.phase ]
+		                            delphiPhase: delphiService.phase,
+		                            config: new Config( grailsApplication ) ]
 	}
 
 	/**
@@ -82,10 +84,11 @@ class LoginController {
 	 * Login page for users with a remember-me cookie but accessing a IS_AUTHENTICATED_FULLY page.
 	 */
 	def full = {
-		def config = SpringSecurityUtils.securityConfig
+        def config = SpringSecurityUtils.securityConfig
 		render view: 'auth', params: params,
 			model: [hasCookie: authenticationTrustResolver.isRememberMe(SCH.context?.authentication),
-			        postUrl: "${request.contextPath}${config.apf.filterProcessesUrl}"]
+			        postUrl: "${request.contextPath}${config.apf.filterProcessesUrl}",
+                    config: new Config( grailsApplication )]
 	}
 
 	/**
