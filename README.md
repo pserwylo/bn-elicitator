@@ -27,8 +27,9 @@ Follow the relevant documentation for your server (e.g. Tomcat, Jetty, etc) for 
 
 ### Configuring
 
-The first thing you'll need to do is `grails-app/conf/CustomConfig.groovy.example` and set values as appropriate. 
-They should all be documented and explain what is required.
+The first thing you'll need to do is `grails-app/conf/CustomConfig.groovy.example`
+([download from here](https://raw.githubusercontent.com/pserwylo/bn-elicitator/master/grails-app/conf/CustomConfig.groovy.example))
+and set values as appropriate. They should all be documented and explain what is required.
 
 The file itself will have to be in one of the following locations:
  * $HOME/.grails/bn-elicitator-config.groovy
@@ -38,8 +39,9 @@ The file itself will have to be in one of the following locations:
 ### Loading data
 
 In order to configure your site, you will need to create a class that extends `bn.elicitator.init.DataLoader` and
-override the relevant methods. A good starting point is to copy `bn.elicitator.init.loaders.ExampleLoader` and change
-what you see fit.
+override the relevant methods. A good starting point is to copy `bn.elicitator.init.loaders.ExampleLoader` 
+([download from here](https://raw.githubusercontent.com/pserwylo/bn-elicitator/master/grails-app/utils/bn/elicitator/init/loaders/ExampleDataLoader.groovy))
+and change what you see fit.
 
 Once created, you'll want to edit your config file (see above) so that the `bn.dataLoaderClass` property points to the
 file it is stored in.

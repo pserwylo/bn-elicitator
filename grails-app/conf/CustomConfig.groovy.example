@@ -1,15 +1,16 @@
-// Copy this file to bn-elicitator.config.groovy, and specify the appropriate properties.
-// It must live in one of the following locations:
-// The file itself will have to be in one of the following locations:
+// Copy this file to bn-elicitator.config.groovy, and change the appropriate properties.
+// Look at the comments above each property to see what you should change.
+// DO NOT check this file into version control for a public project, as it will contain
+// secrets that you do not want to share.
+// 
+// Your copy of this file must live in one of the following locations:
 // 
 //   $HOME/.grails/bn-elicitator-config.groovy
 // 
 //   /etc/bn-elicitator/config.groovy (sorry Windows users, will have to think of a better place on request).
 // 
-//   bn-elicitator.config.location Java system property (e.g. `grails -Dbn-elicitator.config.location=/tmp/config.groovy`)
+//   bn-elicitator.config.location Java system property (e.g. `grails -Dbn-elicitator.config.location=/tmp/config.groovy run-app`)
 //
-// DO NOT check this file into version control for a public project, as it will contain
-// secrets that you do not want to share.
 
 environments {
 	development {
@@ -55,16 +56,38 @@ grails {
 }
 */
 
+//
+// This needs to be changed to point to the database you wish to use for this project.
+// You will need to create the database and grant the relvant permissions (username + password) before running bn-elicitator.
+// Leave the database empty, and this software will create the tables it requires the first time it is run.
+//
 // See http://grails.github.io/grails-doc/latest/guide/conf.html#dataSource for details of how to configure this block.
+// 
 dataSource {
-	dbCreate        = "update"
+
+	// Change these so that the URL points to your database (e.g. http://www.petefreitag.com/articles/jdbc_urls/)
 	url             = "jdbc:mysql://host/database"
+
+	// Configure these to be the username and password you wish to use when connecting to the database.
+	username        = "replace with your database username"
+	password        = "replace with your database password"
+
+	// Your will likely want to leave this as "update", but during testing, it may be helpful to use
+	// "create" or "create-drop" so that the database is wiped each time the application starts. DON'T use
+	// "create" or "create-drop" in production, for the obvious reason that you will continually drop your
+	// production database tables :(
+	dbCreate        = "update"
+
+	// If you are using a MySQL or MariaDB database, these will not need to change.
+	// This software has not been tested with other databases, so I'm not familiar with how to specify
+	// the driver class for other databases. The reason is that the binary bn-elicitator.war file will
+	// have this driver compiled into it, but probably not other drivers. Please log an issue at
+	// https://github.com/pserwylo/bn-elicitator if you are unable to get another database working.
 	driverClassName = "com.mysql.jdbc.Driver"
 	dialect         = "org.hibernate.dialect.MySQL5InnoDBDialect"
-	username        = "username"
-	password        = "username"
-	
-	// This is to prevent "java.io.EOFException: Can not read response from server. Expected to read 4 bytes, read 0 bytes before connection was unexpectedly lost." errors.
+
+	// You probably DON'T want to change this section.
+	// It is here to prevent "java.io.EOFException: Can not read response from server. Expected to read 4 bytes, read 0 bytes before connection was unexpectedly lost." errors.
 	// http://grails4you.com/2012/04/grails-and-java-io-eofexception-can-not-read-response-from-server/
 	properties {
 		maxActive = -1
