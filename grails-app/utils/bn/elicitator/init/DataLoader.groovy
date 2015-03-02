@@ -473,5 +473,14 @@ If this is a mistake, please contact <a href="mailto:peter.serwylo@monash.edu.au
 
 		background.potentialChildren.add( background )
 		background.save( flush: true )
+
+		symptom.potentialChildren.add( symptom )
+        symptom.save( flush: true )
+
+        problem.potentialChildren.add( problem )
+        problem.save( flush: true )
+
+        mediating.potentialChildren.add( mediating )
+        mediating.save( flush: true )
 	}
 }

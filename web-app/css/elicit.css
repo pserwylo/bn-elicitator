@@ -42,14 +42,6 @@ ul.potential-children-list      li.variable-item .variable {
 	}
 }
 
-@media only screen and (min-width: 600px) {
-
-	ul.potential-children-list li.variable-item {
-		height: 30px;
-	}
-
-}
-
 /* List items which indicate disagreement */
 
 ul.potential-children-list li.variable-item.disagree .variable {
@@ -367,12 +359,6 @@ ul.potential-children-list .variable-item.highlighted button.review {
 
 .child-variable {
 	font-size: 1.2em;
-}
-
-@media only screen and (min-width: 600px) {
-	ul.potential-children-list li {
-		height: 50px;
-	}
 }
 
 ul.potential-children-list li.new-var {
