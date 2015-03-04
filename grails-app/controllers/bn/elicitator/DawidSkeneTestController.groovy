@@ -5,12 +5,101 @@ import bn.elicitator.network.BnArc
 import bn.elicitator.network.BnNode
 import bn.elicitator.network.BnProbability
 import bn.elicitator.troia.CptJob
+import bn.elicitator.troia.DawidSkeneRelationship
+import bn.elicitator.troia.DegradedStructureJob
 import bn.elicitator.troia.StructureJob
 import org.apache.commons.collections.CollectionUtils
 
 class DawidSkeneTestController {
 
 	private final String TROIA_URL = "http://uni.peter.serwylo.com:8080/troia"
+
+	def degradeStructure() {
+		def prior = 0.1
+		for ( def i = 1; i <= 10; i++ ) {
+			println "# Iteration $i (prior $prior)#"
+			performDegradeStructure( new File( "/tmp/degraded.ds.structure.$i-${prior}.tsv" ), prior )
+			println "Sleeping for 5 seconds"
+			sleep( 5000 )
+		}
+	}
+
+	private void performDegradeStructure( File file, def prior ) {
+
+		file.withWriter { Writer out ->
+
+			out.println([
+				"Removal Percent",
+				"Parent",
+				"Child",
+				"Uncertainty"
+			].join("\t"))
+
+		}
+
+		for ( def i = 0; i <= 90; i += 10 ) {
+
+			println "* Removing $i% of responses *"
+
+			DegradedStructureJob job = new DegradedStructureJob( TROIA_URL)
+			job.arcPrior       = prior
+			job.removalPercent = i
+			job.run()
+
+			file.withWriterAppend { Writer out ->
+
+				def predictions = job.predictions()
+				def existingPredictions = predictions.findAll { it.relationship.exists }
+				existingPredictions.each { DawidSkeneRelationship rel ->
+					out.println([
+							i,
+							rel.relationship.parent.label,
+							rel.relationship.child.label,
+							rel.uncertainty
+					].join("\t"))
+				}
+			}
+		}
+
+	}
+
+	def analysePriors() {
+
+		def file = new File( "/tmp/prior.ds.structure.tsv" )
+
+		file.withWriter { Writer out ->
+
+			out.println([
+				"Prior",
+				"Parent",
+				"Child",
+			].join("\t"))
+
+		}
+
+		for ( def i = 0.05; i <= 0.95; i += 0.05 ) {
+
+			println "* Calculating with prior of $i *"
+
+			StructureJob job = new StructureJob( TROIA_URL)
+			job.arcPrior     = i
+			job.run()
+
+			file.withWriterAppend { Writer out ->
+
+				def predictions = job.predictions()
+				def existingPredictions = predictions.findAll { it.relationship.exists }
+				existingPredictions.each { DawidSkeneRelationship rel ->
+					out.println([
+						i,
+						rel.relationship.parent.label,
+						rel.relationship.child.label,
+					].join("\t"))
+				}
+			}
+		}
+
+	}
 
 	def structure() {
 

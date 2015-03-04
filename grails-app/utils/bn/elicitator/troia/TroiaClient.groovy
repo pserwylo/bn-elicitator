@@ -31,8 +31,8 @@ class TroiaClient {
 	TroiaResponse ensureResponseIsReady( TroiaResponse response ) {
 		int tryCount = 1
 		while ( !response.responseReady ) {
-			int timeToSleep = Math.min( tryCount * 4 * 1000, 30000 )
-			print "Response at '$response.path' not ready. Sleeping for ${timeToSleep / 1000} seconds, then trying again..."
+			int timeToSleep = Math.min( tryCount * 1 * 1000, 30000 )
+			// print "Response at '$response.path' not ready. Sleeping for ${timeToSleep / 1000} seconds, then trying again..."
 			sleep( timeToSleep )
 			tryCount ++;
 			response = doGet( response.path )
@@ -59,7 +59,7 @@ class TroiaClient {
 				)
 			)
 		} catch ( HttpResponseException e ) {
-			print "Exception loading '$path': $e.message"
+			// print "Exception loading '$path': $e.message"
 			throw e
 		}
 	}

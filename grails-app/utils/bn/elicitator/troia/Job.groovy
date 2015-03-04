@@ -32,7 +32,9 @@ abstract class Job<T> {
 	List<T> predictions() {
 		def response = client.getFollowRedirects( "jobs/$id/objects/prediction" )
 		response = client.ensureResponseIsReady( response )
-		response.response.result.collect { predictionFromData( it ) }
+		response.response.result.collect {
+			predictionFromData( it )
+		}
 	}
 
 	Map<Long, Double> estimatedWorkerQuality() {
