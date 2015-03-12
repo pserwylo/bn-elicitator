@@ -1,6 +1,8 @@
 package bn.elicitator.network
 
-class BnArc {
+import bn.elicitator.Variable
+
+class BnArc implements Arc {
 
 	static constraints = {
 		strength nullable: true
@@ -11,4 +13,9 @@ class BnArc {
 
 	float strength
 
+    @Override
+    Variable getFrom() { parent.variable }
+
+    @Override
+    Variable getTo() { child.variable }
 }

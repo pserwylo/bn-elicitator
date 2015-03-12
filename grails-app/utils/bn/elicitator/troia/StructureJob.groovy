@@ -14,11 +14,11 @@ class DegradedStructureJob extends StructureJob {
 	private double removalPercent = 0;
 
 	DegradedStructureJob(String troiaServerAddress, String jobId) {
-		super(troiaServerAddress, jobId)
+		super(troiaServerAddress, getRelationshipsToAnalyse(), jobId)
 	}
 
 	DegradedStructureJob(String troiaServerAddress) {
-		super(troiaServerAddress)
+		super(troiaServerAddress, getRelationshipsToAnalyse())
 	}
 
 	public void setRemovalPercent(double percent) {
@@ -43,8 +43,11 @@ class StructureJob extends DiscreteJob<DawidSkeneRelationship> {
      */
     private double arcPrior = -1
 
-	StructureJob( String troiaServerAddress, String jobId = null ) {
+    private Collection<Relationship> toAnalyse
+    
+	StructureJob( String troiaServerAddress, Collection<Relationship> relationshipsToAnalyse, String jobId = null ) {
 		super( troiaServerAddress, jobId )
+        this.toAnalyse = relationshipsToAnalyse
 	}
 
     public void setArcPrior(double value) {
@@ -53,10 +56,6 @@ class StructureJob extends DiscreteJob<DawidSkeneRelationship> {
         }
         this.arcPrior = value
     }
-
-	protected Collection<Relationship> getRelationshipsToAnalyse() {
-		Relationship.findAllByIsExistsInitializedAndDelphiPhase( true, 1 )
-	}
 
     public double getArcPrior() {
         this.arcPrior

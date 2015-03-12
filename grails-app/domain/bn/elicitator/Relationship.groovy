@@ -19,6 +19,7 @@
 package bn.elicitator
 
 import bn.elicitator.auth.User
+import bn.elicitator.network.Arc
 
 /**
  * Specifies the nature of the causal relationship from {@link Relationship#parent} to {@link Relationship#child).
@@ -26,7 +27,7 @@ import bn.elicitator.auth.User
  * You can have a relationship which doesn't {@link Relationship#exists}, but still has comments explaining why they
  * think there is *not* any relationship.
  */
-class Relationship {
+class Relationship implements Arc {
 
     static constraints = {
 		comment nullable: true
@@ -99,4 +100,9 @@ class Relationship {
 		return c
 	}
 
+    @Override
+    Variable getFrom() { parent }
+
+    @Override
+    Variable getTo() { child }
 }

@@ -1,0 +1,77 @@
+/*
+ * Bayesian Network (BN) Elicitator
+ * Copyright (C) 2015 Peter Serwylo (peter.serwylo@monash.edu)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/* MAIN LIST STYLES */
+
+ul.potential-children-list li.variable-item .variable,
+ul.main-list li.list-item .label,
+table.summary th {
+    
+	font-size: 13.5pt;
+	font-style: normal;
+    font-weight: normal;
+	color: #48802c; /* mimic the colour of links from global.css */
+    
+}
+
+@media only screen and (max-width: 600px) {
+    
+	ul.potential-children-list li.variable-item .variable,
+    ul.main-list li.list-item .label,
+    table.summary th {
+        
+		font-size: 12pt;
+		font-weight: bold;
+	}
+    
+}
+
+table.summary {
+    border-collapse: collapse;
+}
+
+table.summary th, table.summary td {
+    padding: 0.3em;
+}
+
+ul.variable-list li.variable-item,
+ul.main-list li.list-item,
+table.summary td,
+table.summary th {
+    
+    border: solid 1px #CCC;
+    
+}
+
+ul.variable-list li.variable-item,
+ul.main-list li.list-item,
+table.summary td {
+
+    padding: 10px 5px;
+    margin-top: -1px; /* So that we don't double up on the border in between items... */
+
+}
+
+.item-description,
+ul.main-list li.list-item .info {
+    
+    font-size: 10pt;
+    padding-top: 0.1em;
+    color: #666;
+    
+}

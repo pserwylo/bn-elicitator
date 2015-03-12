@@ -43,7 +43,7 @@ modules = {
 	}
 
 	variableList {
-		resource url: 'css/variableList.css'
+		dependsOn( 'misc' )
 	}
 
 	floatingDialog {
@@ -70,8 +70,12 @@ modules = {
 		resource url: 'css/explain.css'
 	}
 
+	misc {
+		resource url: 'css/misc.css'
+	}
+
 	elicit {
-		dependsOn( [ 'variableList' ] )
+		dependsOn( [ 'variableList', 'misc' ] )
 		resource url: 'css/elicit.css'
 	}
 
@@ -94,6 +98,10 @@ modules = {
 		dependsOn( [ 'elicit', 'global' ] )
 		resource url: 'css/elicitProbabilities.css'
 		resource url: 'js/das2004.js'
+	}
+
+	analysis {
+        dependsOn( [ 'misc' ] )
 	}
 
 	elicitList {
