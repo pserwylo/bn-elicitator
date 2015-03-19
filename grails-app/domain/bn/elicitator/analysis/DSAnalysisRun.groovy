@@ -11,4 +11,6 @@ class DSAnalysisRun extends AnalysisRun {
 
     public String toString() { "Dawid & Skene analysis (prior $prior)" }
     
+    public String toShortString() { "DS_$prior" }
+    
 }

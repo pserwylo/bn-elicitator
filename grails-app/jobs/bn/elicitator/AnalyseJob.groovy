@@ -14,7 +14,7 @@ class AnalyseJob {
         obj.toString()
         AnalysisSuite analysisSuite = context.mergedJobDataMap.get( 'analysisSuite' )
         
-        analysisService.analyseDawidSkene( analysisSuite )
+        analysisService.analyse( analysisSuite )
         
     }
     

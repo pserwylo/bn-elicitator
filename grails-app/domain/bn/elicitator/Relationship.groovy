@@ -68,7 +68,7 @@ class Relationship implements Arc {
 	Comment comment = null
 
 	/**
-	 * Because the survey will be run multiple times, we need to keep track of which phase we are currently in.
+	 * Because the survey will be collateArcs multiple times, we need to keep track of which phase we are currently in.
 	 */
 	Integer delphiPhase
 

@@ -29,10 +29,18 @@
         <fieldset class="default">
             <legend>View Bayesian Network Analysis</legend>
 
-            <div class="message" style="clear: both;">
-                <strong>Current status: </strong>
-                Completed ${analysis.analysisRuns.size()} analysis runs.
-            </div>
+            <p>
+                <g:link action="downloadDataFrame" params="${[ id : analysis.id ]}"><strong>Download R <code>data.frame</code></strong></g:link>
+            </p>
+
+            <g:if test="${analysis.analysisRuns.size() == 0}">
+                
+                <div class="message" style="clear: both;">
+                    <strong>Current status: </strong>
+                    Running (or failed)
+                </div>
+
+            </g:if>
 
             <table class="summary">
                 <tr>

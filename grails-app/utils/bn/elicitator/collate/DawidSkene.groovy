@@ -17,17 +17,14 @@ import com.datascience.gal.AbstractDawidSkene
 import com.datascience.gal.BatchDawidSkene
 import com.datascience.utils.CostMatrix
 
-class DawidSkene {
+class DawidSkene extends CollationAlgorithm {
 
     private double prior
-    private Collection<Relationship> toAnalyse
     private AbstractDawidSkene dawidSkene
 
-    public DawidSkene( double prior, Collection<Relationship> toAnalyse ) {
+    public DawidSkene( double prior, Collection<Relationship> toCollate ) {
+        super( toCollate )
         this.prior = prior
-        this.toAnalyse = toAnalyse
-        
-        run()
     }
 
     public def getLabelResults() {
@@ -44,7 +41,7 @@ class DawidSkene {
         }
     }
 
-    private void run() {
+    protected void collateArcs() {
 
         dawidSkene = new BatchDawidSkene( data : setupData() )
 
@@ -71,15 +68,15 @@ class DawidSkene {
             new CostMatrix<String>()
         )
 
-        toAnalyse.collect { relationshipToObject( it ) }.unique().each {
+        toCollate.collect { relationshipToObject( it ) }.unique().each {
             data.addObject( new LObject( it ) )
         }
 
-        toAnalyse.collect { it.createdBy.id }.unique().each {
+        toCollate.collect { it.createdBy.id }.unique().each {
             data.addWorker( new Worker( String.valueOf( it ) ) )
         }
 
-        toAnalyse.each { Relationship relationship ->
+        toCollate.each { Relationship relationship ->
 
             LObject object = data.getObject( relationshipToObject( relationship ) )
             Worker  worker = data.getWorker( String.valueOf( relationship.createdBy.id ) )

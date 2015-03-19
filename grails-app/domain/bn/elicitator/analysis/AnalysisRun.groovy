@@ -9,5 +9,7 @@ abstract class AnalysisRun {
     CandidateNetwork acyclicNetwork
 
     Double threshold
+    
+    abstract public String toShortString();
 
 }

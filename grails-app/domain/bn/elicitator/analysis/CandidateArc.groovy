@@ -11,6 +11,10 @@ class CandidateArc implements Arc {
     static CandidateArc getOrCreate( Variable from, Variable to ) {
         findByFromAndTo( from, to ) ?: new CandidateArc( from : from, to : to ).save( flush : true, failOnError : true )
     }
+
+    static CandidateArc getOrCreate( Arc arc ) {
+        getOrCreate( arc.from, arc.to )
+    }
     
     String toString() { "${from?.label} -> ${to?.label}" }
     

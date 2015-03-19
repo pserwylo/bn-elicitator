@@ -451,7 +451,7 @@ class InsuranceDataLoader extends DataLoader {
 
 			/*
 			Not included for Victoria (Australia) study, because  medical bills are dealt with by
-			the government run TAC, and not the client's insurance company.
+			the government collateArcs TAC, and not the client's insurance company.
 
 			 new Variable(
 				 label: "MedCost",

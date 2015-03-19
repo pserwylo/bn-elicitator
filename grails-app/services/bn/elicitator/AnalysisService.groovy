@@ -1,13 +1,15 @@
 package bn.elicitator
 
+import bn.elicitator.analysis.AnalysisRun
 import bn.elicitator.analysis.AnalysisSuite
 import bn.elicitator.analysis.CandidateArc
 import bn.elicitator.analysis.CandidateNetwork
 import bn.elicitator.analysis.DSAnalysisRun
+import bn.elicitator.analysis.MajAnalysisRun
 import bn.elicitator.anomalies.cycles.CycleRemover
+import bn.elicitator.collate.CollationAlgorithm
 import bn.elicitator.collate.DawidSkene
-import bn.elicitator.network.Graph
-import bn.elicitator.troia.DawidSkeneRelationship
+import bn.elicitator.collate.MajorityVote
 
 class AnalysisService {
 
@@ -30,11 +32,40 @@ Only looking at the insurance network, I could estimate a prior probability fo a
 
      */
     
-    def analyseDawidSkene( AnalysisSuite analysisSuite ) {
-
+    def analyse( AnalysisSuite analysisSuite ) {
+        
         Collection<Relationship> toAnalyse = relationshipsToAnalyse
         CandidateNetwork fullNetwork = createCandidateNetwork( toAnalyse )
+
+        analyseMajority( analysisSuite, toAnalyse, fullNetwork )
+        analyseDawidSkene( analysisSuite, toAnalyse, fullNetwork )
         
+    }
+
+    def analyseMajority( AnalysisSuite analysisSuite, Collection<Relationship> toAnalyse, CandidateNetwork fullNetwork ) {
+        
+        // TODO: Be less specific about these numbers. I've chosen 6 as it is the maximum amount of allocations for any
+        // given question during my evaluation. And I've chosen 3 because the number of cycles in networks with higher
+        // thresholds than 3 cause memory errors in the JVM.
+        for ( def i in 6..3 ) {
+
+            analysisSuite.analysisRuns.add(
+                analysisRun(
+                    new MajorityVote( i, toAnalyse ),
+                    new MajAnalysisRun(
+                        startingNetwork : fullNetwork,
+                        threshold       : i
+                    )
+                )
+            )
+            
+            analysisSuite.save( flush : true, failOnError : true )
+        }
+        
+    }
+    
+    def analyseDawidSkene( AnalysisSuite analysisSuite, Collection<Relationship> toAnalyse, CandidateNetwork fullNetwork ) {
+
         for ( def i in [
                 0.0000001,
                 0.000001, 
@@ -45,77 +76,39 @@ Only looking at the insurance network, I could estimate a prior probability fo a
                 0.10, 0.15, 0.20
             ] ) {
 
-            analyseWithPrior(
-                analysisSuite,
-                toAnalyse,
-                new DSAnalysisRun(
-                    startingNetwork : fullNetwork,
-                    prior           : i
+            analysisSuite.analysisRuns.add(
+                analysisRun(
+                    new DawidSkene( i, toAnalyse ),
+                    new DSAnalysisRun(
+                        startingNetwork : fullNetwork,
+                        prior           : i
+                    )
                 )
             )
-            
+                    
+            analysisSuite.save( flush : true, failOnError : true )
+
         }
 
     }
 
-    private void analyseWithPrior( AnalysisSuite analysisSuite, Collection<Relationship> toAnalyse, DSAnalysisRun analysis ) {
+    private AnalysisRun analysisRun( CollationAlgorithm collationAlgorithm, AnalysisRun analysis ) {
 
-        print "Getting D&S results (prior $analysis.prior})... "
+        print "Getting results for $analysis..."
         
-        analysis.collatedNetwork = runDawidSkene( toAnalyse, analysis.prior )
+        analysis.collatedNetwork = collationAlgorithm.run()
         
         println "Done (${analysis.collatedNetwork.arcs.size()} arcs)."
-        
         print "Removing cycles... "
         
         CycleRemover cycleRemover = new CycleRemover( analysis.collatedNetwork ).removeCycles()
         analysis.acyclicNetwork   = cycleRemover.dag
-        def summary      = cycleRemover.summary
+        def summary               = cycleRemover.summary
         
         println "Done (${analysis.acyclicNetwork.arcs.size()} arcs left)."
-
         println "\n" + summary.join( "\n" ) + "\n\n"
         
         analysis.save( flush : true, failOnError : true )
-        
-        analysisSuite.analysisRuns.add( analysis )
-        analysisSuite.save( flush : true, failOnError : true )
-    }
-
-    /**
-     * Connect to the Troia server which does the Dawid & Skene calculations for us.
-     * This will decide on a set of arcs to include, based on how popular they were.
-     */
-    private CandidateNetwork runDawidSkene( Collection<Relationship> toAnalyse, Double prior ) {
-        DawidSkene dawidSkene = new DawidSkene( prior, toAnalyse )
-        def arcs = dawidSkene.resultingArcs
-        return new CandidateNetwork( arcs : arcs ).save( failOnError : true )
-    }
-
-    private void writeOutput( prior, predictions ) {
-
-        def file = new File( "/tmp/ds-structure.prior-$prior.tsv" )
-
-        file.withWriter { Writer out ->
-
-            out.println([
-                    "Prior",
-                    "Parent",
-                    "Child",
-            ].join("\t"))
-
-        }
-
-        file.withWriterAppend { Writer out ->
-            predictions.each { DawidSkeneRelationship rel ->
-                out.println([
-                        prior,
-                        rel.relationship.parent.label,
-                        rel.relationship.child.label,
-                ].join("\t"))
-            }
-        }
-        
     }
 
     /**
@@ -194,10 +187,10 @@ Only looking at the insurance network, I could estimate a prior probability fo a
 
                     if ( from != null && to != null ) {
                         network.arcs.add(
-                                new CandidateArc(
-                                        from: from,
-                                        to: to,
-                                )
+                            new CandidateArc(
+                                    from: from,
+                                    to: to,
+                            )
                         )
                     }
 
