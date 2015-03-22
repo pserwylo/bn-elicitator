@@ -53,29 +53,31 @@ class CandidateNetwork implements Graph {
            added.size()
         }
 
+        int getTrueNegatives() {
+            totalNumArcs - truePositives - falsePositives - falseNegatives
+        }
+        
         int getFalseNegatives() {
            removed.size()
         }
-        
-        int getConditionPositive() {
-            arcsInOther.size()
-        }
 
-        int getConditionNegative() {
+        int getNumVariables() {
             def vars = []
             vars.addAll( arcsInOther*.from*.id )
             vars.addAll( arcsInOther*.to*.id )
-            def numVariables = vars.unique().size()
-            
-            return numVariables * numVariables - conditionPositive
+            return vars.unique().size()
+        }
+
+        int getTotalNumArcs() {
+            Math.pow( numVariables, 2 )
         }
 
         double getFalsePositiveRate() {
-            falsePositives / conditionNegative
+            falsePositives / ( falsePositives + trueNegatives )
         }
 
         double getTruePositiveRate() {
-            truePositives / conditionPositive
+            truePositives / ( truePositives + falseNegatives )
         }
         
     }
