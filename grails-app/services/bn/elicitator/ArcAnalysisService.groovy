@@ -7,30 +7,13 @@ import bn.elicitator.analysis.CandidateNetwork
 import bn.elicitator.analysis.DSAnalysisRun
 import bn.elicitator.analysis.MajAnalysisRun
 import bn.elicitator.anomalies.cycles.CycleRemover
-import bn.elicitator.collate.CollationAlgorithm
-import bn.elicitator.collate.DawidSkene
-import bn.elicitator.collate.MajorityVote
+import bn.elicitator.collate.arcs.CollationAlgorithm
+import bn.elicitator.collate.arcs.DawidSkene
+import bn.elicitator.collate.arcs.MajorityVote
 
-class AnalysisService {
+class ArcAnalysisService {
 
     UserService userService
-
-    /*
-
-Only looking at the insurance network, I could estimate a prior probability fo an arc at 0.07
-(52 out of 729 possible arcs)
-
-> bn <- read.net( 'data/insurance.net' )
-> length( arcs( bn ) ) / 2
-[1] 52
-> length( nodes( bn ) )
-[1] 27
-> length( nodes( bn ) ) ^ 2
-[1] 729
-> ( length( arcs( bn ) ) / 2 ) / ( length( nodes( bn ) ) ^ 2 )
-[1] 0.07133059
-
-     */
     
     def analyse( AnalysisSuite analysisSuite ) {
         
@@ -99,6 +82,9 @@ Only looking at the insurance network, I could estimate a prior probability fo a
         analysis.collatedNetwork = collationAlgorithm.run()
         
         println "Done (${analysis.collatedNetwork.arcs.size()} arcs)."
+
+        print collationAlgorithm.expertWeights.collect { "  $it.key.id: $it.value" }.join( "\n" )
+        
         print "Removing cycles... "
         
         CycleRemover cycleRemover = new CycleRemover( analysis.collatedNetwork ).removeCycles()

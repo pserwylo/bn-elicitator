@@ -1,19 +1,18 @@
-package bn.elicitator.collate
+package bn.elicitator.collate.cpts
 
 import bn.elicitator.Relationship
 import bn.elicitator.Variable
 import bn.elicitator.analysis.CandidateArc
 import bn.elicitator.network.Arc
 import groovy.transform.EqualsAndHashCode
-import org.codehaus.groovy.util.HashCodeHelper
 
-class MajorityVote extends CollationAlgorithm {
+class Average extends CollationAlgorithm {
 
     private int threshold
 
     private Map<CandidateArc, Integer> arcCounts = [ : ]
     
-    public MajorityVote( int threshold, Collection<Relationship> toCollate) {
+    public Average( int threshold, Collection<Relationship> toCollate) {
         super( toCollate )
         this.threshold = threshold
     }

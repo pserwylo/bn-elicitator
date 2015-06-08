@@ -5,7 +5,7 @@ import bn.elicitator.analysis.AnalysisSuite
 
 class DawidSkeneTestController {
 
-    AnalysisService analysisService
+    ArcAnalysisService arcAnalysisService
     UserService userService
 
     def index() {
@@ -13,12 +13,12 @@ class DawidSkeneTestController {
     }
     
     def startAnalysis() {
-        redirect( action : 'showAnalysis', params : [ 'id' : analysisService.beginAnalysis().id ] )
+        redirect( action : 'showAnalysis', params : [ 'id' : arcAnalysisService.beginAnalysis().id ] )
     }
 
     def showAnalysis() {
         
-        def goldStandard = analysisService.goldStandardNetwork
+        def goldStandard = arcAnalysisService.goldStandardNetwork
         def analysis = AnalysisSuite.get( params.remove( 'id' ) as Integer )
         return [ analysis : analysis, goldStandard : goldStandard ]
         
@@ -26,7 +26,7 @@ class DawidSkeneTestController {
     
     def downloadDataFrame() {
         
-        def goldStandard = analysisService.goldStandardNetwork
+        def goldStandard = arcAnalysisService.goldStandardNetwork
         def analysis = AnalysisSuite.get( params.remove( 'id' ) as Integer )
         
         render "<pre>"

@@ -4,7 +4,7 @@ import bn.elicitator.analysis.AnalysisSuite
 
 class AnalyseJob {
     
-    AnalysisService analysisService
+    ArcAnalysisService arcAnalysisService
     
     static triggers = {}
     
@@ -14,7 +14,7 @@ class AnalyseJob {
         obj.toString()
         AnalysisSuite analysisSuite = context.mergedJobDataMap.get( 'analysisSuite' )
         
-        analysisService.analyse( analysisSuite )
+        arcAnalysisService.analyse( analysisSuite )
         
     }
     

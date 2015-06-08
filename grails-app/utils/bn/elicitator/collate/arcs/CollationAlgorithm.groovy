@@ -1,8 +1,9 @@
-package bn.elicitator.collate
+package bn.elicitator.collate.arcs
 
 import bn.elicitator.Relationship
 import bn.elicitator.analysis.CandidateArc
 import bn.elicitator.analysis.CandidateNetwork
+import bn.elicitator.auth.User
 
 abstract class CollationAlgorithm {
 
@@ -21,6 +22,12 @@ abstract class CollationAlgorithm {
     public final CandidateNetwork run() {
         collateArcs()
         new CandidateNetwork( arcs : resultingArcs ).save( flush : true, failOnError : true )
+    }
+    
+    public Map<User, Double> getExpertWeights() {
+        User.list().collectEntries {
+            new MapEntry( it, 1.0 )
+        }
     }
     
 }

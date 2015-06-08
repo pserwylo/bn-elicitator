@@ -190,6 +190,7 @@
 			height: 0;
 			border-top: solid 1px lightgray;
 		}
+        
 		</style>
 
 		<title>Admin Dashboard</title>
@@ -209,24 +210,24 @@
 					<form>
 						<ul>
 							<li>
-								<label>Q) Total questions:</label>
+								<label>%{-- Q --}%Total questions (n<sub>tot</sub>):</label>
 								<span class="output" id="output__Q">${totalQuestions}</span>
 							</li>
 
 							<li>
-								<label for="slider_n">n) Number of participants:</label>
+								<label for="slider_n">%{-- n --}% Number of participants (n<sub>e</sub>):</label>
 								<span class="output" id="output_n">${expertCount}</span> (currently ${expertCount} participants)
 								<div id="slider_n"></div>
 							</li>
 
 							<li>
-								<label for="slider_C">C) Number of participants per question:</label>
+								<label for="slider_C">%{-- C --}% Number of participants per question (a):</label>
 								<span class="output" id="output__C">${participantsPerQuestion}</span>
 								<div id="slider_C"></div>
 							</li>
 
 							<li>
-								<label for="slider_q">q) Number of questions each:</label>
+								<label for="slider_q">%{-- q --}% Number of questions each (n<sub>q</sub>):</label>
 								<span class="output" id="output_q"></span>
 								<div id="slider_q"></div>
 							</li>
@@ -234,13 +235,13 @@
 							<li class="separator"></li>
 
 							<li>
-								<label for="slider_t">t) Estimated time per question:</label>
+								<label for="slider_t">%{-- t --}% Estimated time per question:</label>
 								<span class="output" id="output_t"></span> seconds
 								<div id="slider_t"></div>
 							</li>
 
 							<li>
-								<label for="output__T">T) Estimated total time per participant:</label>
+								<label for="output__T">%{-- T --}% Estimated total time per participant:</label>
 								<span class="output" id="output__T"></span> minutes
 							</li>
 						</ul>
