@@ -18,4 +18,14 @@ class BnArc implements Arc {
 
     @Override
     Variable getTo() { child.variable }
+
+
+    boolean equals( Object that ) {
+        if ( that != null && that instanceof Arc ) {
+            Arc arc = (Arc)that
+            return arc.from.id == this.from.id && arc.to.id == this.to.id
+        } else {
+            return false
+        }
+    }
 }

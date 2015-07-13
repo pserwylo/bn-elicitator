@@ -1,7 +1,7 @@
 package bn.elicitator.analysis
 
 abstract class AnalysisRun {
-    
+
     CandidateNetwork startingNetwork
     
     CandidateNetwork collatedNetwork
@@ -9,7 +9,15 @@ abstract class AnalysisRun {
     CandidateNetwork acyclicNetwork
 
     Double threshold
+
+    /** Estimated accuracy */
+    Map expertWeights
     
-    abstract public String toShortString();
+    /** Actual accuracy - compared to the gold standard network */
+    Map expertAccuracy
+
+    public String toShortString() { "${typeName}_$threshold" }
+
+    abstract public String getTypeName()
 
 }

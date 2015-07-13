@@ -30,7 +30,14 @@
             <legend>View Bayesian Network Analysis</legend>
 
             <p>
-                <g:link action="downloadDataFrame" params="${[ id : analysis.id ]}"><strong>Download R <code>data.frame</code></strong></g:link>
+                Download
+                <g:link action="downloadDataFrame" params="${[ id : analysis.id ]}">R <code>data.frame</code></g:link>,
+                <g:link action="downloadNetworkStructures" params="${[ id : analysis.id ]}">.tsv of collated network structures</g:link>, or
+                <g:link action="downloadExpertWeights" params="${[ id : analysis.id ]}">.tsv of all expert weights</g:link>
+            </p>
+
+            <p>
+
             </p>
 
             <g:if test="${analysis.analysisRuns.size() == 0}">
@@ -48,25 +55,39 @@
                     <th rowspan="2">Original<br /> arcs</th>
                     <th rowspan="2">Collated<br /> arcs</th>
                     <th rowspan="2">Acyclic<br /> arcs</th>
-                    <th colspan="4">SHD</th>
+                    <th colspan="4">
+                        SHD<br />Acyclic
+                    </th>
+                    <th colspan="4">
+                        SHD<br />Collated <bn:tooltip>Will probably be the same as Acyclic, because the arcs are usually <em>reversed</em>, rather than <em>removed</em></bn:tooltip>
+                    </th>
                 </tr>
                 <tr>
                     <th>+</th>
                     <th>-</th>
                     <th><-></th>
                     <th>Total</th>
+                    <th>+</th>
+                    <th>-</th>
+                    <th><-></th>
+                    <th>Total</th>
                 </tr>
                 <g:each in="${analysis.analysisRuns}" var="run">
-                    <g:set var="shd" value="${goldStandard.calcShd( run.acyclicNetwork )}" />
+                    <g:set var="shdAcyclic" value="${run.acyclicNetwork.calcShd( goldStandard )}" />
+                    <g:set var="shdCollated" value="${run.collatedNetwork.calcShd( goldStandard )}" />
                     <tr>
                         <td class="main">${run}</td>
                         <td>${run.startingNetwork.arcs.size()}</td>
                         <td>${run.collatedNetwork.arcs.size()}</td>
                         <td>${run.acyclicNetwork.arcs.size()}</td>
-                        <td>${shd.added.size()}</td>
-                        <td>${shd.removed.size()}</td>
-                        <td>${shd.reversed.size()}</td>
-                        <td>${shd.shd}</td>
+                        <td>${shdAcyclic.added.size()}</td>
+                        <td>${shdAcyclic.removed.size()}</td>
+                        <td>${shdAcyclic.reversed.size()}</td>
+                        <td>${shdAcyclic.shd}</td>
+                        <td>${shdCollated.added.size()}</td>
+                        <td>${shdCollated.removed.size()}</td>
+                        <td>${shdCollated.reversed.size()}</td>
+                        <td>${shdCollated.shd}</td>
                     </tr>
                 </g:each>
             </table>

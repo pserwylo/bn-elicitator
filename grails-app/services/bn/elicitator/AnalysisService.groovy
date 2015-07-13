@@ -33,12 +33,14 @@ Only looking at the insurance network, I could estimate a prior probability fo a
      */
     
     def analyse( AnalysisSuite analysisSuite ) {
-        
+
         Collection<Relationship> toAnalyse = relationshipsToAnalyse
         CandidateNetwork fullNetwork = createCandidateNetwork( toAnalyse )
 
-        analyseMajority( analysisSuite, toAnalyse, fullNetwork )
+        // analyseMajority( analysisSuite, toAnalyse, fullNetwork )
         analyseDawidSkene( analysisSuite, toAnalyse, fullNetwork )
+        
+        println "Analysis complete"
         
     }
 
@@ -67,13 +69,10 @@ Only looking at the insurance network, I could estimate a prior probability fo a
     def analyseDawidSkene( AnalysisSuite analysisSuite, Collection<Relationship> toAnalyse, CandidateNetwork fullNetwork ) {
 
         for ( def i in [
-                0.0000001,
-                0.000001, 
-                0.00001, 
-                0.0001, 
-                0.001, 
-                0.01, 0.02, 0.03, 0.04, 0.05,
-                0.10, 0.15, 0.20
+                /*0.0001,
+                0.001,
+                0.01, 0.02, 0.03, 0.04, */0.05,
+                /*0.10, 0.15, 0.20, 0.25, 0.30*//*, 0.35*/
             ] ) {
 
             analysisSuite.analysisRuns.add(
@@ -97,8 +96,10 @@ Only looking at the insurance network, I could estimate a prior probability fo a
         print "Getting results for $analysis..."
         
         analysis.collatedNetwork = collationAlgorithm.run()
-        
+        analysis.expertWeights = collationAlgorithm.expertWeights.collectEntries { new MapEntry( it.key.id.toString(), it.value.toString() ) }
+        analysis.expertAccuracy = collationAlgorithm.calcAccuracy( goldStandardNetwork ).collectEntries { new MapEntry( it.key.id.toString(), it.value.toString() ) }
         println "Done (${analysis.collatedNetwork.arcs.size()} arcs)."
+
         print "Removing cycles... "
         
         CycleRemover cycleRemover = new CycleRemover( analysis.collatedNetwork ).removeCycles()
@@ -109,6 +110,7 @@ Only looking at the insurance network, I could estimate a prior probability fo a
         println "\n" + summary.join( "\n" ) + "\n\n"
         
         analysis.save( flush : true, failOnError : true )
+        
     }
 
     /**
@@ -137,68 +139,85 @@ Only looking at the insurance network, I could estimate a prior probability fo a
         Relationship.findAllByIsExistsInitializedAndDelphiPhase( true, 1 )
     }
 
-    AnalysisSuite beginAnalysis() {
-
-        def analysis = new AnalysisSuite(
+    AnalysisSuite createAnalysisSuite() {
+        new AnalysisSuite(
                 createdBy    : userService.current,
                 createdDate  : new Date(),
                 analysisRuns : []
         ).save( flush : true, failOnError : true )
+    }
+    
+    AnalysisSuite runAnalysis() {
 
-        AnalyseJob.run( analysis )
-        
+        def analysis = createAnalysisSuite()
+        analyse( analysis )
         return analysis
         
     }
 
+    AnalysisSuite scheduleAnalysis() {
+
+        def analysis = createAnalysisSuite()
+        AnalyseJob.run( analysis )
+        return analysis
+        
+    }
+
+    private CandidateNetwork goldStandard
+    
     CandidateNetwork getGoldStandardNetwork() {
 
-        /*
-         * Source for the Insurance network structure is from: http://www.bnlearn.com/documentation/man/insurance.html
-         */
-        def goldStandard = "[Age][Mileage][SocioEcon|Age][GoodStudent|Age:SocioEcon]" +
-                "[RiskAversion|Age:SocioEcon][OtherCar|SocioEcon][VehicleYear|SocioEcon:RiskAversion]" +
-                "[MakeModel|SocioEcon:RiskAversion][SeniorTrain|Age:RiskAversion]" +
-                "[HomeBase|SocioEcon:RiskAversion][AntiTheft|SocioEcon:RiskAversion]" +
-                "[RuggedAuto|VehicleYear:MakeModel][Antilock|VehicleYear:MakeModel]" +
-                "[DrivingSkill|Age:SeniorTrain][CarValue|VehicleYear:MakeModel:Mileage]" +
-                "[Airbag|VehicleYear:MakeModel][DrivQuality|RiskAversion:DrivingSkill]" +
-                "[Theft|CarValue:HomeBase:AntiTheft][Cushioning|RuggedAuto:Airbag]" +
-                "[DrivHist|RiskAversion:DrivingSkill][Accident|DrivQuality:Mileage:Antilock]" +
-                "[ThisCarDam|RuggedAuto:Accident][OtherCarCost|RuggedAuto:Accident]" +
-                "[MedCost|Age:Accident:Cushioning][ILiCost|Accident]" +
-                "[ThisCarCost|ThisCarDam:Theft:CarValue][PropCost|ThisCarCost:OtherCarCost]"
+        if ( goldStandard == null ) {
+        
+            /*
+             * Source for the Insurance network structure is from: http://www.bnlearn.com/documentation/man/insurance.html
+             */
+            def serialized = "[Age][Mileage][SocioEcon|Age][GoodStudent|Age:SocioEcon]" +
+                    "[RiskAversion|Age:SocioEcon][OtherCar|SocioEcon][VehicleYear|SocioEcon:RiskAversion]" +
+                    "[MakeModel|SocioEcon:RiskAversion][SeniorTrain|Age:RiskAversion]" +
+                    "[HomeBase|SocioEcon:RiskAversion][AntiTheft|SocioEcon:RiskAversion]" +
+                    "[RuggedAuto|VehicleYear:MakeModel][Antilock|VehicleYear:MakeModel]" +
+                    "[DrivingSkill|Age:SeniorTrain][CarValue|VehicleYear:MakeModel:Mileage]" +
+                    "[Airbag|VehicleYear:MakeModel][DrivQuality|RiskAversion:DrivingSkill]" +
+                    "[Theft|CarValue:HomeBase:AntiTheft][Cushioning|RuggedAuto:Airbag]" +
+                    "[DrivHist|RiskAversion:DrivingSkill][Accident|DrivQuality:Mileage:Antilock]" +
+                    "[ThisCarDam|RuggedAuto:Accident][OtherCarCost|RuggedAuto:Accident]" +
+                    "[MedCost|Age:Accident:Cushioning][ILiCost|Accident]" +
+                    "[ThisCarCost|ThisCarDam:Theft:CarValue][PropCost|ThisCarCost:OtherCarCost]"
+    
+            CandidateNetwork network = new CandidateNetwork( arcs : [] )
 
-        CandidateNetwork network = new CandidateNetwork( arcs : [] )
-
-        goldStandard[ 1 .. -2 ].split( '\\]\\[' ).each { String fragment ->
-
-            String[] parts = fragment.split( '\\|' )
-            String child   = parts[ 0 ]
-
-            if ( parts.length > 1 ) {
-
-                String[] parents = parts[ 1 ].split( ':' )
-
-                parents.each { String parent ->
-
-                    def from = Variable.findByLabel( parent )
-                    def to   = Variable.findByLabel( child )
-
-                    if ( from != null && to != null ) {
-                        network.arcs.add(
-                            new CandidateArc(
-                                    from: from,
-                                    to: to,
+            serialized[ 1 .. -2 ].split( '\\]\\[' ).each { String fragment ->
+    
+                String[] parts = fragment.split( '\\|' )
+                String child   = parts[ 0 ]
+    
+                if ( parts.length > 1 ) {
+    
+                    String[] parents = parts[ 1 ].split( ':' )
+    
+                    parents.each { String parent ->
+    
+                        def from = Variable.findByLabel( parent )
+                        def to   = Variable.findByLabel( child )
+    
+                        if ( from != null && to != null ) {
+                            network.arcs.add(
+                                new CandidateArc(
+                                        from: from,
+                                        to: to,
+                                )
                             )
-                        )
+                        }
+    
                     }
-
                 }
             }
+            
+            goldStandard = network
         }
 
-        return network
+        return goldStandard
 
     }
 

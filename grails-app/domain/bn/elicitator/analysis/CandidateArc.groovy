@@ -16,11 +16,11 @@ class CandidateArc implements Arc {
         getOrCreate( arc.from, arc.to )
     }
     
-    String toString() { "${from?.label} -> ${to?.label}" }
+    String toString() { "${from?.label} ${from?.id} -> ${to?.label} ${to?.id}" }
     
     boolean equals( Object that ) {
-        if ( that != null && that instanceof CandidateArc ) {
-            CandidateArc arc = (CandidateArc)that
+        if ( that != null && that instanceof Arc ) {
+            Arc arc = (Arc)that
             return arc.from.id == this.from.id && arc.to.id == this.to.id
         } else {
             return false

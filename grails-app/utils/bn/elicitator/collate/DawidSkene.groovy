@@ -3,24 +3,28 @@ package bn.elicitator.collate
 import bn.elicitator.Relationship
 import bn.elicitator.Variable
 import bn.elicitator.analysis.CandidateArc
+import bn.elicitator.auth.User
 import com.datascience.core.base.AssignedLabel
 import com.datascience.core.base.LObject
 import com.datascience.core.base.Worker
 import com.datascience.core.nominal.CategoryValue
 import com.datascience.core.nominal.INominalData
+import com.datascience.core.nominal.NominalProject
+import com.datascience.core.nominal.decision.LabelProbabilityDistributionCostCalculators
+import com.datascience.core.nominal.decision.WorkerEstimator
+import com.datascience.core.nominal.decision.WorkerQualityCalculator
 import com.datascience.core.results.DatumResult
 import com.datascience.core.results.ResultsFactory
 import com.datascience.core.results.WorkerResult
 import com.datascience.datastoring.datamodels.memory.InMemoryNominalData
 import com.datascience.datastoring.datamodels.memory.InMemoryResults
-import com.datascience.gal.AbstractDawidSkene
 import com.datascience.gal.BatchDawidSkene
 import com.datascience.utils.CostMatrix
 
 class DawidSkene extends CollationAlgorithm {
 
     private double prior
-    private AbstractDawidSkene dawidSkene
+    private NominalProject project
 
     public DawidSkene( double prior, Collection<Relationship> toCollate ) {
         super( toCollate )
@@ -28,34 +32,49 @@ class DawidSkene extends CollationAlgorithm {
     }
 
     public def getLabelResults() {
-        dawidSkene.results.getDatumResults( dawidSkene.data.objects )
+        project.results.getDatumResults( project.data.objects )
     }
 
     public def getWorkerResults() {
-        dawidSkene.results.getWorkerResults( dawidSkene.data.workers )
+        project.results.getWorkerResults( project.data.workers )
     }
+
+    @Override
+    Map<User, Double> getExpertWeights() {
+        WorkerQualityCalculator wqc = new WorkerEstimator(LabelProbabilityDistributionCostCalculators.get( "ExpectedCost" ) );
+
+        workerResults.collectEntries {
+            Worker worker = it.key
+            new MapEntry(
+                User.findById(worker.name as Integer),
+                wqc.getQuality( project, worker )
+            )
+
+        }
+    }
+
+    private boolean includeArc( DatumResult result ) { result.categoryProbabilites[ "yes" ] > 0.5 }
     
     public Collection<CandidateArc> getResultingArcs() {
-        labelResults.findAll { it.value.categoryProbabilites[ "yes" ] > 0.5 }.collect {
+        labelResults.findAll { includeArc( it.value ) }.collect {
             objectToArc( it.key )
         }
     }
 
     protected void collateArcs() {
-
-        dawidSkene = new BatchDawidSkene( data : setupData() )
-
         def workerResultsFactory = new ResultsFactory.WorkerResultNominalFactory()
         workerResultsFactory.categories = [ "yes", "no" ]
 
-        dawidSkene.setResults(
+        project = new NominalProject(
+            new BatchDawidSkene(),
+            setupData(),
             new InMemoryResults<String, DatumResult, WorkerResult>(
                 new ResultsFactory.DatumResultFactory(),
                 workerResultsFactory
             )
         )
 
-        dawidSkene.compute()
+        project.algorithm.compute()
     }
 
     private INominalData setupData() {

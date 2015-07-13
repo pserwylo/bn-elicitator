@@ -3,7 +3,10 @@ package bn.elicitator.collate
 import bn.elicitator.Relationship
 import bn.elicitator.Variable
 import bn.elicitator.analysis.CandidateArc
+import bn.elicitator.analysis.CandidateNetwork
+import bn.elicitator.auth.User
 import bn.elicitator.network.Arc
+import bn.elicitator.network.Graph
 import groovy.transform.EqualsAndHashCode
 import org.codehaus.groovy.util.HashCodeHelper
 

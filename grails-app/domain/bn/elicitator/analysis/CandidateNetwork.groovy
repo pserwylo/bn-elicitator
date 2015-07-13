@@ -9,11 +9,30 @@ class CandidateNetwork implements Graph {
 
     static hasMany = [ arcs : CandidateArc ]
     
-    SHD calcShd( Graph other ) {
+    private static intersection( Collection<CandidateArc> arcs1, Collection<CandidateArc> arcs2 ) {
+        def intersect = []
+        for ( def a1 : arcs1 ) {
+            for ( def a2 : arcs2 ) {
+                if ( a2 == a1 && !intersect.contains( a2 ) ) {
+                    intersect.add( a2 )
+                }
+            }
+        }
+        return intersect
+    }
+    
+    boolean contains( Arc arc ) {
+        arcs.find {
+            it.from.id == arc.from.id &&
+            it.to.id   == it.from.id
+        } != null
+    }
+    
+    SHD calcShd( CandidateNetwork other ) {
 
         Collection<CandidateArc> removed  = CollectionUtils.subtract( arcs, other.arcs )
         Collection<CandidateArc> added    = CollectionUtils.subtract( other.arcs, arcs )
-        Collection<CandidateArc> reversed = CollectionUtils.intersection( arcs*.reversed, other.arcs )
+        Collection<CandidateArc> reversed = intersection( arcs*.reversed, other.arcs )
         
         new SHD(
             arcsInOther : other.arcs,

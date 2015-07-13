@@ -10,7 +10,7 @@ class DSAnalysisRun extends AnalysisRun {
     public setPrior( Double prior ) { threshold = prior }
 
     public String toString() { "Dawid & Skene analysis (prior $prior)" }
-    
-    public String toShortString() { "DS_$prior" }
-    
+
+    public String getTypeName() { "DS" }
+
 }
