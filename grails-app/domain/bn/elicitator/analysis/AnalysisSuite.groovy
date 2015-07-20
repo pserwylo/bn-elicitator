@@ -1,6 +1,5 @@
 package bn.elicitator.analysis
 
-import bn.elicitator.Variable
 import bn.elicitator.auth.User
 
 class AnalysisSuite {

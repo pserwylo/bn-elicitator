@@ -1,12 +1,5 @@
 package bn.elicitator.output
 
-import bn.elicitator.Cpt
-import bn.elicitator.State
-import bn.elicitator.Variable
-
-import java.awt.Point
-import java.text.DecimalFormat
-
 class NeticaNodeAttributes {
 
 	private Map<String,String> attributes = [:]

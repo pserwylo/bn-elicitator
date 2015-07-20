@@ -1,7 +1,6 @@
 package bn.elicitator.collate
 
 import bn.elicitator.Relationship
-import bn.elicitator.Variable
 import bn.elicitator.VisitedVariable
 import bn.elicitator.analysis.CandidateArc
 import bn.elicitator.analysis.CandidateNetwork
@@ -17,7 +16,7 @@ abstract class CollationAlgorithm {
 
     final CandidateNetwork run() {
         collateArcs()
-        new CandidateNetwork( arcs : resultingArcs ).save( flush : true, failOnError : true )
+        new CandidateNetwork( candidateArcs: resultingArcs ).save( flush : true, failOnError : true )
     }
     
     final Collection<Relationship> getToCollate() { this.toCollate }

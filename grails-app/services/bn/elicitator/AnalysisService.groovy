@@ -122,7 +122,7 @@ Only looking at the insurance network, I could estimate a prior probability fo a
      */
     private CandidateNetwork createCandidateNetwork( Collection<Relationship> relationships ) {
         new CandidateNetwork(
-            arcs : relationships.findAll { it.exists }.collect {
+            candidateArcs: relationships.findAll { it.exists }.collect {
                 CandidateArc.getOrCreate( it.parent, it.child )
             }.unique()
         ).save( flush : true )
@@ -185,7 +185,7 @@ Only looking at the insurance network, I could estimate a prior probability fo a
                     "[MedCost|Age:Accident:Cushioning][ILiCost|Accident]" +
                     "[ThisCarCost|ThisCarDam:Theft:CarValue][PropCost|ThisCarCost:OtherCarCost]"
     
-            CandidateNetwork network = new CandidateNetwork( arcs : [] )
+            CandidateNetwork network = new CandidateNetwork( candidateArcs: [] )
 
             serialized[ 1 .. -2 ].split( '\\]\\[' ).each { String fragment ->
     

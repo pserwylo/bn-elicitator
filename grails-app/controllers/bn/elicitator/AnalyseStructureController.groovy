@@ -5,7 +5,8 @@ import bn.elicitator.analysis.AnalysisSuite
 import bn.elicitator.analysis.DSAnalysisRun
 import bn.elicitator.network.Arc
 
-class DawidSkeneTestController {
+
+class AnalyseStructureController implements AnalysisController {
 
     AnalysisService analysisService
     UserService userService
@@ -80,7 +81,7 @@ class DawidSkeneTestController {
             def shdCollated = run.collatedNetwork.calcShd( goldStandard )
             render "analysis.data <- rbind( analysis.data, data.frame( " +
                 "label = \"${run.toShortString()}\", " +
-                "original.arcs = ${run.startingNetwork.arcs.size()}, " + 
+                "original.arcs = ${run.startingNetwork.arcs.size()}, " +
                 "acyclic.arcs = ${run.acyclicNetwork.arcs.size()}, " +
                 "collated.arcs = ${run.collatedNetwork.arcs.size()}, " +
                 "shd.acyclic.added = ${shdAcyclic.added.size()}, " +

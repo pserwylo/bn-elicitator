@@ -1,5 +1,6 @@
 package bn.elicitator
 
+import bn.elicitator.analysis.cpt.Cpt
 import bn.elicitator.auth.User
 import bn.elicitator.network.BnArc
 import bn.elicitator.network.BnNode

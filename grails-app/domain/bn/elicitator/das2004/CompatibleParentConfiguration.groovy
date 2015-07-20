@@ -53,4 +53,9 @@ class CompatibleParentConfiguration {
 	String getReadableDescription() {
 		"$parentState.readableLabel, ${otherParentStates.join( ", ")}"
 	}
+    
+    String toString() {
+        "CPC( ${parentState.toConciseString()} :: ${otherParentStates.collect { it.toConciseString() }.join( ', ' ) } )"
+        
+    }
 }

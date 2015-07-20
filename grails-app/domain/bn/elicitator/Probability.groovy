@@ -2,6 +2,8 @@ package bn.elicitator
 
 import bn.elicitator.auth.User
 
+import java.text.DecimalFormat
+
 /**
  * This is the calculated probability (based on the algorithm which processes the users responses).
  *
@@ -25,5 +27,12 @@ class Probability {
 	Double probability
 
 	User createdBy
+
+    String toString() {
+        String formattedProb = new DecimalFormat( "#.##" ).format( probability )
+        parentStates ?
+            "Pr( ${childState.toConciseString() } | ${ parentStates*.toConciseString().join( ', ' ) } ) = $formattedProb" :
+            "Pr( ${childState.toConciseString() } ) = $formattedProb"
+    }
 
 }

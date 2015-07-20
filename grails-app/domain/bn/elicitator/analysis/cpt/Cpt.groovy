@@ -1,23 +1,21 @@
-package bn.elicitator
+package bn.elicitator.analysis.cpt
 
-import bn.elicitator.network.BnProbability
+import bn.elicitator.Probability
+import bn.elicitator.State
+import bn.elicitator.Variable
 import org.apache.commons.collections.CollectionUtils
-
 
 class Cpt {
 
-	private Variable variable
+    static hasMany = [ probabilities : Probability ]
+    
+    static mapping = {
+        probabilities cascade: 'all'
+    }
 
-	private List<Probability> probabilities
-
-	public Cpt( List<Probability> probabilities ) {
-		this.probabilities = probabilities
-		this.variable      = probabilities.size() > 0 ? probabilities[ 0 ].childState.variable : null
-	}
-
-	public Variable getVariable() { this.variable }
-
-	public List<Probability> getProbabilities() { this.probabilities }
+	public Variable getVariable() {
+        probabilities.size() > 0 ? probabilities[ 0 ].childState.variable : null
+    }
 
 	double getProbabilityFor( State state, List<State> parentStates ) {
 

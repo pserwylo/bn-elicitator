@@ -140,7 +140,7 @@ the participants yet.</p>
 	between each of the experts.
 </p>
 <p>
-	<input type="button" onclick="document.location='${createLink( [ controller : 'dawidSkeneTest', action : 'index' ] )}'" value="Generate CPT entries" /> (this may take some time).
+	<input type="button" onclick="document.location='${createLink( [ controller : 'analyseStructure', action : 'index' ] )}'" value="Generate CPT entries" /> (this may take some time).
 </p>
 """
 	}

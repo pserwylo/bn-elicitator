@@ -246,55 +246,57 @@ class Das2004Service {
 
 	private void calculateUsersCptForVariable( Variable child, User user ) {
 
-		List<Variable> parents = bnService.getArcsByChild( child )*.parent*.variable
+		Collection<Variable> parents = bnService.getArcsByChild( child )*.parent*.variable
 		if ( parents.size() > 1 ) {
 			timestamp()
 			print "Calculating conditional probabilities for $child (${parents.size()} parents)"
-			print "First - get weights for $parents -> $child"
-			Map<Variable, BigDecimal> weights = calculateWeights( child, parents, user )
-			print "Weights calculated: $weights"
-			timestamp()
-			print "Calculating weighted sum for $parents -> $child"
-			timestamp()
-			weightedSum( child, parents, user, weights )
+			print "First - get weights for $parents -> $child, then calculate weighted sum."
+            calcConditionalProbability( child, parents, user )*.save()
 			print "Finished calculating weighted sum for $parents -> $child"
 			timestamp()
 		} else if ( parents.size() == 1 ) {
 			print "Calculating CPT for $child with single parent"
 			timestamp()
-			singleParentConditional( child, user )
+			singleParentConditional( child, user )*.save()
 			timestamp()
 		} else {
 			print "Calculating marginal probability for $child (no parents)"
 			timestamp()
-			calcMarginalProbability( child, user )
+			calcMarginalProbability( child, user )*.save()
 			timestamp()
 		}
 
 	}
+    
+    public List<Probability> calcConditionalProbability( Variable child, Collection<Variable> parents, User user ) {
 
-	private void calcMarginalProbability( Variable child, User user ) {
+        Map<Variable, BigDecimal> weights = calculateWeights( child, parents, user )
+        weightedSum( child, parents, user, weights )
+        
+    }
+
+	public List<Probability> calcMarginalProbability( Variable child, User user ) {
 		def estimations = ProbabilityEstimation.findAllByCreatedByAndChildStateInList( user, child.states )
-		estimations.each { ProbabilityEstimation estimation ->
+		estimations.collect { ProbabilityEstimation estimation ->
 			new Probability(
 				childState   : estimation.childState,
 				probability  : estimation.probability,
 				createdBy    : user,
 				// Intentionally leave "parentStates" empty.
-			).save()
+			)
 		}
 	}
 
 	// TODO: Not sure if this is the right calculation. It looks very similar to calcMarginalProbability, but includes parentStates.
-	private void singleParentConditional( Variable child, User user ) {
+	public List<Probability> singleParentConditional( Variable child, User user ) {
 		def estimations = ProbabilityEstimation.findAllByCreatedByAndChildStateInList( user, child.states )
-		estimations.each { ProbabilityEstimation estimation ->
+		estimations.collect { ProbabilityEstimation estimation ->
 			new Probability(
 				childState   : estimation.childState,
 				probability  : estimation.probability,
 				createdBy    : user,
 				parentStates : estimation.parentConfiguration.allParentStates(),
-			).save()
+			)
 		}
 	}
 
@@ -316,7 +318,7 @@ class Das2004Service {
 		} else {
 			output += " (" + ( t - lastTimestamp ) + "ms)"
 		}
-		print output
+		// print output
 		lastTimestamp = t;
 	}
 
@@ -337,38 +339,65 @@ class Das2004Service {
 
 	private List<ProbabilityEstimation> allEstimations = null
 
+    /**
+     * For a given user, load all of their estimations which belong to the CPCs specified by compatibleConfigs.
+     */
 	private List<ProbabilityEstimation> findEstimations( User createdBy, List<CompatibleParentConfiguration> compatibleConfigs ) {
+        // Cache allEstimations because findEstimations will be called many times during our calculations,
+        // and we don't want to hit the database each time.
 		if ( allEstimations == null ) {
-			allEstimations = ProbabilityEstimation.list()
+            List<CompletedDasVariable> completed = CompletedDasVariable.list()
+			allEstimations = ProbabilityEstimation.list().findAll { ProbabilityEstimation estimation ->
+                // Only include estimations which belong to completed variables.
+                completed.find { CompletedDasVariable var ->
+                    var.completedById == estimation.createdById && var.variableId == estimation.childState.variableId
+                }
+            }
+            println "Caching ${allEstimations.size()} estimations from DB..."
 		}
 
 		def compatibleConfigIds = compatibleConfigs*.id
 
 		allEstimations.findAll {
-			it.createdBy.id == createdBy.id &&
-			compatibleConfigIds.contains( it.parentConfiguration.id )
+			it.createdBy.id == createdBy.id && (
+                // Things with no parents will not have a parent configuration.
+                !it.parentConfiguration || compatibleConfigIds.contains( it.parentConfigurationId )
+            )
 		}
 	}
 
-	private void weightedSum( Variable child, List<Variable> parents, User user, Map<Variable, BigDecimal> weights ) {
+	private List<Probability> weightedSum( Variable child, Collection<Variable> parents, User user, Map<Variable, BigDecimal> weights ) {
 
+        List<Probability> probabilities = []
+        
 		boolean completed = CompletedDasVariable.countByCompletedByAndVariable( user, child ) > 0
 		if ( !completed ) {
-			print "User $user.realName ($user.username) didn't complete the variable '$child', so skipping."
-			return
+			print "User $user.id didn't complete the variable '$child', so skipping."
+			return []
 		}
 
 		List<State> parentConfigs = parents*.states.combinations()
 		print "Processing ${parentConfigs.size()} possible combinations of parents..."
 		parentConfigs.each { List<State> parentConfiguration ->
 
-			print "Checking parent configurations for ${parentConfiguration}"
-			timestamp()
+			print "Checking parent configurations for ${parentConfiguration}..."
+			
+            timestamp()
+            
 			// def compatibleConfigs = CompatibleParentConfiguration.findAllByCreatedByAndParentStateInList( user, parentConfiguration )
 			def compatibleConfigs = findCompatibleConfigs( user, parentConfiguration )
-			// def estimations       = ProbabilityEstimation.findAllByCreatedByAndParentConfigurationInList( user, compatibleConfigs )
-			def estimations       = findEstimations( user, compatibleConfigs )
-			print "Done"
+            
+            if ( compatibleConfigs.size() == parentConfiguration.size() ) {
+                println " Found ${compatibleConfigs.size()} matching CPCs."
+            } else {
+                println "\n  ** HMMM, Found ${compatibleConfigs.size()}: ${compatibleConfigs.join( ", " ) }"
+            }
+            
+			// def estimations = ProbabilityEstimation.findAllByCreatedByAndParentConfigurationInList( user, compatibleConfigs )
+			def estimations = findEstimations( user, compatibleConfigs )
+            
+            print "  Estimations: ${estimations.join( "\n  " ) }"
+
 			timestamp()
 
 			Map<State, Double> childStateProbabilities = [:]
@@ -379,7 +408,7 @@ class Das2004Service {
 				compatibleConfigs.each { CompatibleParentConfiguration config ->
 
 					def probOfConfig = estimations.find {
-						it.parentConfiguration.id == config.id &&
+                        ( !it.parentConfiguration || it.parentConfigurationId == config.id ) && // Deal with variables without parents...
 						it.childState.id == childState.id
 					}
 
@@ -387,10 +416,7 @@ class Das2004Service {
 
 						def msg = """
 Couldn't find probability estimation for parent configuration.
-Parent config id: $config.id
-Created by: $config.createdBy.realName ($config.createdBy.username)
-Parent state: $config.parentState
-Other parent states: ${config.otherParentStates*.readableLabel.join(", ")}
+  CPC [id: $config.id, createdBy: $config.createdById] $config
 """
 						print msg
 						// throw new AlgorithmException( msg )
@@ -420,14 +446,16 @@ Other parent states: ${config.otherParentStates*.readableLabel.join(", ")}
 				double scale = 1 / sum
 				childStateProbabilities.each { it.value *= scale }
 
-				saveCalculatedProbabilities( childStateProbabilities, parentConfiguration, user )
+				probabilities.addAll getCalculatedProbabilities( childStateProbabilities, parentConfiguration, user )
 			}
 		}
+        
+        return probabilities
 	}
 
-	def saveCalculatedProbabilities( Map<State, Double> stateProbabilities, List<State> parentStates, User user ) {
+	List<Probability> getCalculatedProbabilities( Map<State, Double> stateProbabilities, List<State> parentStates, User user ) {
 
-		stateProbabilities.each {
+		stateProbabilities.collect {
 
 			State childState   = it.key
 			Double probability = it.value
@@ -439,13 +467,14 @@ Other parent states: ${config.otherParentStates*.readableLabel.join(", ")}
 			}
 
 			existingProbability.probability = probability
-			existingProbability.save()
-
+            
+            return existingProbability
+            
 		}
 
 	}
 
-	private Map<Variable, BigDecimal> calculateWeights( Variable child, List<Variable> parents, User user ) {
+	private Map<Variable, BigDecimal> calculateWeights( Variable child, Collection<Variable> parents, User user ) {
 
 		WeightMatrix matrix = new WeightMatrix( parents )
 
@@ -488,7 +517,7 @@ Other parent states: ${config.otherParentStates*.readableLabel.join(", ")}
 
 		private Map<Variable,Map<Variable,BigDecimal>> matrix = [:]
 
-		public WeightMatrix( List<Variable> variables ) {
+		public WeightMatrix( Collection<Variable> variables ) {
 			variables.each { Variable variable ->
 				matrix[ variable ] = [:]
 				variables.each { Variable other ->

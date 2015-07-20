@@ -18,6 +18,7 @@
 
 package bn.elicitator
 
+import bn.elicitator.analysis.cpt.Cpt
 import bn.elicitator.auth.User
 import bn.elicitator.network.BnArc
 import bn.elicitator.network.BnNode
@@ -293,7 +294,7 @@ class BnService {
 
 		}
 
-		return new Cpt( probabilities )
+		return new Cpt( probabilities : probabilities )
 	}
 
 }

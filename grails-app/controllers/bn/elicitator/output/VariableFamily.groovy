@@ -1,6 +1,6 @@
 package bn.elicitator.output
 
-import bn.elicitator.Cpt
+import bn.elicitator.analysis.cpt.Cpt
 import bn.elicitator.Variable
 
 /**

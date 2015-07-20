@@ -69,7 +69,7 @@ public class CycleRemover {
                 arcs.add( it.worst )
             }
         }
-        return new CandidateNetwork( arcs : arcs ).save( flush : true, failOnError : true )
+        return new CandidateNetwork( candidateArcs: arcs ).save( flush : true, failOnError : true )
     }
 
     public CycleRemover removeCycles() {

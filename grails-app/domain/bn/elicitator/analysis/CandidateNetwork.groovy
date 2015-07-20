@@ -1,13 +1,14 @@
 package bn.elicitator.analysis
 
-import bn.elicitator.Variable
 import bn.elicitator.network.Arc
 import bn.elicitator.network.Graph
 import org.apache.commons.collections.CollectionUtils
 
-class CandidateNetwork implements Graph {
+class CandidateNetwork extends Graph {
 
-    static hasMany = [ arcs : CandidateArc ]
+    static mapping = { tablePerHierarchy false }
+    
+    static hasMany = [ candidateArcs: CandidateArc ]
     
     private static intersection( Collection<CandidateArc> arcs1, Collection<CandidateArc> arcs2 ) {
         def intersect = []
@@ -20,12 +21,10 @@ class CandidateNetwork implements Graph {
         }
         return intersect
     }
-    
-    boolean contains( Arc arc ) {
-        arcs.find {
-            it.from.id == arc.from.id &&
-            it.to.id   == it.from.id
-        } != null
+
+    @Override
+    public Collection<Arc> getArcs() {
+        return this.candidateArcs
     }
     
     SHD calcShd( CandidateNetwork other ) {
@@ -48,7 +47,7 @@ class CandidateNetwork implements Graph {
         return "Candidate Network (${arcs.size()} arcs)"
         
     }
-    
+
     static class SHD {
         
         Collection<Arc> arcsInThis
