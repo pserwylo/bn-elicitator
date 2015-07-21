@@ -36,7 +36,6 @@ class InsuranceDataLoader extends DataLoader {
 	}
 
 	protected List<List<String>> getBnArcs() {
-		return null
 		[
 			[ "Age", "GoodStudent" ],
 			[ "Age", "SocioEcon" ],

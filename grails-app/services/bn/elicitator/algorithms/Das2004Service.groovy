@@ -324,12 +324,12 @@ class Das2004Service {
 
 	private List<CompatibleParentConfiguration> allCompatibleConfigs = null
 
-	private List<CompatibleParentConfiguration> findCompatibleConfigs( User createdBy, List<State> parentConfigurations ) {
+	private List<CompatibleParentConfiguration> findCompatibleConfigs( User createdBy, List<State> parentConfiguration ) {
 		if ( allCompatibleConfigs == null ) {
 			allCompatibleConfigs = CompatibleParentConfiguration.list()
 		}
 
-		def parentConfigIds = parentConfigurations*.id
+		def parentIds = parentConfiguration*.id
 
 		allCompatibleConfigs.findAll {
 			it.createdBy.id == createdBy.id &&
@@ -390,13 +390,23 @@ class Das2004Service {
             if ( compatibleConfigs.size() == parentConfiguration.size() ) {
                 println " Found ${compatibleConfigs.size()} matching CPCs."
             } else {
-                println "\n  ** HMMM, Found ${compatibleConfigs.size()}: ${compatibleConfigs.join( ", " ) }"
+                throw new AlgorithmException( """
+
+Expected ${parentConfiguration.size()} CPCs, but got ${compatibleConfigs.size()}.
+
+Expected:
+  - ${parentConfiguration.join("\n  - ")}
+
+Found:
+  - ${compatibleConfigs.join("\n  - ")}
+
+""" )
             }
             
 			// def estimations = ProbabilityEstimation.findAllByCreatedByAndParentConfigurationInList( user, compatibleConfigs )
 			def estimations = findEstimations( user, compatibleConfigs )
             
-            print "  Estimations: ${estimations.join( "\n  " ) }"
+            print "  Estimations:\n  ${estimations.join( "\n  " ) }"
 
 			timestamp()
 
@@ -413,13 +423,10 @@ class Das2004Service {
 					}
 
 					if ( probOfConfig == null ) {
-
-						def msg = """
+						throw new AlgorithmException( """
 Couldn't find probability estimation for parent configuration.
   CPC [id: $config.id, createdBy: $config.createdById] $config
-"""
-						print msg
-						// throw new AlgorithmException( msg )
+""" )
 					} else {
 
 						if ( !weights.containsKey( config.parentState.variable ) ) {
@@ -545,7 +552,7 @@ Couldn't find probability estimation for parent configuration.
 						int value
 						if ( matrix[ one ][ two ] == null ) {
 							value = 0;
-							print "Uh Oh, we found a null value here in matrix[ $one.label ][ $two.label ]"
+							throw new AlgorithmException( "Uh Oh, we found a null value here in matrix[ $one.label ][ $two.label ]" )
 						} else {
 							value = matrix[ one ][ two ]
 						}
@@ -553,29 +560,27 @@ Couldn't find probability estimation for parent configuration.
 					}
 				}
 			} catch ( Exception e ) {
-				print "OOPS: $e.message"
-				return [:]
+				throw new AlgorithmException( "OOPS: $e.message" )
 			}
 
-			print "  Calculating eigen vectors..."
+			// print "  Calculating eigen vectors..."
 
 			EigenvalueDecomposition eigen = new Matrix( values ).eig()
 
 			if ( eigen == null ) {
-				print "Uh oh, couldn't calculate eigen vectors for $values"
-				return [:]
+				throw new AlgorithmException( "Uh oh, couldn't calculate eigen vectors for $values" )
 			}
 
 			Matrix eigenVectors = eigen.v
 
-			print "  Getting weights from eigen vectors..."
+            // print "  Getting weights from eigen vectors..."
 
 			Map<Variable, BigDecimal> weights = [:]
 			indexes.eachWithIndex { Variable variable, int i ->
 				weights[ variable ] = eigenVectors.get( i, 0 )
 			}
 
-			print "  Normalising weights..."
+            // print "  Normalising weights..."
 
 			double sum = weights.values().sum() as Double
 			if ( sum == 0 ) {

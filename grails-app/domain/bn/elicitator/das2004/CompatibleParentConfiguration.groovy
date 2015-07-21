@@ -55,7 +55,7 @@ class CompatibleParentConfiguration {
 	}
     
     String toString() {
-        "CPC( ${parentState.toConciseString()} :: ${otherParentStates.collect { it.toConciseString() }.join( ', ' ) } )"
+        "CPC( ${parentState.toConciseString()} :: ${otherParentStates.sort { it1, it2 -> it1.label <=> it2.label }.collect { it.toConciseString() }.join( ', ' ) } )"
         
     }
 }
