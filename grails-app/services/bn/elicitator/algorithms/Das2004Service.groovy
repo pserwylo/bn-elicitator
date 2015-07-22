@@ -8,6 +8,8 @@ import bn.elicitator.Probability
 import bn.elicitator.State
 import bn.elicitator.UserService
 import bn.elicitator.Variable
+import bn.elicitator.algorithm.AHP
+import bn.elicitator.algorithm.AlgorithmException
 import bn.elicitator.auth.User
 import bn.elicitator.das2004.CompatibleParentConfiguration
 import bn.elicitator.das2004.CompletedDasAllocation
@@ -269,10 +271,8 @@ class Das2004Service {
 	}
     
     public List<Probability> calcConditionalProbability( Variable child, Collection<Variable> parents, User user ) {
-
-        Map<Variable, BigDecimal> weights = calculateWeights( child, parents, user )
+        Map<Variable, BigDecimal> weights = new AHP( child, parents, user ).run()
         weightedSum( child, parents, user, weights )
-        
     }
 
 	public List<Probability> calcMarginalProbability( Variable child, User user ) {
@@ -300,14 +300,6 @@ class Das2004Service {
 		}
 	}
 
-	static class AlgorithmException extends RuntimeException {
-
-		public AlgorithmException( String message ) {
-			super( "Error while performing Das (2004) calculation: $message" )
-		}
-
-	}
-
 	private long lastTimestamp = 0
 
 	private void timestamp( boolean clear = false ) {
@@ -329,7 +321,7 @@ class Das2004Service {
 			allCompatibleConfigs = CompatibleParentConfiguration.list()
 		}
 
-		def parentIds = parentConfiguration*.id
+		def parentConfigIds = parentConfiguration*.id
 
 		allCompatibleConfigs.findAll {
 			it.createdBy.id == createdBy.id &&
@@ -477,127 +469,6 @@ Couldn't find probability estimation for parent configuration.
             
             return existingProbability
             
-		}
-
-	}
-
-	private Map<Variable, BigDecimal> calculateWeights( Variable child, Collection<Variable> parents, User user ) {
-
-		WeightMatrix matrix = new WeightMatrix( parents )
-
-		def comparisons = PairwiseComparison.findAllByCreatedByAndChild( user, child )
-		comparisons.each { PairwiseComparison comparison ->
-			BigDecimal weight = 1
-			if ( comparison.mostImportantParent?.id == comparison.parentOne.id ) {
-				weight = comparison.weight
-			} else if ( comparison.mostImportantParent?.id == comparison.parentTwo.id ) {
-				weight = 1 / comparison.weight
-			}
-			matrix.set( comparison.parentOne, comparison.parentTwo, weight )
-		}
-
-		return matrix.calcWeights()
-
-	}
-
-	/**
-	 *
-	 *       How much
-	 *   <-    more    ->
-	 *      do these...
-	 *
-	 *     W   X   Y   Z
-	 *   +---+---+---+---+      ^
-	 * W | 1 |   |   |   |      |
-	 *   +---+---+---+---+
-	 * X |   | 1 | 3 |   |  influence
-	 *   +---+---+---+---+
-	 * Y |   |1/3| 1 |   |    these?
-	 *   +---+---+---+---+
-	 * Z |   |   |   | 1 |      |
-	 *   +---+---+---+---+      v
-	 *
-	 *   e.g. Y is three times more important than X, while X is 1/3rd the importance of Y.
-	 *
-	 */
-	static class WeightMatrix {
-
-		private Map<Variable,Map<Variable,BigDecimal>> matrix = [:]
-
-		public WeightMatrix( Collection<Variable> variables ) {
-			variables.each { Variable variable ->
-				matrix[ variable ] = [:]
-				variables.each { Variable other ->
-					matrix[ variable ][ other ] = variable.id == other.id ? 1 : null
-				}
-			}
-		}
-
-		public void set( Variable one, Variable two, BigDecimal weight ) {
-			matrix[ one ][ two ] = weight
-			matrix[ two ][ one ] = 1 / weight
-		}
-
-		public Map<Variable, BigDecimal> calcWeights() {
-
-			List<Variable> indexes = matrix.keySet().toList()
-
-			double[][] values = new double[ matrix.size() ][]
-
-			try {
-				indexes.eachWithIndex { Variable one, int i ->
-					values[ i ] = new double[ matrix.size() ]
-					// TODO: Don't iterate over this, instead iterate over matrix properly...
-					indexes.eachWithIndex { Variable two, int j ->
-						int value
-						if ( matrix[ one ][ two ] == null ) {
-							value = 0;
-							throw new AlgorithmException( "Uh Oh, we found a null value here in matrix[ $one.label ][ $two.label ]" )
-						} else {
-							value = matrix[ one ][ two ]
-						}
-						values[ i ][ j ] = value
-					}
-				}
-			} catch ( Exception e ) {
-				throw new AlgorithmException( "OOPS: $e.message" )
-			}
-
-			// print "  Calculating eigen vectors..."
-
-			EigenvalueDecomposition eigen = new Matrix( values ).eig()
-
-			if ( eigen == null ) {
-				throw new AlgorithmException( "Uh oh, couldn't calculate eigen vectors for $values" )
-			}
-
-			Matrix eigenVectors = eigen.v
-
-            // print "  Getting weights from eigen vectors..."
-
-			Map<Variable, BigDecimal> weights = [:]
-			indexes.eachWithIndex { Variable variable, int i ->
-				weights[ variable ] = eigenVectors.get( i, 0 )
-			}
-
-            // print "  Normalising weights..."
-
-			double sum = weights.values().sum() as Double
-			if ( sum == 0 ) {
-				indexes.eachWithIndex { Variable variable, int i ->
-					weights[ variable ] = 1 / indexes.size()
-				}
-			} else {
-				double scale = 1 / sum;
-				weights.each {
-					it.value *= scale
-				}
-			}
-
-			print "  Weights: " + weights
-
-			return weights
-
 		}
 
 	}
