@@ -1,15 +1,13 @@
 package bn.elicitator.algorithms
 
-import Jama.EigenvalueDecomposition
-import Jama.Matrix
 import bn.elicitator.BnService
 import bn.elicitator.CptAllocation
 import bn.elicitator.Probability
 import bn.elicitator.State
 import bn.elicitator.UserService
 import bn.elicitator.Variable
-import bn.elicitator.algorithm.AHP
-import bn.elicitator.algorithm.AlgorithmException
+import bn.elicitator.algorithm.BadCptException
+import bn.elicitator.algorithm.DasWeightedSum
 import bn.elicitator.auth.User
 import bn.elicitator.das2004.CompatibleParentConfiguration
 import bn.elicitator.das2004.CompletedDasAllocation
@@ -226,8 +224,6 @@ class Das2004Service {
 	 */
 	public void performCalculations() {
 
-		timestamp( true );
-
 		List<CptAllocation> allocations = CptAllocation.list()
 
 		allocations.each { CptAllocation allocation ->
@@ -249,30 +245,30 @@ class Das2004Service {
 	private void calculateUsersCptForVariable( Variable child, User user ) {
 
 		Collection<Variable> parents = bnService.getArcsByChild( child )*.parent*.variable
-		if ( parents.size() > 1 ) {
-			timestamp()
-			print "Calculating conditional probabilities for $child (${parents.size()} parents)"
-			print "First - get weights for $parents -> $child, then calculate weighted sum."
-            calcConditionalProbability( child, parents, user )*.save()
-			print "Finished calculating weighted sum for $parents -> $child"
-			timestamp()
-		} else if ( parents.size() == 1 ) {
-			print "Calculating CPT for $child with single parent"
-			timestamp()
-			singleParentConditional( child, user )*.save()
-			timestamp()
-		} else {
-			print "Calculating marginal probability for $child (no parents)"
-			timestamp()
-			calcMarginalProbability( child, user )*.save()
-			timestamp()
-		}
+        try {
+            if ( parents.size() > 1 ) {
+                print "Calculating conditional probabilities for $child (${parents.size()} parents)"
+                print "First - get weights for $parents -> $child, then calculate weighted sum."
+                calcConditionalProbability( child, parents, user )*.save()
+                print "Finished calculating weighted sum for $parents -> $child"
+            } else if ( parents.size() == 1 ) {
+                print "Calculating CPT for $child with single parent"
+                singleParentConditional( child, user )*.save()
+            } else {
+                print "Calculating marginal probability for $child (no parents)"
+                calcMarginalProbability( child, user )*.save()
+            }
+        } catch ( BadCptException e ) {
+            // TODO: Actually bail when this happens, it really shouldn't happen...
+            println "******************************************************************************"
+            println e.getMessage()
+            println "******************************************************************************"
+        }
 
 	}
     
     public List<Probability> calcConditionalProbability( Variable child, Collection<Variable> parents, User user ) {
-        Map<Variable, BigDecimal> weights = new AHP( child, parents, user ).run()
-        weightedSum( child, parents, user, weights )
+        new DasWeightedSum( child, parents, user ).run()
     }
 
 	public List<Probability> calcMarginalProbability( Variable child, User user ) {
@@ -298,179 +294,6 @@ class Das2004Service {
 				parentStates : estimation.parentConfiguration.allParentStates(),
 			)
 		}
-	}
-
-	private long lastTimestamp = 0
-
-	private void timestamp( boolean clear = false ) {
-		long t = System.currentTimeMillis()
-		String output = "# " + t
-		if ( clear ) {
-			lastTimestamp = 0
-		} else {
-			output += " (" + ( t - lastTimestamp ) + "ms)"
-		}
-		// print output
-		lastTimestamp = t;
-	}
-
-	private List<CompatibleParentConfiguration> allCompatibleConfigs = null
-
-	private List<CompatibleParentConfiguration> findCompatibleConfigs( User createdBy, List<State> parentConfiguration ) {
-		if ( allCompatibleConfigs == null ) {
-			allCompatibleConfigs = CompatibleParentConfiguration.list()
-		}
-
-		def parentConfigIds = parentConfiguration*.id
-
-		allCompatibleConfigs.findAll {
-			it.createdBy.id == createdBy.id &&
-			parentConfigIds.contains( it.parentState.id )
-		}
-	}
-
-	private List<ProbabilityEstimation> allEstimations = null
-
-    /**
-     * For a given user, load all of their estimations which belong to the CPCs specified by compatibleConfigs.
-     */
-	private List<ProbabilityEstimation> findEstimations( User createdBy, List<CompatibleParentConfiguration> compatibleConfigs ) {
-        // Cache allEstimations because findEstimations will be called many times during our calculations,
-        // and we don't want to hit the database each time.
-		if ( allEstimations == null ) {
-            List<CompletedDasVariable> completed = CompletedDasVariable.list()
-			allEstimations = ProbabilityEstimation.list().findAll { ProbabilityEstimation estimation ->
-                // Only include estimations which belong to completed variables.
-                completed.find { CompletedDasVariable var ->
-                    var.completedById == estimation.createdById && var.variableId == estimation.childState.variableId
-                }
-            }
-            println "Caching ${allEstimations.size()} estimations from DB..."
-		}
-
-		def compatibleConfigIds = compatibleConfigs*.id
-
-		allEstimations.findAll {
-			it.createdBy.id == createdBy.id && (
-                // Things with no parents will not have a parent configuration.
-                !it.parentConfiguration || compatibleConfigIds.contains( it.parentConfigurationId )
-            )
-		}
-	}
-
-	private List<Probability> weightedSum( Variable child, Collection<Variable> parents, User user, Map<Variable, BigDecimal> weights ) {
-
-        List<Probability> probabilities = []
-        
-		boolean completed = CompletedDasVariable.countByCompletedByAndVariable( user, child ) > 0
-		if ( !completed ) {
-			print "User $user.id didn't complete the variable '$child', so skipping."
-			return []
-		}
-
-		List<State> parentConfigs = parents*.states.combinations()
-		print "Processing ${parentConfigs.size()} possible combinations of parents..."
-		parentConfigs.each { List<State> parentConfiguration ->
-
-			print "Checking parent configurations for ${parentConfiguration}..."
-			
-            timestamp()
-            
-			// def compatibleConfigs = CompatibleParentConfiguration.findAllByCreatedByAndParentStateInList( user, parentConfiguration )
-			def compatibleConfigs = findCompatibleConfigs( user, parentConfiguration )
-            
-            if ( compatibleConfigs.size() == parentConfiguration.size() ) {
-                println " Found ${compatibleConfigs.size()} matching CPCs."
-            } else {
-                throw new AlgorithmException( """
-
-Expected ${parentConfiguration.size()} CPCs, but got ${compatibleConfigs.size()}.
-
-Expected:
-  - ${parentConfiguration.join("\n  - ")}
-
-Found:
-  - ${compatibleConfigs.join("\n  - ")}
-
-""" )
-            }
-            
-			// def estimations = ProbabilityEstimation.findAllByCreatedByAndParentConfigurationInList( user, compatibleConfigs )
-			def estimations = findEstimations( user, compatibleConfigs )
-            
-            print "  Estimations:\n  ${estimations.join( "\n  " ) }"
-
-			timestamp()
-
-			Map<State, Double> childStateProbabilities = [:]
-
-			child.states.each { State childState ->
-
-				double probChildState = 0
-				compatibleConfigs.each { CompatibleParentConfiguration config ->
-
-					def probOfConfig = estimations.find {
-                        ( !it.parentConfiguration || it.parentConfigurationId == config.id ) && // Deal with variables without parents...
-						it.childState.id == childState.id
-					}
-
-					if ( probOfConfig == null ) {
-						throw new AlgorithmException( """
-Couldn't find probability estimation for parent configuration.
-  CPC [id: $config.id, createdBy: $config.createdById] $config
-""" )
-					} else {
-
-						if ( !weights.containsKey( config.parentState.variable ) ) {
-							throw new AlgorithmException( "Mismatch between compatible parent configuration $config.id and the pairwise comparisons. Could not find variable $config.parentState.variable in comparisons." )
-						}
-
-						def parentWeight = weights[ config.parentState.variable ]
-						probChildState  += parentWeight * probOfConfig.probability
-
-					}
-
-				}
-
-				childStateProbabilities[ childState ] = probChildState
-			}
-
-			double sum = (double)childStateProbabilities.values().sum()
-			if ( sum <= 0 ) {
-				def msg = "Probabilities summed to $sum. Should be > 0."
-				print "OOPS: $msg"
-				// throw new AlgorithmException( msg )
-			} else {
-
-				double scale = 1 / sum
-				childStateProbabilities.each { it.value *= scale }
-
-				probabilities.addAll getCalculatedProbabilities( childStateProbabilities, parentConfiguration, user )
-			}
-		}
-        
-        return probabilities
-	}
-
-	List<Probability> getCalculatedProbabilities( Map<State, Double> stateProbabilities, List<State> parentStates, User user ) {
-
-		stateProbabilities.collect {
-
-			State childState   = it.key
-			Double probability = it.value
-
-			List<Probability> probs         = Probability.findAllByCreatedByAndChildState( user, childState )
-			Probability existingProbability = probs.find { CollectionUtils.isEqualCollection( probs.parentStates*.id, parentStates*.id ) }
-			if ( !existingProbability ) {
-				existingProbability = new Probability( createdBy : user, childState : childState, parentStates : parentStates )
-			}
-
-			existingProbability.probability = probability
-            
-            return existingProbability
-            
-		}
-
 	}
 
 }

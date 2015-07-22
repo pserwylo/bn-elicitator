@@ -11,7 +11,6 @@ class PairwiseComparison {
 
 	Variable child
 
-
 	Variable parentOne
 
 	Variable parentTwo
@@ -21,5 +20,14 @@ class PairwiseComparison {
 	int weight = 0
 
 	User createdBy
+    
+    String toString() {
+        if ( mostImportantParent == null ) {
+            return "$parentOne.label == $parentTwo"
+        } else {
+            Variable leastImportant = mostImportantParent.id == parentOne.id ? parentTwo : parentOne
+            return "$mostImportantParent.label ${weight}x $leastImportant.label"
+        }
+    }
 
 }

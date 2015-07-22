@@ -4,7 +4,10 @@ import Jama.EigenvalueDecomposition
 import Jama.Matrix
 import bn.elicitator.Variable
 import bn.elicitator.auth.User
+import bn.elicitator.das2004.CompatibleParentConfiguration
 import bn.elicitator.das2004.PairwiseComparison
+import bn.elicitator.das2004.ProbabilityEstimation
+import com.sun.mail.iap.BadCommandException
 
 /**
  *
@@ -36,6 +39,8 @@ class AHP {
     private final Variable child
     private final List<Variable> parents
     private final Map<Variable,Map<Variable,BigDecimal>> matrix = [ : ]
+    
+    private static final Cache CACHE = new Cache()
 
     public AHP( Variable child, Collection<Variable> parents, User user ) {
 
@@ -52,7 +57,7 @@ class AHP {
     }
     
     private void loadPairwiseComparisons() {
-        def comparisons = PairwiseComparison.findAllByCreatedByAndChild( user, child )
+        def comparisons = findPairwiseComparisons()
         comparisons.each { PairwiseComparison comparison ->
             BigDecimal weight = 1
             if ( comparison.mostImportantParent?.id == comparison.parentOne.id ) {
@@ -106,9 +111,16 @@ class AHP {
     }
     
     private void normalizeWeights( Map<Variable, BigDecimal> weights ) {
+        
+        weights.each {
+            if ( it.value < 0 ) {
+                throw new WeightLessThanZeroException( it.key )
+            }
+        }
+        
         double sum = weights.values().sum() as Double
         if ( sum == 0 ) {
-            throw new AlgorithmException( "Why do the weights sum to zero for ${parents*.label} and user $user.id?" )
+            throw new WeightSumToLessThanZeroException( weights )
             /*parents.each { Variable variable ->
                 weights[ variable ] = 1 / parents.size()
             }*/
@@ -130,6 +142,49 @@ class AHP {
 
         return weights
 
+    }
+
+    private List<PairwiseComparison> findPairwiseComparisons() {
+        def found = CACHE.findPairwiseComparisons( user ).findAll { it.childId == child.id }
+
+        print "Pairwise Comparisons:\n  ${found.join( "\n  " ) }"
+
+        int expectedComparisons = ( parents.size() * parents.size() - parents.size() ) / 2
+        if ( found.size() != expectedComparisons ) {
+            throw new AlgorithmException( "Expected $expectedComparisons pairwise comparisons for the parents of $child.label (${parents*.label}), but received ${found.size()}" )
+        }
+
+        return found
+    }
+
+    public class WeightLessThanZeroException extends BadCptException {
+        WeightLessThanZeroException(Variable weightedParent) {
+            super( "Weight for $weightedParent.label (user $user.id, child variable $child.label) is < 0" )
+        }
+    }
+
+    public class WeightSumToLessThanZeroException extends BadCptException {
+        WeightSumToLessThanZeroException(Map<Variable, BigDecimal> weights) {
+            super( "Weights ${weights.collect { "Weight($it.key) = $it.value" } } (user $user.id, child variable $child.label) sum to zero." )
+        }
+    }
+    
+    private static class Cache {
+
+        private List<PairwiseComparison> allPairwiseComparisons = null
+        
+        public List<PairwiseComparison> getAllPairwiseComparisons() {
+            if ( this.allPairwiseComparisons == null ) {
+                this.allPairwiseComparisons = PairwiseComparison.list()
+                println "Cached ${this.allPairwiseComparisons.size()} pairwise comparisons from DB."
+            }
+            return this.allPairwiseComparisons
+        }
+
+        private List<PairwiseComparison> findPairwiseComparisons( User createdBy ) {
+            getAllPairwiseComparisons().findAll { it.createdBy.id == createdBy.id }
+        }
+        
     }
 
 }

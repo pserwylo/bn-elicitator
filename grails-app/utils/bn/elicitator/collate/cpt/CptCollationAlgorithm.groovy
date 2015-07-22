@@ -1,5 +1,7 @@
 package bn.elicitator.collate.cpt
 
+import bn.elicitator.State
+import bn.elicitator.algorithm.BadCptException
 import bn.elicitator.analysis.cpt.Cpt
 import bn.elicitator.Probability
 import bn.elicitator.Variable
@@ -38,8 +40,16 @@ abstract class CptCollationAlgorithm {
 
         return combineCpts(
             CompletedDasVariable.findByVariable( variable ).collect { CompletedDasVariable completed ->
-                processUsersVariable( completed.completedBy, variable, parents )
-            }
+                try {
+                    processUsersVariable( completed.completedBy, variable, parents )
+                } catch ( BadCptException e ) {
+                    // TODO: Actually bail when this happens, it really shouldn't happen...
+                    println "******************************************************************************"
+                    println e.getMessage()
+                    println "******************************************************************************"
+                    return null
+                }
+            }.findAll { it != null }
         )
     }
 
