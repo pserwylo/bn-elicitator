@@ -29,16 +29,18 @@
         <fieldset class="default">
             <legend>View CPTs of ${run}</legend>
 
+            <g:link action="normalize" params="${ [ runId : run.id ] }" >Normalize all CPTs for this run</g:link>
+            
             <table class="summary">
                 <tr>
                     <th>Node</th>
                     <th>Parents</th>
                     <th>CPT</th>
                 </tr>
-                <g:each in="${run.cpts}" var="cpt">
+                <g:each in="${run.cpts.sort { it1, it2 -> it1?.variable?.label <=> it2?.variable?.label }}" var="cpt">
                     <tr>
-                        <td class="main">${run}</td>
-                        <td><g:link action="viewRun" params="${ [ id : run.id ] }">View CPTs</g:link></td>
+                        <td class="main">${cpt.variable ? cpt.variable.label : "<em>Unknown</em>"}</td>
+                        <td>${cpt.probabilities?.size() > 0 && cpt.probabilities[ 0 ].parentStates.size() > 0 ? cpt.probabilities[ 0 ].parentStates*.variable*.label.join( ", ") : "<em>No parents</em>"}</td>
                         <td>
                             <ul>
                                 <g:each in="${cpt.probabilities}" var="prob">

@@ -58,6 +58,7 @@ class AHP {
     
     private void loadPairwiseComparisons() {
         def comparisons = findPairwiseComparisons()
+        
         comparisons.each { PairwiseComparison comparison ->
             BigDecimal weight = 1
             if ( comparison.mostImportantParent?.id == comparison.parentOne.id ) {
@@ -82,7 +83,6 @@ class AHP {
                 parents.eachWithIndex { Variable two, int j ->
                     double value
                     if ( matrix[ one ][ two ] == null ) {
-                        value = 0;
                         throw new AlgorithmException( "Uh Oh, we found a null value here in matrix[ $one.label ][ $two.label ]" )
                     } else {
                         value = matrix[ one ][ two ]
@@ -112,9 +112,15 @@ class AHP {
     
     private void normalizeWeights( Map<Variable, BigDecimal> weights ) {
         
-        weights.each {
-            if ( it.value < 0 ) {
-                throw new WeightLessThanZeroException( it.key )
+        def negative = weights.find { it.value < 0 }
+        if ( negative ) {
+            // I only observed this when there were two parents, and the pairwise comparison between them
+            // showed that they had equal weights. As such, I'm going to manually force the weights to 0.5
+            // if that is the case.
+            if ( weights.size() == 2 ) {
+                weights.each { it.value = 0.5 }
+            } else {
+                throw new WeightLessThanZeroException( negative.key )
             }
         }
         

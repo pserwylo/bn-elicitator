@@ -29,4 +29,12 @@ class AnalyseCptController implements AnalysisController {
         
     }
 
+    def normalize() {
+        CptAnalysisRun run = CptAnalysisRun.get( params.remove( 'runId' ) as Integer )
+        run.cpts*.normalize()
+        run.save( flush : true, failOnError : true )
+        redirect( action : 'viewRun', params : [ id : run.id ] )
+        
+    }
+
 }

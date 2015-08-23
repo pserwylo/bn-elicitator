@@ -13,7 +13,7 @@ class MeanCpt extends CptCollationAlgorithm {
     
     protected Cpt combineCpts( List<Cpt> cpts ) {
         if ( cpts ) {
-            new Cpt(
+            Cpt cpt = new Cpt(
                 probabilities: cpts[0].probabilities.collect { Probability prob ->
                     new Probability(
                             parentStates: prob.parentStates,
@@ -22,8 +22,10 @@ class MeanCpt extends CptCollationAlgorithm {
                     )
                 }
             )
+            cpt.normalize()
+            return cpt
         } else {
-            new Cpt( probabilities: [] )
+            return new Cpt( probabilities: [] )
         }
     }
     

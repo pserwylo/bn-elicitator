@@ -18,6 +18,7 @@ import java.text.DecimalFormat
 class Probability {
 
 	static constraints = {
+        createdBy nullable: true
 	}
 
 	static hasMany = [ parentStates : State ]
@@ -29,10 +30,18 @@ class Probability {
 	User createdBy
 
     String toString() {
-        String formattedProb = new DecimalFormat( "#.##" ).format( probability )
+        String formattedProb = new DecimalFormat( "#.####" ).format( probability )
+        return "${toStringWithoutValue()} = $formattedProb"
+    }
+    
+    String toStringWithoutValue() {
         parentStates ?
-            "Pr( ${childState.toConciseString() } | ${ parentStates*.toConciseString().join( ', ' ) } ) = $formattedProb" :
-            "Pr( ${childState.toConciseString() } ) = $formattedProb"
+            "Pr( ${childState.toConciseString() } | ${ sortedParentStates*.toConciseString().join( ', ' ) } )" :
+            "Pr( ${childState.toConciseString() } )"
+    }
+    
+    private List<State> getSortedParentStates() {
+        parentStates?.sort { it1, it2 -> it1.label <=> it2.label }
     }
 
 }

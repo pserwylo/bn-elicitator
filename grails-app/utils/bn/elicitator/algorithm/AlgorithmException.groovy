@@ -1,6 +1,6 @@
 package bn.elicitator.algorithm
 
-class AlgorithmException extends RuntimeException {
+class AlgorithmException extends Exception {
 
     public AlgorithmException( String message ) {
         super( message )

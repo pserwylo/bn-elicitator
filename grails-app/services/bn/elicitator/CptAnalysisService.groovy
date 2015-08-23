@@ -21,24 +21,23 @@ class CptAnalysisService {
         analyseMean( analysisSuite )
         // analyseDawidSkene( analysisSuite )
         
-        println "Analysis complete"
+        print "Analysis complete, saving... "
 
-        analysisSuite.save( failOnError : true, flush : true )
+        analysisSuite.save( failOnError : true )
+        
+        println "Done!"
         
         return analysisSuite
         
     }
 
     def analyseMean( CptAnalysisSuite analysisSuite ) {
-        
         CptAnalysisRun run = analysisRun(
             new MeanCpt( das2004Service, analysisService.goldStandardNetwork ),
             new MeanCptAnalysisRun()
         )
 
         analysisSuite.analysisRuns.add( run )
-        analysisSuite.save()
-        
     }
     
     def analyseDawidSkene( CptAnalysisSuite analysisSuite ) {
@@ -64,16 +63,8 @@ class CptAnalysisService {
     }
 
     private CptAnalysisRun analysisRun( CptCollationAlgorithm collationAlgorithm, CptAnalysisRun analysis ) {
-
         println "Getting results for $analysis... "
-        List<Cpt> cpts = collationAlgorithm.run()
-        cpts*.save()
-        println "CPTs saved."
-        
-        print "Saving analysis... "
-        analysis.save()
-        println "Done."
-        
+        analysis.cpts = collationAlgorithm.run()
         return analysis
     }
 

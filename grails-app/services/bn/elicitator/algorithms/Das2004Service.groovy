@@ -260,9 +260,15 @@ class Das2004Service {
             }
         } catch ( BadCptException e ) {
             // TODO: Actually bail when this happens, it really shouldn't happen...
-            println "******************************************************************************"
-            println e.getMessage()
-            println "******************************************************************************"
+            println """
+******************************************************************************
+  Error occured while preparing variable $child.label for user $user.id"
+
+  Exception: ${e.getMessage()}
+
+  Cause: ${e.cause?.getMessage()}
+******************************************************************************
+"""
         }
 
 	}

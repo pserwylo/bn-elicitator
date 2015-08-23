@@ -68,10 +68,7 @@ class DasWeightedSum {
         println "Found ${found.size()} matching CPCs:\n  - ${found.join( '\n  - ' )}"
 
         if ( found.size() != parentConfiguration.size() ) {
-            throw new AlgorithmException( """
-Expected ${parentConfiguration.size()} CPCs, but got ${found.size()}.
-Expected one for each state: ${parentConfiguration*.label}
-""" )
+            throw new AlgorithmException( "Expected ${parentConfiguration.size()} CPCs (one for each state: ${parentConfiguration*.label}), but got ${found.size()}." )
         }
         
         return found
@@ -84,11 +81,10 @@ Expected one for each state: ${parentConfiguration*.label}
             it.parentConfiguration && compatibleConfigIds.contains( it.parentConfigurationId ) && it.childState.variableId == child.id
         }
 
-        print "Estimations:\n  ${found.join( "\n  " ) }"
-
         int expectedEstimations = parents.size() ? ( compatibleConfigs.size() * child.states.size() ) : child.states.size()
         if ( found.size() != expectedEstimations ) {
-            throw new AlgorithmException( "Expected $expectedEstimations estimations for the $child.label variable, but received ${found.size()}" )
+            print "Not enough estimations:\n  ${found.join( "\n  " ) }"
+            throw new NotEnoughEstimationsException( expectedEstimations, child, found )
         }
 
         return found
@@ -119,8 +115,7 @@ Expected one for each state: ${parentConfiguration*.label}
             double sum = (double)childStateProbabilities.values().sum()
             if ( sum <= 0 ) {
                 def msg = "Probabilities summed to $sum. Should be > 0."
-                print "OOPS: $msg"
-                // throw new AlgorithmException( msg )
+                throw new AlgorithmException( msg )
             } else {
 
                 double scale = 1 / sum
@@ -134,9 +129,11 @@ Expected one for each state: ${parentConfiguration*.label}
     }
 
     private double calcProb( List<State> parentConfiguration, State childState, Map<Variable, BigDecimal> weights ) {
+
+        println "Calculating Pr( $childState.label | ${parentConfiguration*.label.join( "," )} )"
         
-        def compatibleConfigs = findCompatibleConfigs( parentConfiguration )
-        def estimations       = findEstimations( compatibleConfigs )
+        def compatibleConfigs = findCompatibleConfigs(parentConfiguration)
+        def estimations = findEstimations(compatibleConfigs)
         double probChildState = 0
         
         compatibleConfigs.each { CompatibleParentConfiguration config ->
@@ -151,19 +148,22 @@ Expected one for each state: ${parentConfiguration*.label}
 Couldn't find probability estimation for parent configuration.
   CPC [id: $config.id, createdBy: $config.createdById] $config
 """)
-            } else {
-
-                if (!weights.containsKey(config.parentState.variable)) {
-                    throw new AlgorithmException("Mismatch between compatible parent configuration $config.id and the pairwise comparisons. Could not find variable $config.parentState.variable in comparisons.")
-                }
-
-                def parentWeight = weights[config.parentState.variable]
-                probChildState += parentWeight * probOfConfig.probability
-
             }
 
+            if (!weights.containsKey(config.parentState.variable)) {
+                throw new AlgorithmException("Mismatch between compatible parent configuration $config.id and the pairwise comparisons. Could not find variable $config.parentState.variable in comparisons.")
+            }
+
+            print "  $probOfConfig"
+
+            def parentWeight = weights[config.parentState.variable]
+            probChildState += parentWeight * probOfConfig.probability
+
         }
-        probChildState
+        
+        println "    Pr( $childState.label | ${parentConfiguration*.label.join( "," )} ) ~ $probChildState"
+
+        return probChildState
     }
 
     /**

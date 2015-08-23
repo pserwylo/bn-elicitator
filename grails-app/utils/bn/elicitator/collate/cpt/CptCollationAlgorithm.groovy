@@ -1,7 +1,5 @@
 package bn.elicitator.collate.cpt
 
-import bn.elicitator.State
-import bn.elicitator.algorithm.BadCptException
 import bn.elicitator.analysis.cpt.Cpt
 import bn.elicitator.Probability
 import bn.elicitator.Variable
@@ -37,20 +35,28 @@ abstract class CptCollationAlgorithm {
         println "Processing variable $variable.label..."
         
         Collection<Variable> parents = goldStandard.getParentsOf variable
+        List<CompletedDasVariable> completedVars = CompletedDasVariable.findAllByVariable( variable )
+        List<Cpt> cpts = completedVars.collect { CompletedDasVariable completed ->
+            try {
+                processUsersVariable( completed.completedBy, variable, parents )
+            } catch ( Exception e ) {
+                // TODO: Actually bail when this happens, it really shouldn't happen...
+                println """
+******************************************************************************
+  Error occured while processing variable $variable.label
 
-        return combineCpts(
-            CompletedDasVariable.findByVariable( variable ).collect { CompletedDasVariable completed ->
-                try {
-                    processUsersVariable( completed.completedBy, variable, parents )
-                } catch ( BadCptException e ) {
-                    // TODO: Actually bail when this happens, it really shouldn't happen...
-                    println "******************************************************************************"
-                    println e.getMessage()
-                    println "******************************************************************************"
-                    return null
-                }
-            }.findAll { it != null }
-        )
+  Exception: ${e.getMessage()}
+
+  Cause: ${e.cause?.getMessage()}
+******************************************************************************
+"""
+                return null
+            } finally {
+                println "OK."
+            }
+        }.findAll { it != null }
+        
+        return combineCpts( cpts )
     }
 
     private Cpt processUsersVariable( User user, Variable child, Collection<Variable> parents ) {
@@ -65,7 +71,7 @@ abstract class CptCollationAlgorithm {
         } else {
             probs = service.calcConditionalProbability( child, parents, user )
         }
-        return new Cpt( probabilities: probs )
+        return new Cpt( probabilities : probs, createdBy : user )
     }
     
 }
