@@ -17,8 +17,11 @@ class Cpt {
     static hasMany = [ probabilities : Probability ]
     
     static mapping = {
-        createdBy nullable: true
         probabilities cascade: 'all'
+    }
+    
+    static constraints = {
+        createdBy nullable: true
     }
 
 	public Variable getVariable() {

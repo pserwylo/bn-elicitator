@@ -17,7 +17,7 @@ abstract class AllocateQuestionsService {
 		getAllocationsByCriteria( criteria )*.user
 	}
 
-	protected abstract def createNew()
+	protected abstract Allocation createNew()
 	protected abstract def getAllocationsByCriteria( Closure criteria )
 	protected abstract def list()
 
@@ -125,7 +125,7 @@ abstract class AllocateQuestionsService {
 		int maxQuestions = 1000 // maxTime / expectedSecondsPerQuestion() // AppProperties.properties.targetParticipantsPerQuestion
 
 		List<Variable> varsToAllocate = getVarsWithLowestAllocation( maxQuestions )
-		def allocation = createNew()
+		Allocation allocation = createNew()
 		allocation.user = user
 		for ( Variable varToAllocate in varsToAllocate ) {
 			int numQuestions = questionsRequiredFor( varToAllocate )

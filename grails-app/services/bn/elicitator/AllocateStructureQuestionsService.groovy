@@ -3,7 +3,7 @@ package bn.elicitator
 class AllocateStructureQuestionsService extends AllocateQuestionsService {
 
 	@Override
-	protected def createNew() {
+	protected Allocation createNew() {
 		new StructureAllocation()
 	}
 

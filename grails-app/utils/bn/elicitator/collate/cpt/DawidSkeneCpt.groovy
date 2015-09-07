@@ -1,6 +1,7 @@
 package bn.elicitator.collate.cpt
 
 import bn.elicitator.Probability
+import bn.elicitator.Variable
 import bn.elicitator.analysis.cpt.Cpt
 import bn.elicitator.algorithms.Das2004Service
 import bn.elicitator.analysis.CandidateNetwork
@@ -19,21 +20,19 @@ import com.datascience.galc.EmpiricalData
 
 class DawidSkeneCpt extends CptCollationAlgorithm {
 
-    DawidSkeneCpt(Das2004Service service, CandidateNetwork goldStandardStructure) {
-        super(service, goldStandardStructure)
+    DawidSkeneCpt(Map<Variable, List<Cpt>> cptsForAnalysis, Das2004Service service, CandidateNetwork goldStandardStructure) {
+        super(cptsForAnalysis, service, goldStandardStructure)
     }
 
-    protected Cpt combineCpts( List<Cpt> cpts ) {
+    protected List<Cpt> combineCpts( Map<Variable, List<Cpt>> cpts ) {
         if ( cpts ) {
-            Cpt cpt = collateFromTroia( cpts )
-            cpt.normalize()
-            return cpt
+            collateFromTroia( cpts.values().flatten() )
         } else {
-            return new Cpt( probabilities: [] )
+            new Cpt( probabilities: [] )
         }
     }
 
-    private Cpt collateFromTroia( List<Cpt> cpts ) {
+    private List<Cpt> collateFromTroia( List<Cpt> cpts ) {
 
         // This will help us retrieve the probabilities from the results.
         // Troia only lets strings be used as labels (as it is designed for usage over HTTP) and so
@@ -43,9 +42,9 @@ class DawidSkeneCpt extends CptCollationAlgorithm {
             new MapEntry( prob.toStringWithoutValue(), prob )
         }
 
-        List<Probability> collatedProbs = runTroia( cpts ).collect {
-            LObject<ContValue> object = it.key
-            DatumContResults value = it.value
+        def results = runTroia( cpts )
+        
+        results.entrySet().collect { LObject<ContValue> object, DatumContResults value ->
             
             if ( !probabilityLabelMap.containsKey( object.name ) ) {
                 throw new Exception( "Couldn't find probability $object.name while collating Troia results." )
@@ -58,9 +57,12 @@ class DawidSkeneCpt extends CptCollationAlgorithm {
                     childState: oldProb.childState,
                     parentStates: oldProb.parentStates
             )
+            
+        }.groupBy { Probability prob -> 
+            prob.childState.variable
+        }.collect { MapEntry entry ->
+            new Cpt( probabilities : entry.value as List<Probability> )
         }
-
-        return new Cpt( probabilities: collatedProbs )
     }
 
     private Map<LObject<ContValue>, DatumContResults> runTroia( List<Cpt> cpts ) {

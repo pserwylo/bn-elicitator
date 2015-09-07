@@ -5,7 +5,7 @@ class AllocateCptQuestionsService extends AllocateQuestionsService {
 	BnService bnService
 
 	@Override
-	protected def createNew() {
+	protected Allocation createNew() {
 		new CptAllocation()
 	}
 
@@ -34,7 +34,7 @@ class AllocateCptQuestionsService extends AllocateQuestionsService {
 	 */
 	protected int questionsRequiredFor( Variable variable ) {
 		List<Variable> parents = bnService.getArcsByChild( variable )*.parent*.variable
-		int numParentStates = parents.size() == 0 ? 0 : parents.sum { it.states.size() }
+		int numParentStates = parents.size() == 0 ? 0 : parents.sum { it.states.size() } as Integer
 
 		int countCompatibleParentConfigurations      = 0
 		int countConditionalProbabilityDistributions = 0

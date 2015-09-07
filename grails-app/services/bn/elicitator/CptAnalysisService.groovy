@@ -6,9 +6,11 @@ import bn.elicitator.analysis.cpt.CptAnalysisRun
 import bn.elicitator.analysis.cpt.CptAnalysisSuite
 import bn.elicitator.analysis.cpt.DSCptAnalysisRun
 import bn.elicitator.analysis.cpt.MeanCptAnalysisRun
+import bn.elicitator.auth.User
 import bn.elicitator.collate.cpt.CptCollationAlgorithm
 import bn.elicitator.collate.cpt.DawidSkeneCpt
 import bn.elicitator.collate.cpt.MeanCpt
+import bn.elicitator.das2004.CompletedDasVariable
 
 class CptAnalysisService {
 
@@ -18,8 +20,10 @@ class CptAnalysisService {
 
     def analyse( CptAnalysisSuite analysisSuite ) {
 
-        analyseMean( analysisSuite )
-        // analyseDawidSkene( analysisSuite )
+        Map<Variable, List<Cpt>> cptsForAnalysis = loadCptsForAnalysis()
+        
+        analyseMean( analysisSuite, cptsForAnalysis )
+        analyseDawidSkene( analysisSuite, cptsForAnalysis )
         
         print "Analysis complete, saving... "
 
@@ -31,40 +35,87 @@ class CptAnalysisService {
         
     }
 
-    def analyseMean( CptAnalysisSuite analysisSuite ) {
+    def analyseMean( CptAnalysisSuite analysisSuite, Map<Variable, List<Cpt>> cptsForAnalysis ) {
         CptAnalysisRun run = analysisRun(
-            new MeanCpt( das2004Service, analysisService.goldStandardNetwork ),
+            new MeanCpt( cptsForAnalysis, das2004Service, analysisService.goldStandardNetwork ),
             new MeanCptAnalysisRun()
         )
 
         analysisSuite.analysisRuns.add( run )
     }
     
-    def analyseDawidSkene( CptAnalysisSuite analysisSuite ) {
+    def analyseDawidSkene( CptAnalysisSuite analysisSuite, Map<Variable, List<Cpt>> cptsForAnalysis ) {
 
-        for ( def i in [
-                /*0.0001,
-                0.001,
-                0.01, 0.02, 0.03, 0.04, */0.05,
-                /*0.10, 0.15, 0.20, 0.25, 0.30*//*, 0.35*/
-            ] ) {
-
-            analysisSuite.analysisRuns.add(
-                analysisRun(
-                    new DawidSkeneCpt( das2004Service, analysisService.goldStandardNetwork ),
-                    new DSCptAnalysisRun()
-                )
+        analysisSuite.analysisRuns.add(
+            analysisRun(
+                new DawidSkeneCpt( cptsForAnalysis, das2004Service, analysisService.goldStandardNetwork ),
+                new DSCptAnalysisRun()
             )
-                    
-            analysisSuite.save( flush : true, failOnError : true )
+        )
+                
+        analysisSuite.save( flush : true, failOnError : true )
 
+    }
+
+    private Map<Variable, List<Cpt>> loadCptsForAnalysis() {
+        analysisService.goldStandardNetwork.variables.collect { Variable variable ->
+            processVariable( variable )
+        }.flatten().groupBy { it?.variable }
+    }
+
+    /**
+     * Find all people allocated this variable, then for each of those people, produce a CPT.
+     * Then collate those CPTs together.
+     */
+    private List<Cpt> processVariable( Variable variable ) {
+
+        println "Processing variable $variable.label..."
+
+        Collection<Variable> parents = analysisService.goldStandardNetwork.getParentsOf variable
+        List<CompletedDasVariable> completedVars = CompletedDasVariable.findAllByVariable( variable )
+
+        List<Cpt> cpts = completedVars.collect { CompletedDasVariable completed ->
+            try {
+                processUsersVariable( completed.completedBy, variable, parents )
+            } catch ( Exception e ) {
+                // TODO: Actually bail when this happens, it really shouldn't happen...
+                println """
+******************************************************************************
+  Error occured while processing variable $variable.label
+
+  Exception: ${e.getMessage()}
+
+  Cause: ${e.cause?.getMessage()}
+******************************************************************************
+"""
+                return null
+            } finally {
+                println "OK."
+            }
+        }.findAll { it != null }
+
+        return cpts ?: [ new Cpt( probabilities : [] ) ]
+    }
+
+    private Cpt processUsersVariable( User user, Variable child, Collection<Variable> parents ) {
+
+        println "Processing variable $child.label (for user $user.id)..."
+
+        List<Probability> probs
+        if ( parents.size() == 0 ) {
+            probs = das2004Service.calcMarginalProbability( child, user )
+        } else if ( parents.size() == 1 ) {
+            probs = das2004Service.singleParentConditional( child, user )
+        } else {
+            probs = das2004Service.calcConditionalProbability( child, parents, user )
         }
-
+        return new Cpt( probabilities : probs, createdBy : user )
     }
 
     private CptAnalysisRun analysisRun( CptCollationAlgorithm collationAlgorithm, CptAnalysisRun analysis ) {
         println "Getting results for $analysis... "
         analysis.cpts = collationAlgorithm.run()
+        analysis.cpts.each { it.createdBy = userService.current }
         return analysis
     }
 

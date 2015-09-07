@@ -37,7 +37,7 @@ Only looking at the insurance network, I could estimate a prior probability fo a
         Collection<Relationship> toAnalyse = relationshipsToAnalyse
         CandidateNetwork fullNetwork = createCandidateNetwork( toAnalyse )
 
-        // analyseMajority( analysisSuite, toAnalyse, fullNetwork )
+        analyseMajority( analysisSuite, toAnalyse, fullNetwork )
         analyseDawidSkene( analysisSuite, toAnalyse, fullNetwork )
         
         println "Analysis complete"
@@ -69,10 +69,10 @@ Only looking at the insurance network, I could estimate a prior probability fo a
     def analyseDawidSkene( AnalysisSuite analysisSuite, Collection<Relationship> toAnalyse, CandidateNetwork fullNetwork ) {
 
         for ( def i in [
-                /*0.0001,
+                0.0001,
                 0.001,
-                0.01, 0.02, 0.03, 0.04, */0.05,
-                /*0.10, 0.15, 0.20, 0.25, 0.30*//*, 0.35*/
+                0.01, 0.02, 0.03, 0.04, 0.05,
+                0.10, 0.15, 0.20, 0.25, 0.30, 0.35
             ] ) {
 
             analysisSuite.analysisRuns.add(
