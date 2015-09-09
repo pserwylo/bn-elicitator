@@ -1,8 +1,5 @@
 package bn.elicitator.analysis
 
-/**
- *  
- */
 class DSAnalysisRun extends AnalysisRun {
 
     public Double getPrior() { threshold }

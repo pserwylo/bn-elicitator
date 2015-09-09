@@ -21,6 +21,7 @@ package bn.elicitator
 import bn.elicitator.auth.Role
 import bn.elicitator.auth.User
 import bn.elicitator.auth.UserRole
+import bn.elicitator.events.LoggedEvent
 import grails.plugins.springsecurity.SpringSecurityService
 
 class UserService {
@@ -97,4 +98,36 @@ class UserService {
 		}
 		this.minEstimatedQuality
 	}
+
+    Map<User, List<UserSession>> calcSessions() {
+        User.list().collectEntries { User user -> [ user, calcSessions( user ) ] }
+    }
+    
+    List<UserSession> calcSessions( User user ) {
+        
+        List<LoggedEvent> events   = LoggedEvent.findAllByUser( user ).sort { event1, event2 -> event1.date <=> event2.date }
+        List<UserSession> sessions = []
+        UserSession currentSession = null
+        
+        for ( LoggedEvent event : events ) {
+            
+            if ( currentSession == null ) {
+                currentSession = new UserSession( user : user )
+            }
+            
+            if ( currentSession.includes( event ) ) {
+                currentSession.add( event )
+            } else {
+                sessions.add( currentSession )
+                currentSession = null
+            }
+        }
+        
+        if ( currentSession != null ) {
+            sessions.add( currentSession )
+        }
+        
+        return sessions
+        
+    }
 }

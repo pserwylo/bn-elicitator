@@ -106,7 +106,11 @@
 				);
 				
 			}
-			
+
+			function exportSessions() {
+			    document.location = '${createLink( action : 'exportSessions' )}';
+			}
+
 			function addUser() {
 				var newLi = 
 					'<li id="user-NewUser" class=" variable-item">' +
@@ -221,6 +225,7 @@
 				<div class="column-header">
 
 					<input type="button" value="Add user" class="" id="add-user" onclick="addUser();" />
+					<input type="button" value="Export sessions" class="" id="export-sessions" onclick="exportSessions();" />
 
 				</div>
 
@@ -243,11 +248,16 @@
 									</span>
 
 									<span class="username">
-										${user.username} <g:if test="${user.realName != user.username}">${user.realName}</g:if>
+                                        User ${user.id}
+                                        %{--${user.username} <g:if test="${user.realName != user.username}">${user.realName}</g:if>--}%
 									</span>
+                                    
+                                    <div class="sessions">
+                                        <bnUser:sessions user="${user}" />
+                                    </div>
 
 									<div class="stats">
-										<g:if test="${user.email != user.username}">${user.email}<br /></g:if>
+										%{--<g:if test="${user.email != user.username}">${user.email}<br /></g:if>--}%
 										<bnUser:completedInfo user="${user}" />
 									</div>
 

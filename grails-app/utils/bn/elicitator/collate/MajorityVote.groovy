@@ -12,9 +12,9 @@ import org.codehaus.groovy.util.HashCodeHelper
 
 class MajorityVote extends CollationAlgorithm {
 
-    private int threshold
+    protected int threshold
 
-    private Map<CandidateArc, Integer> arcCounts = [ : ]
+    protected Map<CandidateArc, Integer> arcCounts = [ : ]
     
     public MajorityVote( int threshold, Collection<Relationship> toCollate) {
         super( toCollate )
@@ -27,9 +27,9 @@ class MajorityVote extends CollationAlgorithm {
         
     }
 
-    private Map<Variable, Map<Variable, CandidateArc>> cache
+    protected Map<Variable, Map<Variable, CandidateArc>> cache
 
-    private CandidateArc load( Arc arc ) {
+    protected CandidateArc load( Arc arc ) {
         
         if ( !cache ) {
             cache = [ : ]
@@ -75,7 +75,7 @@ class MajorityVote extends CollationAlgorithm {
     }
 
     @EqualsAndHashCode
-    private static class HashableArc {
+    protected static class HashableArc {
 
         public Arc arc
     }

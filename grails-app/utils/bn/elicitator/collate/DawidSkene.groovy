@@ -23,8 +23,8 @@ import com.datascience.utils.CostMatrix
 
 class DawidSkene extends CollationAlgorithm {
 
-    private double prior
-    private NominalProject project
+    protected double prior
+    protected NominalProject project
 
     public DawidSkene( double prior, Collection<Relationship> toCollate ) {
         super( toCollate )
@@ -53,7 +53,7 @@ class DawidSkene extends CollationAlgorithm {
         }
     }
 
-    private boolean includeArc( DatumResult result ) { result.categoryProbabilites[ "yes" ] > 0.5 }
+    protected boolean includeArc( DatumResult result ) { result.categoryProbabilites[ "yes" ] > 0.5 }
     
     public Collection<CandidateArc> getResultingArcs() {
         labelResults.findAll { includeArc( it.value ) }.collect {
@@ -77,7 +77,7 @@ class DawidSkene extends CollationAlgorithm {
         project.algorithm.compute()
     }
 
-    private INominalData setupData() {
+    protected INominalData setupData() {
 
         INominalData data = new InMemoryNominalData()
 
@@ -113,7 +113,7 @@ class DawidSkene extends CollationAlgorithm {
 
     }
 
-    private CandidateArc objectToArc( LObject<String> object ) {
+    protected CandidateArc objectToArc( LObject<String> object ) {
         String[] parts = object.getName().split( '-' )
         CandidateArc.getOrCreate(
             Variable.get( parts[ 0 ] as Long ),
@@ -121,7 +121,7 @@ class DawidSkene extends CollationAlgorithm {
         )
     }
 
-    private String relationshipToObject( Relationship relationship ) {
+    protected String relationshipToObject( Relationship relationship ) {
         "$relationship.parent.id-$relationship.child.id"
     }
 

@@ -52,6 +52,27 @@ class UserTagLib {
 		out << userService.current?.realName ?: ""
 	}
 
+    /**
+     * @attr user REQUIRED 
+     */
+    def sessions = { attrs ->
+        User user = attrs.remove( 'user' )
+        List<UserSession> sessions = userService.calcSessions( user )
+        out << "<ul class='user-session-list'>"
+        sessions.each { UserSession session ->
+            int secs = session.durationInSecs % 60
+            int mins = session.durationInSecs / 60
+            out << """
+                <li>
+                    <span class='duration'>$mins:$secs</span>
+                    <span class='phase'>Phase $session.delphiPhase</span>
+                    <span class='date'>$session.startDate</span>
+                </li>
+                """
+        }
+        out << "</ul>"
+    }
+    
 	/**
 	 * @attr user REQUIRED
 	 */

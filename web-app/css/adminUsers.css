@@ -16,6 +16,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+ul.user-session-list, ul.user-session-list li {
+    margin: 0;
+    padding: 0;
+    min-height: 0;
+}
+
+ul.user-session-list .duration {
+    width: 50px;
+    font-size: 0.9em;
+    display: inline-block;
+}
+
+ul.user-session-list .phase {
+    color: #666;
+    font-size: 0.8em;
+}
+
+ul.user-session-list .date {
+    color: #888;
+    font-size: 0.8em;
+}
+
 ul.filters li {
 	display: inline;
 	padding-right: 1em;

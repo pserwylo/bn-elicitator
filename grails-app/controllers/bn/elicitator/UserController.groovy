@@ -31,6 +31,32 @@ class UserController {
 	VariableService variableService
 	UserService userService
 
+    def exportSessions = {
+        response.contentType = "text/csv"
+        render( [ "User,Duration,Start,End,DelphiPhase,CompletedPhase" ].join( "," ) + "\n"
+        
+        )
+        List<CompletedPhase> completedPhases = CompletedPhase.list()
+        userService.calcSessions().each { User user, List<UserSession> sessions ->
+            
+            def completedPhase = { int delphiPhase ->
+                completedPhases.find { it.delphiPhase == delphiPhase && it.completedBy.id == user.id }
+            }
+            
+            sessions.each { UserSession session ->
+                String line = [
+                    user.id,
+                    session.durationInSecs,
+                    session.startDate.time,
+                    session.endDate.time,
+                    session.delphiPhase,
+                    completedPhase( session.delphiPhase ) ? 1 : 0
+                ].join( "," ) + "\n"
+                render( line )
+            }
+        }
+    }
+    
 	def list = {
 
 		User toShow = null

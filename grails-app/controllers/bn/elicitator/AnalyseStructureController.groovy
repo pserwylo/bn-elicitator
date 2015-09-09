@@ -3,6 +3,9 @@ package bn.elicitator
 import bn.elicitator.analysis.AnalysisRun
 import bn.elicitator.analysis.AnalysisSuite
 import bn.elicitator.analysis.DSAnalysisRun
+import bn.elicitator.analysis.DegradedDSAnalysisRun
+import bn.elicitator.analysis.DegradedMajAnalysisRun
+import bn.elicitator.collate.DegradedCollation
 import bn.elicitator.network.Arc
 
 
@@ -30,22 +33,32 @@ class AnalyseStructureController implements AnalysisController {
     
     def downloadNetworkStructures() {
 
-        render( [ "Type", "Prior", "From", "To" ].join( "\t" ) + "\n" )
+        render( [ "Type", "Prior", "From", "To", "NumExpertsRemoved" ].join( "\t" ) + "\n" )
         
         def analysis = AnalysisSuite.get( params.remove( 'id' ) as Integer )
         analysis.analysisRuns.each { AnalysisRun run ->
             run.acyclicNetwork.arcs.each { Arc arc ->
 
                 render( [
-                    run instanceof DSAnalysisRun ? "DS" : "Maj",
+                    run.typeName,
                     run.threshold,
                     arc.from.label,
-                    arc.to.label
+                    arc.to.label,
+                    getDegradedByString( run )
                 ].join( "\t" ) + "\n" )
             }
             
         }
-
+    }
+    
+    private String getDegradedByString( AnalysisRun run ) {
+        if ( run instanceof DegradedDSAnalysisRun ) {
+            return ((DegradedDSAnalysisRun)run).numExpertsRemoved
+        } else if ( run instanceof DegradedMajAnalysisRun ) {
+            return ((DegradedMajAnalysisRun)run).numExpertsRemoved
+        } else {
+            return ""
+        }
     }
 
     def downloadExpertWeights() {
