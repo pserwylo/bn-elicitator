@@ -15,7 +15,7 @@ import java.text.DecimalFormat
  * @see bn.elicitator.das2004.ProbabilityEstimation
  * @see bn.elicitator.network.BnProbability
  */
-class Probability {
+class Probability implements Comparable<Probability> {
 
 	static constraints = {
         createdBy nullable: true
@@ -39,9 +39,35 @@ class Probability {
             "Pr( ${childState.toConciseString() } | ${ sortedParentStates*.toConciseString().join( ', ' ) } )" :
             "Pr( ${childState.toConciseString() } )"
     }
-    
-    private List<State> getSortedParentStates() {
+
+    String toShortStringWithoutValue() {
+        parentStates ?
+            "${childState.toShortConciseString()}|${sortedParentStates*.toShortConciseString().join( ',' )}" :
+            "Pr( ${childState.toConciseString() } )"
+    }
+
+    public List<State> getSortedParentStates() {
         parentStates?.sort { it1, it2 -> it1.label <=> it2.label }
     }
 
+    @Override
+    int compareTo(Probability that) {
+        int initialResult = this.childState.label <=> that.childState.label
+        if (initialResult != 0) {
+            return initialResult
+        }
+        
+        List<State> mySortedParents = this.sortedParentStates
+        List<State> theirSortedParents = that.sortedParentStates
+        while (mySortedParents.size() > 0 && theirSortedParents.size() > 0) {
+            int result = mySortedParents[0].label <=> theirSortedParents[0].label
+            if (result != 0) {
+                return result
+            }
+            mySortedParents.remove(0)
+            theirSortedParents.remove(0)
+        }
+        
+        return 0;
+    }
 }

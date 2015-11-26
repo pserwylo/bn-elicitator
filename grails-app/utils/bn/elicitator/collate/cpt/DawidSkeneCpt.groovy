@@ -42,9 +42,11 @@ class DawidSkeneCpt extends CptCollationAlgorithm {
             new MapEntry( prob.toStringWithoutValue(), prob )
         }
 
-        def results = runTroia( cpts )
-        
-        results.entrySet().collect { LObject<ContValue> object, DatumContResults value ->
+        Map<LObject<ContValue>, DatumContResults>  results = runTroia( cpts )
+
+        def collectedProbs = results.entrySet().collect { Map.Entry<LObject<ContValue>, DatumContResults> entry ->
+            LObject<ContValue> object = entry.key
+            DatumContResults value = entry.value
             
             if ( !probabilityLabelMap.containsKey( object.name ) ) {
                 throw new Exception( "Couldn't find probability $object.name while collating Troia results." )
@@ -58,10 +60,16 @@ class DawidSkeneCpt extends CptCollationAlgorithm {
                     parentStates: oldProb.parentStates
             )
             
-        }.groupBy { Probability prob -> 
+        }
+        
+        def groupedProbs = collectedProbs.groupBy { Probability prob -> 
             prob.childState.variable
-        }.collect { MapEntry entry ->
-            new Cpt( probabilities : entry.value as List<Probability> )
+        }
+        
+        return groupedProbs.collect { Map.Entry<Variable, List<Probability>> entry ->
+            Variable variable = entry.key
+            List<Probability> probabilities = entry.value
+            new Cpt( probabilities : probabilities )
         }
     }
 

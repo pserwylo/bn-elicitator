@@ -1,6 +1,6 @@
 package bn.elicitator.analysis
 
-class DegradedMajAnalysisRun extends AnalysisRun {
+class DegradedMajAnalysisRun extends MajAnalysisRun {
 
     int numExpertsRemoved
 

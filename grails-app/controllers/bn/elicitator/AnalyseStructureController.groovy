@@ -2,12 +2,9 @@ package bn.elicitator
 
 import bn.elicitator.analysis.AnalysisRun
 import bn.elicitator.analysis.AnalysisSuite
-import bn.elicitator.analysis.DSAnalysisRun
 import bn.elicitator.analysis.DegradedDSAnalysisRun
 import bn.elicitator.analysis.DegradedMajAnalysisRun
-import bn.elicitator.collate.DegradedCollation
 import bn.elicitator.network.Arc
-
 
 class AnalyseStructureController implements AnalysisController {
 
@@ -25,10 +22,18 @@ class AnalyseStructureController implements AnalysisController {
 
     def showAnalysis() {
         
-        def goldStandard = analysisService.goldStandardNetwork
-        def analysis = AnalysisSuite.get( params.remove( 'id' ) as Integer )
-        return [ analysis : analysis, goldStandard : goldStandard ]
+        if ( params.containsKey( 'id' ) ) {
+            def suite = AnalysisSuite.get( params.remove( 'id' ) as Integer )
+            if ( suite ) {
+                return [ analysis : suite, goldStandard : analysisService.goldStandardNetwork ]
+            }
+        }
         
+        redirect( action : 'listAnalysis' )
+    }
+    
+    def listAnalysis() {
+        return [ suites : AnalysisSuite.list() ]
     }
     
     def downloadNetworkStructures() {
@@ -44,20 +49,20 @@ class AnalyseStructureController implements AnalysisController {
                     run.threshold,
                     arc.from.label,
                     arc.to.label,
-                    getDegradedByString( run )
+                    getDegradedBy( run )
                 ].join( "\t" ) + "\n" )
             }
             
         }
     }
     
-    private String getDegradedByString( AnalysisRun run ) {
-        if ( run instanceof DegradedDSAnalysisRun ) {
-            return ((DegradedDSAnalysisRun)run).numExpertsRemoved
-        } else if ( run instanceof DegradedMajAnalysisRun ) {
-            return ((DegradedMajAnalysisRun)run).numExpertsRemoved
+    private int getDegradedBy( AnalysisRun run ) {
+        DegradedDSAnalysisRun degradedDs = DegradedDSAnalysisRun.findById( run.id )
+        if ( degradedDs ) {
+            return degradedDs.numExpertsRemoved
         } else {
-            return ""
+            DegradedMajAnalysisRun degradedMaj = DegradedMajAnalysisRun.findById( run.id )
+            return degradedMaj?.numExpertsRemoved ?: 0
         }
     }
 

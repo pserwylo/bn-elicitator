@@ -55,4 +55,8 @@ class State {
         "$variable.label = $label"
     }
 
+    String toShortConciseString() {
+        "$variable.label=$label"
+    }
+
 }

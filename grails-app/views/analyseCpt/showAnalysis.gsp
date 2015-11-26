@@ -38,6 +38,8 @@
 
             </g:if>
 
+            <g:link action="verifyDas" params="${ [ id : analysis.id ] }" >Verify weighted sum calculations</g:link>
+
             <table class="summary">
                 <tr>
                     <th>Analysis</th>
@@ -46,7 +48,9 @@
                 <g:each in="${analysis.analysisRuns}" var="run">
                     <tr>
                         <td class="main">${run}</td>
-                        <td><g:link action="viewRun" params="${ [ id : run.id ] }">View CPTs</g:link></td>
+                        <td>
+                            <g:link action="viewRun" params="${ [ id : run.id ] }">View CPTs</g:link>
+                        </td>
                     </tr>
                 </g:each>
             </table>

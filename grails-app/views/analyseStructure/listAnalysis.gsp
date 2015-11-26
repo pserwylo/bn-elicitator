@@ -20,25 +20,23 @@
 <html>
 	<head>
 		<meta name="layout" content="main">
-		<title>Analyse CPTs</title>
+		<title>All Past Analysis</title>
 		<r:require module="analysis" />
 	</head>
 
 	<body>
 
-        <h1>Analyse CPTs</h1>
-    
-        <input type="button" value="Conduct new analysis" onclick="document.location = '${createLink( action : 'startAnalysis' )}'"/>
-    
         <fieldset class="default">
-            <legend>Previous analysis</legend>
-            
-            <ul>
-                <g:each in="${analysisSuites}" var="analysis">
-                    <li><g:link action="showAnalysis" params="${[ id : analysis.id ]}">Analysis Suite ${analysis.id}</g:link></li>
+            <legend>All Past Analysis</legend>
+            <ul class="variable-list">
+                <g:each in="${suites.reverse()}" var="suite">
+                    <li class="variable-item">
+                        <g:link action="showAnalysis" params="${ [ id : suite.id ] }">View Analysis ${suite.id}</g:link>
+                        (${suite.createdDate})
+                    </li>
                 </g:each>
             </ul>
-            
+
         </fieldset>
     
 	</body>

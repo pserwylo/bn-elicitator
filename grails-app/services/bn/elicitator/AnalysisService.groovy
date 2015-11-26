@@ -42,7 +42,7 @@ Only looking at the insurance network, I could estimate a prior probability fo a
         CandidateNetwork fullNetwork = createCandidateNetwork( toAnalyse )
 
         analyseMajority( analysisSuite, toAnalyse, fullNetwork )
-        analyseDawidSkene( analysisSuite, toAnalyse, fullNetwork )
+        // analyseDawidSkene( analysisSuite, toAnalyse, fullNetwork )
         
         println "Analysis complete"
         
@@ -53,8 +53,8 @@ Only looking at the insurance network, I could estimate a prior probability fo a
         // TODO: Be less specific about these numbers. I've chosen 6 as it is the maximum amount of allocations for any
         // given question during my evaluation. And I've chosen 3 because the number of cycles in networks with higher
         // thresholds than 3 cause memory errors in the JVM when DAGgifying the network structures.
-        for ( def i in 6..3 ) {
-
+        // for ( def i in 6..3 ) {
+        def i = 1
             analysisSuite.analysisRuns.add(
                 analysisRun(
                     new MajorityVote( i, toAnalyse ),
@@ -79,17 +79,17 @@ Only looking at the insurance network, I could estimate a prior probability fo a
             }
             
             analysisSuite.save( flush : true, failOnError : true )
-        }
+        // }
         
     }
     
     def analyseDawidSkene( AnalysisSuite analysisSuite, Collection<Relationship> toAnalyse, CandidateNetwork fullNetwork ) {
 
         for ( def i in [
-                0.0001,
+                /*0.0001,
                 0.001,
                 0.01, 0.02, 0.03, 0.04, 0.05,
-                0.10, 0.15, 0.20, 0.25, /*0.30, 0.35*/
+                0.10, 0.15, 0.20, 0.25, 0.30, 0.35*/ 0.40
             ] ) {
 
             analysisSuite.analysisRuns.add(

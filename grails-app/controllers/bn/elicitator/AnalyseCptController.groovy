@@ -7,10 +7,11 @@ import bn.elicitator.analysis.cpt.CptAnalysisSuite
 class AnalyseCptController implements AnalysisController {
 
     CptAnalysisService cptAnalysisService
+    VerifyDasService verifyDasService
     UserService userService
 
     def index() {
-        []
+        [ analysisSuites: CptAnalysisSuite.list() ]
     }
     
     def startAnalysis() {
@@ -26,7 +27,40 @@ class AnalyseCptController implements AnalysisController {
     def viewRun() {
         CptAnalysisRun run = CptAnalysisRun.get( params.remove( 'id' ) as Integer )
         return [ run : run ]
+    }
+    
+    def verifyDas() {
+        CptAnalysisSuite suite = CptAnalysisSuite.get( params.remove( 'id' ) as Integer )
+        List<EstimatedAndElicitedProbabilities> results = verifyDasService.verify(suite)
+
+        println "Printing header of .tsv"
+
+        header("Content-Type", "text/csv")
         
+        render([
+              "probabilityOf",
+              "user",
+              "estimatedProb",
+              "elicitedProb",
+        ].join("\t") + "\n")
+        
+        println "Printing body of .tsv"
+        
+        results.each { outerIt ->
+            outerIt.each { innerIt ->
+                render([
+                    innerIt.estimated.toShortStringWithoutValue(),
+                    innerIt.estimated.createdById,
+                    innerIt.estimated.probability,
+                    innerIt.elicited.probability
+                ].join("\t") + "\n")
+                
+            }
+        }
+
+        println "Done!"
+
+        // return [ results : results ]
     }
 
     def normalize() {
@@ -34,7 +68,6 @@ class AnalyseCptController implements AnalysisController {
         run.cpts*.normalize()
         run.save( flush : true, failOnError : true )
         redirect( action : 'viewRun', params : [ id : run.id ] )
-        
     }
 
 }

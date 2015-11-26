@@ -20,14 +20,15 @@ class CptAnalysisService {
 
     def analyse( CptAnalysisSuite analysisSuite ) {
 
-        Map<Variable, List<Cpt>> cptsForAnalysis = loadCptsForAnalysis()
+        analysisSuite.unprocessedCpts = loadCptsForAnalysis()
+        Map<Variable, List<Cpt>> cptsForAnalysis = analysisSuite.unprocessedCpts.groupBy { it?.variable }
         
         analyseMean( analysisSuite, cptsForAnalysis )
         analyseDawidSkene( analysisSuite, cptsForAnalysis )
         
         print "Analysis complete, saving... "
 
-        analysisSuite.save( failOnError : true )
+        analysisSuite.save( failOnError : true, flush: true )
         
         println "Done!"
         
@@ -57,10 +58,10 @@ class CptAnalysisService {
 
     }
 
-    private Map<Variable, List<Cpt>> loadCptsForAnalysis() {
+    private List<Cpt> loadCptsForAnalysis() {
         analysisService.goldStandardNetwork.variables.collect { Variable variable ->
             processVariable( variable )
-        }.flatten().groupBy { it?.variable }
+        }.flatten()
     }
 
     /**
@@ -76,7 +77,7 @@ class CptAnalysisService {
 
         List<Cpt> cpts = completedVars.collect { CompletedDasVariable completed ->
             try {
-                processUsersVariable( completed.completedBy, variable, parents )
+                return processUsersVariable( completed.completedBy, variable, parents )
             } catch ( Exception e ) {
                 // TODO: Actually bail when this happens, it really shouldn't happen...
                 println """
@@ -109,7 +110,7 @@ class CptAnalysisService {
         } else {
             probs = das2004Service.calcConditionalProbability( child, parents, user )
         }
-        return new Cpt( probabilities : probs, createdBy : user )
+        new Cpt( probabilities : probs, createdBy : user )
     }
 
     private CptAnalysisRun analysisRun( CptCollationAlgorithm collationAlgorithm, CptAnalysisRun analysis ) {
