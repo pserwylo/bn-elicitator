@@ -15,8 +15,8 @@ class VerifyDasService {
     List<EstimatedAndElicitedProbabilities> verify(CptAnalysisSuite analysisSuite) {
 
         final List<EstimatedAndElicitedProbabilities> results      = [];
-        final List<CompatibleParentConfiguration> allCpcs          = CompatibleParentConfiguration.list()
         final List<ProbabilityEstimation> allElicitedProbabilities = ProbabilityEstimation.list()
+        final List<CompatibleParentConfiguration> allCpcs          = CompatibleParentConfiguration.list().findAll { it.otherParentStates?.size() > 0 }
         
         userService.expertList.each { User expert ->
             allCpcs.findAll { it.createdById == expert.id }.each { CompatibleParentConfiguration cpc ->

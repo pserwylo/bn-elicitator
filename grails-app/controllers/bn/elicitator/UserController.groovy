@@ -22,6 +22,7 @@ import bn.elicitator.auth.Role
 import bn.elicitator.auth.User
 import bn.elicitator.auth.UserRole
 import bn.elicitator.events.LoggedEvent
+import bn.elicitator.events.PageViewEventFromLog
 import org.apache.commons.collections.CollectionUtils
 
 class UserController {
@@ -31,13 +32,21 @@ class UserController {
 	VariableService variableService
 	UserService userService
 
+    def exportCptSessions = {
+        return []
+    }
+    
     def exportSessions = {
         response.contentType = "text/csv"
-        render( [ "User,Duration,Start,End,DelphiPhase,CompletedPhase" ].join( "," ) + "\n"
-        
-        )
         List<CompletedPhase> completedPhases = CompletedPhase.list()
-        userService.calcSessions().each { User user, List<UserSession> sessions ->
+
+        List<LoggedEvent> eventsToProcess = params.containsKey('cptPageLogs') ?
+                PageViewEventFromLog.createMultiple(params.remove('cptPageLogs') as String) :
+                LoggedEvent.list()
+
+        render( [ "User,Duration,Start,End,DelphiPhase,CompletedPhase" ].join( "," ) + "\n")
+        
+        userService.calcSessions(eventsToProcess).each { User user, List<UserSession> sessions ->
             
             def completedPhase = { int delphiPhase ->
                 completedPhases.find { it.delphiPhase == delphiPhase && it.completedBy.id == user.id }

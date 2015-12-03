@@ -20,7 +20,7 @@ class UserSession {
             return false
         } else {
             long timeSince = event.date.time - endDate.time
-            return ( timeSince > 0 && timeSince < 1000 * 60 * 30 )
+            return ( timeSince >= 0 && timeSince < 1000 * 60 * 30 )
         }
     }
     
@@ -32,5 +32,10 @@ class UserSession {
     Date getEndDate()   { events.size() > 0 ? events[ events.size() - 1 ].date : null }
     int getDurationInSecs() { ( endDate.time - startDate.time ) / 1000 }
     int getDelphiPhase() { events.size() > 0 ? events[ 0 ].delphiPhase : 0 }
+    
+    public String toString() {
+        "Session [User: $user.id, Duration: ${durationInSecs}s]"
+        
+    }
     
 }
