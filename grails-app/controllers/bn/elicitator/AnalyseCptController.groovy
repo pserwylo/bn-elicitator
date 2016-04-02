@@ -2,12 +2,14 @@ package bn.elicitator
 
 import bn.elicitator.analysis.cpt.CptAnalysisRun
 import bn.elicitator.analysis.cpt.CptAnalysisSuite
+import bn.elicitator.auth.User
 
 
 class AnalyseCptController implements AnalysisController {
 
     CptAnalysisService cptAnalysisService
     VerifyDasService verifyDasService
+    VerifyCoherencyService verifyCoherencyService
     UserService userService
 
     def index() {
@@ -24,6 +26,27 @@ class AnalyseCptController implements AnalysisController {
         return [ analysis : analysis ]
     }
 
+    def verifyConsistency() {
+        Map<User, List<Double>> results = verifyCoherencyService.verify()
+
+        header('Content-Type', 'text/csv')
+        header('Content-Disposition', 'attachment; filename="verifyConsistency.csv"')
+
+        render([
+            "user",
+            "totalProb",
+        ].join(",") + "\n")
+
+        results.each { User user, List<Double> usersValues ->
+            usersValues.each { Double totalProb ->
+                render([
+                    user.id,
+                    totalProb
+                ].join(",") + "\n")
+            }
+        }
+    }
+
     def viewRun() {
         CptAnalysisRun run = CptAnalysisRun.get( params.remove( 'id' ) as Integer )
         return [ run : run ]
@@ -33,8 +56,6 @@ class AnalyseCptController implements AnalysisController {
         CptAnalysisSuite suite = CptAnalysisSuite.get( params.remove( 'id' ) as Integer )
         List<EstimatedAndElicitedProbabilities> results = verifyDasService.verify(suite)
 
-        println "Printing header of .tsv"
-
         header("Content-Type", "text/csv")
         
         render([
@@ -43,9 +64,7 @@ class AnalyseCptController implements AnalysisController {
               "estimatedProb",
               "elicitedProb",
         ].join("\t") + "\n")
-        
-        println "Printing body of .tsv"
-        
+
         results.each { outerIt ->
             outerIt.each { innerIt ->
                 render([
@@ -57,10 +76,6 @@ class AnalyseCptController implements AnalysisController {
                 
             }
         }
-
-        println "Done!"
-
-        // return [ results : results ]
     }
 
     def normalize() {
