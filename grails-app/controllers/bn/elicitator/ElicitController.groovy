@@ -36,7 +36,7 @@ class ElicitController {
 	BnService           bnService
 	UserService         userService
 
-	def beforeInterceptor = {
+	def beforeInterceptor() {
 		if ( !delphiService.hasPreviousPhase && !userService.current.hasConsented ) {
 			redirect( controller: 'explain', action: 'statement' )
 		}
@@ -46,7 +46,7 @@ class ElicitController {
 	 * Mark this user as completed (for this round), then redirect to the main list so that they can still play around
 	 * until next round.
 	 */
-	def completed = {
+	def completed() {
 		if ( checkProblems( createLink( action: 'completed' ) ) ) {
 			List<Variable> stillToComplete = variableService.getStillToVisit()
 			if ( stillToComplete.size() > 0 ) {
@@ -64,7 +64,7 @@ class ElicitController {
 		}
 	}
 
-	def completedVariable = {
+	def completedVariable() {
 
 		Variable var = Variable.findByLabel( (String)params[ 'variable' ] )
 		if ( var == null ) {
@@ -75,8 +75,7 @@ class ElicitController {
 		}
 	}
 
-	def fixProblems =
-	{
+	def fixProblems() {
 		List<BnService.CyclicalRelationship> cyclicalRelationships = bnService.getCyclicalRelationships()
 		List<String>                         errors                = []
 		List<List<Variable>>                 cyclicalLosers        = []
@@ -113,7 +112,7 @@ class ElicitController {
 		redirect( targetUri: targetUri )
 	}
 
-	def removeCycle = {
+	def removeCycle() {
 		Variable parent = Variable.findByLabel( (String)params["parent"] )
 		Variable child  = Variable.findByLabel( (String)params["child"] )
 
@@ -127,7 +126,7 @@ class ElicitController {
 		}
 	}
 
-	def redirectToProblems = {
+	def redirectToProblems() {
 		def newParams = [:]
 		if ( params.containsKey( "scroll" ) ) {
 			flash.scroll = params.remove( "scroll" )
@@ -142,7 +141,7 @@ class ElicitController {
 	 * Check if there are any cyclical relationships and present them to the user to resolve.
 	 * @return
 	 */
-	def problems = {
+	def problems() {
 		if ( checkProblems( createLink( action: 'problems' ) ) ) {
 			redirect( action: 'index' )
 		}
@@ -164,7 +163,7 @@ class ElicitController {
 		return !show
 	}
 
-	def ajaxGetDetails = {
+	def ajaxGetDetails() {
 		if ( delphiService.hasPreviousPhase ) {
 			return
 		}
@@ -191,7 +190,7 @@ class ElicitController {
 		}
 	}
 
-	def ajaxGetReviewDetails = {
+	def ajaxGetReviewDetails() {
 		if ( !delphiService.hasPreviousPhase ) {
 			return
 		}
@@ -236,7 +235,7 @@ class ElicitController {
 	 * workload on the expert. Instead, we use the configuration of constraints to restrict
 	 * the variables which are shown as potential children.
 	 */
-    def children = {
+    def children() {
 
 		Variable parentVar = ( params["for"] == null ) ? null : Variable.findByLabel( (String)params["for"] )
 		if ( parentVar == null ) {
@@ -265,7 +264,7 @@ class ElicitController {
 	 * Usually in response to an AJAX post, this will just dump the data into the database so that we can continue with
 	 * the interaction in the view.
 	 */
-	def save = { SaveRelationshipCommand cmd ->
+	def save(SaveRelationshipCommand cmd) {
 
 		User user = userService.current
 		Variable child = Variable.findByLabel( cmd.child );
@@ -351,7 +350,7 @@ class ElicitController {
 		}
 	}
 
-	def index = {
+	def index() {
 		if ( AppProperties.properties.elicitationPhase == AppProperties.ELICIT_3_PROBABILITIES ) {
 			forward( controller : 'das2004' )
 		} else {
@@ -359,7 +358,7 @@ class ElicitController {
 		}
 	}
 
-	def indexStructure = {
+	def indexStructure() {
 
 		this.variableService.initRelationships()
 		List<Variable> variablesToElicit = this.variableService.getAllParentsVars()
@@ -383,7 +382,7 @@ class ElicitController {
 	 * Creates the new variable, saves it, then redirects to {@link ElicitController#children} for the variable we
 	 * were viewing when we added this new variable.
 	 */
-	def addVariable = { AddVariableCommand cmd ->
+	def addVariable(AddVariableCommand cmd) {
 
 		if ( !cmd.label.trim() || !cmd.description.trim() ) {
 			throw new Exception( "Invalid input: No label or description received." )
