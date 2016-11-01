@@ -2,7 +2,8 @@ package bn.elicitator.output
 
 class NeticaOutputGraph extends SerializedBnGraph<NeticaNode> {
 
-
+    @Override
+    NeticaNode createNode() { new NeticaNode() }
 
 	@Override
 	String generateGraph() {
@@ -22,7 +23,7 @@ bnet BayesianNetwork {
 			$bnVisualAttributes
 		};
 
-	${nodes.join( "\n" )}
+	${nodes.join( "\n\t" )}
 };
 """
 

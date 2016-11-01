@@ -42,6 +42,12 @@
 				margin-bottom: 0.3em;
 			}
 
+            #download-links  li {
+                font-size: 0.8em;
+                display: inline-block;
+                margin-right: 1em;
+            }
+
 		</style>
 
 		<g:javascript>
@@ -51,6 +57,7 @@
 			var mainContainer  = $( '.column-footer' );
 			var imageContainer = mainContainer.find( '.image' );
 			var htmlMatrix     = mainContainer.find( '#htmlMatrix' );
+			var downloadLinks  = document.getElementById( 'download-links' );
 
 			var scaleSvg = function() {
 				var svg          = imageContainer.find( 'svg' );
@@ -59,6 +66,47 @@
 				svg.width( targetWidth );
 				svg.height( svg.height() * ratio );
 			};
+
+            var displayInfo = function( delphiPhase, minUsers ) {
+                buildDownloadLinks( delphiPhase, minUsers );
+                loadImage( delphiPhase, minUsers );
+            };
+
+            var buildDownloadLinks = function( delphiPhase, minUsers ) {
+                while ( downloadLinks.firstChild ) {
+                    downloadLinks.removeChild(downloadLinks.firstChild );
+                }
+
+                var links = [{
+                    name: "CSV (.csv)",
+                    link: "${createLink( controller: 'output', action: 'csv' )}" + '?phase=' + delphiPhase + '&minUsers=' + minUsers,
+                }, {
+                    name: "SVG (.svg)",
+                    link: "${createLink( controller: 'output', action: 'svgDiagram' )}" + '?phase=' + delphiPhase + '&minUsers=' + minUsers,
+                }, {
+                    name: "GraphViz (.dot)",
+                    link: "${createLink( controller: 'output', action: 'graphviz' )}" + '?phase=' + delphiPhase + '&minUsers=' + minUsers,
+                }, {
+                    name: "Netica (.dne)",
+                    link: "${createLink( controller: 'output', action: 'netica' )}" + '?phase=' + delphiPhase + '&minUsers=' + minUsers,
+                }, {
+                    name: "GeNIe (.xdsl)",
+                    link: "${createLink(controller: 'output', action: 'genie')}" + '?phase=' + delphiPhase + '&minUsers=' + minUsers,
+                }, {
+                    name: "Hugin (.net)",
+                    link: "${createLink(controller: 'output', action: 'hugin')}" + '?phase=' + delphiPhase + '&minUsers=' + minUsers,
+                }];
+
+                for ( var i = 0; i < links.length; i ++ ) {
+                    var info = links[ i ];
+                    var li = document.createElement( 'li' );
+                    var a = document.createElement( 'a' );
+                    a.href = info.link;
+                    a.innerHTML = info.name;
+                    li.appendChild( a );
+                    downloadLinks.appendChild( li );
+                }
+            };
 
 			var loadImage = function( delphiPhase, minUsers ) {
 				var graphStats = $( '#graphStats' );
@@ -80,10 +128,10 @@
 			mainContainer.find( 'select' ).change( function() {
 				var phase    = $( '#graphPhase'    ).val();
 				var strength = $( '#graphMinUsers' ).val();
-				loadImage( phase, strength );
+				displayInfo( phase, strength );
 			});
 
-			loadImage( ${appProperties.delphiPhase}, 1 );
+			displayInfo( ${appProperties.delphiPhase}, 1 );
 
 			$( '#targetParticipantsPerQuestion' ).change( function() {
 				var params = { participantsPerQuestion: this.value };
@@ -91,7 +139,6 @@
 			});
 
 		});
-
 		</g:javascript>
 	</head>
 	
@@ -216,8 +263,9 @@
 						</div>
 
 						<span id="graphStats" class="info"></span>
-						<div id="htmlMatrix"></div>
+                        <ul id="download-links"></ul>
 						<div class="image stats"></div>
+                        <div id="htmlMatrix"></div>
 
 					</fieldset>
 				</div>

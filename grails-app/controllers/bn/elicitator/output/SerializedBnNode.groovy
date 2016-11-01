@@ -4,10 +4,12 @@ import bn.elicitator.analysis.cpt.Cpt
 
 import java.awt.Point
 
-class SerializedBnNode {
+abstract class SerializedBnNode {
 
 	VariableFamily family
 	Cpt            cpt
 	Point          location
+
+    abstract String toString()
 
 }
