@@ -10,6 +10,4 @@ abstract class SerializedBnNode {
 	Cpt            cpt
 	Point          location
 
-    abstract String toString()
-
 }

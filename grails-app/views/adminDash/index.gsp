@@ -218,7 +218,9 @@
 
 			<div class="column-right">
 				<fieldset class="default ">
-					<legend>Variable Allocations</legend>
+					<legend>Variables</legend>
+
+                    <g:link action="editVariables">Edit variables</g:link>
 
 					<div class="overview">
 						<div class="info">

@@ -1,5 +1,7 @@
 package bn.elicitator
 
+import bn.elicitator.auth.Role
+
 class AllocateStructureQuestionsService extends AllocateQuestionsService {
 
 	@Override
@@ -32,4 +34,20 @@ class AllocateStructureQuestionsService extends AllocateQuestionsService {
 		variableService.countPotentialChildren( variable )
 	}
 
+	/**
+	 * When an admin adds a new variable, or changes the variable class of a variable, then the list of eligible questions changes.
+	 * In response, we need to take the drastic step of removing all allocated questiosn, and reallocating questions anew.
+	 */
+	void reassignQuestions() {
+		def allocations = StructureAllocation.list()
+		def relationships = Relationship.list()
+		allocations*.delete(flush: true, failOnError: true)
+		relationships*.delete(flush: true, failOnError: true)
+
+		userService.expertList.each { user ->
+			if (AppProperties.properties.elicitationPhase == AppProperties.ELICIT_2_RELATIONSHIPS) {
+				allocateToUser(user)
+			}
+		}
+	}
 }

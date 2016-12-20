@@ -17,7 +17,7 @@ abstract class SerializedBnGraph<T extends SerializedBnNode> extends OutputGraph
 
 	Map<Variable,Cpt> cpts = [:]
 
-	protected T createNode() { return new T() }
+	protected abstract T createNode()
 
 	private void putVar( Variable var ) {
 		if ( !variableFamilies.containsKey( var ) ) {

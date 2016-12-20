@@ -28,6 +28,7 @@ class AdminDashController {
 	def userService
 	def springSecurityService
 	def variableService
+	def allocateStructureQuestionsService
 
 	/**
 	 * Show some summary statistics, including the current state of the app (e.g. delphi phase), the list of users
@@ -47,6 +48,94 @@ class AdminDashController {
 		]
 
 	}
+
+    def editVariables() {
+        return [
+            variables: Variable.list(),
+			refreshedQuestions: flash.refreshedQuestions,
+        ]
+    }
+
+	def addVariable() {
+		render(view: 'variableForm', model: [
+			variableId: null,
+			variable: new Variable(
+				readableLabel: "New Variable",
+				usageDescription: "Does the state of New Variable directly influence any of these?",
+			),
+			variableClasses: VariableClass.list(),
+		])
+	}
+
+    def editVariable() {
+        if (!params.containsKey('id')) {
+            redirect(action: 'editVariables')
+        }
+
+		Variable variable = Variable.get(params['id'] as Long)
+		if (variable == null) {
+			redirect(action: 'editVariables')
+		}
+
+        render(view: 'variableForm', model: [
+			variableId: variable.id,
+            variable: variable,
+            variableClasses: VariableClass.list(),
+        ])
+    }
+
+    def saveVariable() {
+
+		Variable variable = null
+
+		boolean requiresRefresh = false
+
+		if (params.containsKey('id')) {
+			variable = Variable.get(Long.parseLong(params['id'] as String))
+		} else if (params.containsKey('add')) {
+			requiresRefresh = true
+			variable = new Variable(
+				createdBy: userService.current,
+				createdDate: new Date(),
+				states: [],
+			)
+		}
+
+        if (variable == null) {
+            redirect(action: 'editVariables')
+        }
+
+        def requiredKeys = ["description", "readableLabel", "usageDescription", "variableClass"]
+        if (requiredKeys.find({ !params.containsKey(it) })) {
+            redirect(action: 'editVariables')
+        }
+
+        VariableClass newVariableClass = VariableClass.get(params['variableClass'] as Long)
+        String newReadableLabel = params['readableLabel']
+        String newDescription = params['description']
+        String newUsageDescription = params['usageDescription']
+		String newLabel = newReadableLabel.replaceAll("[^a-zA-Z0-9]", "")
+
+        requiresRefresh = requiresRefresh || newVariableClass.id != variable.variableClass?.id
+
+        variable.readableLabel = newReadableLabel
+        variable.label = newLabel
+        variable.description = newDescription
+        variable.usageDescription = newUsageDescription
+        variable.variableClass = newVariableClass
+
+		variable.lastModifiedBy = userService.current
+		variable.lastModifiedDate = new Date()
+
+        variable.save(failOnError: true, flush: true)
+
+		if (requiresRefresh) {
+			allocateStructureQuestionsService.reassignQuestions()
+			flash.refreshedQuestions = true
+		}
+
+        redirect(action: 'editVariables')
+    }
 
 	def editStudyDetails() {
 		

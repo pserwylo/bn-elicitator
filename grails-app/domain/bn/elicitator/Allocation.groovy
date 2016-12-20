@@ -6,7 +6,7 @@ abstract class Allocation {
 
 	static hasMany = [ variables: Variable ]
 
-	int totalQuestionCount   = 0
+	int totalQuestionCount = 0
 
 	User user
 

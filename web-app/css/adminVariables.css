@@ -1,0 +1,66 @@
+/*
+ * Bayesian Network (BN) Elicitator
+ * Copyright (C) 2016 Peter Serwylo (peter.serwylo@monash.edu)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.errors p, .message p {
+    margin: 0.5em 0;
+}
+
+.quote {
+    margin: 1em;
+    padding: 0.75em 0.5em;
+    border-left: solid 2px #b2d8ff;
+}
+
+.add-button {
+    margin-bottom: 1em;
+}
+
+.back-button {
+    margin-top: 1em;
+}
+
+#variable-form .input {
+    margin-bottom: 1em;
+}
+
+#variable-form .input .input-label {
+    width: 200px;
+    text-align: right;
+    font-weight: bold;
+    display: inline-block;
+    padding-right: 1em;
+    vertical-align: top;
+}
+
+#variable-form .input input[type=text],
+#variable-form .input textarea {
+    width: 100%;
+}
+
+#variable-form .input textarea {
+    height: 100px;
+}
+
+#variable-form .input .input-value {
+    width: 600px;
+    display: inline-block;
+}
+
+#variable-form .variable-classes {
+    display: inline-block;
+}

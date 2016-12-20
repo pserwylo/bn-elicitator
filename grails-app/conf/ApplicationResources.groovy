@@ -119,6 +119,11 @@ modules = {
 		resource url: 'css/adminSurveyDetails.css'
 	}
 
+	adminVariables {
+		dependsOn( [ 'admin' ] )
+		resource url: 'css/adminVariables.css'
+	}
+
 	adminUsers {
 		dependsOn( [ 'admin', 'floatingDialog' ] )
 		resource url: 'css/adminUsers.css'
