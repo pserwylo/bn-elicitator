@@ -216,6 +216,10 @@
 						</g:each>
 					</ul>
 
+					<div class="info">
+						<g:link action="reassignQuestions" onclick="${"return confirm(\"Are you sure you want to REMOVE ALL SURVEY RESPONSES and start again?\")"}"><em>Remove all survey responses</em></g:link>
+					</div>
+
 				</fieldset>
 			</div>
 

@@ -56,6 +56,11 @@ class AdminDashController {
         ]
     }
 
+	def reassignQuestions() {
+		allocateStructureQuestionsService.reassignQuestions()
+		redirect(action: "index")
+	}
+
 	def addVariable() {
 		render(view: 'variableForm', model: [
 			variableId: null,

@@ -1,7 +1,5 @@
 package bn.elicitator
 
-import bn.elicitator.auth.Role
-
 class AllocateStructureQuestionsService extends AllocateQuestionsService {
 
 	@Override
@@ -41,8 +39,13 @@ class AllocateStructureQuestionsService extends AllocateQuestionsService {
 	void reassignQuestions() {
 		def allocations = StructureAllocation.list()
 		def relationships = Relationship.list()
+		def completedPhases = CompletedPhase.list()
+		def completedVariables = VisitedVariable.list()
+
 		allocations*.delete(flush: true, failOnError: true)
 		relationships*.delete(flush: true, failOnError: true)
+		completedVariables*.delete(flush: true, failOnError: true)
+		completedPhases*.delete(flush: true, failOnError: true)
 
 		userService.expertList.each { user ->
 			if (AppProperties.properties.elicitationPhase == AppProperties.ELICIT_2_RELATIONSHIPS) {
