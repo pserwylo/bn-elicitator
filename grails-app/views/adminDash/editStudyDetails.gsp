@@ -46,7 +46,12 @@
 						<g:textField name="adminEmail" value="${appProperties.adminEmail}" />
 					</label>
 				</div>
-	
+
+				<div class="field">
+					<span class="label">Explanatory Statement <bn:tooltip>Shown to participants before they join the survey.</bn:tooltip>:</span>
+					<bnContent:editLink label="${bn.elicitator.ContentPage.EXPLANATORY_STATEMENT}">Edit explanatory statement</bnContent:editLink>
+				</div>
+
 				<div class="field">
 					<span class="label">Prizes:</span>
 					<g:if test="${appProperties.arePrizesEnabled()}">
@@ -56,7 +61,7 @@
 						Disabled (add description <bnContent:editLink label="${bn.elicitator.ContentPage.PRIZE}">here</bnContent:editLink> to enable prizes).
 					</g:else>
 				</div>
-				
+
 				<div class="button-container">
 					<g:submitButton name="Save" />
 					<input type="button" value="Back" onclick="document.location = '${createLink( controller: 'adminDash' )}'" />

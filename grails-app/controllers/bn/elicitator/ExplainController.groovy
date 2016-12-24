@@ -85,7 +85,8 @@ class ExplainController {
 		if ( delphiService.hasPreviousPhase ) {
 			forward( controller: 'contentView', params : [ page : ContentPage.CANT_REGISTER_THIS_ROUND ] )
 		} else {
-			return [ explanatoryStatement: AppProperties.properties.explanatoryStatement ]
+			ContentPage contentPage = ContentPage.findByAlias( ContentPage.EXPLANATORY_STATEMENT )
+			return [ explanatoryStatement: contentPage == null ? "" : contentPage.content ]
 		}
 
     }

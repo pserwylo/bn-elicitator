@@ -179,6 +179,21 @@ If this is a mistake, please contact <a href="mailto:peter.serwylo@monash.edu.au
 """
 			).save()
 		}
+
+		ContentPage explanatoryStatement = ContentPage.findByAlias( ContentPage.EXPLANATORY_STATEMENT )
+		if ( !explanatoryStatement ) {
+			new ContentPage(
+					alias : ContentPage.EXPLANATORY_STATEMENT,
+					canDelete : false,
+					label: "Explanatory statement",
+					content : AppProperties.properties.explanatoryStatement?.length() > 0 ? AppProperties.properties.explanatoryStatement : """
+<h2>Explanatory Statement</h2>
+<p>
+This page is shown to participants the first time they log in. They are asked to acknowledge that they understand the content in this page before continuing.
+</p>
+"""
+			).save()
+		}
 	}
 
 	private void upgradeRoles() {

@@ -172,6 +172,9 @@
 						<div class="info">
 							<span class="label">Prizes:</span> ${appProperties.arePrizesEnabled() ? "Enabled" : "Disabled"}
 						</div>
+						<div class="info">
+							<span class="label">Explanatory Statement:</span> Edit details to view/edit explanatory statement.
+						</div>
 						%{--<div class="info">
 							<span class="label">Delphi Phase:</span> ${appProperties.delphiPhase}
 						</div>--}%
